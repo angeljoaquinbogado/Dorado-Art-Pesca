@@ -1626,3 +1626,79 @@ body.intro-finished .hero-content{
     letter-spacing:.12em !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — TÍTULO DE INTRO EQUILIBRADO
+   Misma familia tipográfica + tamaños más cercanos
+   ========================================================= */
+.brand-intro-title{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:clamp(18px,2vw,30px) !important;
+  flex-wrap:nowrap !important;
+  margin-top:14px !important;
+  text-align:center !important;
+}
+
+/* Marca principal: elegante, sólida y menos "cartel". */
+.brand-intro-title > strong{
+  font-family:"Montserrat",sans-serif !important;
+  font-size:clamp(52px,6vw,76px) !important;
+  font-weight:800 !important;
+  line-height:.95 !important;
+  letter-spacing:-.035em !important;
+  color:#f7f1e7 !important;
+  text-shadow:0 12px 34px rgba(0,0,0,.30) !important;
+}
+
+/* Descriptor: misma familia y mucho más cercano en escala. */
+.brand-intro-title > span{
+  font-family:"Montserrat",sans-serif !important;
+  font-size:clamp(28px,3.35vw,42px) !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+  letter-spacing:.055em !important;
+  color:#e6a43a !important;
+  text-transform:uppercase !important;
+  text-shadow:0 8px 24px rgba(0,0,0,.24) !important;
+}
+
+/* Mantener exactamente la misma apariencia cuando JS divide las letras. */
+.brand-intro-title > strong .intro-char,
+.brand-intro-title > span .intro-char{
+  font-family:inherit !important;
+  font-size:inherit !important;
+  font-weight:inherit !important;
+  line-height:inherit !important;
+  letter-spacing:inherit !important;
+  color:inherit !important;
+  text-transform:inherit !important;
+  text-shadow:inherit !important;
+}
+
+/* Línea inferior más discreta para no competir con el nombre. */
+.brand-intro-line{
+  width:min(560px,68vw) !important;
+  margin-top:24px !important;
+  background:rgba(247,241,231,.14) !important;
+}
+.brand-intro-line i{
+  background:linear-gradient(90deg,#c68420,#e6a43a,#f2c36c) !important;
+}
+
+@media(max-width:760px){
+  .brand-intro-title{
+    flex-direction:column !important;
+    gap:10px !important;
+    flex-wrap:wrap !important;
+  }
+  .brand-intro-title > strong{
+    font-size:clamp(48px,15vw,66px) !important;
+  }
+  .brand-intro-title > span{
+    font-size:clamp(21px,6.5vw,29px) !important;
+    letter-spacing:.045em !important;
+  }
+}
