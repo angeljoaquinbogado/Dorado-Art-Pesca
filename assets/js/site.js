@@ -2381,7 +2381,7 @@ comprobarRetornoPago();
                     {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.92)`,offset:.68},
                     {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`,offset:1}
                 ],{
-                    duration:2050,
+                    duration:3300,
                     easing:"cubic-bezier(.22,.76,.18,1)",
                     fill:"forwards"
                 });
@@ -2392,15 +2392,15 @@ comprobarRetornoPago();
                         {clipPath:"inset(0 0% 0 0)",opacity:1,filter:"blur(0)"},
                         {clipPath:"inset(0 100% 0 0)",opacity:.08,filter:"blur(4px)"}
                     ],{
-                        duration:790,
+                        duration:1350,
                         easing:"cubic-bezier(.4,0,.2,1)",
                         fill:"forwards"
                     });
-                },620);
+                },1100);
 
-                window.setTimeout(()=>intro.classList.add("fly-to-header"),1380);
-                window.setTimeout(finishIntro,2110);
-            },1500);
+                window.setTimeout(()=>intro.classList.add("fly-to-header"),2450);
+                window.setTimeout(finishIntro,3500);
+            },2000);
         }
     }
 
