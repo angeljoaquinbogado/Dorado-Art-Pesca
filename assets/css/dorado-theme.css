@@ -728,3 +728,326 @@ body.intro-finished .dorado-field-strip{animation:doradoStripReveal .9s .12s cub
   .dorado-map-live{min-height:390px !important;}
   .map-open-button{left:14px !important;right:14px !important;bottom:14px !important;justify-content:center !important;}
 }
+
+
+/* =========================================================
+   DORADO — CATÁLOGO + FLUJO DE COMPRA OSCUROS
+   Rediseño independiente de FER · 2026-09-22
+   ========================================================= */
+
+/* Catálogo: bloque editorial oscuro, sin estructura visual de FER */
+.dorado-catalog{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:#061019 !important;
+  color:#f4f7f8 !important;
+  position:relative;
+  overflow:hidden;
+}
+.dorado-catalog::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 8% 18%,rgba(239,159,36,.12),transparent 30%),
+    radial-gradient(circle at 86% 0%,rgba(73,112,132,.10),transparent 34%),
+    linear-gradient(180deg,#07131d 0%,#061019 100%);
+}
+.catalog-shell-dark{
+  position:relative;
+  z-index:1;
+  width:var(--container);
+  margin:0 auto;
+  padding:104px 0 118px;
+}
+.catalog-heading-row{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(320px,.55fr);
+  gap:clamp(48px,7vw,100px);
+  align-items:end;
+  padding-bottom:36px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.catalog-copy{max-width:760px;}
+.dorado-catalog .section-index{color:#d1d7db !important;}
+.dorado-catalog .section-index span,
+.dorado-catalog .section-index b,
+.dorado-catalog .kicker{color:#ef9f24 !important;}
+.dorado-catalog .section-title{
+  max-width:760px !important;
+  margin-top:18px !important;
+  color:#f5f7f8 !important;
+  font-size:clamp(46px,5.6vw,78px) !important;
+  line-height:.94 !important;
+  letter-spacing:-.06em !important;
+}
+.dorado-catalog .section-title span{color:#f0aa3e !important;}
+.dorado-catalog .section-desc{
+  max-width:700px !important;
+  margin-top:22px !important;
+  color:#aeb8bf !important;
+  font-size:14px !important;
+  line-height:1.75 !important;
+}
+.catalog-promises{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 18px;
+  margin-top:28px;
+}
+.catalog-promises span{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#d7dde1;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.035em;
+}
+.catalog-promises .ui-icon{width:15px;height:15px;color:#ef9f24;}
+
+.dorado-catalog .catalog-tools{
+  align-self:end !important;
+  gap:12px !important;
+}
+.dorado-catalog .catalog-search{
+  height:60px !important;
+  padding:0 14px 0 18px !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:18px !important;
+  background:rgba(255,255,255,.055) !important;
+  box-shadow:none !important;
+  backdrop-filter:blur(12px);
+  transition:border-color .24s ease,background .24s ease,box-shadow .24s ease !important;
+}
+.dorado-catalog .catalog-search:focus-within{
+  border-color:rgba(239,159,36,.72) !important;
+  background:rgba(255,255,255,.075) !important;
+  box-shadow:0 0 0 4px rgba(239,159,36,.08) !important;
+}
+.dorado-catalog .catalog-search .ui-icon{color:#ef9f24 !important;}
+.dorado-catalog .catalog-search input{color:#fff !important;font-size:13px !important;}
+.dorado-catalog .catalog-search input::placeholder{color:#8f9aa2 !important;}
+.dorado-catalog .search-shortcut{
+  color:#cbd2d7 !important;
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.08);
+}
+.dorado-catalog .catalog-count{
+  padding-left:4px !important;
+  color:#77848d !important;
+  font-size:9px !important;
+  letter-spacing:.09em !important;
+  text-transform:uppercase !important;
+}
+
+.dorado-catalog .category-chips{
+  width:100% !important;
+  margin:30px 0 34px !important;
+  padding:0 0 7px !important;
+  gap:9px !important;
+}
+.dorado-catalog .category-chip{
+  border:1px solid rgba(255,255,255,.13) !important;
+  background:rgba(255,255,255,.035) !important;
+  color:#bac3c9 !important;
+  padding:10px 16px !important;
+  transition:background .2s ease,border-color .2s ease,color .2s ease !important;
+  transform:none !important;
+}
+.dorado-catalog .category-chip:hover,
+.dorado-catalog .category-chip.active{
+  background:#ef9f24 !important;
+  color:#061019 !important;
+  border-color:#ef9f24 !important;
+  transform:none !important;
+}
+
+.dorado-catalog .products{gap:20px !important;}
+.dorado-catalog .products-loading{
+  min-height:180px !important;
+  border-radius:22px !important;
+  background:rgba(255,255,255,.035) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#9da8af !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:12px !important;
+}
+.catalog-loader-dot{
+  width:8px;height:8px;border-radius:50%;background:#ef9f24;
+  box-shadow:0 0 0 6px rgba(239,159,36,.10);
+  animation:doradoLoaderPulse 1.4s ease-in-out infinite;
+}
+@keyframes doradoLoaderPulse{50%{opacity:.45;box-shadow:0 0 0 11px rgba(239,159,36,0)}}
+.dorado-catalog .product{
+  border:1px solid rgba(255,255,255,.08) !important;
+  border-radius:18px !important;
+  background:#f8f4eb !important;
+  box-shadow:0 16px 36px rgba(0,0,0,.18) !important;
+}
+.dorado-catalog .product:hover{transform:translateY(-3px) !important;}
+
+/* Cómo comprar: dark cards, interacción por color — nunca zoom */
+.dorado-buy-flow{
+  width:100% !important;
+  background:#030b11 !important;
+  color:#f5f7f8 !important;
+  padding:112px 0 120px !important;
+  position:relative;
+  overflow:hidden;
+}
+.dorado-buy-flow::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 12% 30%,rgba(239,159,36,.08),transparent 25%),
+    linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 44px);
+  background-size:auto,44px 44px;
+}
+.dorado-buy-flow::after{display:none !important;}
+.dorado-buy-flow .process-shell{
+  width:var(--container) !important;
+  margin:auto !important;
+  display:grid !important;
+  grid-template-columns:minmax(280px,.70fr) minmax(0,1.30fr) !important;
+  gap:clamp(56px,7vw,110px) !important;
+  align-items:start !important;
+  position:relative;
+  z-index:1;
+}
+.dorado-buy-flow .section-index,
+.dorado-buy-flow .kicker{color:#ef9f24 !important;}
+.dorado-buy-flow .process-intro h2{
+  color:#f6f8f9 !important;
+  font-size:clamp(46px,5.2vw,74px) !important;
+  line-height:.95 !important;
+  letter-spacing:-.055em !important;
+}
+.dorado-buy-flow .process-intro h2 span{color:#ef9f24 !important;}
+.dorado-buy-flow .process-intro>p{
+  max-width:520px !important;
+  color:#9eabb3 !important;
+  font-size:13px !important;
+  line-height:1.75 !important;
+}
+.dorado-buy-flow .process-link{
+  color:#f4f6f7 !important;
+  border-color:rgba(239,159,36,.55) !important;
+}
+.dorado-buy-flow .process-link:hover{color:#ef9f24 !important;border-color:#ef9f24 !important;}
+
+.dorado-buy-flow .process-steps{
+  border:0 !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:14px !important;
+}
+.dorado-buy-flow .process-step{
+  min-height:218px !important;
+  padding:24px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:space-between !important;
+  gap:32px !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  border-radius:20px !important;
+  background:rgba(255,255,255,.035) !important;
+  color:#eef2f4 !important;
+  box-shadow:none !important;
+  cursor:default !important;
+  transform:none !important;
+  animation:none !important;
+  will-change:auto !important;
+  transition:background .24s ease,border-color .24s ease,box-shadow .24s ease,color .24s ease !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.dorado-buy-flow .process-step:hover,
+.dorado-buy-flow .process-step:active,
+.dorado-buy-flow .process-step.fe-tap-pop,
+.dorado-buy-flow .process-step.is-active{
+  transform:none !important;
+  animation:none !important;
+  padding-left:24px !important;
+  background:
+    radial-gradient(circle at 92% 10%,rgba(239,159,36,.11),transparent 38%),
+    #0d1b25 !important;
+  border-color:rgba(239,159,36,.38) !important;
+  box-shadow:inset 3px 0 0 #ef9f24,0 18px 36px rgba(0,0,0,.20) !important;
+}
+.process-step-head{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.process-step-number{
+  color:#ef9f24 !important;
+  font-size:10px !important;
+  font-weight:850 !important;
+  letter-spacing:.14em !important;
+}
+.process-step-icon{
+  width:42px;height:42px;border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(239,159,36,.09);
+  border:1px solid rgba(239,159,36,.18);
+  color:#ef9f24;
+  transition:background .24s ease,color .24s ease,border-color .24s ease;
+}
+.process-step-icon .ui-icon{width:18px;height:18px;}
+.dorado-buy-flow .process-step:hover .process-step-icon,
+.dorado-buy-flow .process-step.is-active .process-step-icon{
+  background:#ef9f24;
+  border-color:#ef9f24;
+  color:#071019;
+}
+.process-step-copy strong{
+  display:block;
+  color:#f4f6f7 !important;
+  font-size:22px !important;
+  line-height:1.18 !important;
+  letter-spacing:-.035em !important;
+}
+.process-step-copy p{
+  margin:9px 0 0 !important;
+  color:#8f9ca4 !important;
+  font-size:11px !important;
+  line-height:1.65 !important;
+}
+.dorado-buy-flow .process-step:hover .process-step-copy p,
+.dorado-buy-flow .process-step.is-active .process-step-copy p{color:#b8c2c8 !important;}
+
+/* La entrada de estas dos secciones es sutil: sin zoom ni barridos bruscos */
+html.motion-enhanced .dorado-catalog .motion-item,
+html.motion-enhanced .dorado-buy-flow .motion-item{
+  --motion-x:0px !important;
+  --motion-y:18px !important;
+  --motion-scale:1 !important;
+  transition-duration:.72s,.78s !important;
+}
+
+@media(max-width:1000px){
+  .catalog-heading-row{grid-template-columns:1fr !important;gap:34px !important;}
+  .dorado-catalog .catalog-tools{max-width:620px !important;}
+  .dorado-buy-flow .process-shell{grid-template-columns:1fr !important;gap:44px !important;}
+}
+@media(max-width:700px){
+  .catalog-shell-dark{padding:76px 0 82px !important;}
+  .dorado-catalog .section-title{font-size:clamp(40px,12vw,56px) !important;}
+  .catalog-promises{display:grid !important;grid-template-columns:1fr 1fr !important;gap:12px !important;}
+  .dorado-catalog .catalog-search{height:56px !important;}
+  .dorado-catalog .search-shortcut{display:none !important;}
+  .dorado-buy-flow{padding:82px 0 90px !important;}
+  .dorado-buy-flow .process-steps{grid-template-columns:1fr !important;gap:10px !important;}
+  .dorado-buy-flow .process-step{min-height:160px !important;padding:20px !important;gap:24px !important;}
+  .dorado-buy-flow .process-step:hover,
+  .dorado-buy-flow .process-step:active,
+  .dorado-buy-flow .process-step.fe-tap-pop,
+  .dorado-buy-flow .process-step.is-active{padding-left:20px !important;}
+  .process-step-copy strong{font-size:20px !important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .catalog-loader-dot{animation:none !important;}
+}

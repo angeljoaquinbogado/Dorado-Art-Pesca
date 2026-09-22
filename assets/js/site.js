@@ -1831,14 +1831,23 @@ comprobarRetornoPago();
 
 // ==============================
 
-(function(){
-  const steps = document.querySelectorAll('.process-step');
-  steps.forEach((step) => {
+(function configurarInteraccionPasosDorado(){
+  const steps = Array.from(document.querySelectorAll('.dorado-buy-flow .process-step'));
+  if (!steps.length) return;
+
+  let timer = 0;
+  const activar = (step) => {
+    steps.forEach(item => item.classList.toggle('is-active', item === step));
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => step.classList.remove('is-active'), 1400);
+  };
+
+  steps.forEach(step => {
+    step.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'touch' || event.pointerType === 'pen') activar(step);
+    }, { passive:true });
     step.addEventListener('click', () => {
-      step.classList.remove('fe-tap-pop');
-      void step.offsetWidth;
-      step.classList.add('fe-tap-pop');
-      window.setTimeout(() => step.classList.remove('fe-tap-pop'), 280);
+      if (window.matchMedia('(hover:none)').matches) activar(step);
     });
   });
 })();

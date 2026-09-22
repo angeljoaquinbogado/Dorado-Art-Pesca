@@ -218,18 +218,24 @@
     </div>
   </div>
 </section>
-<section class="section catalog-section reveal" id="productos">
-<div class="section-head">
-<div class="section-head-copy">
+<section class="section catalog-section reveal dorado-catalog" id="productos">
+<div class="catalog-shell-dark">
+<div class="catalog-heading-row">
+<div class="section-head-copy catalog-copy">
 <div class="section-index"><span>03</span><i></i><b>EQUIPAMIENTO</b></div>
-<div class="kicker">ELEGÍ POR PRODUCTO O CATEGORÍA</div>
-<h2 class="section-title">Prepará tu próxima salida <span>desde acá.</span></h2>
-<p class="section-desc">Buscá por nombre, filtrá por categoría y revisá precio, stock y detalles antes de sumar al carrito.</p>
+<div class="kicker">CATÁLOGO DORADO</div>
+<h2 class="section-title">Todo tu equipo, <span>en un solo lugar.</span></h2>
+<p class="section-desc">Explorá cañas, reels, líneas, señuelos y accesorios. Filtrá por categoría, revisá el stock y elegí con calma lo que realmente necesitás.</p>
+<div class="catalog-promises" aria-label="Ventajas del catálogo">
+<span><svg class="ui-icon"><use href="#i-check"></use></svg> Stock visible</span>
+<span><svg class="ui-icon"><use href="#i-grid"></use></svg> Categorías claras</span>
+<span><svg class="ui-icon"><use href="#i-headset"></use></svg> Asesoramiento real</span>
+</div>
 </div>
 <div class="catalog-tools">
 <label class="catalog-search" for="product-search">
 <svg class="ui-icon"><use href="#i-search"></use></svg>
-<input autocomplete="off" id="product-search" placeholder="Buscar cañas, reels, señuelos, tanzas..." type="search"/>
+<input autocomplete="off" id="product-search" placeholder="¿Qué necesitás para tu próxima salida?" type="search"/>
 <span aria-hidden="true" class="search-shortcut">Buscar</span>
 </label>
 <div aria-live="polite" class="catalog-count" id="product-result-count">Cargando catálogo…</div>
@@ -238,24 +244,38 @@
 <div class="category-chips" id="categorias" aria-label="Filtrar por categoría"></div>
 <div class="products" id="products-grid">
 <div class="products-loading">
-        Cargando productos...
-    </div>
+<span class="catalog-loader-dot" aria-hidden="true"></span>
+<span>Cargando productos…</span>
+</div>
+</div>
 </div>
 </section>
-<section class="process reveal" id="como-comprar">
+<section class="process reveal dorado-buy-flow" id="como-comprar">
   <div class="process-shell">
     <div class="process-intro">
       <div class="section-index light"><span>04</span><i></i><b>CÓMO COMPRAR</b></div>
-      <div class="kicker">DE LA ELECCIÓN A TU PRÓXIMA SALIDA</div>
-      <h2>Elegí, coordiná <br><span>y preparate para salir.</span></h2>
-      <p>Elegí tu equipo, revisá stock y cerrá la compra de la forma que te quede más cómoda. Si necesitás ayuda, te asesoramos de verdad.</p>
-      <a class="process-link" href="#productos">Explorar catálogo <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
+      <div class="kicker">SIMPLE, CLARO Y A TU MANERA</div>
+      <h2>De elegir tu equipo <br><span>a tenerlo listo.</span></h2>
+      <p>La compra se adapta a vos: elegís el equipo, definís cómo pagar y coordinamos retiro o envío sin vueltas.</p>
+      <a class="process-link" href="#productos">Ir al catálogo <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
     </div>
     <div class="process-steps" aria-label="Pasos de compra">
-      <article class="process-step"><span>01</span><div><strong>Elegí</strong><p>Revisá productos, precio y stock disponible.</p></div></article>
-      <article class="process-step"><span>02</span><div><strong>Sumá al carrito</strong><p>Armá tu compra con la cantidad que necesitás.</p></div></article>
-      <article class="process-step"><span>03</span><div><strong>Pagá seguro</strong><p>Pagá con Mercado Pago y tarjeta, o coordiná transferencia y efectivo.</p></div></article>
-      <article class="process-step"><span>04</span><div><strong>Coordinamos</strong><p>Definimos con vos la mejor forma de entrega.</p></div></article>
+      <article class="process-step" data-step="01">
+        <div class="process-step-head"><span class="process-step-number">01</span><span class="process-step-icon"><svg class="ui-icon"><use href="#i-search"></use></svg></span></div>
+        <div class="process-step-copy"><strong>Encontrá tu equipo</strong><p>Buscá por producto o categoría y compará opciones con stock visible.</p></div>
+      </article>
+      <article class="process-step" data-step="02">
+        <div class="process-step-head"><span class="process-step-number">02</span><span class="process-step-icon"><svg class="ui-icon"><use href="#i-cart"></use></svg></span></div>
+        <div class="process-step-copy"><strong>Armá tu compra</strong><p>Elegí cantidades y sumá al carrito solamente lo que necesitás.</p></div>
+      </article>
+      <article class="process-step" data-step="03">
+        <div class="process-step-head"><span class="process-step-number">03</span><span class="process-step-icon"><svg class="ui-icon"><use href="#i-shield"></use></svg></span></div>
+        <div class="process-step-copy"><strong>Elegí cómo pagar</strong><p>Mercado Pago y tarjetas, transferencia o efectivo con retiro.</p></div>
+      </article>
+      <article class="process-step" data-step="04">
+        <div class="process-step-head"><span class="process-step-number">04</span><span class="process-step-icon"><svg class="ui-icon"><use href="#i-truck"></use></svg></span></div>
+        <div class="process-step-copy"><strong>Retirá o recibí</strong><p>Coordinamos la entrega local, retiro o envío según tu compra.</p></div>
+      </article>
     </div>
   </div>
 </section>
