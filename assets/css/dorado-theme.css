@@ -1295,3 +1295,46 @@ body.intro-finished .nav-logo{
 body.intro-finished .hero-content{
   animation-duration:1.35s !important;
 }
+
+
+/* =========================================================
+   DORADO — INTRO CINEMATOGRÁFICA LENTA
+   ~14–15 segundos totales. El título desaparece detrás del logo.
+   ========================================================= */
+.brand-intro-bg{
+  animation-duration:15.5s !important;
+}
+.brand-intro{
+  transition:
+    opacity 1.65s cubic-bezier(.4,0,.2,1),
+    visibility 1.65s cubic-bezier(.4,0,.2,1) !important;
+}
+.brand-intro-logo{
+  animation-duration:1.6s !important;
+  z-index:20 !important;
+}
+.brand-intro-title{
+  z-index:8 !important;
+  overflow:visible !important;
+  /* Sin fade global: la desaparición es únicamente por clip progresivo. */
+  opacity:1 !important;
+  filter:none !important;
+}
+.brand-intro.sweeping .brand-intro-title{
+  opacity:1 !important;
+  filter:none !important;
+}
+.brand-intro.sweeping .brand-intro-kicker,
+.brand-intro.sweeping .brand-intro-line,
+.brand-intro.sweeping .brand-intro-tagline{
+  /* JS controla el momento de estos textos; evitamos que CSS los borre antes. */
+  opacity:1;
+  transform:none;
+  filter:none;
+}
+body.intro-finished .nav-logo{
+  animation-duration:1.15s !important;
+}
+body.intro-finished .hero-content{
+  animation-duration:1.5s !important;
+}

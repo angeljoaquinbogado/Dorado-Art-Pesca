@@ -2375,32 +2375,62 @@ comprobarRetornoPago();
                 const finalY=navCenterY-logoCenterY;
                 const finalScale=Math.max(.28,Math.min(1,navRect.width/logoRect.width));
 
+                /*
+                 * Secuencia cinematográfica:
+                 * 1. Respira en el centro.
+                 * 2. Viaja al lado derecho del título.
+                 * 3. Barre lentamente de derecha a izquierda.
+                 * 4. El texto se recorta EXACTAMENTE en el mismo sentido del barrido.
+                 * 5. El logo termina en la cabecera.
+                 */
                 introLogo.animate([
                     {transform:"translate3d(0,0,0) scale(1)",offset:0},
-                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.88)`,offset:.30},
-                    {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.92)`,offset:.68},
+                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`,offset:.28},
+                    {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`,offset:.74},
                     {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`,offset:1}
                 ],{
-                    duration:5400,
-                    easing:"cubic-bezier(.22,.76,.18,1)",
+                    duration:9200,
+                    easing:"cubic-bezier(.20,.70,.16,1)",
                     fill:"forwards"
                 });
 
+                /*
+                 * El logo alcanza el borde derecho del título al 28% del recorrido.
+                 * Desde ahí, el clip avanza de derecha a izquierda junto con el logo.
+                 * No bajamos opacity global: las letras desaparecen por sectores,
+                 * justo detrás del emblema.
+                 */
                 window.setTimeout(()=>{
                     intro.classList.add("sweeping");
                     introTitle.animate([
-                        {clipPath:"inset(0 0% 0 0)",opacity:1,filter:"blur(0)"},
-                        {clipPath:"inset(0 100% 0 0)",opacity:.08,filter:"blur(4px)"}
+                        {clipPath:"inset(0 0% 0 0)"},
+                        {clipPath:"inset(0 100% 0 0)"}
                     ],{
-                        duration:2200,
-                        easing:"cubic-bezier(.4,0,.2,1)",
+                        duration:4230,
+                        easing:"linear",
                         fill:"forwards"
                     });
-                },1750);
+                },2580);
 
-                window.setTimeout(()=>intro.classList.add("fly-to-header"),3950);
-                window.setTimeout(finishIntro,5850);
-            },2800);
+                /* Los textos secundarios esperan a que el barrido esté casi terminado. */
+                window.setTimeout(()=>{
+                    [intro.querySelector(".brand-intro-kicker"),
+                     intro.querySelector(".brand-intro-line"),
+                     intro.querySelector(".brand-intro-tagline")].forEach((el)=>{
+                        el?.animate([
+                            {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
+                            {opacity:0,transform:"translateY(-8px)",filter:"blur(5px)"}
+                        ],{
+                            duration:1450,
+                            easing:"cubic-bezier(.4,0,.2,1)",
+                            fill:"forwards"
+                        });
+                    });
+                },6400);
+
+                window.setTimeout(()=>intro.classList.add("fly-to-header"),7000);
+                window.setTimeout(finishIntro,9800);
+            },3200);
         }
     }
 
