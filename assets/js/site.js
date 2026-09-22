@@ -2316,11 +2316,21 @@ comprobarRetornoPago();
     if(intro){
         const seen=sessionStorage.getItem("doradoIntroSeen")==="1";
         const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if(seen||reduced){intro.classList.add("hide");}
-        else{
+        if(seen||reduced){
+            intro.classList.add("hide");
+            document.body.classList.add("intro-finished");
+        }else{
             document.body.style.overflow="hidden";
-            window.setTimeout(()=>{intro.classList.add("hide");document.body.style.overflow="";sessionStorage.setItem("doradoIntroSeen","1");},3400);
-            window.setTimeout(()=>intro.remove(),4300);
+            document.body.classList.add("intro-running");
+            window.setTimeout(()=>intro.classList.add("closing"),2550);
+            window.setTimeout(()=>{
+                intro.classList.add("hide");
+                document.body.style.overflow="";
+                document.body.classList.remove("intro-running");
+                document.body.classList.add("intro-finished");
+                sessionStorage.setItem("doradoIntroSeen","1");
+            },3200);
+            window.setTimeout(()=>intro.remove(),4100);
         }
     }
 
