@@ -1442,3 +1442,110 @@ body.intro-finished .nav-logo{
 body.intro-finished .hero-content{
   animation-duration:.9s !important;
 }
+
+
+/* =========================================================
+   DORADO — TÍTULO DE INTRO ESTABLE Y PROFESIONAL
+   Mantiene EXACTAMENTE la misma apariencia antes y durante el barrido.
+   ========================================================= */
+.brand-intro-title{
+  margin-top:14px !important;
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:center !important;
+  gap:clamp(12px,1.4vw,22px) !important;
+  flex-wrap:wrap !important;
+  opacity:1;
+  text-align:center !important;
+  white-space:normal !important;
+}
+
+/* Solo los hijos directos reciben la jerarquía visual.
+   Así, cuando JS divide las letras, NO cambia tipografía ni tamaño. */
+.brand-intro-title > strong{
+  font-family:inherit !important;
+  font-size:clamp(46px,7vw,84px) !important;
+  font-weight:850 !important;
+  line-height:.92 !important;
+  letter-spacing:-.055em !important;
+  color:#ffffff !important;
+  text-shadow:0 14px 42px rgba(0,0,0,.34) !important;
+}
+
+.brand-intro-title > span{
+  font-family:inherit !important;
+  font-size:clamp(15px,2.15vw,27px) !important;
+  font-weight:650 !important;
+  line-height:1 !important;
+  letter-spacing:.12em !important;
+  color:#e7ecef !important;
+  text-transform:uppercase !important;
+  text-shadow:0 8px 26px rgba(0,0,0,.28) !important;
+}
+
+/* CRÍTICO:
+   las letras creadas por JS heredan TODO del título original.
+   No pueden cambiar tamaño, peso, color ni separación al empezar la animación. */
+.brand-intro-title .intro-char{
+  display:inline !important;
+  font:inherit !important;
+  font-size:inherit !important;
+  font-weight:inherit !important;
+  line-height:inherit !important;
+  letter-spacing:inherit !important;
+  color:inherit !important;
+  text-transform:inherit !important;
+  text-shadow:inherit !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+  filter:none !important;
+  transition:none !important;
+}
+
+.brand-intro-title .intro-space{
+  display:inline !important;
+  white-space:pre !important;
+}
+
+/* Al tocar el logo, la letra desaparece de inmediato PERO conserva su espacio.
+   Así el título jamás se mueve ni se reacomoda mientras se borra. */
+.brand-intro-title .intro-char.swept{
+  opacity:0 !important;
+  visibility:hidden !important;
+  transform:none !important;
+  filter:none !important;
+  transition:none !important;
+}
+
+.brand-intro.sweeping .brand-intro-title{
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+  clip-path:none !important;
+}
+
+/* Evita que reglas antiguas afecten a spans internos generados por JS. */
+.brand-intro-title strong .intro-char,
+.brand-intro-title > span .intro-char{
+  font-size:inherit !important;
+  font-weight:inherit !important;
+  letter-spacing:inherit !important;
+  line-height:inherit !important;
+  color:inherit !important;
+}
+
+@media(max-width:700px){
+  .brand-intro-title{
+    flex-direction:column !important;
+    align-items:center !important;
+    gap:8px !important;
+  }
+  .brand-intro-title > strong{
+    font-size:clamp(42px,15vw,68px) !important;
+  }
+  .brand-intro-title > span{
+    font-size:clamp(13px,4vw,18px) !important;
+    letter-spacing:.10em !important;
+  }
+}
