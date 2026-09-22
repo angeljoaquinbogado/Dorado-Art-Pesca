@@ -1391,3 +1391,54 @@ body.intro-finished .nav-logo{
 body.intro-finished .hero-content{
   animation-duration:1.05s !important;
 }
+
+
+/* =========================================================
+   DORADO — AJUSTE FINAL DE INTRO
+   Título intacto + borrado instantáneo + subida rápida
+   ========================================================= */
+.brand-intro-bg{
+  animation-duration:8.2s !important;
+}
+.brand-intro{
+  transition:
+    opacity .62s ease,
+    visibility .62s ease !important;
+}
+.brand-intro-logo{
+  animation-duration:1s !important;
+  z-index:40 !important;
+}
+.brand-intro-title strong,
+.brand-intro-title > span{
+  display:inline !important;
+}
+.brand-intro-title .intro-char{
+  display:inline !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+  filter:none !important;
+  transition:none !important;
+}
+.brand-intro-title .intro-char.swept{
+  opacity:0 !important;
+  visibility:hidden !important;
+  transform:none !important;
+  filter:none !important;
+  transition:none !important;
+}
+.brand-intro-title .intro-space{
+  white-space:pre !important;
+}
+.brand-intro.sweeping .brand-intro-title{
+  opacity:1 !important;
+  clip-path:none !important;
+  filter:none !important;
+}
+body.intro-finished .nav-logo{
+  animation-duration:.45s !important;
+}
+body.intro-finished .hero-content{
+  animation-duration:.9s !important;
+}

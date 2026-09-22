@@ -2376,11 +2376,12 @@ comprobarRetornoPago();
                 const finalScale=Math.max(.28,Math.min(1,navRect.width/logoRect.width));
 
                 /*
-                 * Secuencia afinada:
-                 * - ritmo más rápido que la versión anterior
-                 * - el logo barre el título de derecha a izquierda
-                 * - cada letra desaparece EXACTAMENTE cuando el logo la pisa
-                 * - después el logo sube al header
+                 * Secuencia final:
+                 * - conserva EXACTAMENTE el título original
+                 * - va al costado derecho del título
+                 * - barre de derecha a izquierda
+                 * - cada letra desaparece EN EL INSTANTE en que el logo la toca
+                 * - al terminar el barrido, el logo SUBE RÁPIDO al header
                  */
                 const splitIntroTitleIntoChars=()=>{
                     const nodes=[...introTitle.children];
@@ -2396,83 +2397,109 @@ comprobarRetornoPago();
                     });
                 };
 
-                splitIntroTitleIntoChars();
-                const titleChars=[...introTitle.querySelectorAll(".intro-char:not(.intro-space)")];
+                const placeLogo=(x,y,scale)=>{
+                    introLogo.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`;
+                };
 
-                const logoAnim=introLogo.animate([
-                    {transform:"translate3d(0,0,0) scale(1)",offset:0},
-                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`,offset:.30},
-                    {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`,offset:.76},
-                    {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`,offset:1}
+                /* 1) Centro -> derecha del título */
+                const toRight=introLogo.animate([
+                    {transform:"translate3d(0,0,0) scale(1)"},
+                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`}
                 ],{
-                    duration:6900,
-                    easing:"cubic-bezier(.20,.68,.18,1)",
+                    duration:1200,
+                    easing:"cubic-bezier(.22,.78,.18,1)",
                     fill:"forwards"
                 });
 
-                /*
-                 * El seguimiento usa la posición REAL del logo en pantalla.
-                 * Como el logo va de derecha a izquierda, las letras se apagan
-                 * una por una justo cuando el emblema las cubre.
-                 */
-                let sweepRaf=0;
-                const sweepChars=()=>{
-                    const logoNow=introLogo.getBoundingClientRect();
+                toRight.onfinish=()=>{
+                    placeLogo(rightX,titleY,.90);
+                    toRight.cancel();
 
-                    titleChars.forEach((char)=>{
-                        if(char.classList.contains("swept")) return;
-                        const r=char.getBoundingClientRect();
+                    /* El texto sigue diciendo exactamente:
+                       DORADO / ARTÍCULOS DE PESCA */
+                    splitIntroTitleIntoChars();
+                    const titleChars=[...introTitle.querySelectorAll(".intro-char:not(.intro-space)")];
 
-                        const overlaps=
-                            logoNow.left <= r.right &&
-                            logoNow.right >= r.left &&
-                            logoNow.top <= r.bottom &&
-                            logoNow.bottom >= r.top;
+                    let sweepRaf=0;
+                    const hideTouchedChars=()=>{
+                        const logoNow=introLogo.getBoundingClientRect();
 
-                        if(overlaps){
-                            char.classList.add("swept");
+                        titleChars.forEach((char)=>{
+                            if(char.classList.contains("swept")) return;
+                            const r=char.getBoundingClientRect();
+
+                            const overlaps=
+                                logoNow.left <= r.right &&
+                                logoNow.right >= r.left &&
+                                logoNow.top <= r.bottom &&
+                                logoNow.bottom >= r.top;
+
+                            if(overlaps){
+                                /* Sin fade: desaparece de inmediato al tocarlo. */
+                                char.classList.add("swept");
+                            }
+                        });
+
+                        if(titleChars.some((char)=>!char.classList.contains("swept"))){
+                            sweepRaf=requestAnimationFrame(hideTouchedChars);
                         }
+                    };
+
+                    intro.classList.add("sweeping");
+                    sweepRaf=requestAnimationFrame(hideTouchedChars);
+
+                    /* 2) Barrido derecha -> izquierda sobre el texto */
+                    const sweep=introLogo.animate([
+                        {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`},
+                        {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`}
+                    ],{
+                        duration:2700,
+                        easing:"linear",
+                        fill:"forwards"
                     });
 
-                    if(titleChars.some((char)=>!char.classList.contains("swept"))){
-                        sweepRaf=requestAnimationFrame(sweepChars);
-                    }
-                };
+                    /* Los textos secundarios salen mientras el logo barre. */
+                    window.setTimeout(()=>{
+                        [intro.querySelector(".brand-intro-kicker"),
+                         intro.querySelector(".brand-intro-line"),
+                         intro.querySelector(".brand-intro-tagline")].forEach((el)=>{
+                            el?.animate([
+                                {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
+                                {opacity:0,transform:"translateY(-6px)",filter:"blur(3px)"}
+                            ],{
+                                duration:520,
+                                easing:"ease-out",
+                                fill:"forwards"
+                            });
+                        });
+                    },1700);
 
-                window.setTimeout(()=>{
-                    intro.classList.add("sweeping");
-                    sweepRaf=requestAnimationFrame(sweepChars);
-                },2050);
+                    sweep.onfinish=()=>{
+                        cancelAnimationFrame(sweepRaf);
+                        titleChars.forEach((char)=>char.classList.add("swept"));
+                        placeLogo(leftX,titleY,.94);
+                        sweep.cancel();
 
-                /*
-                 * Textos secundarios se retiran mientras termina el barrido,
-                 * sin esperar a que el logo ya esté arriba.
-                 */
-                window.setTimeout(()=>{
-                    [intro.querySelector(".brand-intro-kicker"),
-                     intro.querySelector(".brand-intro-line"),
-                     intro.querySelector(".brand-intro-tagline")].forEach((el)=>{
-                        el?.animate([
-                            {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
-                            {opacity:0,transform:"translateY(-7px)",filter:"blur(4px)"}
+                        intro.classList.add("fly-to-header");
+
+                        /* 3) Subida RÁPIDA al logo del header */
+                        const flyUp=introLogo.animate([
+                            {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`},
+                            {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`}
                         ],{
-                            duration:900,
-                            easing:"cubic-bezier(.4,0,.2,1)",
+                            duration:650,
+                            easing:"cubic-bezier(.30,.78,.24,1)",
                             fill:"forwards"
                         });
-                    });
-                },5050);
 
-                window.setTimeout(()=>intro.classList.add("fly-to-header"),5250);
-
-                window.setTimeout(()=>{
-                    cancelAnimationFrame(sweepRaf);
-                    /* Si quedara alguna letra por precisión subpíxel, la cerramos antes del final. */
-                    titleChars.forEach((char)=>char.classList.add("swept"));
-                },5700);
-
-                window.setTimeout(finishIntro,7450);
-            },2200);
+                        flyUp.onfinish=()=>{
+                            placeLogo(finalX,finalY,finalScale);
+                            flyUp.cancel();
+                            window.setTimeout(finishIntro,180);
+                        };
+                    };
+                };
+            },1800);
         }
     }
 
