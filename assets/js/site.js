@@ -2376,61 +2376,103 @@ comprobarRetornoPago();
                 const finalScale=Math.max(.28,Math.min(1,navRect.width/logoRect.width));
 
                 /*
-                 * Secuencia cinematográfica:
-                 * 1. Respira en el centro.
-                 * 2. Viaja al lado derecho del título.
-                 * 3. Barre lentamente de derecha a izquierda.
-                 * 4. El texto se recorta EXACTAMENTE en el mismo sentido del barrido.
-                 * 5. El logo termina en la cabecera.
+                 * Secuencia afinada:
+                 * - ritmo más rápido que la versión anterior
+                 * - el logo barre el título de derecha a izquierda
+                 * - cada letra desaparece EXACTAMENTE cuando el logo la pisa
+                 * - después el logo sube al header
                  */
-                introLogo.animate([
+                const splitIntroTitleIntoChars=()=>{
+                    const nodes=[...introTitle.children];
+                    nodes.forEach((node)=>{
+                        const original=node.textContent||"";
+                        node.textContent="";
+                        [...original].forEach((char)=>{
+                            const charSpan=document.createElement("span");
+                            charSpan.className=char===" " ? "intro-char intro-space" : "intro-char";
+                            charSpan.textContent=char===" " ? "\u00a0" : char;
+                            node.appendChild(charSpan);
+                        });
+                    });
+                };
+
+                splitIntroTitleIntoChars();
+                const titleChars=[...introTitle.querySelectorAll(".intro-char:not(.intro-space)")];
+
+                const logoAnim=introLogo.animate([
                     {transform:"translate3d(0,0,0) scale(1)",offset:0},
-                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`,offset:.28},
-                    {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`,offset:.74},
+                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`,offset:.30},
+                    {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`,offset:.76},
                     {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`,offset:1}
                 ],{
-                    duration:9200,
-                    easing:"cubic-bezier(.20,.70,.16,1)",
+                    duration:6900,
+                    easing:"cubic-bezier(.20,.68,.18,1)",
                     fill:"forwards"
                 });
 
                 /*
-                 * El logo alcanza el borde derecho del título al 28% del recorrido.
-                 * Desde ahí, el clip avanza de derecha a izquierda junto con el logo.
-                 * No bajamos opacity global: las letras desaparecen por sectores,
-                 * justo detrás del emblema.
+                 * El seguimiento usa la posición REAL del logo en pantalla.
+                 * Como el logo va de derecha a izquierda, las letras se apagan
+                 * una por una justo cuando el emblema las cubre.
                  */
+                let sweepRaf=0;
+                const sweepChars=()=>{
+                    const logoNow=introLogo.getBoundingClientRect();
+
+                    titleChars.forEach((char)=>{
+                        if(char.classList.contains("swept")) return;
+                        const r=char.getBoundingClientRect();
+
+                        const overlaps=
+                            logoNow.left <= r.right &&
+                            logoNow.right >= r.left &&
+                            logoNow.top <= r.bottom &&
+                            logoNow.bottom >= r.top;
+
+                        if(overlaps){
+                            char.classList.add("swept");
+                        }
+                    });
+
+                    if(titleChars.some((char)=>!char.classList.contains("swept"))){
+                        sweepRaf=requestAnimationFrame(sweepChars);
+                    }
+                };
+
                 window.setTimeout(()=>{
                     intro.classList.add("sweeping");
-                    introTitle.animate([
-                        {clipPath:"inset(0 0% 0 0)"},
-                        {clipPath:"inset(0 100% 0 0)"}
-                    ],{
-                        duration:4230,
-                        easing:"linear",
-                        fill:"forwards"
-                    });
-                },2580);
+                    sweepRaf=requestAnimationFrame(sweepChars);
+                },2050);
 
-                /* Los textos secundarios esperan a que el barrido esté casi terminado. */
+                /*
+                 * Textos secundarios se retiran mientras termina el barrido,
+                 * sin esperar a que el logo ya esté arriba.
+                 */
                 window.setTimeout(()=>{
                     [intro.querySelector(".brand-intro-kicker"),
                      intro.querySelector(".brand-intro-line"),
                      intro.querySelector(".brand-intro-tagline")].forEach((el)=>{
                         el?.animate([
                             {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
-                            {opacity:0,transform:"translateY(-8px)",filter:"blur(5px)"}
+                            {opacity:0,transform:"translateY(-7px)",filter:"blur(4px)"}
                         ],{
-                            duration:1450,
+                            duration:900,
                             easing:"cubic-bezier(.4,0,.2,1)",
                             fill:"forwards"
                         });
                     });
-                },6400);
+                },5050);
 
-                window.setTimeout(()=>intro.classList.add("fly-to-header"),7000);
-                window.setTimeout(finishIntro,9800);
-            },3200);
+                window.setTimeout(()=>intro.classList.add("fly-to-header"),5250);
+
+                window.setTimeout(()=>{
+                    cancelAnimationFrame(sweepRaf);
+                    /* Si quedara alguna letra por precisión subpíxel, la cerramos antes del final. */
+                    titleChars.forEach((char)=>char.classList.add("swept"));
+                },5700);
+
+                window.setTimeout(finishIntro,7450);
+            },2200);
         }
     }
 
