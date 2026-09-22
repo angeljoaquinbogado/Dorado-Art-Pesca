@@ -1051,3 +1051,132 @@ html.motion-enhanced .dorado-buy-flow .motion-item{
 @media(prefers-reduced-motion:reduce){
   .catalog-loader-dot{animation:none !important;}
 }
+
+
+/* =========================================================
+   DORADO — HERO DERECHA + INTRO LOGO SWEEP
+   2026-09-22
+   ========================================================= */
+
+/* El pescador queda libre a la izquierda; el contenido vive a la derecha. */
+.hero-shell{
+  justify-content:flex-end !important;
+  align-items:center !important;
+}
+.hero-content{
+  width:min(610px,48vw) !important;
+  max-width:610px !important;
+  margin-left:auto !important;
+  margin-right:0 !important;
+  padding:30px 32px 32px !important;
+  background:
+    linear-gradient(145deg,rgba(4,11,17,.84),rgba(4,11,17,.50)) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:28px !important;
+  backdrop-filter:blur(12px) saturate(120%) !important;
+  box-shadow:0 28px 76px rgba(0,0,0,.30) !important;
+}
+.hero-content h1{
+  font-size:clamp(46px,5.35vw,76px) !important;
+  line-height:.94 !important;
+}
+.hero-lead{
+  max-width:540px !important;
+}
+.hero-bg::before{
+  background-position:48% 50% !important;
+}
+.hero-bg::after{
+  background:
+    linear-gradient(180deg,rgba(2,8,12,.18) 0%,rgba(2,8,12,.05) 34%,rgba(3,10,15,.64) 100%),
+    linear-gradient(90deg,rgba(3,10,15,.10) 0%,rgba(3,10,15,.08) 42%,rgba(3,10,15,.48) 68%,rgba(3,10,15,.80) 100%) !important;
+}
+
+/* Durante la intro, el logo real del header espera al logo animado. */
+body.intro-running .nav-logo{
+  opacity:0 !important;
+}
+body.intro-finished .nav-logo{
+  animation:doradoNavLogoArrive .34s ease both !important;
+}
+@keyframes doradoNavLogoArrive{
+  from{opacity:0;transform:scale(.82)}
+  to{opacity:1;transform:none}
+}
+
+/* Preparación visual de la intro. La trayectoria final la calcula JS. */
+.brand-intro-content{
+  overflow:visible !important;
+}
+.brand-intro-logo{
+  position:relative !important;
+  z-index:8 !important;
+  will-change:transform,filter,opacity !important;
+  animation:introLogo .72s .12s ease forwards !important;
+}
+.brand-intro-title{
+  position:relative !important;
+  z-index:4 !important;
+  overflow:visible !important;
+  will-change:clip-path,opacity,filter !important;
+}
+.brand-intro-kicker,
+.brand-intro-line,
+.brand-intro-tagline{
+  will-change:opacity,transform,filter !important;
+}
+.brand-intro.sweeping .brand-intro-kicker,
+.brand-intro.sweeping .brand-intro-line,
+.brand-intro.sweeping .brand-intro-tagline{
+  opacity:0 !important;
+  transform:translateY(-8px) !important;
+  filter:blur(6px) !important;
+}
+.brand-intro.fly-to-header .brand-intro-bg{
+  filter:saturate(.88) brightness(.46) !important;
+}
+.brand-intro.fly-to-header .brand-intro-shade{
+  background:
+    linear-gradient(180deg,rgba(2,7,11,.50),rgba(2,7,11,.72)),
+    radial-gradient(circle at 50% 46%,transparent 0 20%,rgba(2,7,11,.72) 72%) !important;
+}
+
+/* El contenido del hero aparece una vez que el logo llegó al header. */
+body.intro-running .hero-content,
+body.intro-running .dorado-field-strip{
+  opacity:0 !important;
+  transform:translateY(22px) !important;
+}
+body.intro-finished .hero-content{
+  animation:doradoHeroRightReveal .78s cubic-bezier(.2,.75,.2,1) both !important;
+}
+@keyframes doradoHeroRightReveal{
+  from{opacity:0;transform:translateX(28px)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:1000px){
+  .hero-content{
+    width:min(620px,76vw) !important;
+  }
+}
+@media(max-width:700px){
+  .hero-shell{
+    justify-content:center !important;
+    align-items:flex-end !important;
+  }
+  .hero-content{
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:22px 18px 23px !important;
+    background:linear-gradient(145deg,rgba(4,11,17,.82),rgba(4,11,17,.50)) !important;
+  }
+  .hero-bg::before{
+    background-position:43% center !important;
+  }
+  .hero-bg::after{
+    background:
+      linear-gradient(180deg,rgba(2,8,12,.12) 0%,rgba(2,8,12,.12) 42%,rgba(3,10,15,.82) 100%) !important;
+  }
+}

@@ -2325,21 +2325,82 @@ comprobarRetornoPago();
     if(intro){
         const seen=sessionStorage.getItem("doradoIntroSeen")==="1";
         const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const finishIntro=()=>{
+            intro.classList.add("hide");
+            document.body.style.overflow="";
+            document.body.classList.remove("intro-running");
+            document.body.classList.add("intro-finished");
+            sessionStorage.setItem("doradoIntroSeen","1");
+            window.setTimeout(()=>intro.remove(),900);
+        };
+
         if(seen||reduced){
             intro.classList.add("hide");
             document.body.classList.add("intro-finished");
+            window.setTimeout(()=>intro.remove(),50);
         }else{
             document.body.style.overflow="hidden";
             document.body.classList.add("intro-running");
-            window.setTimeout(()=>intro.classList.add("closing"),2550);
+
+            const introLogo=intro.querySelector(".brand-intro-logo");
+            const introTitle=intro.querySelector(".brand-intro-title");
+            const navLogo=document.querySelector(".nav-logo");
+
             window.setTimeout(()=>{
-                intro.classList.add("hide");
-                document.body.style.overflow="";
-                document.body.classList.remove("intro-running");
-                document.body.classList.add("intro-finished");
-                sessionStorage.setItem("doradoIntroSeen","1");
-            },3200);
-            window.setTimeout(()=>intro.remove(),4100);
+                if(!introLogo||!introTitle||!navLogo||typeof introLogo.animate!=="function"){
+                    intro.classList.add("closing");
+                    window.setTimeout(finishIntro,700);
+                    return;
+                }
+
+                const logoRect=introLogo.getBoundingClientRect();
+                const titleRect=introTitle.getBoundingClientRect();
+                const navRect=navLogo.getBoundingClientRect();
+
+                const logoCenterX=logoRect.left+logoRect.width/2;
+                const logoCenterY=logoRect.top+logoRect.height/2;
+
+                /* 1) Del centro al costado derecho del nombre. */
+                const rightX=(titleRect.right+logoRect.width*.70)-logoCenterX;
+                const titleY=(titleRect.top+titleRect.height/2)-logoCenterY;
+
+                /* 2) Barrido de derecha a izquierda por encima de las palabras. */
+                const leftX=(titleRect.left-logoRect.width*.55)-logoCenterX;
+
+                /* 3) Termina exactamente sobre el logo real del header. */
+                const navCenterX=navRect.left+navRect.width/2;
+                const navCenterY=navRect.top+navRect.height/2;
+                const finalX=navCenterX-logoCenterX;
+                const finalY=navCenterY-logoCenterY;
+                const finalScale=Math.max(.28,Math.min(1,navRect.width/logoRect.width));
+
+                introLogo.animate([
+                    {transform:"translate3d(0,0,0) scale(1)",offset:0},
+                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.88)`,offset:.30},
+                    {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.92)`,offset:.68},
+                    {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`,offset:1}
+                ],{
+                    duration:2050,
+                    easing:"cubic-bezier(.22,.76,.18,1)",
+                    fill:"forwards"
+                });
+
+                window.setTimeout(()=>{
+                    intro.classList.add("sweeping");
+                    introTitle.animate([
+                        {clipPath:"inset(0 0% 0 0)",opacity:1,filter:"blur(0)"},
+                        {clipPath:"inset(0 100% 0 0)",opacity:.08,filter:"blur(4px)"}
+                    ],{
+                        duration:790,
+                        easing:"cubic-bezier(.4,0,.2,1)",
+                        fill:"forwards"
+                    });
+                },620);
+
+                window.setTimeout(()=>intro.classList.add("fly-to-header"),1380);
+                window.setTimeout(finishIntro,2110);
+            },1500);
         }
     }
 
