@@ -80,3 +80,229 @@ body{background:linear-gradient(180deg,#f7f4ed 0%,#f1eee7 100%)}
   color:#d98210!important;
   background:#f6ead5!important;
 }
+
+
+/* =========================================================
+   DORADO UI FIX — 2026-09-22
+   Contacto + botones + WhatsApp + footer visible
+   ========================================================= */
+
+/* Logos: PNG limpio, sin aro ni fondos agregados */
+.nav-logo,
+.brand-intro-logo,
+.footer-logo,
+.about-real-logo{
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  object-fit:contain !important;
+}
+
+/* Bloque de contacto */
+.location{
+  background:#06101a !important;
+}
+.location-box{
+  background:#0b1722 !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:0 30px 70px rgba(0,0,0,.18) !important;
+}
+.location-copy>p{
+  color:#b7c0c7 !important;
+}
+.contact-line{
+  background:#f7f5ef !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:none !important;
+}
+.contact-line:hover{
+  border-color:rgba(239,159,36,.55) !important;
+  transform:translateY(-2px) !important;
+}
+.contact-line small{
+  color:#8a949d !important;
+}
+.contact-line strong{
+  color:#101820 !important;
+}
+.contact-icon{
+  color:#d98210 !important;
+  background:#fff0d7 !important;
+  border:1px solid rgba(217,130,16,.10) !important;
+}
+
+/* Los dos botones de contacto quedan legibles y del mismo tamaño */
+.contact-actions{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:12px !important;
+  margin-top:24px !important;
+}
+.contact-actions>a{
+  width:100% !important;
+  min-height:54px !important;
+  padding:0 20px !important;
+  border-radius:999px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:9px !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  letter-spacing:.01em !important;
+  text-decoration:none !important;
+  white-space:nowrap !important;
+}
+.contact-actions>a .ui-icon{
+  width:18px !important;
+  height:18px !important;
+  flex:0 0 auto !important;
+}
+
+/* WhatsApp: color oficial */
+.contact-actions>a[href*="wa.me"]{
+  background:#25D366 !important;
+  border:1px solid #25D366 !important;
+  color:#fff !important;
+  box-shadow:0 13px 28px rgba(37,211,102,.20) !important;
+}
+.contact-actions>a[href*="wa.me"]:hover{
+  background:#20bd5a !important;
+  border-color:#20bd5a !important;
+}
+
+/* Instagram: botón claro, sin texto invisible */
+.contact-actions>a[href*="instagram.com"]{
+  background:#fff !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#101820 !important;
+  box-shadow:0 13px 28px rgba(0,0,0,.10) !important;
+}
+.contact-actions>a[href*="instagram.com"] .ui-icon{
+  color:#c13584 !important;
+}
+.contact-actions>a[href*="instagram.com"]:hover{
+  background:#f4f5f6 !important;
+  color:#101820 !important;
+}
+
+/* Tarjeta visual de Google Maps */
+.dorado-map{
+  min-height:480px !important;
+  background:
+    linear-gradient(180deg,rgba(4,12,19,.16),rgba(4,12,19,.58)),
+    url('../images/backgrounds/hero-bg-dorado.webp') 50% 48%/cover no-repeat !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:0 22px 50px rgba(0,0,0,.18) !important;
+}
+.dorado-map-visual{
+  background:
+    radial-gradient(circle at 50% 52%,rgba(239,159,36,.18),transparent 38%) !important;
+}
+.dorado-map-pin{
+  background:#ef9f24 !important;
+  color:#081018 !important;
+  box-shadow:0 16px 36px rgba(0,0,0,.28) !important;
+}
+.dorado-map-visual strong{
+  color:#fff !important;
+  text-shadow:0 3px 14px rgba(0,0,0,.45) !important;
+}
+.dorado-map-visual small{
+  color:#eef2f4 !important;
+  text-shadow:0 2px 10px rgba(0,0,0,.50) !important;
+}
+.map-hint{
+  background:rgba(255,255,255,.95) !important;
+  color:#111820 !important;
+  box-shadow:0 12px 28px rgba(0,0,0,.14) !important;
+}
+.map-hint .ui-icon{
+  color:#d98210 !important;
+}
+
+/* Botón flotante de WhatsApp */
+.float-wa{
+  background:#25D366 !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.20) !important;
+  box-shadow:0 16px 38px rgba(37,211,102,.30) !important;
+}
+.float-wa:hover{
+  background:#20bd5a !important;
+  transform:translateY(-3px) scale(1.04) !important;
+}
+.float-wa .ui-icon{
+  color:#fff !important;
+}
+
+/* WhatsApp del dock móvil */
+.mobile-dock-item[href*="wa.me"] .ui-icon{
+  color:#25D366 !important;
+}
+
+/* Footer: corregir elementos presentes pero invisibles por la animación */
+.site-footer{
+  background:#02070b !important;
+  color:#fff !important;
+}
+.site-footer .motion-item,
+.site-footer .motion-item.motion-visible{
+  opacity:1 !important;
+  transform:none !important;
+  visibility:visible !important;
+  transition:none !important;
+  will-change:auto !important;
+}
+.footer-main{
+  opacity:1 !important;
+  visibility:visible !important;
+  padding-bottom:38px !important;
+}
+.footer-brand-box,
+.footer-column,
+.footer-wordmark{
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
+.footer-brand-box p{
+  color:#aeb6bc !important;
+}
+.footer-badges span{
+  color:#d0d6db !important;
+}
+.footer-column h4{
+  color:#dca44a !important;
+}
+.footer-column>a{
+  color:#d5dbe0 !important;
+}
+.footer-column>a:hover{
+  color:#fff !important;
+}
+.footer-contact a[href*="wa.me"] .ui-icon{
+  color:#25D366 !important;
+}
+.footer-wordmark{
+  color:#f4f6f7 !important;
+  padding:22px 0 20px !important;
+}
+.footer-wordmark span{
+  color:#ef9f24 !important;
+}
+.footer-bottom{
+  color:#858d94 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
+
+@media(max-width:900px){
+  .contact-actions{
+    grid-template-columns:1fr !important;
+  }
+  .dorado-map{
+    min-height:360px !important;
+  }
+}
