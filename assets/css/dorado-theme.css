@@ -1252,3 +1252,46 @@ body.intro-finished .hero-content{
       url('../images/backgrounds/hero-bg-dorado.webp') center 54% / cover no-repeat;
   }
 }
+
+
+/* =========================================================
+   DORADO — INTRO MUCHO MÁS LENTA
+   Ritmo cinematográfico aprox. 9–10 segundos
+   ========================================================= */
+.brand-intro-bg{
+  animation-duration:10.2s !important;
+}
+.brand-intro-logo{
+  animation-duration:1.45s !important;
+}
+.brand-intro-kicker{
+  animation-duration:.95s !important;
+}
+.brand-intro-title{
+  animation-duration:1.15s !important;
+}
+.brand-intro-line i{
+  animation-duration:1.85s !important;
+}
+.brand-intro-tagline{
+  animation-duration:1.05s !important;
+}
+.brand-intro-kicker,
+.brand-intro-line,
+.brand-intro-tagline{
+  transition:
+    opacity 1.4s cubic-bezier(.4,0,.2,1),
+    transform 1.4s cubic-bezier(.4,0,.2,1),
+    filter 1.4s cubic-bezier(.4,0,.2,1) !important;
+}
+.brand-intro{
+  transition:
+    opacity 1.45s ease,
+    visibility 1.45s ease !important;
+}
+body.intro-finished .nav-logo{
+  animation-duration:.9s !important;
+}
+body.intro-finished .hero-content{
+  animation-duration:1.35s !important;
+}
