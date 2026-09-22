@@ -2406,7 +2406,7 @@ comprobarRetornoPago();
                     {transform:"translate3d(0,0,0) scale(1)"},
                     {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`}
                 ],{
-                    duration:1200,
+                    duration:950,
                     easing:"cubic-bezier(.22,.78,.18,1)",
                     fill:"forwards"
                 });
@@ -2453,7 +2453,7 @@ comprobarRetornoPago();
                         {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`},
                         {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`}
                     ],{
-                        duration:2700,
+                        duration:2100,
                         easing:"linear",
                         fill:"forwards"
                     });
@@ -2467,12 +2467,12 @@ comprobarRetornoPago();
                                 {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
                                 {opacity:0,transform:"translateY(-6px)",filter:"blur(3px)"}
                             ],{
-                                duration:520,
+                                duration:420,
                                 easing:"ease-out",
                                 fill:"forwards"
                             });
                         });
-                    },1700);
+                    },1320);
 
                     sweep.onfinish=()=>{
                         cancelAnimationFrame(sweepRaf);
@@ -2487,7 +2487,7 @@ comprobarRetornoPago();
                             {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`},
                             {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`}
                         ],{
-                            duration:650,
+                            duration:500,
                             easing:"cubic-bezier(.30,.78,.24,1)",
                             fill:"forwards"
                         });
@@ -2495,11 +2495,11 @@ comprobarRetornoPago();
                         flyUp.onfinish=()=>{
                             placeLogo(finalX,finalY,finalScale);
                             flyUp.cancel();
-                            window.setTimeout(finishIntro,180);
+                            window.setTimeout(finishIntro,120);
                         };
                     };
                 };
-            },1800);
+            },1300);
         }
     }
 

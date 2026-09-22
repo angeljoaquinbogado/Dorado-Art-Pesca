@@ -1549,3 +1549,80 @@ body.intro-finished .hero-content{
     letter-spacing:.10em !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — TÍTULO PREMIUM + INTRO 1–2 S MÁS ÁGIL
+   ========================================================= */
+.brand-intro-title{
+  margin-top:12px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:clamp(16px,1.8vw,28px) !important;
+  flex-wrap:wrap !important;
+  text-align:center !important;
+}
+
+/* Marca principal: fuerte, vertical y con identidad de pesca/outdoor */
+.brand-intro-title > strong{
+  font-family:"Barlow Condensed","Arial Narrow",sans-serif !important;
+  font-size:clamp(54px,7.4vw,92px) !important;
+  font-weight:800 !important;
+  line-height:.86 !important;
+  letter-spacing:.015em !important;
+  color:#f0a027 !important;
+  text-shadow:
+    0 10px 30px rgba(0,0,0,.34),
+    0 0 28px rgba(240,160,39,.10) !important;
+}
+
+/* Descriptor más limpio, elegante y menos pesado */
+.brand-intro-title > span{
+  font-family:"Manrope",sans-serif !important;
+  font-size:clamp(14px,2vw,25px) !important;
+  font-weight:700 !important;
+  line-height:1.05 !important;
+  letter-spacing:.145em !important;
+  color:#f5efe5 !important;
+  text-transform:uppercase !important;
+  text-shadow:0 8px 24px rgba(0,0,0,.28) !important;
+}
+
+/* La línea acompaña la nueva paleta */
+.brand-intro-line{
+  width:min(540px,70vw) !important;
+  margin-top:22px !important;
+  background:rgba(245,239,229,.16) !important;
+}
+.brand-intro-line i{
+  background:linear-gradient(90deg,#b97413,#f0a027,#ffd27a) !important;
+}
+
+/* Las letras generadas durante la animación heredan exactamente el estilo.
+   No cambia el título cuando empieza el barrido. */
+.brand-intro-title > strong .intro-char,
+.brand-intro-title > span .intro-char{
+  font-family:inherit !important;
+  font-size:inherit !important;
+  font-weight:inherit !important;
+  line-height:inherit !important;
+  letter-spacing:inherit !important;
+  color:inherit !important;
+  text-transform:inherit !important;
+  text-shadow:inherit !important;
+}
+
+@media(max-width:700px){
+  .brand-intro-title{
+    flex-direction:column !important;
+    gap:7px !important;
+  }
+  .brand-intro-title > strong{
+    font-size:clamp(50px,17vw,76px) !important;
+  }
+  .brand-intro-title > span{
+    font-size:clamp(12px,4.2vw,17px) !important;
+    letter-spacing:.12em !important;
+  }
+}
