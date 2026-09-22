@@ -93,14 +93,14 @@ function caracteristicasFormateadas(valor) {
 function imagenSegura(valor) {
     const imagen = String(valor || "").trim();
     const legacyAssets = {
-        "logo-2.PNG": "assets/images/brand/logo-dorado.webp",
-        "/logo-2.PNG": "assets/images/brand/logo-dorado.webp",
-        "logo.PNG": "assets/images/brand/logo-dorado.webp",
-        "/logo.PNG": "assets/images/brand/logo-dorado.webp",
-        "logo.jpg": "assets/images/brand/logo-dorado.webp",
-        "/logo.jpg": "assets/images/brand/logo-dorado.webp",
-        "auriculares 2.PNG": "assets/images/brand/logo-dorado.webp",
-        "/auriculares 2.PNG": "assets/images/brand/logo-dorado.webp",
+        "logo-2.PNG": "assets/images/brand/logo-dorado.png",
+        "/logo-2.PNG": "assets/images/brand/logo-dorado.png",
+        "logo.PNG": "assets/images/brand/logo-dorado.png",
+        "/logo.PNG": "assets/images/brand/logo-dorado.png",
+        "logo.jpg": "assets/images/brand/logo-dorado.png",
+        "/logo.jpg": "assets/images/brand/logo-dorado.png",
+        "auriculares 2.PNG": "assets/images/brand/logo-dorado.png",
+        "/auriculares 2.PNG": "assets/images/brand/logo-dorado.png",
         "hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
         "/hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
         "sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
@@ -109,13 +109,13 @@ function imagenSegura(valor) {
         "/assets/images/backgrounds/hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
         "assets/images/backgrounds/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
         "/assets/images/backgrounds/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
-        "assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.webp",
-        "/assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.webp",
-        "assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado.webp",
-        "/assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado.webp"
+        "assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.png",
+        "/assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.png",
+        "assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado.png",
+        "/assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado.png"
     };
 
-    if (!imagen) return "assets/images/brand/logo-dorado.webp";
+    if (!imagen) return "assets/images/brand/logo-dorado.png";
     if (legacyAssets[imagen]) return legacyAssets[imagen];
 
     if (
@@ -129,7 +129,7 @@ function imagenSegura(valor) {
         return imagen;
     }
 
-    return "assets/images/brand/logo-dorado.webp";
+    return "assets/images/brand/logo-dorado.png";
 }
 
 function leerCarrito() {

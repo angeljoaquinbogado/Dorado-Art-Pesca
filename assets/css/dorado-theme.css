@@ -9,7 +9,7 @@ body{background:linear-gradient(180deg,#f7f4ed 0%,#f1eee7 100%)}
 .nav{background:rgba(4,11,17,.90);border-bottom-color:rgba(255,255,255,.08);color:#fff;backdrop-filter:blur(18px) saturate(130%)}
 .nav.scrolled{background:rgba(4,11,17,.96);border-color:rgba(255,255,255,.10);box-shadow:0 12px 30px rgba(0,0,0,.18)}
 .navlinks a{color:#b7c0c8}.navlinks a:hover,.navlinks a.active{color:#fff}.navlinks a::after{background:#f2a128}
-.nav-logo{width:58px;height:58px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.10),0 8px 30px rgba(0,0,0,.28)}
+.nav-logo{width:58px;height:58px;border-radius:0;object-fit:contain;box-shadow:none}
 .nav-cta{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#fff}.nav-cta:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.24)}
 .orders-trigger{color:#e9edf0!important;border-color:rgba(255,255,255,.12)!important;background:rgba(255,255,255,.05)!important}
 .cart-trigger{background:#f0a027!important;color:#071019!important;border-color:#f0a027!important}.cart-count{background:#071019!important;color:#fff!important}
@@ -22,7 +22,7 @@ body{background:linear-gradient(180deg,#f7f4ed 0%,#f1eee7 100%)}
 .hero-secondary{color:#fff!important;border-color:rgba(255,255,255,.34)!important;background:rgba(4,10,16,.22)!important}.hero-secondary:hover{background:rgba(255,255,255,.08)!important}
 .hero-proof{color:#d9dee2}.hero-aside{border-left-color:rgba(255,255,255,.18)!important}.hero-aside-item small{color:#d49a49!important}.hero-aside-item strong{color:#fff!important}
 @keyframes doradoHeroDrift{0%{transform:scale(1.06) translate3d(-1%,0,0)}100%{transform:scale(1.13) translate3d(2%,1%,0)}}
-.features{background:#08131d!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}.feature{border-color:rgba(255,255,255,.09)!important}.feature span{color:#aab4bc!important}.feature-icon{color:#f0a027!important;background:rgba(240,160,39,.10)!important}
+.features{background:transparent!important;color:#111820!important;border-color:rgba(8,16,24,.10)!important}.feature{border-color:rgba(8,16,24,.08)!important}.feature strong{color:#111820!important}.feature span{color:#7b838a!important}.feature-icon{color:#d98210!important;background:#f6ead5!important}
 .catalog-section{padding-top:96px}.section-index b,.kicker{color:#b86c12}.section-title span{color:#bb6b0e}
 .category-chips{width:var(--container);margin:0 auto 26px;display:flex;gap:9px;overflow:auto;padding:4px 0 8px;scrollbar-width:none}.category-chips::-webkit-scrollbar{display:none}.category-chip{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 15px;font-size:10px;font-weight:800;letter-spacing:.04em;color:#59616a;transition:.2s ease}.category-chip:hover,.category-chip.active{background:#071019;color:#fff;border-color:#071019;transform:translateY(-1px)}
 .product{background:#fffdf9!important}.badge{background:#071019!important;color:#ffd58a!important}.product-price{color:#10161d!important}.product-stock{color:#78613e!important}
@@ -33,6 +33,50 @@ body{background:linear-gradient(180deg,#f7f4ed 0%,#f1eee7 100%)}
 .site-footer{background:#02070b!important}.footer-logo{width:94px!important;height:94px!important;border-radius:50%;object-fit:cover}.footer-wordmark{letter-spacing:-.07em!important}.footer-wordmark span{color:#f0a027}
 .payment-method-field select{font-weight:700}.checkout-secure{transition:.2s ease}
 /* Cinematic intro */
-.brand-intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#02070b;color:#fff;transition:opacity .8s ease,visibility .8s ease}.brand-intro.hide{opacity:0;visibility:hidden;pointer-events:none}.brand-intro-bg{position:absolute;inset:-5%;background:url('../images/backgrounds/hero-bg-dorado.webp') center/cover no-repeat;filter:saturate(.88) brightness(.58);animation:introBg 4.3s cubic-bezier(.2,.7,.2,1) both}.brand-intro-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,7,11,.36),rgba(2,7,11,.58)),radial-gradient(circle at 50% 46%,transparent 0 28%,rgba(2,7,11,.58) 75%)}.brand-intro-content{position:relative;z-index:2;width:min(90vw,900px);text-align:center;display:grid;justify-items:center}.brand-intro-logo{width:clamp(90px,11vw,145px);height:clamp(90px,11vw,145px);border-radius:50%;object-fit:cover;opacity:0;transform:translateY(18px) scale(.92);animation:introLogo .8s .18s ease forwards;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 24px 80px rgba(0,0,0,.45)}.brand-intro-kicker{margin-top:22px;color:#f0a027;font-size:10px;font-weight:800;letter-spacing:.30em;opacity:0;animation:introRise .6s .62s ease forwards}.brand-intro-title{margin-top:12px;display:flex;align-items:baseline;justify-content:center;gap:16px;flex-wrap:wrap;opacity:0;animation:introRise .75s .88s ease forwards}.brand-intro-title strong{font-size:clamp(40px,7vw,82px);letter-spacing:-.055em;line-height:.95}.brand-intro-title span{font-size:clamp(15px,2.6vw,31px);font-weight:400;letter-spacing:.08em;color:#edf0f2}.brand-intro-line{width:min(520px,68vw);height:1px;background:rgba(255,255,255,.17);margin-top:24px;overflow:hidden}.brand-intro-line i{display:block;width:100%;height:100%;background:#f0a027;transform:translateX(-105%);animation:introLine 1.15s 1.22s ease forwards}.brand-intro-tagline{margin-top:15px;font-size:12px;letter-spacing:.09em;color:#d3d8dc;opacity:0;animation:introRise .6s 1.55s ease forwards}@keyframes introBg{from{transform:scale(1.12)}to{transform:scale(1.02)}}@keyframes introLogo{to{opacity:1;transform:none}}@keyframes introRise{to{opacity:1;transform:none}}@keyframes introLine{to{transform:translateX(0)}}
+.brand-intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#02070b;color:#fff;transition:opacity .8s ease,visibility .8s ease}.brand-intro.hide{opacity:0;visibility:hidden;pointer-events:none}.brand-intro-bg{position:absolute;inset:-5%;background:url('../images/backgrounds/hero-bg-dorado.webp') center/cover no-repeat;filter:saturate(.88) brightness(.58);animation:introBg 4.3s cubic-bezier(.2,.7,.2,1) both}.brand-intro-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,7,11,.36),rgba(2,7,11,.58)),radial-gradient(circle at 50% 46%,transparent 0 28%,rgba(2,7,11,.58) 75%)}.brand-intro-content{position:relative;z-index:2;width:min(90vw,900px);text-align:center;display:grid;justify-items:center}.brand-intro-logo{width:clamp(90px,11vw,145px);height:clamp(90px,11vw,145px);border-radius:0;object-fit:contain;opacity:0;transform:translateY(18px) scale(.92);animation:introLogo .8s .18s ease forwards;box-shadow:none}.brand-intro-kicker{margin-top:22px;color:#f0a027;font-size:10px;font-weight:800;letter-spacing:.30em;opacity:0;animation:introRise .6s .62s ease forwards}.brand-intro-title{margin-top:12px;display:flex;align-items:baseline;justify-content:center;gap:16px;flex-wrap:wrap;opacity:0;animation:introRise .75s .88s ease forwards}.brand-intro-title strong{font-size:clamp(40px,7vw,82px);letter-spacing:-.055em;line-height:.95}.brand-intro-title span{font-size:clamp(15px,2.6vw,31px);font-weight:400;letter-spacing:.08em;color:#edf0f2}.brand-intro-line{width:min(520px,68vw);height:1px;background:rgba(255,255,255,.17);margin-top:24px;overflow:hidden}.brand-intro-line i{display:block;width:100%;height:100%;background:#f0a027;transform:translateX(-105%);animation:introLine 1.15s 1.22s ease forwards}.brand-intro-tagline{margin-top:15px;font-size:12px;letter-spacing:.09em;color:#d3d8dc;opacity:0;animation:introRise .6s 1.55s ease forwards}@keyframes introBg{from{transform:scale(1.12)}to{transform:scale(1.02)}}@keyframes introLogo{to{opacity:1;transform:none}}@keyframes introRise{to{opacity:1;transform:none}}@keyframes introLine{to{transform:translateX(0)}}
 @media(max-width:900px){.hero{min-height:auto}.hero-shell{grid-template-columns:1fr;min-height:620px}.hero-aside{display:none}.hero-content h1{font-size:clamp(44px,12vw,72px)}.nav-logo{width:50px;height:50px}.category-chips{width:calc(100% - 28px)}.dorado-map{min-height:340px}.brand-intro-title{gap:8px;flex-direction:column;align-items:center}.brand-intro-title span{font-size:16px;letter-spacing:.14em}}
 @media(prefers-reduced-motion:reduce){.brand-intro-bg,.brand-intro-logo,.brand-intro-kicker,.brand-intro-title,.brand-intro-line i,.brand-intro-tagline{animation:none!important;opacity:1!important;transform:none!important}.hero-bg::before{animation:none!important}}
+
+
+/* DORADO FIX 2026-09-22 — logo PNG transparente + beneficios sin fondo negro */
+.brand{
+  border:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+.nav-logo{
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  object-fit:contain!important;
+}
+.brand-intro-logo{
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  object-fit:contain!important;
+}
+.footer-logo{
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  object-fit:contain!important;
+}
+.features{
+  background:transparent!important;
+  color:#111820!important;
+  border-color:rgba(8,16,24,.10)!important;
+}
+.feature{
+  border-color:rgba(8,16,24,.08)!important;
+}
+.feature strong{
+  color:#111820!important;
+}
+.feature span{
+  color:#7b838a!important;
+}
+.feature-icon{
+  color:#d98210!important;
+  background:#f6ead5!important;
+}
