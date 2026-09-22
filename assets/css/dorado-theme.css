@@ -1208,3 +1208,47 @@ body.intro-finished .nav-logo{
 body.intro-finished .hero-content{
   animation-duration:1.05s !important;
 }
+
+/* ============================================
+   DORADO — fondo extendido detrás de beneficios
+   Quita la franja blanca y prolonga la foto del hero
+============================================ */
+.dorado-field-strip{
+  isolation:isolate !important;
+  overflow:visible !important;
+}
+.dorado-field-strip::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:-170px;
+  bottom:-36px;
+  width:100vw;
+  pointer-events:none;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,16,25,0) 0%,rgba(6,16,25,.18) 20%,rgba(6,16,25,.58) 52%,rgba(6,16,25,.96) 100%),
+    url('../images/backgrounds/hero-bg-dorado.webp') center 58% / cover no-repeat;
+}
+.dorado-field-strip::before{
+  z-index:-1 !important;
+}
+@media (max-width: 900px){
+  .dorado-field-strip::after{
+    top:-120px;
+    bottom:-22px;
+    background:
+      linear-gradient(180deg,rgba(6,16,25,0) 0%,rgba(6,16,25,.20) 24%,rgba(6,16,25,.64) 58%,rgba(6,16,25,.96) 100%),
+      url('../images/backgrounds/hero-bg-dorado.webp') center 56% / cover no-repeat;
+  }
+}
+@media (max-width: 640px){
+  .dorado-field-strip::after{
+    top:-84px;
+    bottom:-14px;
+    background:
+      linear-gradient(180deg,rgba(6,16,25,0) 0%,rgba(6,16,25,.24) 30%,rgba(6,16,25,.74) 68%,rgba(6,16,25,.97) 100%),
+      url('../images/backgrounds/hero-bg-dorado.webp') center 54% / cover no-repeat;
+  }
+}
