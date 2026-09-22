@@ -1,0 +1,126 @@
+/* =========================================================
+   CHECKOUT — SUGERENCIAS DE DIRECCIÓN
+========================================================= */
+.checkout-address-field{
+  position:relative;
+  z-index:20;
+}
+
+.checkout-address-helper{
+  min-height:14px;
+  margin-top:1px;
+  font-size:8px;
+  line-height:1.45;
+  color:#8a8c91;
+  letter-spacing:.015em;
+}
+
+.checkout-address-helper.selected{
+  color:#6d5921;
+}
+
+.checkout-address-suggestions{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% - 12px);
+  z-index:120;
+  max-height:250px;
+  overflow:auto;
+  padding:7px;
+  border:1px solid #e4ded3;
+  border-radius:16px;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 18px 42px rgba(13,14,16,.16);
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+  overscroll-behavior:contain;
+}
+
+.checkout-address-suggestions[hidden]{
+  display:none!important;
+}
+
+.checkout-address-option{
+  width:100%;
+  min-height:56px;
+  padding:10px 12px;
+  border:0;
+  border-radius:11px;
+  background:transparent;
+  color:#222427;
+  text-align:left;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+  transition:background .16s ease, color .16s ease;
+}
+
+.checkout-address-option:hover,
+.checkout-address-option.active{
+  background:#f5f1e7;
+}
+
+.checkout-address-option strong{
+  font-size:11px;
+  line-height:1.35;
+  font-weight:800;
+}
+
+.checkout-address-option span{
+  font-size:8px;
+  line-height:1.4;
+  color:#777980;
+}
+
+@media(max-width:640px){
+  .checkout-address-suggestions{
+    position:fixed;
+    left:12px;
+    right:12px;
+    top:auto;
+    bottom:calc(12px + env(safe-area-inset-bottom));
+    max-height:min(42dvh,320px);
+    border-radius:20px;
+    padding:8px;
+    z-index:320;
+    box-shadow:0 20px 60px rgba(13,14,16,.24);
+  }
+
+  .checkout-address-option{
+    min-height:62px;
+    padding:11px 12px;
+  }
+
+  .checkout-address-option strong{
+    font-size:12px;
+  }
+
+  .checkout-address-option span{
+    font-size:9px;
+  }
+
+  .checkout-address-helper{
+    font-size:9px;
+  }
+}
+
+/* Fix táctil: permite seleccionar sugerencias en iOS/Android sin que
+   el blur del input cierre la lista antes del toque. */
+.checkout-address-option{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+
+@media(max-width:640px){
+  .checkout-address-suggestions{
+    max-height:min(38dvh,300px);
+  }
+
+  .checkout-address-option{
+    min-height:58px;
+  }
+}
+

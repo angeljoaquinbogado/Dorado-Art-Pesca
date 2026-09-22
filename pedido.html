@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090a0b">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Seguimiento de pedido | Dorado Artículos de Pesca</title>
+<meta name="description" content="Consultá el estado de tu pedido de DORADO ARTÍCULOS DE PESCA.">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/brand/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/pedido.css">
+</head>
+<body>
+<main class="tracking-shell">
+  <header class="tracking-head">
+    <a class="tracking-brand" href="/" aria-label="Volver a DORADO ARTÍCULOS DE PESCA">
+      <img src="/assets/images/brand/logo-dorado.webp" alt="Dorado Artículos de Pesca">
+    </a>
+    <a class="back-store" href="/">Volver a la tienda</a>
+  </header>
+
+  <section class="tracking-card" aria-labelledby="tracking-title">
+    <div class="tracking-kicker">SEGUIMIENTO PRIVADO</div>
+    <h1 id="tracking-title">Tu pedido, paso a paso.</h1>
+    <p class="tracking-intro">Este enlace contiene una clave privada de seguimiento. No necesitás iniciar sesión.</p>
+
+    <div id="tracking-loading" class="tracking-loading" role="status" aria-live="polite">
+      <span></span> Cargando pedido…
+    </div>
+
+    <div id="tracking-error" class="tracking-error" hidden>
+      <strong>No pudimos abrir este seguimiento.</strong>
+      <p id="tracking-error-text">Revisá que el enlace sea completo o intentá nuevamente.</p>
+      <a href="/" class="button secondary">VOLVER A LA TIENDA</a>
+    </div>
+
+    <div id="tracking-content" hidden>
+      <div class="order-summary-top">
+        <div>
+          <span>NÚMERO DE PEDIDO</span>
+          <strong id="tracking-code">DP-—</strong>
+          <small id="tracking-date"></small>
+        </div>
+        <div class="status-pill" id="tracking-status">Cargando</div>
+      </div>
+
+      <div class="track-progress" id="tracking-progress" aria-label="Progreso del pedido"></div>
+
+      <div class="notice review" id="tracking-review" hidden>
+        <strong>Tu pago está registrado y el pedido necesita una revisión manual.</strong>
+        <span>No vuelvas a pagar. Si necesitás ayuda, escribinos por WhatsApp.</span>
+      </div>
+
+      <section class="items-block">
+        <div class="section-title-row">
+          <h2>Productos</h2>
+          <span id="tracking-units"></span>
+        </div>
+        <div id="tracking-items"></div>
+        <div class="tracking-total">
+          <span>Total de productos</span>
+          <strong id="tracking-total">$0</strong>
+        </div>
+      </section>
+
+      <div class="tracking-actions">
+        <button class="button primary" id="tracking-refresh" type="button">ACTUALIZAR ESTADO</button>
+        <button class="button secondary" id="tracking-copy" type="button">COPIAR ENLACE</button>
+        <a class="button whatsapp" id="tracking-whatsapp" href="https://wa.me/5491168070039" target="_blank" rel="noopener">CONSULTAR POR WHATSAPP</a>
+      </div>
+
+      <p class="privacy-note">Por seguridad, este enlace no muestra domicilio, teléfono ni email del comprador.</p>
+    </div>
+  </section>
+</main>
+<script src="/assets/js/pedido.js"></script>
+</body>
+</html>

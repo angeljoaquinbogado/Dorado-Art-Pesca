@@ -1,0 +1,54 @@
+/* =========================================================
+   Dorado Artículos de Pesca ADMIN — DESKTOP / NOTEBOOK
+   Legibilidad y densidad de trabajo para pantallas >= 901px.
+========================================================= */
+@media (min-width:901px){
+  body{font-size:15px}
+  .login-kicker{font-size:12px!important}
+  .login-visual p{font-size:15px!important}
+  .secure-note{font-size:13px!important}
+  .login-card-head span{font-size:10.5px!important}
+  .login-card p{font-size:13px!important}
+
+  .field label{font-size:10.5px!important}
+  .field input,.field textarea,.field select{font-size:14px!important;min-height:48px}
+  .file-help{font-size:11px!important}
+  .primary,.secondary,.danger{font-size:11.5px!important;min-height:46px}
+  .message{font-size:11.5px!important}
+
+  .side-brand small,.side-label{font-size:9.5px!important}
+  .tab,.store-link{font-size:11.5px!important}
+  .user-meta strong{font-size:11.5px!important}
+  .user-meta small,.top-user{font-size:9.5px!important}
+
+  .workspace-top p,.hero-head p{font-size:13px!important;line-height:1.65!important}
+  .hero-head .eyebrow{font-size:10.5px!important}
+  .stat-label{font-size:9.5px!important}
+  .stat small{font-size:9.5px!important}
+  .card-head p,.catalog-toolbar p,.orders-toolbar p{font-size:12px!important;line-height:1.6!important}
+  .form-section-title{font-size:10.5px!important}
+
+  table th{font-size:9.5px!important}
+  table td{font-size:12px!important}
+  .product-name{font-size:12.5px!important}
+  .product-category,.muted{font-size:10.5px!important}
+  .catalog-count,.privacy-chip,.stock-alert-chip{font-size:10px!important}
+  .icon-btn{font-size:10.5px!important;min-height:38px}
+  .badge{font-size:9.5px!important}
+  .fulfillment-select{font-size:11.5px!important}
+
+  .orders-filterbar select{font-size:11.5px!important}
+  .orders-filterbar .date-filter span{font-size:9px!important}
+  .orders-filterbar .date-filter input{font-size:11.5px!important}
+  .orders-select-all,.orders-selected-count{font-size:11px!important}
+
+  .order-modal-code span{font-size:9.5px!important}
+  .order-modal-code small{font-size:10.5px!important}
+  .order-meta span{font-size:9.5px!important}
+  .order-meta strong{font-size:12px!important}
+  .order-note{font-size:11.5px!important}
+  .order-item-row strong{font-size:12px!important}
+  .order-item-row small{font-size:10.5px!important}
+  .confirm-card p{font-size:12px!important}
+  .admin-toast{font-size:11.5px!important}
+}

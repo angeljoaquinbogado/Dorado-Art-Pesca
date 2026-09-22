@@ -1,0 +1,119 @@
+/* =========================================================
+   Dorado Artículos de Pesca ADMIN — GALERÍA DE PRODUCTOS
+========================================================= */
+.gallery-admin-help{
+  margin:-2px 0 14px;
+  padding:12px 13px;
+  border:1px solid #ebe5da;
+  border-radius:14px;
+  background:#faf8f3;
+  color:#6c6f74;
+  font-size:10px;
+  line-height:1.55;
+}
+.gallery-admin-help strong{color:#222427}
+
+.product-gallery-preview{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.gallery-admin-empty{
+  grid-column:1/-1;
+  min-height:130px;
+  display:grid;
+  place-items:center;
+  border:1px dashed #d9d2c6;
+  border-radius:16px;
+  color:#989a9f;
+  font-size:10px;
+  background:#fbfaf7;
+}
+
+.gallery-admin-item{
+  position:relative;
+  min-width:0;
+  border:1px solid #e7e1d7;
+  border-radius:16px;
+  background:#fff;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(20,20,20,.04);
+}
+.gallery-admin-item.is-primary{
+  border-color:#c89f37;
+  box-shadow:0 0 0 1px rgba(200,159,55,.18),0 10px 28px rgba(20,20,20,.05);
+}
+.gallery-admin-image{
+  aspect-ratio:1/1;
+  display:grid;
+  place-items:center;
+  background:#f7f5ef;
+  overflow:hidden;
+}
+.gallery-admin-image img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.gallery-admin-primary{
+  position:absolute;
+  top:8px;
+  left:8px;
+  z-index:2;
+  border-radius:999px;
+  padding:5px 8px;
+  background:#c89f37;
+  color:#111;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.gallery-admin-actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  padding:8px;
+}
+.gallery-admin-actions button{
+  min-height:34px;
+  border:1px solid #ebe6dd;
+  border-radius:9px;
+  background:#fff;
+  color:#5e6065;
+  font-size:8px;
+  font-weight:800;
+  cursor:pointer;
+}
+.gallery-admin-actions button:hover{background:#f7f4ed;color:#17191d}
+.gallery-admin-actions button:disabled{opacity:.32;cursor:not-allowed}
+.gallery-admin-actions .gallery-remove{color:#a43c34}
+.gallery-admin-file-name{
+  padding:0 9px 8px;
+  color:#8a8c91;
+  font-size:7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.gallery-url-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+}
+.gallery-url-add{
+  min-width:102px;
+  padding-inline:14px;
+}
+
+@media(max-width:700px){
+  .product-gallery-preview{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gallery-admin-actions{grid-template-columns:repeat(2,1fr)}
+  .gallery-url-row{grid-template-columns:1fr}
+  .gallery-url-add{width:100%}
+}
+@media(max-width:380px){
+  .product-gallery-preview{grid-template-columns:1fr}
+}

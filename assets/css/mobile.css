@@ -1,0 +1,539 @@
+/* =========================================================
+   Dorado Artículos de Pesca — MOBILE UX FINAL
+   Cargado DESPUÉS de site.css para centralizar los ajustes
+   responsive sin seguir acumulando reglas dentro del CSS grande.
+========================================================= */
+
+/* Tablets y celulares */
+@media (max-width: 900px){
+  html,body{max-width:100%;overflow-x:hidden}
+
+  /* Dock móvil: site.css tenía un display:none!important posterior
+     que anulaba el dock original. */
+  .mobile-dock{
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    left:8px!important;
+    right:8px!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+    min-height:62px!important;
+    padding:6px 4px!important;
+    border-radius:20px!important;
+    background:rgba(250,250,247,.96)!important;
+    border:1px solid rgba(13,14,16,.10)!important;
+    -webkit-backdrop-filter:blur(18px)!important;
+    backdrop-filter:blur(18px)!important;
+    box-shadow:0 14px 42px rgba(13,14,16,.16)!important;
+    z-index:150!important;
+  }
+
+  .mobile-dock-item{
+    min-width:0!important;
+    min-height:48px!important;
+    padding:4px 2px!important;
+    border:0!important;
+    border-radius:13px!important;
+    background:transparent!important;
+    color:#777980!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:3px!important;
+    font-size:7px!important;
+    font-weight:800!important;
+  }
+  .mobile-dock-item .ui-icon{width:19px!important;height:19px!important}
+  .mobile-dock-item span{white-space:nowrap!important}
+  .mobile-dock-item.active{color:#111214!important;background:#f0ede5!important}
+
+  body{
+    padding-bottom:calc(82px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Evita duplicar dos accesos flotantes a WhatsApp en celular. */
+  .float-wa{display:none!important}
+
+  /* Nunca superponer el dock sobre capas de compra. */
+  body.cart-open .mobile-dock,
+  body.checkout-open .mobile-dock,
+  body.modal-open .mobile-dock,
+  body.orders-open .mobile-dock,
+  body.payment-result-open .mobile-dock,
+  body.menu-open .mobile-dock{
+    display:none!important;
+  }
+
+  .cart-toast{
+    bottom:calc(86px + env(safe-area-inset-bottom))!important;
+    z-index:230!important;
+  }
+}
+
+/* Celulares */
+@media (max-width: 640px){
+  :root{--mobile-pad:14px}
+
+  /* Header */
+  .nav{
+    min-height:64px!important;
+    padding-left:var(--mobile-pad)!important;
+    padding-right:var(--mobile-pad)!important;
+  }
+  .menu-toggle,.cart-trigger{
+    width:42px!important;
+    height:42px!important;
+    min-height:42px!important;
+  }
+
+  /* Catálogo: controles táctiles claros y coherentes */
+  .catalog-section{padding-top:58px!important;padding-bottom:72px!important}
+  .section-head{gap:22px!important;margin-bottom:28px!important}
+  .catalog-search{
+    min-height:50px!important;
+    border-radius:16px!important;
+  }
+
+  .products{gap:38px!important}
+  .product{width:100%!important}
+  .product-img{
+    border-radius:22px!important;
+    overflow:hidden!important;
+  }
+  .product-info{padding:16px 2px 0!important}
+  .product-info h3{
+    font-size:17px!important;
+    line-height:1.32!important;
+  }
+  .product-card-description{
+    margin-top:7px!important;
+    font-size:10.5px!important;
+    line-height:1.55!important;
+  }
+  .product-price{font-size:23px!important}
+  .product-actions{margin-top:14px!important;padding-top:4px!important}
+
+  .view-product{
+    min-height:44px!important;
+    padding:0 2px!important;
+    font-size:9px!important;
+  }
+
+  .card-quantity-row{
+    display:flex!important;
+    margin:10px 0 12px!important;
+    padding:8px 9px 8px 12px!important;
+    border-radius:16px!important;
+    background:#fff!important;
+    box-shadow:0 7px 20px rgba(13,14,16,.045)!important;
+  }
+  .card-quantity-row>span{
+    font-size:7px!important;
+    color:#777980!important;
+  }
+  .card-quantity-selector,
+  .quantity-selector{
+    border-radius:999px!important;
+  }
+  .card-quantity-selector{
+    grid-template-columns:38px 44px 38px!important;
+    min-height:40px!important;
+    background:#f4f2ec!important;
+    border:0!important;
+  }
+  .card-quantity-selector .qty-btn{
+    width:38px!important;
+    height:40px!important;
+  }
+  .card-quantity-selector .qty-input{
+    width:44px!important;
+    height:40px!important;
+    font-size:12px!important;
+    background:transparent!important;
+  }
+  .add-card-product{
+    min-height:50px!important;
+    border-radius:999px!important;
+    font-size:9px!important;
+  }
+
+  /* Ficha de producto */
+  .product-detail{
+    padding:0!important;
+    background:#fff!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+  .product-detail-inner{
+    width:100%!important;
+    min-height:100dvh!important;
+    border-radius:0!important;
+    padding-bottom:calc(86px + env(safe-area-inset-bottom))!important;
+  }
+  .product-detail-close{
+    position:fixed!important;
+    top:calc(10px + env(safe-area-inset-top))!important;
+    right:12px!important;
+    width:42px!important;
+    height:42px!important;
+    z-index:260!important;
+    box-shadow:0 6px 18px rgba(0,0,0,.09)!important;
+  }
+  .product-detail-image{
+    min-height:34svh!important;
+    max-height:360px!important;
+    padding:54px 20px 18px!important;
+  }
+  .dynamic-product-image{
+    width:88%!important;
+    max-height:285px!important;
+  }
+  .product-detail-info{
+    padding:24px 16px 30px!important;
+    overflow:visible!important;
+  }
+  .dynamic-product-name{
+    font-size:clamp(28px,8.2vw,34px)!important;
+    line-height:1.04!important;
+  }
+  .dynamic-product-description,
+  .dynamic-product-features{
+    font-size:12px!important;
+    line-height:1.7!important;
+  }
+  .dynamic-product-price{font-size:30px!important}
+  .quantity-label-row{align-items:flex-end!important}
+  .dynamic-qty-help{
+    max-width:52%!important;
+    text-align:right!important;
+    line-height:1.35!important;
+  }
+  .product-detail .quantity-selector{
+    grid-template-columns:42px 50px 42px!important;
+    min-height:42px!important;
+    border-radius:999px!important;
+  }
+  .product-detail .quantity-selector .qty-btn{
+    width:42px!important;height:42px!important;border-radius:999px!important
+  }
+  .product-detail .quantity-selector .qty-input{
+    width:50px!important;height:42px!important;font-size:13px!important
+  }
+  .product-mobile-buybar{
+    z-index:250!important;
+    gap:10px!important;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom))!important;
+    background:rgba(255,255,255,.97)!important;
+    -webkit-backdrop-filter:blur(18px)!important;
+    backdrop-filter:blur(18px)!important;
+  }
+  .product-mobile-price{min-width:92px!important}
+  .product-mobile-price strong{font-size:18px!important}
+  .dynamic-add-cart-mobile{
+    min-width:0!important;
+    min-height:50px!important;
+    border-radius:999px!important;
+  }
+
+  /* Carrito */
+  .cart-drawer{
+    width:100%!important;
+    height:100dvh!important;
+    max-width:none!important;
+  }
+  .cart-head{
+    flex:0 0 auto!important;
+    padding:calc(14px + env(safe-area-inset-top)) 16px 14px!important;
+    background:#fff!important;
+  }
+  .cart-head-copy strong{font-size:20px!important}
+  .cart-close{width:42px!important;height:42px!important}
+  .cart-items{
+    min-height:0!important;
+    padding:8px 14px 16px!important;
+    overscroll-behavior:contain!important;
+  }
+  .cart-item{
+    grid-template-columns:64px minmax(0,1fr)!important;
+    gap:11px!important;
+    padding:14px 0!important;
+  }
+  .cart-item-image{
+    width:64px!important;
+    height:64px!important;
+    border-radius:15px!important;
+  }
+  .cart-item-name{font-size:11px!important}
+  .cart-item-bottom{align-items:center!important}
+  .cart-item .quantity-selector{
+    grid-template-columns:32px 38px 32px!important;
+    border-radius:999px!important;
+  }
+  .cart-item .qty-btn{width:32px!important;height:34px!important}
+  .cart-item .qty-input{width:38px!important;height:34px!important}
+  .cart-footer{
+    flex:0 0 auto!important;
+    padding:14px 16px calc(14px + env(safe-area-inset-bottom))!important;
+    box-shadow:0 -10px 30px rgba(13,14,16,.06)!important;
+  }
+  .cart-checkout{
+    min-height:52px!important;
+    border-radius:999px!important;
+  }
+
+  /* Checkout: 16px evita zoom automático de iOS */
+  .checkout-modal{
+    padding:0!important;
+    background:#fff!important;
+  }
+  .checkout-card{
+    width:100%!important;
+    min-height:100dvh!important;
+    border-radius:0!important;
+    overflow:visible!important;
+  }
+  .checkout-close{
+    position:fixed!important;
+    top:calc(10px + env(safe-area-inset-top))!important;
+    right:12px!important;
+    width:42px!important;
+    height:42px!important;
+    z-index:280!important;
+  }
+  .checkout-main{
+    padding:calc(62px + env(safe-area-inset-top)) 16px 28px!important;
+  }
+  .checkout-side{
+    padding:26px 16px calc(28px + env(safe-area-inset-bottom))!important;
+  }
+  .checkout-title{
+    font-size:clamp(29px,8vw,34px)!important;
+    line-height:1.05!important;
+  }
+  .checkout-intro{font-size:11px!important;line-height:1.65!important}
+  .checkout-form-grid{grid-template-columns:1fr!important}
+  .checkout-field.full{grid-column:auto!important}
+  .checkout-field input,
+  .checkout-field select,
+  .checkout-field textarea{
+    min-height:50px!important;
+    font-size:16px!important;
+    border-radius:14px!important;
+  }
+  .checkout-field textarea{
+    min-height:104px!important;
+    padding-top:14px!important;
+  }
+  .checkout-consent{
+    gap:10px!important;
+    font-size:10px!important;
+    line-height:1.55!important;
+  }
+  .checkout-consent input{
+    width:18px!important;
+    height:18px!important;
+    flex:0 0 auto!important;
+  }
+  .checkout-pay{
+    min-height:54px!important;
+    border-radius:999px!important;
+  }
+  .checkout-summary-item{
+    grid-template-columns:50px minmax(0,1fr) auto!important;
+    gap:9px!important;
+  }
+  .checkout-summary-item img{
+    width:50px!important;height:50px!important
+  }
+  .checkout-summary-price{white-space:nowrap!important}
+  .checkout-whatsapp{
+    min-height:48px!important;
+    border-radius:999px!important;
+  }
+
+  /* Mis pedidos */
+  .orders-drawer{
+    width:100%!important;
+    max-width:none!important;
+  }
+  .orders-head{
+    padding:calc(18px + env(safe-area-inset-top)) 16px 16px!important;
+  }
+  .orders-head strong{font-size:22px!important}
+  .orders-close{width:42px!important;height:42px!important;flex:0 0 auto!important}
+  .orders-toolbar{padding:0 16px!important}
+  .orders-list{
+    padding:12px!important;
+    overscroll-behavior:contain!important;
+  }
+  .customer-order-card{
+    padding:15px!important;
+    border-radius:18px!important;
+    margin-bottom:12px!important;
+  }
+  .order-track{
+    margin:22px -2px 18px!important;
+  }
+  .order-track-dot{
+    width:28px!important;height:28px!important
+  }
+  .order-track:before{top:14px!important}
+  .order-track-step small{
+    font-size:6.5px!important;
+    line-height:1.2!important;
+  }
+  .orders-foot{
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Resultado de pago */
+  .payment-result{padding:12px!important}
+  .payment-result-card{
+    width:100%!important;
+    max-height:calc(100dvh - 24px)!important;
+    padding:30px 18px 22px!important;
+    border-radius:24px!important;
+  }
+  .payment-result h2{
+    font-size:clamp(28px,8vw,32px)!important;
+  }
+}
+
+/* Celulares angostos */
+@media (max-width: 430px){
+  .section-title{font-size:clamp(40px,11.5vw,50px)!important}
+  .product-img{aspect-ratio:1.10/1!important}
+
+  .product-assurances{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .product-assurances>div{
+    min-width:0!important;
+    padding:9px 7px!important;
+  }
+  .product-assurances strong{
+    font-size:8px!important;
+    line-height:1.25!important;
+  }
+  .product-assurances small{display:none!important}
+
+  .cart-footer-actions{
+    gap:8px!important;
+    justify-content:space-between!important;
+  }
+  .cart-link-button{
+    min-height:38px!important;
+    font-size:7.5px!important;
+  }
+
+  .customer-order-top{
+    align-items:flex-start!important;
+  }
+  .customer-order-status{
+    max-width:42%!important;
+    text-align:center!important;
+    white-space:normal!important;
+    line-height:1.2!important;
+  }
+}
+
+/* 360px y similares */
+@media (max-width: 380px){
+  :root{--mobile-pad:11px}
+
+  .mobile-dock{
+    left:6px!important;
+    right:6px!important;
+    border-radius:18px!important;
+  }
+  .mobile-dock-item{
+    font-size:6.5px!important;
+  }
+
+  .dynamic-qty-help{display:none!important}
+  .quantity-label-row{justify-content:flex-start!important}
+
+  .product-detail-info{padding-left:14px!important;padding-right:14px!important}
+  .product-assurances{
+    grid-template-columns:1fr!important;
+  }
+  .product-assurances>div{
+    display:flex!important;
+    padding:9px 10px!important;
+  }
+  .product-assurances small{display:block!important}
+
+  .cart-item{
+    grid-template-columns:56px minmax(0,1fr)!important;
+  }
+  .cart-item-image{
+    width:56px!important;height:56px!important
+  }
+  .cart-item-bottom{
+    gap:7px!important;
+  }
+  .cart-item-subtotal{font-size:11px!important}
+
+  .checkout-main,
+  .checkout-side{
+    padding-left:13px!important;
+    padding-right:13px!important;
+  }
+
+  .orders-head small{font-size:9px!important}
+  .customer-order-card{padding:13px!important}
+  .order-track-step small{font-size:6px!important}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .mobile-dock,
+  .product-mobile-buybar{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+}
+
+/* =========================================================
+   MOBILE — SIN MENÚ HAMBURGUESA
+   En desktop la navegación superior se mantiene igual.
+   En celular usamos el dock inferior y dejamos el header limpio.
+========================================================= */
+@media (max-width: 900px){
+  #menu-toggle,
+  .menu-toggle{
+    display:none!important;
+  }
+
+  #primary-navigation,
+  .navlinks{
+    display:none!important;
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
+  .nav{
+    grid-template-columns:1fr auto!important;
+  }
+
+  .brand{
+    grid-column:1!important;
+    justify-self:start!important;
+  }
+
+  .nav-actions{
+    grid-column:2!important;
+    justify-self:end!important;
+  }
+
+  /* El menú móvil ya no existe, por lo que esta clase no debe bloquear la página. */
+  body.menu-open{
+    overflow:auto!important;
+  }
+
+  body.menu-open .mobile-dock{
+    display:grid!important;
+  }
+}
+

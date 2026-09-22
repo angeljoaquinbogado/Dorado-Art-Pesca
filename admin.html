@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<meta name="theme-color" content="#0d0e10">
+<meta name="description" content="Panel privado de DORADO ARTÍCULOS DE PESCA para gestionar productos, stock y pedidos. Acceso exclusivo para administradores autorizados.">
+<link rel="canonical" href="https://dorado-art-pesca.vercel.app/admin.html">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
+<title>Dorado Artículos de Pesca | Panel privado de administración</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/admin.css"/>
+<link rel="stylesheet" href="assets/css/admin-desktop.css"/>
+<link rel="stylesheet" href="assets/css/admin-mobile.css"/>
+<link rel="stylesheet" href="assets/css/admin-gallery.css"/>
+</head>
+<body>
+
+<section id="login-screen" class="login-screen">
+  <div class="login-shell">
+    <div class="login-visual">
+      <div class="login-brand">
+        <img src="assets/images/brand/logo-dorado.webp" alt="Dorado Artículos de Pesca" class="login-logo-img">
+        <div class="login-kicker">CENTRO DE CONTROL</div>
+        <h1>Tu tienda,<br>bien administrada.</h1>
+        <p>Gestioná catálogo, stock y pedidos desde un panel privado pensado para trabajar rápido y sin perder de vista lo importante.</p>
+      </div>
+      <div class="secure-note">
+        <span><svg viewBox="0 0 24 24"><path d="M6 10V7a6 6 0 0 1 12 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M12 14v3"/></svg></span>
+        Acceso protegido para administradores autorizados
+      </div>
+    </div>
+    <form id="login-form" class="login-card">
+      <div class="login-card-head">
+        <span>ADMINISTRACIÓN</span>
+        <h2>Ingresá al panel</h2>
+        <p>Usá la cuenta autorizada de Dorado Artículos de Pesca para continuar.</p>
+      </div>
+      <div class="field">
+        <label for="login-email">EMAIL</label>
+        <input id="login-email" type="email" autocomplete="username" required placeholder="tu@email.com">
+      </div>
+      <div class="field">
+        <label for="login-password">CONTRASEÑA</label>
+        <input id="login-password" type="password" autocomplete="current-password" required minlength="8" placeholder="••••••••">
+      </div>
+      <div id="login-message" class="message error"></div>
+      <button id="login-button" class="primary" type="submit">INGRESAR AL PANEL</button>
+    </form>
+  </div>
+</section>
+
+<div id="admin-app" class="app hidden">
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <img src="assets/images/brand/logo-dorado.webp" alt="Dorado Artículos de Pesca">
+        <small>ADMINISTRACIÓN</small>
+      </div>
+      <div class="side-label">GESTIÓN</div>
+      <nav class="tabs" aria-label="Secciones del panel">
+        <button class="tab active" data-tab="products" type="button">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3M8 12h8"/></svg><span>PRODUCTOS</span>
+        </button>
+        <button class="tab" data-tab="orders" type="button">
+          <svg viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>PEDIDOS</span>
+        </button>
+      </nav>
+      <div class="side-spacer"></div>
+      <a class="store-link" href="/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M14 5h5v5"/><path d="M10 14 19 5"/><path d="M19 13v6H5V5h6"/></svg>
+        Ver tienda publicada
+      </a>
+      <div class="side-user">
+        <div class="user-line">
+          <div class="user-avatar">FE</div>
+          <div class="user-meta"><strong>Administrador</strong><span id="admin-email" class="top-user"></span></div>
+        </div>
+        <button class="secondary" type="button" id="logout-button">CERRAR SESIÓN</button>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <header class="workspace-top">
+        <div class="crumb"><span>Dorado Artículos de Pesca</span><span>/</span><strong>Panel de administración</strong></div>
+        <div class="top-actions">
+          <span class="connection-pill" id="connection-state">CONECTANDO</span>
+          <button class="secondary" type="button" id="refresh-button">
+            <svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M18.4 9A7 7 0 0 0 6.8 6.2L4 11M20 13l-2.8 4.8A7 7 0 0 1 5.6 15"/></svg>
+            ACTUALIZAR
+          </button>
+        </div>
+      </header>
+
+      <main class="shell">
+        <section class="hero-head">
+          <div class="head-copy">
+            <div class="head-kicker">Dorado Artículos de Pesca · BACK OFFICE</div>
+            <h2 class="admin-page-title">Centro de control.</h2>
+            <p>Administrá el catálogo, revisá stock y seguí cada pedido desde una interfaz pensada para usar todos los días.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="primary" type="button" id="new-product-button">
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              NUEVO PRODUCTO
+            </button>
+            <a class="secondary" href="/" target="_blank" rel="noopener">VER TIENDA</a>
+          </div>
+        </section>
+
+        <section id="products-panel" class="panel active">
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3"/></svg></div></div>
+              <span class="stat-label">PRODUCTOS CARGADOS</span><strong id="stat-products">0</strong><small>CATÁLOGO</small>
+            </div>
+            <div class="stat">
+              <div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M3 8 12 3l9 5-9 5Z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/></svg></div></div>
+              <span class="stat-label">UNIDADES EN STOCK</span><strong id="stat-stock">0</strong><small>DISPONIBLES</small>
+            </div>
+            <div class="stat">
+              <div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M5 12 10 17 20 7"/></svg></div></div>
+              <span class="stat-label">PRODUCTOS ACTIVOS</span><strong id="stat-active">0</strong><small>VISIBLES</small>
+            </div>
+          </div>
+
+          <div class="grid">
+            <form id="product-form" class="card form-card">
+              <div class="card-head">
+                <div><span class="section-tag">EDITOR DE PRODUCTO</span><h2 id="product-form-title" style="margin-top:10px">Nuevo producto</h2><p>Completá la información que va a ver el cliente.</p></div>
+              </div>
+              <input id="product-id" type="hidden">
+
+              <div class="form-section-title">INFORMACIÓN PRINCIPAL</div>
+              <div class="field"><label for="product-name">NOMBRE</label><input id="product-name" maxlength="160" required placeholder="Ej: Reel frontal 4 rulemanes"></div>
+              <div class="field"><label for="product-description">DESCRIPCIÓN</label><textarea id="product-description" maxlength="1600" placeholder="Contá brevemente qué es el producto, para qué sirve y sus beneficios principales."></textarea><div class="file-help">Este texto aparece como descripción principal en la ficha.</div></div>
+              <div class="field"><label for="product-features">CARACTERÍSTICAS PRINCIPALES</label><textarea id="product-features" maxlength="3000" placeholder="Una característica por línea&#10;Sonido estéreo&#10;Conexión Bluetooth&#10;Diseño plegable"></textarea><div class="file-help">Una característica por línea para que la ficha quede ordenada.</div></div>
+
+              <div class="form-section">
+                <div class="form-section-title">PRECIO Y DISPONIBILIDAD</div>
+                <div class="field-row">
+                  <div class="field"><label for="product-price">PRECIO (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
+                  <div class="field"><label for="product-stock">STOCK</label><input id="product-stock" type="number" min="0" step="1" required placeholder="10"></div>
+                </div>
+                <datalist id="fishing-categories"><option value="Cañas"><option value="Reels"><option value="Señuelos"><option value="Líneas y Tanzas"><option value="Anzuelos y Terminales"><option value="Boyas"><option value="Accesorios"><option value="Indumentaria"><option value="Carnadas"><option value="Combos"></datalist>
+                <div class="field-row">
+                  <div class="field"><label for="product-category">CATEGORÍA</label><input id="product-category" maxlength="80" placeholder="Ej: Reels" list="fishing-categories"></div>
+                  <div class="field"><label for="product-active">VISIBILIDAD</label><select id="product-active"><option value="true">Activo / visible</option><option value="false">Oculto</option></select></div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title">GALERÍA DEL PRODUCTO</div>
+                <div class="gallery-admin-help">
+                  <strong>La primera imagen es la principal.</strong>
+                  Podés subir varias, cambiar el orden, marcar otra como principal o quitar las que no quieras.
+                </div>
+
+                <div id="product-gallery-preview" class="product-gallery-preview" aria-live="polite">
+                  <div class="gallery-admin-empty" id="product-gallery-empty">Todavía no agregaste imágenes.</div>
+                </div>
+
+                <div class="field">
+                  <label for="product-image-file">SUBIR IMÁGENES</label>
+                  <input id="product-image-file" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+                  <div class="file-help">Podés seleccionar varias a la vez. JPG, PNG o WebP. Hasta 50 MB por archivo; se optimizan automáticamente a WebP antes de subir para mantener la tienda rápida.</div>
+                </div>
+
+                <div class="field">
+                  <label for="product-image">AGREGAR IMAGEN POR URL</label>
+                  <div class="gallery-url-row">
+                    <input id="product-image" maxlength="1000" placeholder="https://... o ruta de imagen">
+                    <button id="product-image-add-url" class="secondary gallery-url-add" type="button">AGREGAR</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="product-message" class="message"></div>
+              <div class="form-actions"><button id="product-save" class="primary" type="submit">GUARDAR PRODUCTO</button><button id="product-cancel" class="secondary hidden" type="button">CANCELAR EDICIÓN</button></div>
+            </form>
+
+            <div class="card catalog-card">
+              <div class="catalog-toolbar">
+                <div class="catalog-title-row"><div><h2>Catálogo</h2><p>Visualizá y administrá todos los productos.</p></div><div class="catalog-status-row"><span id="product-stock-alert" class="stock-alert-chip" hidden></span><span id="product-list-count" class="catalog-count">0 productos</span></div></div>
+                <div class="catalog-filters">
+                  <label class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="product-search" type="search" placeholder="Buscar por nombre o categoría"></label>
+                  <select id="product-filter" aria-label="Filtrar productos"><option value="all">Todos</option><option value="active">Activos</option><option value="hidden">Ocultos</option><option value="low">Stock bajo</option><option value="out">Sin stock</option></select>
+                </div>
+              </div>
+              <div class="table-wrap"><table><thead><tr><th>IMAGEN</th><th>PRODUCTO</th><th>PRECIO</th><th>STOCK</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="products-table"><tr><td colspan="6" class="loading">Cargando productos...</td></tr></tbody></table></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="orders-panel" class="panel">
+          <div class="stats orders-stats">
+            <div class="stat"><div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6"/></svg></div></div><span class="stat-label">PEDIDOS TOTALES</span><strong id="order-stat-total">0</strong><small>REGISTRO</small></div>
+            <div class="stat"><div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></div></div><span class="stat-label">PAGADOS</span><strong id="order-stat-paid">0</strong><small>CONFIRMADOS</small></div>
+            <div class="stat"><div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div></div><span class="stat-label">PENDIENTES</span><strong id="order-stat-pending">0</strong><small>POR REVISAR</small></div>
+          </div>
+          <div class="card orders-card">
+            <div class="orders-toolbar"><div><h2>Pedidos</h2><p>Seguimiento de compras y preparación.</p></div><span class="privacy-chip"><svg viewBox="0 0 24 24"><path d="M6 10V7a6 6 0 0 1 12 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/></svg> Datos privados solo para administradores</span></div>
+
+            <div class="orders-filterbar">
+              <label class="search-wrap orders-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="order-search" type="search" placeholder="Buscar pedido, cliente, email o teléfono"></label>
+              <select id="order-payment-filter" aria-label="Filtrar por pago">
+                <option value="all">Todos los pagos</option>
+                <option value="pagado">Pagados</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="revision">En revisión</option>
+                <option value="fallido">Rechazados / cancelados</option>
+              </select>
+              <select id="order-prep-filter" aria-label="Filtrar por preparación">
+                <option value="all">Toda preparación</option>
+                <option value="nuevo">Nuevos</option>
+                <option value="preparando">Preparando</option>
+                <option value="enviado">Enviados</option>
+                <option value="entregado">Entregados</option>
+                <option value="cancelado">Cancelados</option>
+              </select>
+              <label class="date-filter"><span>DESDE</span><input id="order-date-from" type="date" aria-label="Pedidos desde"></label>
+              <label class="date-filter"><span>HASTA</span><input id="order-date-to" type="date" aria-label="Pedidos hasta"></label>
+              <button id="export-orders" class="secondary export-orders" type="button">EXPORTAR CSV</button>
+              <span id="orders-list-count" class="catalog-count">0 pedidos</span>
+            </div>
+
+            <div class="orders-bulkbar">
+              <label class="orders-select-all">
+                <input id="orders-select-all" type="checkbox">
+                <span>Seleccionar todos</span>
+              </label>
+              <div class="orders-bulk-actions">
+                <span id="orders-selected-count">0 seleccionados</span>
+                <button id="delete-selected-orders" class="danger orders-delete-selected" type="button" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg>
+                  ELIMINAR SELECCIONADOS
+                </button>
+              </div>
+            </div>
+
+            <div class="table-wrap"><table><thead><tr><th class="order-check-head"><input id="orders-select-all-head" type="checkbox" aria-label="Seleccionar todos los pedidos"></th><th>FECHA</th><th>CLIENTE</th><th>CONTACTO</th><th>TOTAL</th><th>PAGO</th><th>PREPARACIÓN</th><th>ACCIONES</th></tr></thead><tbody id="orders-table"><tr><td colspan="8" class="loading">Cargando pedidos...</td></tr></tbody></table></div>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+</div>
+
+<div id="order-modal" class="order-modal" aria-hidden="true"><div class="order-modal-card" role="dialog" aria-modal="true" aria-labelledby="order-modal-title"><button class="order-modal-close" id="order-modal-close" type="button" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button><h2 id="order-modal-title">Detalle del pedido</h2><div id="order-modal-content" class="loading">Cargando...</div></div></div>
+
+<div id="confirm-modal" class="confirm-modal" aria-hidden="true"><div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title"><h2 id="confirm-title">Confirmar acción</h2><p id="confirm-text">¿Querés continuar?</p><div class="confirm-actions"><button id="confirm-no" class="secondary" type="button">CANCELAR</button><button id="confirm-yes" class="danger solid" type="button">CONFIRMAR</button></div></div></div>
+<div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
+
+
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
