@@ -413,3 +413,217 @@ body{background:linear-gradient(180deg,#f7f4ed 0%,#f1eee7 100%)}
     font-size:clamp(18px,7vw,28px) !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — IDENTIDAD PROPIA / REDISEÑO EDITORIAL OUTDOOR
+   2026-09-22
+   Mantiene carrito, catálogo, checkout y Admin intactos.
+   ========================================================= */
+
+/* 1. HERO full-bleed, sin sensación de layout FER */
+.hero{
+  min-height:calc(100svh - 78px) !important;
+  padding:0 !important;
+  align-items:end !important;
+  background:#061019 !important;
+}
+.hero-shell{
+  position:relative !important;
+  min-height:calc(100svh - 78px) !important;
+  display:block !important;
+  padding:clamp(130px,18vh,210px) 0 74px !important;
+}
+.hero-content{
+  max-width:850px !important;
+  padding:0 !important;
+  margin-top:auto !important;
+}
+.hero-content h1{
+  font-size:clamp(58px,8vw,118px) !important;
+  max-width:980px !important;
+  line-height:.88 !important;
+  text-wrap:balance;
+}
+.hero-lead{max-width:660px !important;font-size:clamp(15px,1.35vw,19px) !important;}
+.hero-aside{
+  position:absolute !important;
+  right:0 !important;
+  bottom:82px !important;
+  width:min(310px,28vw) !important;
+  padding-left:22px !important;
+  display:grid !important;
+  gap:17px !important;
+}
+.hero-scroll{right:0 !important;left:auto !important;}
+.hero-bg::after{
+  background:
+    linear-gradient(180deg,rgba(2,7,11,.18) 0%,rgba(2,7,11,.10) 33%,rgba(2,7,11,.78) 100%),
+    linear-gradient(90deg,rgba(2,7,11,.76) 0%,rgba(2,7,11,.35) 46%,rgba(2,7,11,.12) 74%,rgba(2,7,11,.28) 100%) !important;
+}
+
+/* 2. Franja editorial, sin tarjetas */
+.dorado-field-strip{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 max(28px,calc((100% - 1180px)/2)) !important;
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:0 !important;
+  background:#e9951d !important;
+  color:#081018 !important;
+  border:0 !important;
+}
+.dorado-field-strip .feature{
+  min-height:170px !important;
+  padding:34px 28px !important;
+  border:0 !important;
+  border-right:1px solid rgba(8,16,24,.16) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  display:grid !important;
+  grid-template-columns:42px 1fr !important;
+  gap:16px !important;
+  align-content:center !important;
+}
+.dorado-field-strip .feature:last-child{border-right:0 !important;}
+.dorado-field-strip .field-no{font-size:11px !important;font-weight:900 !important;letter-spacing:.14em;color:rgba(8,16,24,.55) !important;}
+.dorado-field-strip .feature strong{font-size:15px !important;line-height:1.2 !important;color:#081018 !important;}
+.dorado-field-strip .feature span:not(.field-no){font-size:11px !important;line-height:1.55 !important;color:rgba(8,16,24,.70) !important;}
+
+/* 3. Historia de la tienda: oscuro + sello grande */
+.about{
+  width:100% !important;
+  padding:0 !important;
+  background:#07131d !important;
+}
+.about::before{display:none !important;}
+.dorado-story-grid{
+  width:min(1180px,calc(100% - 56px)) !important;
+  margin:0 auto !important;
+  min-height:760px !important;
+  display:grid !important;
+  grid-template-columns:minmax(360px,.82fr) minmax(0,1.18fr) !important;
+  align-items:center !important;
+  gap:clamp(58px,8vw,112px) !important;
+  padding:92px 0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  color:#fff !important;
+}
+.dorado-story-visual{min-height:560px !important;display:grid !important;align-content:center !important;justify-items:center !important;position:relative !important;}
+.dorado-seal-wrap{position:relative !important;width:min(390px,90%) !important;aspect-ratio:1 !important;display:grid !important;place-items:center !important;}
+.dorado-story-logo{position:relative !important;z-index:2 !important;width:82% !important;height:82% !important;object-fit:contain !important;filter:drop-shadow(0 28px 55px rgba(0,0,0,.34)) !important;}
+.dorado-seal-ring{position:absolute !important;border-radius:50% !important;border:1px solid rgba(239,159,36,.22) !important;}
+.dorado-seal-ring-a{inset:0 !important;}
+.dorado-seal-ring-b{inset:8% !important;border-color:rgba(255,255,255,.10) !important;}
+.dorado-story-caption{width:min(390px,90%) !important;margin-top:25px !important;padding-top:18px !important;border-top:1px solid rgba(255,255,255,.12) !important;display:flex !important;justify-content:space-between !important;color:#aeb8c0 !important;font-size:10px !important;letter-spacing:.1em !important;text-transform:uppercase !important;}
+.dorado-story-caption strong{color:#ef9f24 !important;}
+.dorado-story-copy{padding:0 !important;}
+.dorado-story-copy .section-index b,.dorado-story-copy .kicker{color:#e7a03b !important;}
+.dorado-story-copy h2{color:#fff !important;font-size:clamp(46px,5.5vw,78px) !important;line-height:.94 !important;}
+.dorado-story-copy h2 span{color:#ef9f24 !important;}
+.dorado-story-copy>p{color:#bac3ca !important;font-size:15px !important;line-height:1.8 !important;max-width:720px !important;}
+.dorado-story-copy .about-copy-note{
+  background:transparent !important;
+  border:0 !important;
+  border-left:3px solid #ef9f24 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  color:#d7dde1 !important;
+  padding:4px 0 4px 18px !important;
+  max-width:690px !important;
+}
+.dorado-story-points{display:grid !important;grid-template-columns:1fr !important;gap:0 !important;margin-top:34px !important;}
+.dorado-story-points .about-highlight,
+.dorado-story-points .about-highlight:nth-child(3){
+  min-height:0 !important;
+  padding:20px 0 !important;
+  display:grid !important;
+  grid-template-columns:52px 1fr !important;
+  grid-template-rows:auto auto !important;
+  column-gap:16px !important;
+  border:0 !important;
+  border-top:1px solid rgba(255,255,255,.10) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.dorado-story-points .about-highlight-icon,
+.dorado-story-points .about-highlight:nth-child(3) .about-highlight-icon{
+  grid-row:1/3 !important;
+  width:42px !important;height:42px !important;margin:0 !important;border-radius:50% !important;
+  background:rgba(239,159,36,.12) !important;border-color:rgba(239,159,36,.18) !important;color:#ef9f24 !important;
+}
+.dorado-story-points .about-highlight strong{grid-column:2 !important;color:#fff !important;font-size:14px !important;}
+.dorado-story-points .about-highlight span{grid-column:2 !important;color:#929da5 !important;font-size:11px !important;margin-top:5px !important;}
+
+/* 4. Catálogo claro y espacioso */
+.catalog-section{
+  padding:112px 0 120px !important;
+  background:#f4efe5 !important;
+}
+.catalog-section .section-head{
+  align-items:end !important;
+  margin-bottom:28px !important;
+}
+.catalog-section .section-title{max-width:760px !important;font-size:clamp(44px,5.3vw,74px) !important;line-height:.95 !important;}
+.catalog-tools{align-self:end !important;}
+.category-chips{margin-top:12px !important;margin-bottom:34px !important;}
+.category-chip{background:transparent !important;border-color:rgba(8,16,24,.18) !important;}
+.category-chip:hover,.category-chip.active{background:#07131d !important;border-color:#07131d !important;color:#fff !important;}
+.product{border-radius:16px !important;box-shadow:0 14px 34px rgba(24,20,14,.05) !important;}
+.product-img{background:#ebe5da !important;}
+
+/* 5. Proceso como timeline clara, no bloque oscuro tipo FER */
+.process{background:#e7dfd0 !important;color:#081018 !important;padding:104px 0 !important;}
+.process-shell{display:grid !important;grid-template-columns:minmax(280px,.72fr) minmax(0,1.28fr) !important;gap:80px !important;align-items:start !important;}
+.process .section-index,.process .kicker{color:#a65e0a !important;}
+.process h2{color:#081018 !important;}
+.process h2 span{color:#b76a10 !important;}
+.process-intro p{color:#5e625f !important;}
+.process-link{color:#081018 !important;border-color:#081018 !important;}
+.process-step{
+  border:0 !important;
+  border-top:1px solid rgba(8,16,24,.18) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#081018 !important;
+  padding:22px 0 !important;
+}
+.process-step>span{color:#b76a10 !important;}
+.process-step strong{color:#081018 !important;}
+.process-step p{color:#636761 !important;}
+
+/* 6. Contacto como cierre visual */
+.location{padding:92px 0 !important;background:#06101a !important;}
+.location-box{border-radius:22px !important;overflow:hidden !important;}
+
+/* Header más outdoor/minimal */
+.nav{background:rgba(3,10,15,.82) !important;}
+.nav-inner{min-height:78px !important;}
+.nav-logo{width:64px !important;height:64px !important;}
+
+@media(max-width:1000px){
+  .hero-aside{display:none !important;}
+  .dorado-field-strip{grid-template-columns:1fr 1fr !important;}
+  .dorado-field-strip .feature:nth-child(2){border-right:0 !important;}
+  .dorado-story-grid{grid-template-columns:1fr !important;padding:72px 0 !important;gap:40px !important;}
+  .dorado-story-visual{min-height:360px !important;}
+  .dorado-seal-wrap{width:min(310px,70vw) !important;}
+  .process-shell{grid-template-columns:1fr !important;gap:42px !important;}
+}
+@media(max-width:640px){
+  .hero-shell{min-height:calc(100svh - 60px) !important;padding:120px 0 48px !important;}
+  .hero-content h1{font-size:clamp(44px,14vw,64px) !important;}
+  .dorado-field-strip{grid-template-columns:1fr !important;padding:0 20px !important;}
+  .dorado-field-strip .feature{border-right:0 !important;border-bottom:1px solid rgba(8,16,24,.14) !important;min-height:130px !important;padding:24px 6px !important;}
+  .dorado-story-grid{width:calc(100% - 34px) !important;}
+  .dorado-story-visual{min-height:300px !important;}
+  .catalog-section{padding:82px 0 90px !important;}
+  .catalog-section .section-title{font-size:clamp(38px,11vw,52px) !important;}
+  .process{padding:78px 0 !important;}
+}
