@@ -2348,9 +2348,6 @@ comprobarRetornoPago();
             const introTagline=intro.querySelector(".brand-intro-tagline");
             const navLogo=document.querySelector(".nav-logo");
 
-            /* El slogan aparece una sola vez y queda estable hasta el cierre. */
-            window.setTimeout(()=>introTagline?.classList.add("is-visible"),620);
-
             window.setTimeout(()=>{
                 if(!introLogo||!introTitle||!navLogo||typeof introLogo.animate!=="function"){
                     intro.classList.add("closing");
@@ -2401,6 +2398,19 @@ comprobarRetornoPago();
                     });
                 };
 
+                const splitIntroTaglineIntoChars=()=>{
+                    if(!introTagline || introTagline.dataset.split === "1") return;
+                    const original=introTagline.textContent||"";
+                    introTagline.textContent="";
+                    [...original].forEach((char)=>{
+                        const charSpan=document.createElement("span");
+                        charSpan.className=char===" " ? "intro-tag-char intro-tag-space" : "intro-tag-char";
+                        charSpan.textContent=char===" " ? "\u00a0" : char;
+                        introTagline.appendChild(charSpan);
+                    });
+                    introTagline.dataset.split="1";
+                };
+
                 const placeLogo=(x,y,scale)=>{
                     introLogo.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`;
                 };
@@ -2422,7 +2432,9 @@ comprobarRetornoPago();
                     /* El texto sigue diciendo exactamente:
                        DORADO / ARTÍCULOS DE PESCA */
                     splitIntroTitleIntoChars();
+                    splitIntroTaglineIntoChars();
                     const titleChars=[...introTitle.querySelectorAll(".intro-char:not(.intro-space)")];
+                    const taglineChars=[...intro.querySelectorAll(".brand-intro-tagline .intro-tag-char:not(.intro-tag-space)")];
 
                     let sweepRaf=0;
                     const hideTouchedChars=()=>{
@@ -2444,7 +2456,23 @@ comprobarRetornoPago();
                             }
                         });
 
-                        if(titleChars.some((char)=>!char.classList.contains("swept"))){
+                        taglineChars.forEach((char)=>{
+                            if(char.classList.contains("swept")) return;
+                            const r=char.getBoundingClientRect();
+
+                            const reachedHorizontally=
+                                logoNow.left <= r.right &&
+                                logoNow.right >= r.left;
+
+                            if(reachedHorizontally){
+                                char.classList.add("swept");
+                            }
+                        });
+
+                        if(
+                            titleChars.some((char)=>!char.classList.contains("swept")) ||
+                            taglineChars.some((char)=>!char.classList.contains("swept"))
+                        ){
                             sweepRaf=requestAnimationFrame(hideTouchedChars);
                         }
                     };
@@ -2475,14 +2503,12 @@ comprobarRetornoPago();
                                 fill:"forwards"
                             });
                         });
-
-                        /* El slogan inferior dura exactamente lo mismo que el mensaje superior. */
-                        introTagline?.classList.add("fade-with-kicker");
                     },1320);
 
                     sweep.onfinish=()=>{
                         cancelAnimationFrame(sweepRaf);
                         titleChars.forEach((char)=>char.classList.add("swept"));
+                        taglineChars.forEach((char)=>char.classList.add("swept"));
                         placeLogo(leftX,titleY,.94);
                         sweep.cancel();
 
