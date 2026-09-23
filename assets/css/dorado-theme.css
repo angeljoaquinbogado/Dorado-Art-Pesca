@@ -2952,3 +2952,57 @@ button:disabled,[aria-disabled="true"]{cursor:not-allowed !important;}
     background-image:none !important;
   }
 }
+
+/* =========================================================
+   DORADO — INTRO ADAPTADA A CELULAR
+   Mantiene la animación original, pero reduce el logo durante
+   el barrido y reserva margen lateral para que nunca se corte.
+   ========================================================= */
+@media (max-width:700px){
+  .brand-intro-content{
+    width:94vw !important;
+    max-width:94vw !important;
+    overflow:visible !important;
+  }
+
+  .brand-intro-logo{
+    width:clamp(72px,20vw,86px) !important;
+    height:clamp(72px,20vw,86px) !important;
+    max-width:86px !important;
+    max-height:86px !important;
+    transform-origin:center center !important;
+  }
+
+  .brand-intro-title{
+    width:max-content !important;
+    max-width:94vw !important;
+    gap:4px !important;
+  }
+
+  .brand-intro-title>strong{
+    font-size:clamp(24px,7vw,34px) !important;
+  }
+
+  .brand-intro-title>span{
+    font-size:clamp(12px,3.7vw,18px) !important;
+  }
+
+  .brand-intro-line{
+    width:min(78vw,360px) !important;
+  }
+}
+
+@media (max-width:390px){
+  .brand-intro-logo{
+    width:72px !important;
+    height:72px !important;
+  }
+
+  .brand-intro-title>strong{
+    font-size:clamp(22px,6.8vw,28px) !important;
+  }
+
+  .brand-intro-title>span{
+    font-size:clamp(11px,3.5vw,15px) !important;
+  }
+}

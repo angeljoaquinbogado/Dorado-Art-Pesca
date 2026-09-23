@@ -2421,12 +2421,31 @@ comprobarRetornoPago();
                 const logoCenterX=logoRect.left+logoRect.width/2;
                 const logoCenterY=logoRect.top+logoRect.height/2;
 
-                /* 1) Del centro al costado derecho del nombre. */
-                const rightX=(titleRect.right+logoRect.width*.70)-logoCenterX;
+                /* 1) Del centro al costado derecho del nombre.
+                   En móvil limitamos el recorrido a la zona visible para que
+                   el logo nunca salga por los laterales de la pantalla. */
+                const isMobileIntro=window.matchMedia("(max-width:700px)").matches;
+                const viewportWidth=Math.max(document.documentElement.clientWidth,window.innerWidth||0);
+                const safeEdge=isMobileIntro?Math.max(12,Math.min(18,viewportWidth*.04)):0;
+                const minLogoCenter=(logoRect.width/2)+safeEdge;
+                const maxLogoCenter=viewportWidth-(logoRect.width/2)-safeEdge;
+
+                const rawRightCenter=titleRect.right+logoRect.width*.70;
+                const rawLeftCenter=titleRect.left-logoRect.width*.55;
+                const rightTargetCenter=isMobileIntro
+                    ? Math.min(maxLogoCenter,titleRect.right-logoRect.width*.10)
+                    : rawRightCenter;
+                const leftTargetCenter=isMobileIntro
+                    ? Math.max(minLogoCenter,titleRect.left+logoRect.width*.10)
+                    : rawLeftCenter;
+
+                const rightX=rightTargetCenter-logoCenterX;
                 const titleY=(titleRect.top+titleRect.height/2)-logoCenterY;
 
                 /* 2) Barrido de derecha a izquierda por encima de las palabras. */
-                const leftX=(titleRect.left-logoRect.width*.55)-logoCenterX;
+                const leftX=leftTargetCenter-logoCenterX;
+                const travelScale=isMobileIntro?.72:.90;
+                const sweepScale=isMobileIntro?.76:.94;
 
                 /* 3) Termina exactamente sobre el logo real del header. */
                 const navCenterX=navRect.left+navRect.width/2;
@@ -2466,7 +2485,7 @@ comprobarRetornoPago();
                 /* 1) Centro -> derecha del título */
                 const toRight=introLogo.animate([
                     {transform:"translate3d(0,0,0) scale(1)"},
-                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`}
+                    {transform:`translate3d(${rightX}px,${titleY}px,0) scale(${travelScale})`}
                 ],{
                     duration:950,
                     easing:"cubic-bezier(.22,.78,.18,1)",
@@ -2474,7 +2493,7 @@ comprobarRetornoPago();
                 });
 
                 toRight.onfinish=()=>{
-                    placeLogo(rightX,titleY,.90);
+                    placeLogo(rightX,titleY,travelScale);
                     toRight.cancel();
 
                     /* El texto sigue diciendo exactamente:
@@ -2512,8 +2531,8 @@ comprobarRetornoPago();
 
                     /* 2) Barrido derecha -> izquierda sobre el texto */
                     const sweep=introLogo.animate([
-                        {transform:`translate3d(${rightX}px,${titleY}px,0) scale(.90)`},
-                        {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`}
+                        {transform:`translate3d(${rightX}px,${titleY}px,0) scale(${travelScale})`},
+                        {transform:`translate3d(${leftX}px,${titleY}px,0) scale(${sweepScale})`}
                     ],{
                         duration:2100,
                         easing:"linear",
@@ -2547,14 +2566,14 @@ comprobarRetornoPago();
                     sweep.onfinish=()=>{
                         cancelAnimationFrame(sweepRaf);
                         titleChars.forEach((char)=>char.classList.add("swept"));
-                        placeLogo(leftX,titleY,.94);
+                        placeLogo(leftX,titleY,sweepScale);
                         sweep.cancel();
 
                         intro.classList.add("fly-to-header");
 
                         /* 3) Subida RÁPIDA al logo del header */
                         const flyUp=introLogo.animate([
-                            {transform:`translate3d(${leftX}px,${titleY}px,0) scale(.94)`},
+                            {transform:`translate3d(${leftX}px,${titleY}px,0) scale(${sweepScale})`},
                             {transform:`translate3d(${finalX}px,${finalY}px,0) scale(${finalScale})`}
                         ],{
                             duration:500,
