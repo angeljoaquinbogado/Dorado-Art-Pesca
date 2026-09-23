@@ -1990,3 +1990,298 @@ body.intro-finished .hero-content{
     font-size:clamp(19px,6.2vw,28px) !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — LA TIENDA RESPONSIVE / MISMO DISEÑO EN TODOS
+   PC, notebook, tablet y móvil: misma identidad y contenido,
+   solamente escala, espacios y columnas adaptadas.
+   ========================================================= */
+
+/* ---------- Desktop / notebook ---------- */
+.about{
+  overflow:hidden !important;
+}
+
+.dorado-story-grid{
+  width:min(1120px,calc(100% - 64px)) !important;
+  min-height:0 !important;
+  grid-template-columns:minmax(280px,.78fr) minmax(0,1.22fr) !important;
+  gap:clamp(40px,5vw,72px) !important;
+  padding:clamp(60px,6vw,78px) 0 !important;
+}
+
+.dorado-story-visual{
+  min-height:430px !important;
+}
+
+.dorado-seal-wrap{
+  width:min(300px,82%) !important;
+}
+
+.dorado-story-logo{
+  width:80% !important;
+  height:80% !important;
+}
+
+.dorado-story-caption{
+  width:min(300px,82%) !important;
+  margin-top:18px !important;
+  padding-top:14px !important;
+  font-size:9px !important;
+}
+
+.dorado-story-copy .section-index{
+  margin-bottom:18px !important;
+}
+
+.dorado-story-copy .kicker{
+  margin-bottom:12px !important;
+  font-size:10px !important;
+  letter-spacing:.16em !important;
+}
+
+.dorado-story-copy h2{
+  max-width:620px !important;
+  margin-bottom:24px !important;
+  font-size:clamp(38px,4.2vw,58px) !important;
+  line-height:.96 !important;
+  letter-spacing:-.045em !important;
+}
+
+.dorado-story-copy>p{
+  max-width:650px !important;
+  font-size:14px !important;
+  line-height:1.7 !important;
+}
+
+.dorado-story-copy .about-copy-note{
+  max-width:640px !important;
+  margin-top:22px !important;
+  padding:3px 0 3px 16px !important;
+  font-size:13px !important;
+  line-height:1.55 !important;
+}
+
+.dorado-story-points{
+  margin-top:26px !important;
+}
+
+.dorado-story-points .about-highlight,
+.dorado-story-points .about-highlight:nth-child(3){
+  padding:15px 0 !important;
+  grid-template-columns:46px 1fr !important;
+  column-gap:14px !important;
+}
+
+.dorado-story-points .about-highlight-icon,
+.dorado-story-points .about-highlight:nth-child(3) .about-highlight-icon{
+  width:36px !important;
+  height:36px !important;
+}
+
+.dorado-story-points .about-highlight strong{
+  font-size:13px !important;
+}
+
+.dorado-story-points .about-highlight span{
+  margin-top:3px !important;
+  font-size:10.5px !important;
+  line-height:1.45 !important;
+}
+
+/* ---------- Notebook / tablet horizontal ---------- */
+@media (max-width:1180px){
+  .dorado-story-grid{
+    width:calc(100% - 48px) !important;
+    grid-template-columns:minmax(250px,.76fr) minmax(0,1.24fr) !important;
+    gap:36px !important;
+    padding:58px 0 !important;
+  }
+
+  .dorado-story-visual{
+    min-height:370px !important;
+  }
+
+  .dorado-seal-wrap{
+    width:min(265px,82%) !important;
+  }
+
+  .dorado-story-caption{
+    width:min(265px,82%) !important;
+  }
+
+  .dorado-story-copy h2{
+    font-size:clamp(36px,4.6vw,52px) !important;
+  }
+}
+
+/* ---------- Tablet: conserva las DOS columnas ---------- */
+@media (min-width:761px) and (max-width:1000px){
+  .dorado-story-grid{
+    width:calc(100% - 40px) !important;
+    grid-template-columns:minmax(215px,.72fr) minmax(0,1.28fr) !important;
+    gap:30px !important;
+    padding:52px 0 !important;
+    align-items:center !important;
+  }
+
+  .dorado-story-visual{
+    min-height:320px !important;
+  }
+
+  .dorado-seal-wrap{
+    width:min(225px,90%) !important;
+  }
+
+  .dorado-story-caption{
+    width:min(225px,90%) !important;
+    margin-top:14px !important;
+    font-size:8px !important;
+  }
+
+  .dorado-story-copy h2{
+    font-size:clamp(34px,5vw,44px) !important;
+    margin-bottom:18px !important;
+  }
+
+  .dorado-story-copy>p{
+    font-size:13.5px !important;
+    line-height:1.62 !important;
+  }
+
+  .dorado-story-copy .about-copy-note{
+    margin-top:18px !important;
+    font-size:12px !important;
+  }
+
+  .dorado-story-points{
+    margin-top:20px !important;
+  }
+
+  .dorado-story-points .about-highlight,
+  .dorado-story-points .about-highlight:nth-child(3){
+    padding:12px 0 !important;
+    grid-template-columns:40px 1fr !important;
+    column-gap:12px !important;
+  }
+
+  .dorado-story-points .about-highlight-icon,
+  .dorado-story-points .about-highlight:nth-child(3) .about-highlight-icon{
+    width:32px !important;
+    height:32px !important;
+  }
+
+  .dorado-story-points .about-highlight strong{
+    font-size:12px !important;
+  }
+
+  .dorado-story-points .about-highlight span{
+    font-size:9.5px !important;
+  }
+}
+
+/* ---------- Móvil: mismo contenido, una columna para legibilidad ---------- */
+@media (max-width:760px){
+  .dorado-story-grid{
+    width:calc(100% - 32px) !important;
+    grid-template-columns:1fr !important;
+    gap:30px !important;
+    padding:46px 0 52px !important;
+  }
+
+  .dorado-story-visual{
+    min-height:0 !important;
+    padding:0 !important;
+  }
+
+  .dorado-seal-wrap{
+    width:min(210px,58vw) !important;
+  }
+
+  .dorado-story-caption{
+    width:min(260px,82vw) !important;
+    margin-top:14px !important;
+    padding-top:12px !important;
+    font-size:8px !important;
+  }
+
+  .dorado-story-copy{
+    width:100% !important;
+  }
+
+  .dorado-story-copy .section-index{
+    margin-bottom:14px !important;
+  }
+
+  .dorado-story-copy .kicker{
+    margin-bottom:9px !important;
+    font-size:9px !important;
+  }
+
+  .dorado-story-copy h2{
+    max-width:none !important;
+    margin-bottom:18px !important;
+    font-size:clamp(34px,10.3vw,46px) !important;
+    line-height:.98 !important;
+  }
+
+  .dorado-story-copy>p{
+    font-size:13.5px !important;
+    line-height:1.62 !important;
+  }
+
+  .dorado-story-copy .about-copy-note{
+    margin-top:18px !important;
+    padding-left:14px !important;
+    font-size:12px !important;
+    line-height:1.5 !important;
+  }
+
+  .dorado-story-points{
+    margin-top:20px !important;
+  }
+
+  .dorado-story-points .about-highlight,
+  .dorado-story-points .about-highlight:nth-child(3){
+    padding:13px 0 !important;
+    grid-template-columns:40px 1fr !important;
+    column-gap:11px !important;
+  }
+
+  .dorado-story-points .about-highlight-icon,
+  .dorado-story-points .about-highlight:nth-child(3) .about-highlight-icon{
+    width:32px !important;
+    height:32px !important;
+  }
+
+  .dorado-story-points .about-highlight strong{
+    font-size:12px !important;
+  }
+
+  .dorado-story-points .about-highlight span{
+    font-size:9.5px !important;
+    line-height:1.4 !important;
+  }
+}
+
+/* ---------- Celulares chicos ---------- */
+@media (max-width:390px){
+  .dorado-story-grid{
+    width:calc(100% - 24px) !important;
+    padding:40px 0 46px !important;
+    gap:26px !important;
+  }
+
+  .dorado-seal-wrap{
+    width:min(190px,60vw) !important;
+  }
+
+  .dorado-story-copy h2{
+    font-size:clamp(31px,10.5vw,40px) !important;
+  }
+
+  .dorado-story-copy>p{
+    font-size:13px !important;
+  }
+}
