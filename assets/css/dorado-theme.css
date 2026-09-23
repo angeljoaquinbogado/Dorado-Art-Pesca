@@ -1924,11 +1924,25 @@ body.intro-finished .hero-content{
   background:none !important;
 }
 
-/* Tarjetas apoyadas sobre la MISMA imagen, sin corte horizontal. */
+/* Tarjetas apoyadas sobre la MISMA imagen, sin corte horizontal.
+   Vuelve el look más transparente y semiborrrroso. */
 .hero-combined-scene .dorado-field-strip{
-  background:rgba(6,16,25,.76) !important;
-  backdrop-filter:blur(14px) saturate(118%) !important;
-  -webkit-backdrop-filter:blur(14px) saturate(118%) !important;
+  background:rgba(6,16,25,.34) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:0 18px 40px rgba(0,0,0,.20) !important;
+  backdrop-filter:blur(10px) saturate(115%) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(115%) !important;
+}
+.hero-combined-scene .dorado-field-strip::before{
+  background:linear-gradient(120deg,rgba(239,159,36,.05),transparent 36%,rgba(255,255,255,.02)) !important;
+}
+.hero-combined-scene .dorado-field-strip .feature{
+  background:rgba(255,255,255,.02) !important;
+  border:1px solid rgba(255,255,255,.07) !important;
+}
+.hero-combined-scene .dorado-field-strip .feature:hover{
+  background:rgba(255,255,255,.05) !important;
+  border-color:rgba(239,159,36,.20) !important;
 }
 
 @media(max-width:700px){
