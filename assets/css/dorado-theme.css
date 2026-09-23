@@ -1811,3 +1811,18 @@ body.intro-finished .hero-content{
     transform .42s ease-out,
     filter .42s ease-out !important;
 }
+
+
+/* =========================================================
+   FIX DEFINITIVO — slogan inferior se va junto con "BIENVENIDO A"
+   Esta regla supera la especificidad de la regla anterior de sweeping.
+   ========================================================= */
+body .brand-intro.sweeping .brand-intro-tagline.is-visible.fade-with-kicker{
+  opacity:0 !important;
+  transform:translateY(-6px) !important;
+  filter:blur(3px) !important;
+  transition:
+    opacity .42s ease-out,
+    transform .42s ease-out,
+    filter .42s ease-out !important;
+}
