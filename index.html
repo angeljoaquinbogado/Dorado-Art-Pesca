@@ -60,6 +60,89 @@
 <link rel="stylesheet" href="assets/css/mobile.css"/>
 <link rel="stylesheet" href="assets/css/product-gallery.css"/>
 <link rel="stylesheet" href="assets/css/dorado-theme.css"/>
+
+<style id="dorado-intro-one-line-fix">
+/* =========================================================
+   DORADO — título de intro estable desde el PRIMER frame
+   Evita que "ARTÍCULOS DE PESCA" arranque en dos renglones
+   y luego salte a uno cuando termina de cargar la tipografía.
+   ========================================================= */
+.brand-intro-content{
+  width:min(96vw,1180px) !important;
+  max-width:1180px !important;
+}
+
+.brand-intro-title{
+  width:max-content !important;
+  max-width:96vw !important;
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:baseline !important;
+  justify-content:center !important;
+  flex-wrap:nowrap !important;
+  gap:clamp(8px,1.15vw,16px) !important;
+  white-space:nowrap !important;
+  margin-inline:auto !important;
+}
+
+/* DORADO: única palabra con color */
+.brand-intro-title > strong{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+  font-family:"Montserrat","Segoe UI",Arial,sans-serif !important;
+  font-size:clamp(42px,6.05vw,74px) !important;
+  font-weight:800 !important;
+  line-height:.94 !important;
+  letter-spacing:-.045em !important;
+  color:#e3a02e !important;
+}
+
+/* ARTÍCULOS DE PESCA: siempre en UNA SOLA LÍNEA */
+.brand-intro-title > span{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+  font-family:"Montserrat","Segoe UI",Arial,sans-serif !important;
+  font-size:clamp(27px,3.62vw,44px) !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+  letter-spacing:.005em !important;
+  color:#f7f3ea !important;
+}
+
+/* Cuando JS divide el título letra por letra, conserva EXACTAMENTE el mismo tamaño. */
+.brand-intro-title > strong .intro-char,
+.brand-intro-title > span .intro-char{
+  font:inherit !important;
+  font-size:inherit !important;
+  font-weight:inherit !important;
+  line-height:inherit !important;
+  letter-spacing:inherit !important;
+  color:inherit !important;
+  white-space:inherit !important;
+}
+
+/* En celular también se mantiene en una sola línea, pero se adapta al ancho. */
+@media (max-width:760px){
+  .brand-intro-content{
+    width:97vw !important;
+  }
+
+  .brand-intro-title{
+    max-width:97vw !important;
+    gap:clamp(5px,1.5vw,8px) !important;
+  }
+
+  .brand-intro-title > strong{
+    font-size:clamp(25px,7.4vw,39px) !important;
+  }
+
+  .brand-intro-title > span{
+    font-size:clamp(14px,4.15vw,22px) !important;
+    letter-spacing:0 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
