@@ -2285,3 +2285,40 @@ body.intro-finished .hero-content{
     font-size:13px !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — HEADER SIEMPRE NEGRO
+   Evita que al hacer scroll o cambiar de sección tome tono gris.
+   ========================================================= */
+.nav,
+.nav.scrolled{
+  background:#050505 !important;
+  background-color:#050505 !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+/* La barra superior también conserva el mismo negro profundo. */
+.topbar{
+  background:#050505 !important;
+  background-color:#050505 !important;
+}
+
+/* Cualquier capa interna del header debe quedar transparente
+   para que no vuelva a aparecer un bloque gris encima. */
+.nav-inner{
+  background:transparent !important;
+}
+
+/* En tablet y móvil mantenemos exactamente el mismo fondo. */
+@media(max-width:1000px){
+  .nav,
+  .nav.scrolled,
+  .topbar{
+    background:#050505 !important;
+    background-color:#050505 !important;
+  }
+}
