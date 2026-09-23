@@ -2345,8 +2345,22 @@ comprobarRetornoPago();
 
             const introLogo=intro.querySelector(".brand-intro-logo");
             const introTitle=intro.querySelector(".brand-intro-title");
+            const introKicker=intro.querySelector(".brand-intro-kicker");
             const introTagline=intro.querySelector(".brand-intro-tagline");
             const navLogo=document.querySelector(".nav-logo");
+
+            /* "BIENVENIDO A" y el slogan inferior entran juntos y duran lo mismo. */
+            [introKicker,introTagline].forEach((el)=>{
+                el?.animate([
+                    {opacity:0,transform:"translateY(8px)",filter:"blur(3px)"},
+                    {opacity:1,transform:"translateY(0)",filter:"blur(0)"}
+                ],{
+                    duration:520,
+                    delay:620,
+                    easing:"cubic-bezier(.22,.72,.2,1)",
+                    fill:"forwards"
+                });
+            });
 
             window.setTimeout(()=>{
                 if(!introLogo||!introTitle||!navLogo||typeof introLogo.animate!=="function"){
@@ -2398,18 +2412,7 @@ comprobarRetornoPago();
                     });
                 };
 
-                const splitIntroTaglineIntoChars=()=>{
-                    if(!introTagline || introTagline.dataset.split === "1") return;
-                    const original=introTagline.textContent||"";
-                    introTagline.textContent="";
-                    [...original].forEach((char)=>{
-                        const charSpan=document.createElement("span");
-                        charSpan.className=char===" " ? "intro-tag-char intro-tag-space" : "intro-tag-char";
-                        charSpan.textContent=char===" " ? "\u00a0" : char;
-                        introTagline.appendChild(charSpan);
-                    });
-                    introTagline.dataset.split="1";
-                };
+
 
                 const placeLogo=(x,y,scale)=>{
                     introLogo.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`;
@@ -2432,9 +2435,7 @@ comprobarRetornoPago();
                     /* El texto sigue diciendo exactamente:
                        DORADO / ARTÍCULOS DE PESCA */
                     splitIntroTitleIntoChars();
-                    splitIntroTaglineIntoChars();
                     const titleChars=[...introTitle.querySelectorAll(".intro-char:not(.intro-space)")];
-                    const taglineChars=[...intro.querySelectorAll(".brand-intro-tagline .intro-tag-char:not(.intro-tag-space)")];
 
                     let sweepRaf=0;
                     const hideTouchedChars=()=>{
@@ -2456,23 +2457,7 @@ comprobarRetornoPago();
                             }
                         });
 
-                        taglineChars.forEach((char)=>{
-                            if(char.classList.contains("swept")) return;
-                            const r=char.getBoundingClientRect();
-
-                            const reachedHorizontally=
-                                logoNow.left <= r.right &&
-                                logoNow.right >= r.left;
-
-                            if(reachedHorizontally){
-                                char.classList.add("swept");
-                            }
-                        });
-
-                        if(
-                            titleChars.some((char)=>!char.classList.contains("swept")) ||
-                            taglineChars.some((char)=>!char.classList.contains("swept"))
-                        ){
+                        if(titleChars.some((char)=>!char.classList.contains("swept"))){
                             sweepRaf=requestAnimationFrame(hideTouchedChars);
                         }
                     };
@@ -2492,8 +2477,7 @@ comprobarRetornoPago();
 
                     /* Los textos secundarios salen mientras el logo barre. */
                     window.setTimeout(()=>{
-                        [intro.querySelector(".brand-intro-kicker"),
-                         intro.querySelector(".brand-intro-line")].forEach((el)=>{
+                        [introKicker,introTagline].forEach((el)=>{
                             el?.animate([
                                 {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
                                 {opacity:0,transform:"translateY(-6px)",filter:"blur(3px)"}
@@ -2503,12 +2487,21 @@ comprobarRetornoPago();
                                 fill:"forwards"
                             });
                         });
+
+                        /* La línea se retira en el mismo tramo, sin alterar los dos textos chicos. */
+                        intro.querySelector(".brand-intro-line")?.animate([
+                            {opacity:1},
+                            {opacity:0}
+                        ],{
+                            duration:420,
+                            easing:"ease-out",
+                            fill:"forwards"
+                        });
                     },1320);
 
                     sweep.onfinish=()=>{
                         cancelAnimationFrame(sweepRaf);
                         titleChars.forEach((char)=>char.classList.add("swept"));
-                        taglineChars.forEach((char)=>char.classList.add("swept"));
                         placeLogo(leftX,titleY,.94);
                         sweep.cancel();
 

@@ -1810,3 +1810,169 @@ body.intro-finished .hero-content{
     background:#0b1722 !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — FIX 23/09
+   1) Meta de intro sincronizada
+   2) Hero + beneficios con UNA sola imagen continua
+   3) Wordmark del footer con DORADO como protagonista
+   ========================================================= */
+
+/* ---------- 1. INTRO: los dos textos chicos tienen EXACTAMENTE
+   la misma entrada, duración y salida. El JS controla ambos. ---------- */
+.brand-intro-kicker,
+.brand-intro-tagline{
+  animation:none !important;
+  opacity:0 !important;
+  transform:translateY(8px) !important;
+  filter:blur(3px) !important;
+  transition:none !important;
+}
+
+.brand-intro-kicker[style],
+.brand-intro-tagline[style]{
+  /* Web Animations mantiene la prioridad de la animación; esta regla
+     evita que estilos heredados vuelvan a mostrar uno antes que el otro. */
+  animation:none !important;
+}
+
+.brand-intro.sweeping .brand-intro-kicker,
+.brand-intro.sweeping .brand-intro-tagline{
+  /* No aplicar aquí una animación distinta. Ambos quedan bajo el mismo JS. */
+  transition:none !important;
+}
+
+/* Desactivar el sistema anterior que partía el slogan en caracteres. */
+.brand-intro-tagline .intro-tag-char,
+.brand-intro-tagline .intro-tag-char.swept{
+  opacity:inherit !important;
+  visibility:inherit !important;
+  transform:none !important;
+  filter:none !important;
+  transition:none !important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .brand-intro-kicker,
+  .brand-intro-tagline{
+    opacity:1 !important;
+    transform:none !important;
+    filter:none !important;
+  }
+}
+
+/* ---------- 2. UNA SOLA FOTO: hero + tarjetas comparten el mismo fondo ---------- */
+.hero-combined-scene{
+  position:relative !important;
+  isolation:isolate !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg,
+      rgba(2,8,12,.08) 0%,
+      rgba(2,8,12,.08) 48%,
+      rgba(2,8,12,.30) 68%,
+      rgba(2,8,12,.72) 100%),
+    url('../images/backgrounds/hero-bg-dorado.webp') center 48% / cover no-repeat !important;
+}
+
+.hero-combined-scene::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    linear-gradient(90deg,
+      rgba(3,10,15,.18) 0%,
+      rgba(3,10,15,.05) 45%,
+      rgba(3,10,15,.24) 76%,
+      rgba(3,10,15,.48) 100%);
+}
+
+.hero-combined-scene > .hero,
+.hero-combined-scene > .dorado-field-strip{
+  position:relative !important;
+  z-index:1 !important;
+}
+
+.hero-combined-scene .hero{
+  background:transparent !important;
+}
+
+/* La imagen ya está en el wrapper: no repetirla dentro del hero. */
+.hero-combined-scene .hero-bg{
+  background:transparent !important;
+}
+
+.hero-combined-scene .hero-bg::before{
+  background-image:none !important;
+  background:transparent !important;
+}
+
+/* Conservamos solamente el sombreado que ayuda a leer el texto. */
+.hero-combined-scene .hero-bg::after{
+  background:
+    linear-gradient(180deg,rgba(2,8,12,.18) 0%,rgba(2,8,12,.03) 38%,rgba(3,10,15,.28) 100%),
+    linear-gradient(90deg,rgba(3,10,15,.18) 0%,rgba(3,10,15,.05) 50%,rgba(3,10,15,.42) 100%) !important;
+}
+
+/* El antiguo pseudo-elemento era la segunda copia visible de la foto. */
+.hero-combined-scene .dorado-field-strip::after{
+  content:none !important;
+  display:none !important;
+  background:none !important;
+}
+
+/* Tarjetas apoyadas sobre la MISMA imagen, sin corte horizontal. */
+.hero-combined-scene .dorado-field-strip{
+  background:rgba(6,16,25,.76) !important;
+  backdrop-filter:blur(14px) saturate(118%) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(118%) !important;
+}
+
+@media(max-width:700px){
+  .hero-combined-scene{
+    background-position:42% center !important;
+  }
+}
+
+/* ---------- 3. FOOTER: DORADO más grande; descriptor secundario ---------- */
+.footer-wordmark{
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:flex-start !important;
+  gap:clamp(10px,1.4vw,18px) !important;
+  flex-wrap:wrap !important;
+  white-space:normal !important;
+  font-size:initial !important;
+  letter-spacing:normal !important;
+}
+
+.footer-wordmark .footer-wordmark-name{
+  color:#ef9f24 !important;
+  font-size:clamp(34px,4.4vw,58px) !important;
+  line-height:.94 !important;
+  font-weight:850 !important;
+  letter-spacing:-.055em !important;
+}
+
+.footer-wordmark .footer-wordmark-desc{
+  color:#edf1f3 !important;
+  font-size:clamp(22px,2.8vw,36px) !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  letter-spacing:-.035em !important;
+}
+
+@media(max-width:640px){
+  .footer-wordmark{
+    gap:8px !important;
+  }
+  .footer-wordmark .footer-wordmark-name{
+    font-size:clamp(30px,10vw,44px) !important;
+  }
+  .footer-wordmark .footer-wordmark-desc{
+    font-size:clamp(19px,6.2vw,28px) !important;
+  }
+}
