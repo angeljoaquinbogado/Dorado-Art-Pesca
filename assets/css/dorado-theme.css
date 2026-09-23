@@ -2905,3 +2905,50 @@ button:disabled,[aria-disabled="true"]{cursor:not-allowed !important;}
     background-position:8% center !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — FIX REAL DEL ENCUADRE MÓVIL
+   La captura mostraba la INTRO, no solamente el hero.
+   Ahora tanto la intro como el inicio enfocan el lado izquierdo
+   de la fotografía, donde está el pescador.
+   ========================================================= */
+@media (max-width:700px){
+
+  /* INTRO */
+  .brand-intro-bg{
+    background-image:url('../images/backgrounds/hero-bg-dorado.webp') !important;
+    background-repeat:no-repeat !important;
+    background-size:cover !important;
+    background-position:left center !important;
+    transform-origin:left center !important;
+  }
+
+  /* HERO + BENEFICIOS */
+  .hero-combined-scene{
+    background-position:left center !important;
+    background-size:cover !important;
+    background-repeat:no-repeat !important;
+  }
+}
+
+/* En teléfonos angostos fijamos todavía más el foco.
+   0% significa: conservar visible el borde izquierdo de la foto,
+   justo donde se encuentra el pescador. */
+@media (max-width:430px){
+  .brand-intro-bg,
+  .hero-combined-scene{
+    background-position:0% center !important;
+  }
+}
+
+/* Evita que una regla anterior vuelva a centrar la foto. */
+@media (max-width:700px){
+  .brand-intro:not(.hide) .brand-intro-bg{
+    background-position:0% center !important;
+  }
+
+  .hero-combined-scene .hero-bg::before{
+    background-image:none !important;
+  }
+}
