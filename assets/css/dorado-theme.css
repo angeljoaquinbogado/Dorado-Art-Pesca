@@ -1734,3 +1734,79 @@ body.intro-finished .hero-content{
   filter:none !important;
   transition:none !important;
 }
+
+
+/* =========================================================
+   DORADO — CONTACTO FULL BLEED
+   El fondo oscuro ocupa todo el ancho y elimina las franjas claras.
+   ========================================================= */
+.location{
+  position:relative !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:92px 0 !important;
+  background:#06101a !important;
+  overflow:hidden !important;
+  border:0 !important;
+}
+
+/* Capa de seguridad para que nunca aparezca el fondo claro del body
+   en los costados de esta sección. */
+.location::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:
+    radial-gradient(circle at 78% 24%,rgba(239,159,36,.045),transparent 34%),
+    linear-gradient(180deg,#06101a 0%,#07131d 100%);
+  pointer-events:none;
+}
+
+.location-box{
+  position:relative !important;
+  z-index:1 !important;
+  width:min(1180px,calc(100% - 56px)) !important;
+  max-width:1180px !important;
+  margin:0 auto !important;
+  padding:26px !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+  border-radius:26px !important;
+  background:#0b1722 !important;
+  box-shadow:0 30px 70px rgba(0,0,0,.20) !important;
+  overflow:hidden !important;
+}
+
+/* Eliminar cualquier línea clara heredada de estilos viejos. */
+.location,
+.location-box,
+.location-copy,
+.contact-list,
+.contact-line,
+.dorado-map-live{
+  outline:0 !important;
+}
+
+.location-box::before,
+.location-box::after{
+  border:0 !important;
+}
+
+@media(max-width:760px){
+  .location{
+    width:100% !important;
+    padding:64px 0 72px !important;
+    background:#06101a !important;
+  }
+
+  .location-box{
+    width:calc(100% - 28px) !important;
+    max-width:none !important;
+    margin:0 auto !important;
+    padding:16px !important;
+    border-radius:22px !important;
+    background:#0b1722 !important;
+  }
+}
