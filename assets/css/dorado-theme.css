@@ -1767,3 +1767,26 @@ body.intro-finished .hero-content{
     letter-spacing:.01em !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — SLOGAN DE INTRO ESTABLE
+   Evita el parpadeo de "Donde empieza tu próxima pesca."
+   ========================================================= */
+.brand-intro-tagline{
+  opacity:0 !important;
+  animation:none !important;
+  transform:none !important;
+  filter:none !important;
+  transition:opacity .55s ease !important;
+}
+
+.brand-intro-tagline.is-visible{
+  opacity:1 !important;
+}
+
+.brand-intro.sweeping .brand-intro-tagline.is-visible{
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+}

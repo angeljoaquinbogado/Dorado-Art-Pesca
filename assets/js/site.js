@@ -2345,7 +2345,11 @@ comprobarRetornoPago();
 
             const introLogo=intro.querySelector(".brand-intro-logo");
             const introTitle=intro.querySelector(".brand-intro-title");
+            const introTagline=intro.querySelector(".brand-intro-tagline");
             const navLogo=document.querySelector(".nav-logo");
+
+            /* El slogan aparece una sola vez y queda estable hasta el cierre. */
+            window.setTimeout(()=>introTagline?.classList.add("is-visible"),900);
 
             window.setTimeout(()=>{
                 if(!introLogo||!introTitle||!navLogo||typeof introLogo.animate!=="function"){
@@ -2461,8 +2465,7 @@ comprobarRetornoPago();
                     /* Los textos secundarios salen mientras el logo barre. */
                     window.setTimeout(()=>{
                         [intro.querySelector(".brand-intro-kicker"),
-                         intro.querySelector(".brand-intro-line"),
-                         intro.querySelector(".brand-intro-tagline")].forEach((el)=>{
+                         intro.querySelector(".brand-intro-line")].forEach((el)=>{
                             el?.animate([
                                 {opacity:1,transform:"translateY(0)",filter:"blur(0)"},
                                 {opacity:0,transform:"translateY(-6px)",filter:"blur(3px)"}
