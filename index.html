@@ -61,87 +61,6 @@
 <link rel="stylesheet" href="assets/css/product-gallery.css"/>
 <link rel="stylesheet" href="assets/css/dorado-theme.css"/>
 
-<style id="dorado-intro-one-line-fix">
-/* =========================================================
-   DORADO — título de intro estable desde el PRIMER frame
-   Evita que "ARTÍCULOS DE PESCA" arranque en dos renglones
-   y luego salte a uno cuando termina de cargar la tipografía.
-   ========================================================= */
-.brand-intro-content{
-  width:min(96vw,1180px) !important;
-  max-width:1180px !important;
-}
-
-.brand-intro-title{
-  width:max-content !important;
-  max-width:96vw !important;
-  display:flex !important;
-  flex-direction:row !important;
-  align-items:baseline !important;
-  justify-content:center !important;
-  flex-wrap:nowrap !important;
-  gap:clamp(8px,1.15vw,16px) !important;
-  white-space:nowrap !important;
-  margin-inline:auto !important;
-}
-
-/* DORADO: única palabra con color */
-.brand-intro-title > strong{
-  flex:0 0 auto !important;
-  white-space:nowrap !important;
-  font-family:"Montserrat","Segoe UI",Arial,sans-serif !important;
-  font-size:clamp(42px,6.05vw,74px) !important;
-  font-weight:800 !important;
-  line-height:.94 !important;
-  letter-spacing:-.045em !important;
-  color:#e3a02e !important;
-}
-
-/* ARTÍCULOS DE PESCA: siempre en UNA SOLA LÍNEA */
-.brand-intro-title > span{
-  flex:0 0 auto !important;
-  white-space:nowrap !important;
-  font-family:"Montserrat","Segoe UI",Arial,sans-serif !important;
-  font-size:clamp(27px,3.62vw,44px) !important;
-  font-weight:700 !important;
-  line-height:1 !important;
-  letter-spacing:.005em !important;
-  color:#f7f3ea !important;
-}
-
-/* Cuando JS divide el título letra por letra, conserva EXACTAMENTE el mismo tamaño. */
-.brand-intro-title > strong .intro-char,
-.brand-intro-title > span .intro-char{
-  font:inherit !important;
-  font-size:inherit !important;
-  font-weight:inherit !important;
-  line-height:inherit !important;
-  letter-spacing:inherit !important;
-  color:inherit !important;
-  white-space:inherit !important;
-}
-
-/* En celular también se mantiene en una sola línea, pero se adapta al ancho. */
-@media (max-width:760px){
-  .brand-intro-content{
-    width:97vw !important;
-  }
-
-  .brand-intro-title{
-    max-width:97vw !important;
-    gap:clamp(5px,1.5vw,8px) !important;
-  }
-
-  .brand-intro-title > strong{
-    font-size:clamp(25px,7.4vw,39px) !important;
-  }
-
-  .brand-intro-title > span{
-    font-size:clamp(14px,4.15vw,22px) !important;
-    letter-spacing:0 !important;
-  }
-}
-</style>
 
 </head>
 <body>
@@ -189,7 +108,7 @@
 ========================= -->
 <div class="topbar">
 <div class="topbar-inner">
-<span><svg class="ui-icon"><use href="#i-truck"></use></svg> Envíos a todo Argentina</span>
+<span><svg class="ui-icon"><use href="#i-truck"></use></svg> Envíos a toda la Argentina</span>
 <span aria-hidden="true" class="topbar-sep"></span>
 <span><svg class="ui-icon"><use href="#i-shield"></use></svg> Compra segura</span>
 <span aria-hidden="true" class="topbar-sep"></span>
@@ -208,7 +127,7 @@
 <a href="#contacto">Contacto</a>
 </nav>
 <a aria-label="Dorado Artículos de Pesca — Inicio" class="brand" href="#inicio">
-<img alt="Dorado Artículos de Pesca" class="nav-logo" src="assets/images/brand/logo-dorado.png"/>
+<img alt="Dorado Artículos de Pesca" class="nav-logo" decoding="async" fetchpriority="high" src="assets/images/brand/logo-dorado.png"/>
 </a>
 <div class="nav-actions">
 <button aria-controls="primary-navigation" aria-expanded="false" aria-label="Abrir menú" class="menu-toggle" id="menu-toggle" type="button"><span></span><span></span></button>
@@ -235,7 +154,7 @@
 <section class="hero reveal" id="inicio">
 <div aria-hidden="true" class="hero-bg">
 <div class="hero-bg-media" aria-hidden="true"></div>
-<!-- Fondo premium optimizado: assets/images/backgrounds/hero-bg-dorado-art-pesca.webp -->
+<!-- Fondo premium optimizado: assets/images/backgrounds/hero-bg-dorado.webp -->
 <span class="hero-glow hero-glow-a"></span>
 <span class="hero-glow hero-glow-b"></span>
 <span class="hero-grid"></span>
@@ -286,7 +205,7 @@
       <div class="dorado-seal-wrap">
         <span class="dorado-seal-ring dorado-seal-ring-a"></span>
         <span class="dorado-seal-ring dorado-seal-ring-b"></span>
-        <img src="assets/images/brand/logo-dorado.png" alt="" class="dorado-story-logo"/>
+        <img src="assets/images/brand/logo-dorado.png" alt="" class="dorado-story-logo" decoding="async" loading="lazy"/>
       </div>
       <div class="dorado-story-caption"><span>CARUPÁ · SAN FERNANDO</span><strong>Desde 2023</strong></div>
     </div>
@@ -319,11 +238,15 @@
 </div>
 </div>
 <div class="catalog-tools">
+<div class="catalog-search-wrap">
 <label class="catalog-search" for="product-search">
 <svg class="ui-icon"><use href="#i-search"></use></svg>
 <input autocomplete="off" id="product-search" placeholder="¿Qué necesitás para tu próxima salida?" type="search"/>
-<span aria-hidden="true" class="search-shortcut">Buscar</span>
 </label>
+<button class="catalog-search-clear" id="product-search-clear" type="button" aria-label="Limpiar búsqueda" hidden>
+<svg class="ui-icon" aria-hidden="true"><use href="#i-close"></use></svg>
+</button>
+</div>
 <div aria-live="polite" class="catalog-count" id="product-result-count">Cargando catálogo…</div>
 </div>
 </div>
@@ -395,7 +318,7 @@
 <!-- =========================
      PRODUCTO DINÁMICO
 ========================= -->
-<div aria-hidden="true" class="product-detail" id="producto-dinamico">
+<div aria-hidden="true" aria-modal="true" aria-labelledby="dynamic-product-name" class="product-detail" id="producto-dinamico" role="dialog">
 <div class="product-detail-inner">
 <button aria-label="Cerrar" class="product-detail-close" type="button"><svg class="ui-icon"><use href="#i-close"></use></svg></button>
 <div class="product-detail-gallery">
@@ -410,7 +333,7 @@
 <div class="kicker dynamic-product-category">
                 PRODUCTO
             </div>
-<h2 class="dynamic-product-name">
+<h2 class="dynamic-product-name" id="dynamic-product-name">
                 Producto
             </h2>
 <section class="product-info-section dynamic-description-section reveal">
@@ -462,7 +385,7 @@
 <footer class="site-footer">
 <div class="footer-main">
 <div class="footer-brand-box">
-<img alt="Dorado Artículos de Pesca" class="footer-logo" loading="lazy" src="assets/images/brand/logo-dorado.png"/>
+<img alt="Dorado Artículos de Pesca" class="footer-logo" decoding="async" loading="lazy" src="assets/images/brand/logo-dorado.png"/>
 <p>Donde empieza tu próxima pesca. Variedad, asesoramiento y una compra clara.</p>
 <div class="footer-badges">
 <span><svg class="ui-icon"><use href="#i-shield"></use></svg> Compra segura</span>
@@ -496,7 +419,7 @@
 </div>
 <div class="footer-wordmark" aria-hidden="true"><span class="footer-wordmark-name">Dorado</span><span class="footer-wordmark-desc">Artículos de Pesca</span></div>
 <div class="footer-bottom">
-<span>© 2026 Dorado Artículos de Pesca · Todos los derechos reservados.</span>
+<span>© <span id="copyright-year">2026</span> Dorado Artículos de Pesca · Todos los derechos reservados.</span>
 <span>San Fernando · Buenos Aires</span>
 </div>
 </footer>
@@ -668,7 +591,7 @@
      MIS PEDIDOS
 ========================= -->
 <div aria-hidden="true" class="orders-overlay" id="orders-overlay"></div>
-<aside aria-hidden="true" aria-label="Mis pedidos" class="orders-drawer" id="orders-drawer">
+<aside aria-hidden="true" aria-label="Mis pedidos" aria-modal="true" class="orders-drawer" id="orders-drawer" role="dialog">
     <div class="orders-head">
         <div>
             <span class="orders-kicker">Dorado Artículos de Pesca</span>
@@ -702,7 +625,7 @@
      CARRITO DE COMPRAS
 ========================= -->
 <div aria-hidden="true" class="cart-overlay" id="cart-overlay"></div>
-<aside aria-hidden="true" aria-label="Carrito de compras" class="cart-drawer" id="cart-drawer">
+<aside aria-hidden="true" aria-label="Carrito de compras" aria-modal="true" class="cart-drawer" id="cart-drawer" role="dialog">
 <div class="cart-head">
 <div class="cart-head-copy">
 <strong>Tu carrito</strong>
@@ -725,10 +648,10 @@
             Completá tus datos y elegí Mercado Pago, transferencia, efectivo en retiro o coordinación por WhatsApp.
         </div>
 <div class="cart-footer-actions">
-<button class="cart-link-button" id="cart-clear" type="button">
+<button class="cart-link-button" id="cart-continue" type="button">
                 SEGUIR COMPRANDO
             </button>
-<button class="cart-link-button" type="button">
+<button class="cart-link-button cart-link-danger" id="cart-clear" type="button">
                 VACIAR CARRITO
             </button>
 </div>

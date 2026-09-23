@@ -1,4 +1,4 @@
-import { consumeRateLimit, enforceRateLimit } from "../lib/security.js";
+import { consumeRateLimit, enforceRateLimit, fetchWithTimeout } from "../lib/security.js";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -7,13 +7,13 @@ async function sb(path) {
     const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !service) throw new Error("Configuración incompleta");
 
-    return fetch(`${url}${path}`, {
+    return fetchWithTimeout(`${url}${path}`, {
         headers: {
             apikey: service,
             Authorization: `Bearer ${service}`,
             Accept: "application/json"
         }
-    });
+    }, 8000);
 }
 
 export default async function handler(req, res) {

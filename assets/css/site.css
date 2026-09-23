@@ -101,7 +101,7 @@ img{max-width:100%;display:block}
 .hero-bg{position:absolute;inset:-7%;z-index:-1;overflow:hidden;pointer-events:none;background:#070707}
 .hero-bg::before{
   content:"";position:absolute;inset:-5%;
-  background-image:url("../images/backgrounds/hero-bg-dorado-art-pesca.webp");
+  background-image:url("../images/backgrounds/hero-bg-dorado.webp");
   background-size:cover;background-position:center center;background-repeat:no-repeat;
   transform:scale(1.06);will-change:transform,background-position;
   animation:heroBgMotion 18s cubic-bezier(.45,.05,.55,.95) infinite alternate;
@@ -1878,7 +1878,7 @@ body{background:var(--studio-bg)!important;color:var(--studio-ink)}
 .hero{width:100%!important;max-width:none!important;margin:0!important;min-height:calc(100svh - 106px)!important;padding:0!important;background:#08090a!important;overflow:hidden!important}
 .hero-bg{inset:0!important;background:#08090a!important}
 .hero-bg::before{
-  inset:-3%!important;background-image:linear-gradient(90deg,rgba(6,7,8,.96) 0%,rgba(6,7,8,.86) 38%,rgba(6,7,8,.36) 72%,rgba(6,7,8,.62) 100%),url('../images/backgrounds/hero-bg-dorado-art-pesca.webp')!important;
+  inset:-3%!important;background-image:linear-gradient(90deg,rgba(6,7,8,.96) 0%,rgba(6,7,8,.86) 38%,rgba(6,7,8,.36) 72%,rgba(6,7,8,.62) 100%),url('../images/backgrounds/hero-bg-dorado.webp')!important;
   background-size:cover!important;background-position:60% 50%!important;filter:saturate(.78) contrast(1.05)!important;
   animation:none!important;transform:scale(1.025)!important;opacity:.94!important;
 }
@@ -1952,11 +1952,11 @@ body{background:var(--studio-bg)!important;color:var(--studio-ink)}
 .catalog-search input{font-size:12px!important}
 .search-shortcut{background:transparent!important;border:1px solid #c9c4b8!important;color:#8c887d!important}
 .catalog-count{padding-left:0!important;font-size:8px!important;letter-spacing:.08em!important;text-transform:uppercase!important}
-.products{counter-reset:ferProduct;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:50px 22px!important}
-.product{counter-increment:ferProduct;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;transition:none!important}
+.products{counter-reset:doradoProduct;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:50px 22px!important}
+.product{counter-increment:doradoProduct;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;transition:none!important}
 .product:hover{transform:none!important;box-shadow:none!important;border-color:transparent!important}
 .product-img{aspect-ratio:1/1!important;border-radius:22px!important;background:#eae7df!important;overflow:hidden!important;transition:background .25s ease!important}
-.product-img::before{content:"0" counter(ferProduct);position:absolute;z-index:5;left:14px;bottom:12px;color:rgba(0,0,0,.34);font-size:8px;font-weight:850;letter-spacing:.12em}
+.product-img::before{content:"0" counter(doradoProduct);position:absolute;z-index:5;left:14px;bottom:12px;color:rgba(0,0,0,.34);font-size:8px;font-weight:850;letter-spacing:.12em}
 .product-img::after{inset:auto 12% 5% 12%!important;opacity:.65!important}
 .product-real-image{width:80%!important;height:80%!important;filter:drop-shadow(0 18px 16px rgba(0,0,0,.10))!important;transition:transform .5s cubic-bezier(.2,.8,.2,1)!important}
 .product:hover .product-real-image{transform:scale(1.045) translateY(-3px)!important}
@@ -2076,7 +2076,7 @@ body{background:var(--studio-bg)!important;color:var(--studio-ink)}
   body.menu-open .float-wa{display:none!important}
 
   .hero{min-height:calc(100svh - 66px)!important}
-  .hero-bg::before{background-image:linear-gradient(180deg,rgba(7,8,9,.76),rgba(7,8,9,.86) 58%,#08090a 100%),url('../images/backgrounds/hero-bg-dorado-art-pesca.webp')!important;background-position:64% 50%!important;background-size:auto 103%!important}
+  .hero-bg::before{background-image:linear-gradient(180deg,rgba(7,8,9,.76),rgba(7,8,9,.86) 58%,#08090a 100%),url('../images/backgrounds/hero-bg-dorado.webp')!important;background-position:64% 50%!important;background-size:auto 103%!important}
   .hero-shell{min-height:calc(100svh - 66px)!important;width:var(--studio-container)!important;padding:64px 0 52px!important;display:block!important}
   .hero-content{text-align:left!important;max-width:none!important}
   .hero-index{margin-bottom:24px!important}
@@ -2883,7 +2883,7 @@ body{background:var(--studio-bg)!important;color:var(--studio-ink)}
 .hero-bg{inset:0!important;overflow:hidden!important;background:#08090a!important}
 .hero-bg::before{
   inset:-5%!important;
-  background-image:linear-gradient(90deg,rgba(5,6,7,.80) 0%,rgba(5,6,7,.60) 38%,rgba(5,6,7,.22) 68%,rgba(5,6,7,.34) 100%),url('../images/backgrounds/hero-bg-dorado-art-pesca.webp')!important;
+  background-image:linear-gradient(90deg,rgba(5,6,7,.80) 0%,rgba(5,6,7,.60) 38%,rgba(5,6,7,.22) 68%,rgba(5,6,7,.34) 100%),url('../images/backgrounds/hero-bg-dorado.webp')!important;
   background-size:cover!important;
   background-position:50% 50%!important;
   background-repeat:no-repeat!important;
@@ -3138,7 +3138,7 @@ html.motion-enhanced .motion-heading{transform-origin:left center}
 }
 .hero-bg::before{
   inset:-5%!important;
-  background-image:url("../images/backgrounds/hero-bg-dorado-art-pesca.webp")!important;
+  background-image:url("../images/backgrounds/hero-bg-dorado.webp")!important;
   background-size:cover!important;
   background-position:center center!important;
   background-repeat:no-repeat!important;
@@ -3212,7 +3212,7 @@ html.motion-enhanced .motion-heading{transform-origin:left center}
   inset:-10%;
   z-index:0;
   pointer-events:none;
-  background-image:url('../images/backgrounds/hero-bg-dorado-art-pesca.webp');
+  background-image:url('../images/backgrounds/hero-bg-dorado.webp');
   background-repeat:no-repeat;
   background-size:cover;
   background-position:48% 50%;
@@ -3410,7 +3410,7 @@ html.motion-enhanced .motion-heading{transform-origin:left center}
   inset:-6%!important;
   background-image:
     linear-gradient(90deg,rgba(5,6,7,.76) 0%,rgba(5,6,7,.56) 36%,rgba(5,6,7,.18) 68%,rgba(5,6,7,.30) 100%),
-    url('../images/backgrounds/hero-bg-dorado-art-pesca.webp')!important;
+    url('../images/backgrounds/hero-bg-dorado.webp')!important;
   background-size:cover!important;
   background-repeat:no-repeat!important;
   background-position:50% 50%!important;

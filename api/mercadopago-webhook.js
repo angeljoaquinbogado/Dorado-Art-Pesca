@@ -5,7 +5,8 @@ import {
     consumeRateLimit,
     enforceRateLimit,
     verifyMercadoPagoSignature,
-    bodyTooLarge
+    bodyTooLarge,
+    fetchWithTimeout
 } from "../lib/security.js";
 
 async function supabaseFetch(path, options = {}) {
@@ -20,7 +21,7 @@ async function supabaseFetch(path, options = {}) {
         ...(options.headers || {})
     };
 
-    return fetch(`${url}${path}`, { ...options, headers });
+    return fetchWithTimeout(`${url}${path}`, { ...options, headers }, 8000);
 }
 
 function extractPaymentId(req) {
@@ -110,14 +111,15 @@ if (topic === "merchant_order") {
 
         // Nunca confiamos en el cuerpo del webhook: consultamos el pago directamente
         // a Mercado Pago con el token privado del comercio.
-        const mpResponse = await fetch(
+        const mpResponse = await fetchWithTimeout(
             `https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/json"
                 }
-            }
+            },
+            10000
         );
 
         const payment = await mpResponse.json().catch(() => ({}));

@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from "../lib/security.js";
+
 export default async function handler(req, res) {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=120");
@@ -21,7 +23,7 @@ export default async function handler(req, res) {
         for (let page = 0; page < 50; page += 1) {
             const from = page * pageSize;
             const to = from + pageSize - 1;
-            const response = await fetch(
+            const response = await fetchWithTimeout(
                 `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc`,
                 {
                     headers: {
@@ -31,7 +33,8 @@ export default async function handler(req, res) {
                         Range: `${from}-${to}`,
                         "Range-Unit": "items"
                     }
-                }
+                },
+                8000
             );
 
             const data = await response.json().catch(() => []);

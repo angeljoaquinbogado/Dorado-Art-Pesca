@@ -72,3 +72,18 @@ h1{font-size:clamp(34px,7vw,60px);line-height:.98;letter-spacing:-.055em;margin:
   .track-progress{margin:28px -5px 26px}.track-progress::before{top:15px}.track-dot{width:30px;height:30px}.track-step small{font-size:6.5px}
   .tracking-actions{grid-template-columns:1fr}.button.whatsapp{grid-column:auto}
 }
+
+/* DORADO — seguimiento final responsive */
+:where(a,button):focus-visible{outline:2px solid #ed9d23;outline-offset:3px}
+body{background:linear-gradient(180deg,#061019 0 230px,#f5f2eb 230px)!important}
+.tracking-brand img{width:82px!important;height:72px!important;object-fit:contain!important}
+.tracking-card{box-shadow:0 24px 70px rgba(6,16,26,.12)!important}
+.button.primary{background:linear-gradient(135deg,#f3aa35,#d97910)!important;color:#061019!important}
+.button.whatsapp{background:#25D366!important;border-color:#25D366!important;color:#fff!important}
+@media(max-width:620px){
+  body{background:linear-gradient(180deg,#061019 0 150px,#f5f2eb 150px)!important}
+  .tracking-brand img{width:64px!important;height:56px!important}
+  .track-progress{overflow-x:auto;grid-template-columns:repeat(5,minmax(72px,1fr));padding-bottom:6px;scrollbar-width:none}
+  .track-progress::-webkit-scrollbar{display:none}
+  .tracking-actions{position:relative}
+}

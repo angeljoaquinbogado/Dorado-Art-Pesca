@@ -1,4 +1,4 @@
-import { consumeRateLimit, enforceRateLimit, bodyTooLarge } from "../lib/security.js";
+import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
 
 const MAX_ITEMS = 40;
 const MAX_QTY = 99;
@@ -39,7 +39,7 @@ async function supabaseFetch(path, options = {}) {
         ...(options.headers || {})
     };
 
-    return fetch(`${url}${path}`, { ...options, headers });
+    return fetchWithTimeout(`${url}${path}`, { ...options, headers }, 8000);
 }
 
 export default async function handler(req, res) {
@@ -287,7 +287,7 @@ export default async function handler(req, res) {
             }
         };
 
-        const mpResponse = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        const mpResponse = await fetchWithTimeout("https://api.mercadopago.com/checkout/preferences", {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${mpToken}`,
@@ -295,7 +295,7 @@ export default async function handler(req, res) {
                 Accept: "application/json"
             },
             body: JSON.stringify(preference)
-        });
+        }, 10000);
 
         const mpData = await mpResponse.json().catch(() => ({}));
 

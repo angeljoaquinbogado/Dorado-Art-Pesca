@@ -126,8 +126,8 @@ function resolveAdminImage(src){
         "/auriculares 2.PNG":"assets/images/brand/logo-dorado.png",
         "assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png",
         "/assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png",
-        "assets/images/products/auriculares-2.png":"assets/images/brand/logo-dorado.png",
-        "/assets/images/products/auriculares-2.png":"assets/images/brand/logo-dorado.png"
+        "assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png",
+        "/assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png"
     };
     return legacy[value]||value||"assets/images/brand/logo-dorado.png";
 }

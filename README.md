@@ -1,6 +1,6 @@
 # Dorado Artículos de Pesca
 
-Tienda online independiente basada en la arquitectura reutilizable del proyecto FER ELECTRO, con identidad, repositorio, Supabase y credenciales propios.
+Tienda online independiente de Dorado Artículos de Pesca, con identidad, repositorio, Supabase y credenciales propios.
 
 ## Incluye
 
@@ -13,7 +13,17 @@ Tienda online independiente basada en la arquitectura reutilizable del proyecto 
 - Panel Admin para productos, stock, galerías y pedidos.
 - Carga de imágenes fuente de hasta 50 MB con optimización automática a WebP antes de Storage.
 - Galerías con múltiples imágenes por producto.
-- Responsive, SEO, PWA y medidas de seguridad heredadas del proyecto base.
+- Responsive, SEO, PWA, accesibilidad y medidas de seguridad integradas para Dorado.
+
+## Calidad técnica
+
+- Interfaz optimizada para desktop, notebook, tablet y móvil.
+- Navegación por teclado, focos visibles y diálogos con atributos ARIA.
+- Catálogo con estados de carga, búsqueda, filtros y estado sin resultados.
+- Galería con flechas y gesto de deslizamiento en móvil.
+- Protección de endpoints con validación, rate limiting y timeouts de red.
+- Cabeceras CSP/HSTS y claves privadas reservadas al servidor.
+- Recursos visuales con carga diferida cuando corresponde.
 
 ## Antes de producción
 

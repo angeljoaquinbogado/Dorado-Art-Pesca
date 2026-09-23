@@ -1,4 +1,4 @@
-import { consumeRateLimit, enforceRateLimit, bodyTooLarge } from "../lib/security.js";
+import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
 
 const UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -53,7 +53,7 @@ export default async function handler(req,res){
     }
 
     try{
-        const rpcResponse=await fetch(
+        const rpcResponse=await fetchWithTimeout(
             `${supabaseUrl}/rest/v1/rpc/admin_delete_orders`,
             {
                 method:"POST",
@@ -64,7 +64,8 @@ export default async function handler(req,res){
                     Accept:"application/json"
                 },
                 body:JSON.stringify({p_ids:ids})
-            }
+            },
+            8000
         );
 
         const result=await parseJson(rpcResponse,null);

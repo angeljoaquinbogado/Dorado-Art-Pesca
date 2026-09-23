@@ -101,12 +101,12 @@ function imagenSegura(valor) {
         "/logo.jpg": "assets/images/brand/logo-dorado.png",
         "auriculares 2.PNG": "assets/images/brand/logo-dorado.png",
         "/auriculares 2.PNG": "assets/images/brand/logo-dorado.png",
-        "hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
-        "/hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
+        "hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
+        "/hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
         "sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
         "/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
-        "assets/images/backgrounds/hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
-        "/assets/images/backgrounds/hero-bg-dorado-art-pesca.png": "assets/images/backgrounds/hero-bg-dorado-art-pesca.webp",
+        "assets/images/backgrounds/hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
+        "/assets/images/backgrounds/hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
         "assets/images/backgrounds/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
         "/assets/images/backgrounds/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
         "assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.png",
@@ -281,6 +281,7 @@ async function cargarProductosDesdeSupabase() {
                         alt="${textoSeguro(producto.nombre || "Producto")}"
                         class="product-real-image"
                         loading="lazy"
+                        decoding="async"
                     >
                 </div>
 
@@ -364,6 +365,14 @@ async function cargarProductosDesdeSupabase() {
                     </div>
                 </div>
             `;
+
+            const productImage = tarjeta.querySelector(".product-real-image");
+            productImage?.addEventListener("error",()=>{
+                if(productImage.dataset.fallbackApplied === "1") return;
+                productImage.dataset.fallbackApplied = "1";
+                productImage.src = "assets/images/brand/logo-dorado.png";
+                productImage.classList.add("is-fallback-logo");
+            },{once:true});
 
             const botonVer = tarjeta.querySelector(".view-product");
             const botonAgregar = tarjeta.querySelector(".add-card-product");
@@ -1707,10 +1716,14 @@ function construirFiltrosCategorias(productos = []) {
     const preferidas = ["Cañas","Reels","Señuelos","Líneas y Tanzas","Anzuelos y Terminales","Boyas","Accesorios","Indumentaria","Carnadas"];
     const detectadas = [...new Set(productos.map(p => String(p.categoria || "Otros").trim()).filter(Boolean))];
     const categorias = ["Todos", ...preferidas.filter(x=>detectadas.includes(x)), ...detectadas.filter(x=>!preferidas.includes(x)).sort((a,b)=>a.localeCompare(b,"es"))];
-    wrap.innerHTML = categorias.map(cat => `<button class="category-chip${cat===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat)}">${textoSeguro(cat)}</button>`).join("");
+    wrap.innerHTML = categorias.map(cat => `<button class="category-chip${cat===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat)}" aria-pressed="${cat===categoriaActiva?"true":"false"}">${textoSeguro(cat)}</button>`).join("");
     wrap.querySelectorAll(".category-chip").forEach(btn=>btn.addEventListener("click",()=>{
         categoriaActiva = btn.dataset.category || "Todos";
-        wrap.querySelectorAll(".category-chip").forEach(b=>b.classList.toggle("active",b===btn));
+        wrap.querySelectorAll(".category-chip").forEach(b=>{
+            const active=b===btn;
+            b.classList.toggle("active",active);
+            b.setAttribute("aria-pressed",String(active));
+        });
         actualizarFiltroCatalogo();
     }));
 }
@@ -1718,9 +1731,12 @@ function construirFiltrosCategorias(productos = []) {
 function actualizarFiltroCatalogo() {
     const input = document.getElementById("product-search");
     const contador = document.getElementById("product-result-count");
+    const clear = document.getElementById("product-search-clear");
+    const grid = document.getElementById("products-grid");
     const query = String(input?.value || "").trim().toLowerCase();
     const cards = Array.from(document.querySelectorAll("#products-grid .product"));
     let visibles = 0;
+
     cards.forEach(card => {
         const coincideTexto = !query || String(card.dataset.search || card.textContent || "").includes(query);
         const coincideCategoria = categoriaActiva === "Todos" || String(card.dataset.category || "Otros") === categoriaActiva;
@@ -1728,13 +1744,42 @@ function actualizarFiltroCatalogo() {
         card.hidden = !coincide;
         if (coincide) visibles += 1;
     });
+
+    if (clear) clear.hidden = !query;
+
+    let empty = grid?.querySelector(".catalog-empty-filter");
+    if (cards.length && visibles === 0 && (query || categoriaActiva !== "Todos")) {
+        if (!empty && grid) {
+            empty = document.createElement("div");
+            empty.className = "catalog-empty-filter";
+            empty.setAttribute("role", "status");
+            grid.appendChild(empty);
+        }
+        if (empty) {
+            empty.hidden = false;
+            empty.textContent = query
+                ? `No encontramos productos que coincidan con “${input.value.trim()}”. Probá otra búsqueda o categoría.`
+                : "No hay productos disponibles en esta categoría por el momento.";
+        }
+    } else if (empty) {
+        empty.hidden = true;
+    }
+
     if (contador) {
         if (!cards.length) contador.textContent = "Sin productos disponibles";
         else if (query || categoriaActiva !== "Todos") contador.textContent = `${visibles} ${visibles === 1 ? "resultado" : "resultados"}`;
         else contador.textContent = `${cards.length} ${cards.length === 1 ? "producto" : "productos"} disponibles`;
     }
 }
-document.getElementById("product-search")?.addEventListener("input", actualizarFiltroCatalogo);
+
+const productSearch=document.getElementById("product-search");
+productSearch?.addEventListener("input", actualizarFiltroCatalogo);
+document.getElementById("product-search-clear")?.addEventListener("click",()=>{
+    if(!productSearch) return;
+    productSearch.value="";
+    productSearch.focus();
+    actualizarFiltroCatalogo();
+});
 
 (function configurarUIVisual(){
     const header = document.getElementById("site-header");
@@ -2582,7 +2627,157 @@ comprobarRetornoPago();
     document.getElementById("cart-overlay")?.addEventListener("click", cerrarCarrito);
     document.querySelector(".cart-close")?.addEventListener("click", cerrarCarrito);
     document.getElementById("cart-checkout")?.addEventListener("click", abrirCheckout);
-    document.getElementById("cart-continue-shopping")?.addEventListener("click", cerrarCarrito);
+    document.getElementById("cart-continue")?.addEventListener("click", cerrarCarrito);
     document.getElementById("cart-clear")?.addEventListener("click", vaciarCarrito);
 })();
 
+/* =========================================================
+   DORADO — UI FINAL: navegación activa, foco, año y detalles UX
+   ========================================================= */
+(function configurarPulidoFinal(){
+    const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* Año automático del footer. */
+    const year=document.getElementById("copyright-year");
+    if(year) year.textContent=String(new Date().getFullYear());
+
+    /* Navegación principal: estado activo según la sección visible. */
+    const navLinks=Array.from(document.querySelectorAll('#primary-navigation a[href^="#"]'));
+    const sections=navLinks
+        .map(link=>({link,id:link.getAttribute("href").slice(1)}))
+        .map(item=>({...item,section:document.getElementById(item.id)}))
+        .filter(item=>item.section);
+
+    const setActive=(id)=>{
+        sections.forEach(({link,id:linkId})=>{
+            const active=linkId===id;
+            link.classList.toggle("active",active);
+            if(active) link.setAttribute("aria-current","page");
+            else link.removeAttribute("aria-current");
+        });
+    };
+
+    if("IntersectionObserver" in window && sections.length){
+        const observer=new IntersectionObserver(entries=>{
+            const visible=entries
+                .filter(entry=>entry.isIntersecting)
+                .sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+            if(visible?.target?.id) setActive(visible.target.id);
+        },{rootMargin:"-24% 0px -58% 0px",threshold:[0,.05,.15,.3,.5]});
+        sections.forEach(({section})=>observer.observe(section));
+    }
+
+    /* Scroll suave respetando reduced motion. */
+    document.querySelectorAll('a[href^="#"]').forEach(link=>{
+        link.addEventListener("click",event=>{
+            const id=link.getAttribute("href")?.slice(1);
+            const target=id&&document.getElementById(id);
+            if(!target) return;
+            event.preventDefault();
+            target.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});
+            history.replaceState(null,"",`#${id}`);
+        });
+    });
+
+    /* Imágenes dinámicas: decodificación asíncrona por defecto. */
+    const prepareImages=(root=document)=>{
+        root.querySelectorAll("img").forEach(img=>{
+            if(!img.hasAttribute("decoding")) img.decoding="async";
+            if(!img.closest(".brand-intro") && !img.classList.contains("nav-logo") && !img.hasAttribute("loading")){
+                img.loading="lazy";
+            }
+        });
+    };
+    prepareImages();
+
+    const productsGrid=document.getElementById("products-grid");
+    if(productsGrid && "MutationObserver" in window){
+        new MutationObserver(()=>prepareImages(productsGrid)).observe(productsGrid,{childList:true,subtree:true});
+    }
+
+    /* Evita que un contador grande de carrito rompa el header. */
+    const clampCartCount=()=>{
+        const cart=leerCarrito();
+        const total=cantidadTotal(cart);
+        [document.getElementById("cart-count"),document.getElementById("mobile-cart-count")].forEach(el=>{
+            if(el) el.textContent=total>99?"99+":String(total);
+        });
+    };
+    clampCartCount();
+
+    /* Devuelve el foco al control que abrió cada panel. */
+    let previousFocus=null;
+    const remember=(selector)=>document.querySelector(selector)?.addEventListener("click",()=>{previousFocus=document.activeElement;});
+    remember("#cart-trigger");
+    remember("#orders-trigger");
+    remember(".mobile-dock-cart");
+    remember(".mobile-dock-orders");
+
+    const focusBack=()=>{
+        if(previousFocus instanceof HTMLElement && document.contains(previousFocus)){
+            window.setTimeout(()=>previousFocus.focus({preventScroll:true}),0);
+        }
+    };
+    document.querySelector(".cart-close")?.addEventListener("click",focusBack);
+    document.querySelector(".orders-close")?.addEventListener("click",focusBack);
+
+    /* En móvil el toque sobre las tarjetas de proceso deja feedback visual breve. */
+    document.querySelectorAll(".process-step,.feature").forEach(card=>{
+        card.addEventListener("pointerdown",event=>{
+            if(event.pointerType!=="touch") return;
+            card.classList.add("touch-active");
+            window.setTimeout(()=>card.classList.remove("touch-active"),520);
+        },{passive:true});
+    });
+})();
+
+
+/* Galería: swipe en móvil + flechas del teclado en desktop. */
+(function configurarGaleriaAccesible(){
+    const modal=document.getElementById("producto-dinamico");
+    const imageStage=modal?.querySelector(".product-detail-image");
+    if(!modal||!imageStage) return;
+
+    let startX=null;
+    imageStage.addEventListener("touchstart",event=>{
+        startX=event.touches?.[0]?.clientX ?? null;
+    },{passive:true});
+    imageStage.addEventListener("touchend",event=>{
+        if(startX===null) return;
+        const endX=event.changedTouches?.[0]?.clientX ?? startX;
+        const delta=endX-startX;
+        startX=null;
+        if(Math.abs(delta)<48) return;
+        modal.querySelector(delta<0?".product-gallery-next":".product-gallery-prev")?.click();
+    },{passive:true});
+
+    document.addEventListener("keydown",event=>{
+        if(!modal.classList.contains("active")) return;
+        if(event.key==="ArrowRight") modal.querySelector(".product-gallery-next")?.click();
+        if(event.key==="ArrowLeft") modal.querySelector(".product-gallery-prev")?.click();
+    });
+})();
+
+/* Mantiene el foco dentro de overlays abiertos para navegación con teclado. */
+(function configurarFocusTrap(){
+    const containers=[
+        document.getElementById("producto-dinamico"),
+        document.getElementById("checkout-modal"),
+        document.getElementById("cart-drawer"),
+        document.getElementById("orders-drawer"),
+        document.getElementById("payment-result")
+    ].filter(Boolean);
+
+    const activeContainer=()=>containers.find(el=>el.classList.contains("active")&&el.getAttribute("aria-hidden")!=="true");
+    document.addEventListener("keydown",event=>{
+        if(event.key!=="Tab") return;
+        const root=activeContainer();
+        if(!root) return;
+        const focusable=Array.from(root.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+            .filter(el=>!el.hidden&&el.offsetParent!==null);
+        if(!focusable.length) return;
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    });
+})();
