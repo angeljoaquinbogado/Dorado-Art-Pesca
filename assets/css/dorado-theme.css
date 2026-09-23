@@ -1790,3 +1790,24 @@ body.intro-finished .hero-content{
   transform:none !important;
   filter:none !important;
 }
+
+
+/* =========================================================
+   DORADO — SLOGAN CON EL MISMO TIEMPO QUE "BIENVENIDO A"
+   ========================================================= */
+.brand-intro-tagline{
+  transition:
+    opacity .60s ease,
+    transform .60s ease,
+    filter .60s ease !important;
+}
+
+.brand-intro-tagline.is-visible.fade-with-kicker{
+  opacity:0 !important;
+  transform:translateY(-6px) !important;
+  filter:blur(3px) !important;
+  transition:
+    opacity .42s ease-out,
+    transform .42s ease-out,
+    filter .42s ease-out !important;
+}

@@ -2349,7 +2349,7 @@ comprobarRetornoPago();
             const navLogo=document.querySelector(".nav-logo");
 
             /* El slogan aparece una sola vez y queda estable hasta el cierre. */
-            window.setTimeout(()=>introTagline?.classList.add("is-visible"),900);
+            window.setTimeout(()=>introTagline?.classList.add("is-visible"),620);
 
             window.setTimeout(()=>{
                 if(!introLogo||!introTitle||!navLogo||typeof introLogo.animate!=="function"){
@@ -2475,6 +2475,9 @@ comprobarRetornoPago();
                                 fill:"forwards"
                             });
                         });
+
+                        /* El slogan inferior dura exactamente lo mismo que el mensaje superior. */
+                        introTagline?.classList.add("fade-with-kicker");
                     },1320);
 
                     sweep.onfinish=()=>{
