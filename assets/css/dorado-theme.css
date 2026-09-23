@@ -2881,3 +2881,27 @@ button:disabled,[aria-disabled="true"]{cursor:not-allowed !important;}
     bottom:max(88px,calc(72px + env(safe-area-inset-bottom))) !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — FOCO DEL PESCADOR EN MÓVIL
+   Mantiene la misma foto, pero desplaza el encuadre hacia la izquierda
+   para que el pescador siga siendo visible en pantallas angostas.
+   ========================================================= */
+@media (max-width:700px){
+  .hero-combined-scene{
+    background-position:14% center !important;
+  }
+}
+
+@media (max-width:430px){
+  .hero-combined-scene{
+    background-position:11% center !important;
+  }
+}
+
+@media (max-width:370px){
+  .hero-combined-scene{
+    background-position:8% center !important;
+  }
+}
