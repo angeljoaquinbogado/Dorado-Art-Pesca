@@ -154,3 +154,53 @@
     padding-top:clamp(485px,calc(177.777vw - 48px),620px) !important;
   }
 }
+
+/* =========================================================
+   DORADO — FONDO DEL INICIO MÓVIL = MISMO ENCUADRE DE LA INTRO
+   2026-09-24
+   No modifica tarjetas, dock, botones ni desktop.
+   La foto móvil se dibuja en una capa del tamaño del viewport,
+   exactamente con center / cover como la animación inicial.
+   ========================================================= */
+@media (max-width:820px){
+  .hero-combined-scene{
+    position:relative !important;
+    background:#061019 !important;
+  }
+
+  .hero-combined-scene::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;
+    left:0 !important;
+    right:0 !important;
+    width:100% !important;
+    height:100vh !important;
+    height:100dvh !important;
+    min-height:560px !important;
+    pointer-events:none !important;
+    z-index:0 !important;
+    background-image:url('../images/backgrounds/hero-bg-dorado-mobile.webp') !important;
+    background-position:center center !important;
+    background-size:cover !important;
+    background-repeat:no-repeat !important;
+  }
+
+  /* El sombreado sigue encima de la foto, sin cambiar el layout. */
+  .hero-combined-scene::after{
+    z-index:0 !important;
+  }
+
+  .hero-combined-scene > .hero,
+  .hero-combined-scene > .dorado-field-strip{
+    position:relative !important;
+    z-index:1 !important;
+  }
+
+  /* Impide que las capas antiguas vuelvan a mostrar otra imagen. */
+  .hero-combined-scene .hero-bg,
+  .hero-combined-scene .hero-bg::before{
+    background:transparent !important;
+    background-image:none !important;
+  }
+}
