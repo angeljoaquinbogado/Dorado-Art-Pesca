@@ -1164,7 +1164,7 @@ async function iniciarPagoMercadoPago(evento) {
     }
 
     const datos = new FormData(form);
-    const metodoPago = String(datos.get("metodo_pago") || "mercadopago").trim();
+    const metodoPago = String(datos.get("metodo_pago") || "whatsapp").trim();
     const entrega = String(datos.get("entrega") || "retiro").trim();
 
     if (metodoPago === "efectivo" && entrega !== "retiro") {
@@ -2599,7 +2599,7 @@ comprobarRetornoPago();
     const addressFields=["checkout-address","checkout-city","checkout-province","checkout-postal"].map(id=>document.getElementById(id)).filter(Boolean);
 
     const updateCheckout=()=>{
-        const method=payment?.value||"mercadopago";
+        const method=payment?.value||"whatsapp";
         const retiro=delivery?.value==="retiro";
         addressFields.forEach(el=>{el.required=!retiro; el.closest?.(".checkout-field")?.classList.toggle("optional-for-pickup",retiro);});
         if(!payButton)return;
@@ -2799,4 +2799,63 @@ comprobarRetornoPago();
         if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
         else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
+})();
+
+
+/* =========================================================
+   DORADO — ESTADO COMERCIAL CASI FINAL
+   - MP se habilita automáticamente cuando MERCADOPAGO_ENABLED=true.
+   - Horario del local calculado en zona Buenos Aires.
+   ========================================================= */
+(function doradoEstadoComercial(){
+  const run=async()=>{
+    const payment=document.getElementById("checkout-payment-method");
+    const mpOption=payment?.querySelector('option[value="mercadopago"]');
+    if(payment&&mpOption){
+      try{
+        const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
+        const data=await response.json().catch(()=>({}));
+        const enabled=Boolean(response.ok&&data?.mercadoPagoEnabled);
+        mpOption.disabled=!enabled;
+        mpOption.textContent=enabled ? "Mercado Pago / tarjetas" : "Mercado Pago / tarjetas — próximo a habilitar";
+        if(!enabled&&payment.value==="mercadopago") payment.value="whatsapp";
+        payment.dispatchEvent(new Event("change",{bubbles:true}));
+      }catch{
+        mpOption.disabled=true;
+        mpOption.textContent="Mercado Pago / tarjetas — próximo a habilitar";
+      }
+    }
+
+    const status=document.getElementById("store-open-status");
+    if(status){
+      try{
+        const parts=new Intl.DateTimeFormat("en-US",{
+          timeZone:"America/Argentina/Buenos_Aires",
+          weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+        }).formatToParts(new Date());
+        const get=type=>parts.find(p=>p.type===type)?.value||"";
+        const dayMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+        const day=dayMap[get("weekday")];
+        const minutes=(Number(get("hour"))||0)*60+(Number(get("minute"))||0);
+        const ranges={
+          0:[],
+          1:[[540,780],[960,1200]],
+          2:[[540,780],[960,1200]],
+          3:[[540,780],[960,1200]],
+          4:[[540,780],[960,1200]],
+          5:[[540,780],[960,1200]],
+          6:[[540,1200]]
+        };
+        const open=(ranges[day]||[]).some(([from,to])=>minutes>=from&&minutes<to);
+        status.textContent=open?"Abierto ahora":"Cerrado ahora";
+        status.classList.toggle("is-open",open);
+        status.classList.toggle("is-closed",!open);
+      }catch{
+        status.textContent="Consultá el horario antes de venir";
+        status.classList.add("is-closed");
+      }
+    }
+  };
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",run,{once:true});
+  else run();
 })();

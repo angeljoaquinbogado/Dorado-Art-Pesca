@@ -69,10 +69,11 @@ export default async function handler(req, res) {
         }
     }
 
+    const mpEnabled = String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true";
     const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-    if (!mpToken || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (!mpEnabled || !mpToken || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
         return res.status(503).json({
-            error: "Los pagos todavía no fueron habilitados por el comercio."
+            error: "Mercado Pago todavía no fue habilitado por el comercio. Podés coordinar tu pedido por WhatsApp."
         });
     }
 

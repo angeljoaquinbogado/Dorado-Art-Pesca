@@ -3006,3 +3006,44 @@ button:disabled,[aria-disabled="true"]{cursor:not-allowed !important;}
     font-size:clamp(11px,3.5vw,15px) !important;
   }
 }
+
+
+/* =========================================================
+   DORADO — CONTACTO CASI FINAL
+   Dirección, horarios y responsable comercial visibles.
+   ========================================================= */
+.contact-line-static{cursor:default !important;}
+.contact-line-static:hover{transform:none !important;}
+.contact-detail{
+  display:block;
+  margin-top:5px;
+  color:#8f9aa2;
+  font-size:10px;
+  line-height:1.45;
+}
+.store-open-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(239,159,36,.10);
+  color:#ef9f24;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.04em;
+}
+.store-open-status::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+}
+.store-open-status.is-open{background:rgba(61,181,103,.12);color:#56c985;}
+.store-open-status.is-closed{background:rgba(255,255,255,.06);color:#aeb8bf;}
+@media(max-width:700px){
+  .contact-detail{font-size:9.5px;}
+  .store-open-status{font-size:8.5px;}
+}

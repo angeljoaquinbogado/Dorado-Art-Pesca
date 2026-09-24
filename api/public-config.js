@@ -17,6 +17,7 @@ export default function handler(req, res) {
     // La publishable key es pública por diseño. Nunca exponer SERVICE_ROLE ni MP_ACCESS_TOKEN.
     return res.status(200).json({
         supabaseUrl: url,
-        supabasePublishableKey: key
+        supabasePublishableKey: key,
+        mercadoPagoEnabled: String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true"
     });
 }

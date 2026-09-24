@@ -61,15 +61,19 @@ En Vercel > proyecto `dorado-art-pesca` > Settings > Environment Variables, debe
 - `SUPABASE_URL`
 - `SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `MERCADOPAGO_ACCESS_TOKEN`
 - `PUBLIC_SITE_URL` (recomendado: `https://dorado-art-pesca.vercel.app`)
+- `RATE_LIMIT_SECRET`
+- `MERCADOPAGO_ENABLED` (`false` mientras MP no esté listo; `true` recién al activar producción)
+- `MERCADOPAGO_ACCESS_TOKEN`
+- `MERCADOPAGO_WEBHOOK_SECRET`
+- `MERCADOPAGO_REQUIRE_SIGNATURE`
 - `GMAIL_USER` (pendiente de confirmar por el comercio)
 - `GMAIL_APP_PASSWORD` (contraseña de aplicación de Google; secreta)
 - `EMAIL_REPLY_TO` (pendiente de confirmar por el comercio)
 
-Las claves privadas (`SUPABASE_SERVICE_ROLE_KEY`, `MERCADOPAGO_ACCESS_TOKEN` y `GMAIL_APP_PASSWORD`) deben configurarse solo en Vercel. No pegarlas en HTML ni subirlas a GitHub.
+Las claves privadas (`SUPABASE_SERVICE_ROLE_KEY`, `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET`, `RATE_LIMIT_SECRET` y `GMAIL_APP_PASSWORD`) deben configurarse solo en Vercel. No pegarlas en HTML ni subirlas a GitHub.
 
-Después de agregar/cambiar variables, hacer un Redeploy de Production.
+Después de agregar o cambiar variables, hacer un Redeploy de Production.
 
 ## 4. Mercado Pago
 
