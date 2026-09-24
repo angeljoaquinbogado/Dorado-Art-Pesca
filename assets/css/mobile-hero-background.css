@@ -1,7 +1,14 @@
 /* =========================================================
-   DORADO — FONDO EXCLUSIVO PARA CELULAR
-   Desktop/tablet grande conserva hero-bg-dorado.webp.
-   Mobile usa la imagen vertical dedicada 9:16.
+   DORADO — FONDO MOBILE DEFINITIVO
+   2026-09-24
+
+   Objetivo:
+   - La intro y el hero usan EXACTAMENTE la misma imagen móvil.
+   - La imagen del hero vive dentro del HERO, no en el wrapper que
+     también contiene beneficios. Así "cover" calcula el recorte
+     contra el viewport/hero y no contra una sección mucho más alta.
+   - Desktop no se modifica.
+   - El dock inferior conserva el estilo oscuro ya aprobado.
    ========================================================= */
 
 @keyframes doradoMobileIntroBg {
@@ -10,34 +17,119 @@
 }
 
 @media (max-width: 820px) {
-  /* Intro: imagen vertical completa, sin el recorte agresivo del fondo desktop. */
+
+  /* INTRO — misma imagen móvil */
   .brand-intro-bg {
     inset: 0 !important;
-    background: url('../images/backgrounds/hero-bg-dorado-mobile.webp') center center / cover no-repeat !important;
+    background-image: url('../images/backgrounds/hero-bg-dorado-mobile.webp') !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
     transform-origin: center center !important;
     animation: doradoMobileIntroBg 6s cubic-bezier(.2,.7,.2,1) both !important;
   }
 
-  /* Inicio + beneficios: misma imagen móvil en una única escena continua. */
+  /*
+   * El wrapper contiene HERO + BENEFICIOS.
+   * No debe calcular el "cover" de la foto porque su altura es mucho
+   * mayor que una pantalla y terminaba ampliando la imagen hasta
+   * mostrar casi solamente el cielo.
+   */
   .hero-combined-scene {
-    background:
-      linear-gradient(180deg,
-        rgba(2,8,12,.05) 0%,
-        rgba(2,8,12,.08) 48%,
-        rgba(2,8,12,.60) 100%),
-      url('../images/backgrounds/hero-bg-dorado-mobile.webp') center center / cover no-repeat !important;
+    position: relative !important;
+    background: #061019 !important;
   }
 
-  /* No permitir que el fondo horizontal anterior aparezca como una segunda capa. */
-  .hero-combined-scene .hero-bg::before,
-  .hero-bg::before {
+  .hero-combined-scene::before {
+    content: none !important;
+    display: none !important;
+    background: none !important;
+  }
+
+  /*
+   * HERO — misma imagen y mismo encuadre que la intro.
+   * Al estar aplicada directamente al hero, center/cover funciona
+   * sobre una altura de pantalla y mantiene visible al pescador.
+   */
+  .hero-combined-scene > .hero {
+    min-height: 100svh !important;
+    background-color: #061019 !important;
+    background-image: url('../images/backgrounds/hero-bg-dorado-mobile.webp') !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .hero-combined-scene > .hero .hero-shell {
+    min-height: 100svh !important;
+    padding-top: 84px !important;
+    padding-bottom: 102px !important;
+    align-items: flex-end !important;
+  }
+
+  /*
+   * Desactiva únicamente las capas antiguas que podían volver a
+   * dibujar el fondo horizontal. No toca contenido, botones ni cards.
+   */
+  .hero-combined-scene .hero-bg {
+    background: transparent !important;
+  }
+
+  .hero-combined-scene .hero-bg::before {
+    content: none !important;
+    display: none !important;
+    background: none !important;
     background-image: none !important;
+  }
+
+  /* Conserva el sombreado suave ya existente para legibilidad. */
+  .hero-combined-scene .hero-bg::after {
+    background:
+      linear-gradient(180deg,
+        rgba(2,8,12,.08) 0%,
+        rgba(2,8,12,.02) 42%,
+        rgba(2,8,12,.22) 100%) !important;
+  }
+
+  /* =========================================================
+     DOCK MOBILE — conserva la corrección ya aprobada
+     ========================================================= */
+  .mobile-dock {
+    background: rgba(4,10,15,.94) !important;
+    border-color: rgba(255,255,255,.10) !important;
+    box-shadow: 0 16px 44px rgba(0,0,0,.30) !important;
+  }
+
+  .mobile-dock-item {
+    color: #aeb7bd !important;
+    background: transparent !important;
+  }
+
+  .mobile-dock-item .ui-icon,
+  .mobile-dock-item span {
+    color: inherit !important;
+  }
+
+  .mobile-dock-item.active {
+    color: #f6b13c !important;
+    background: rgba(239,159,36,.13) !important;
+    box-shadow: inset 0 0 0 1px rgba(239,159,36,.24) !important;
+  }
+
+  .mobile-dock-item.active .ui-icon,
+  .mobile-dock-item.active span {
+    color: #f6b13c !important;
+  }
+
+  .mobile-dock-item[href*="wa.me"] {
+    color: #55dc83 !important;
   }
 }
 
+/* iPhone/Android angostos: mismo encuadre, sin mover el foco. */
 @media (max-width: 430px) {
   .brand-intro-bg,
-  .hero-combined-scene {
+  .hero-combined-scene > .hero {
     background-position: center center !important;
   }
 }
@@ -46,161 +138,5 @@
   .brand-intro-bg {
     animation: none !important;
     transform: none !important;
-  }
-}
-
-/* =========================================================
-   DORADO — MOBILE HERO FINAL
-   2026-09-24
-   En mobile se muestra la composición vertical completa antes del
-   bloque de texto. La intro y el inicio usan la misma imagen 9:16.
-   ========================================================= */
-@media (max-width: 820px) {
-  .hero-combined-scene {
-    background-color:#061019 !important;
-    background-image:
-      linear-gradient(180deg,
-        rgba(2,8,12,.03) 0%,
-        rgba(2,8,12,.03) 38%,
-        rgba(2,8,12,.18) 54%,
-        rgba(6,16,25,.78) 70%,
-        #061019 82%,
-        #061019 100%),
-      url('../images/backgrounds/hero-bg-dorado-mobile.webp') !important;
-    background-repeat:no-repeat !important;
-    background-size:100% auto !important;
-    background-position:center top !important;
-  }
-
-  .hero-combined-scene::after {
-    background:
-      linear-gradient(180deg,
-        rgba(2,8,12,.02) 0%,
-        rgba(2,8,12,.02) 48%,
-        rgba(2,8,12,.14) 60%,
-        rgba(6,16,25,.58) 76%,
-        rgba(6,16,25,.92) 100%) !important;
-  }
-
-  .hero-combined-scene .hero {
-    min-height:auto !important;
-    padding:0 0 46px !important;
-    background:transparent !important;
-  }
-
-  /* 9:16 a ancho completo. El bloque comienza casi al terminar la foto,
-     dejando visible al pescador en lugar de taparlo con la tarjeta. */
-  .hero-combined-scene .hero-shell {
-    min-height:auto !important;
-    padding-top:clamp(515px,calc(177.777vw - 54px),730px) !important;
-    padding-bottom:78px !important;
-    align-items:flex-start !important;
-  }
-
-  .hero-combined-scene .hero-content {
-    width:100% !important;
-    max-width:none !important;
-    margin:0 !important;
-    background:linear-gradient(145deg,rgba(5,12,17,.88),rgba(5,12,17,.72)) !important;
-    border-color:rgba(255,255,255,.13) !important;
-    backdrop-filter:blur(12px) saturate(116%) !important;
-    -webkit-backdrop-filter:blur(12px) saturate(116%) !important;
-    box-shadow:0 22px 54px rgba(0,0,0,.30) !important;
-  }
-
-  /* Evita que cualquier regla vieja vuelva a dibujar el fondo horizontal. */
-  .hero-combined-scene .hero-bg,
-  .hero-combined-scene .hero-bg::before {
-    background:transparent !important;
-    background-image:none !important;
-  }
-
-  /* Dock inferior oscuro: el apartado activo sigue siendo obvio,
-     pero sin el bloque blanco que encandilaba y ocultaba el texto. */
-  .mobile-dock {
-    background:rgba(4,10,15,.94) !important;
-    border-color:rgba(255,255,255,.10) !important;
-    box-shadow:0 16px 44px rgba(0,0,0,.30) !important;
-  }
-
-  .mobile-dock-item {
-    color:#aeb7bd !important;
-    background:transparent !important;
-  }
-
-  .mobile-dock-item .ui-icon,
-  .mobile-dock-item span {
-    color:inherit !important;
-  }
-
-  .mobile-dock-item.active {
-    color:#f6b13c !important;
-    background:rgba(239,159,36,.13) !important;
-    box-shadow:inset 0 0 0 1px rgba(239,159,36,.24) !important;
-  }
-
-  .mobile-dock-item.active .ui-icon,
-  .mobile-dock-item.active span {
-    color:#f6b13c !important;
-  }
-
-  .mobile-dock-item[href*="wa.me"] {
-    color:#55dc83 !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .hero-combined-scene .hero-shell {
-    padding-top:clamp(485px,calc(177.777vw - 48px),620px) !important;
-  }
-}
-
-/* =========================================================
-   DORADO — FONDO DEL INICIO MÓVIL = MISMO ENCUADRE DE LA INTRO
-   2026-09-24
-   No modifica tarjetas, dock, botones ni desktop.
-   La foto móvil se dibuja en una capa del tamaño del viewport,
-   exactamente con center / cover como la animación inicial.
-   ========================================================= */
-@media (max-width:820px){
-  .hero-combined-scene{
-    position:relative !important;
-    background:#061019 !important;
-  }
-
-  .hero-combined-scene::before{
-    content:"" !important;
-    position:absolute !important;
-    top:0 !important;
-    left:0 !important;
-    right:0 !important;
-    width:100% !important;
-    height:100vh !important;
-    height:100dvh !important;
-    min-height:560px !important;
-    pointer-events:none !important;
-    z-index:0 !important;
-    background-image:url('../images/backgrounds/hero-bg-dorado-mobile.webp') !important;
-    background-position:center center !important;
-    background-size:cover !important;
-    background-repeat:no-repeat !important;
-  }
-
-  /* El sombreado sigue encima de la foto, sin cambiar el layout. */
-  .hero-combined-scene::after{
-    z-index:0 !important;
-  }
-
-  .hero-combined-scene > .hero,
-  .hero-combined-scene > .dorado-field-strip{
-    position:relative !important;
-    z-index:1 !important;
-  }
-
-  /* Impide que las capas antiguas vuelvan a mostrar otra imagen. */
-  .hero-combined-scene .hero-bg,
-  .hero-combined-scene .hero-bg::before{
-    background:transparent !important;
-    background-image:none !important;
   }
 }
