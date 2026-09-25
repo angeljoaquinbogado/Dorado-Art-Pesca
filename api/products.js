@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             const from = page * pageSize;
             const to = from + pageSize - 1;
             const response = await fetchWithTimeout(
-                `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc`,
+                `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc`,
                 {
                     headers: {
                         apikey: key,
@@ -47,12 +47,19 @@ export default async function handler(req, res) {
             if (data.length < pageSize) break;
         }
 
-        const safe = rows.map(p => ({
+        const safe = rows.map(p => {
+            const precioLista = Math.max(0, Number(p.precio) || 0);
+            const descuento = Math.min(95, Math.max(0, Number(p.descuento_porcentaje) || 0));
+            const precioFinal = Math.round(precioLista * (1 - descuento / 100) * 100) / 100;
+
+            return {
             id: p.id,
             nombre: String(p.nombre || ""),
             descripcion: String(p.descripcion || ""),
             caracteristicas: String(p.caracteristicas || ""),
-            precio: Math.max(0, Number(p.precio) || 0),
+            precio: precioFinal,
+            precio_lista: precioLista,
+            descuento_porcentaje: descuento,
             imagen: String(p.imagen || ""),
             imagenes: Array.isArray(p.imagenes)
                 ? p.imagenes.map(x => String(x || "").trim()).filter(Boolean)
@@ -60,7 +67,8 @@ export default async function handler(req, res) {
             categoria: String(p.categoria || ""),
             stock: Math.max(0, Number(p.stock) || 0),
             activo: Boolean(p.activo)
-        }));
+            };
+        });
 
         return res.status(200).json(safe);
 
