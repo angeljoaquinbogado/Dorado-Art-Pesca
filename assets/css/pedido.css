@@ -87,3 +87,20 @@ body{background:linear-gradient(180deg,#061019 0 230px,#f5f2eb 230px)!important}
   .track-progress::-webkit-scrollbar{display:none}
   .tracking-actions{position:relative}
 }
+
+
+/* DORADO — pago pendiente y reintento */
+.notice.pending-payment{
+  background:#eef5ff;
+  border:1px solid #c9dcf7;
+  color:#1f4f86;
+}
+.notice.pending-payment .retry-payment-button{
+  width:100%;
+  margin-top:9px;
+  border:0;
+  background:linear-gradient(135deg,#f3aa35,#d97910)!important;
+  color:#061019!important;
+}
+.notice.pending-payment .retry-payment-button[hidden]{display:none!important}
+.notice.pending-payment .retry-payment-button:disabled{opacity:.58;cursor:wait}
