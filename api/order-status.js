@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 
     try {
         const orderResponse = await sb(
-            `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,total`
+            `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,total,subtotal,descuento_productos,descuento_cupon,cupon_codigo,expira_pago_at`
         );
         const orders = await orderResponse.json().catch(() => []);
 
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
         const order = orders[0];
 
         const itemsResponse = await sb(
-            `/rest/v1/pedido_items?pedido_id=eq.${encodeURIComponent(id)}&select=nombre,cantidad,precio_unitario&order=id.asc`
+            `/rest/v1/pedido_items?pedido_id=eq.${encodeURIComponent(id)}&select=nombre,cantidad,precio_unitario,precio_lista&order=id.asc`
         );
         const items = await itemsResponse.json().catch(() => []);
 
@@ -89,10 +89,19 @@ export default async function handler(req, res) {
             preparation_status: preparacion,
             created_at: order.created_at,
             total: Number(order.total) || 0,
+            subtotal: Number(order.subtotal) || Number(order.total) || 0,
+            product_discount: Math.max(0, Number(order.descuento_productos) || 0),
+            coupon_discount: Math.max(0, Number(order.descuento_cupon) || 0),
+            coupon_code: String(order.cupon_codigo || ""),
+            expires_at: order.expira_pago_at || null,
+            can_retry_payment: ["pendiente","pago_pendiente","pago_rechazado","pago_cancelado","error_pago"].includes(estado)
+                && Boolean(order.expira_pago_at)
+                && Date.now() < new Date(order.expira_pago_at).getTime(),
             items: items.map(item => ({
                 name: String(item.nombre || ""),
                 quantity: Math.max(1, Number(item.cantidad) || 1),
-                unit_price: Number(item.precio_unitario) || 0
+                unit_price: Number(item.precio_unitario) || 0,
+                list_price: Math.max(Number(item.precio_unitario) || 0, Number(item.precio_lista) || 0)
             }))
         });
     } catch (error) {

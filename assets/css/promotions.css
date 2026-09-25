@@ -1,0 +1,20 @@
+/* DORADO — promociones, descuentos y cupones */
+.product-price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.product-price .price-current{font:inherit}
+.product-price .price-old{font-size:.62em;color:#8b8f96;text-decoration:line-through;font-weight:600}
+.product-price .discount-chip{font-size:10px;line-height:1;padding:6px 8px;border-radius:999px;background:#fff0d8;color:#9a5300;font-weight:800;letter-spacing:.04em}
+.dynamic-price-discount{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.dynamic-price-discount .old{font-size:13px;color:#8b8f96;text-decoration:line-through}
+.dynamic-price-discount .off{font-size:10px;font-weight:800;background:#fff0d8;color:#9a5300;border-radius:999px;padding:6px 8px}
+.checkout-coupon-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.checkout-coupon-row button{min-width:108px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:#17191d;color:#fff;font-weight:800;font-size:10px;letter-spacing:.05em;padding:0 14px;cursor:pointer}
+.checkout-coupon-row button:disabled{opacity:.5;cursor:wait}
+.checkout-coupon-message{min-height:18px;margin-top:6px;font-size:10px;line-height:1.5;color:#777}
+.checkout-coupon-message.ok{color:#1c7a4e}
+.checkout-coupon-message.error{color:#b3463d}
+.checkout-summary-row.discount{color:#176c45}
+.checkout-summary-row.discount strong{color:#176c45}
+@media(max-width:620px){
+  .checkout-coupon-row{grid-template-columns:1fr}
+  .checkout-coupon-row button{min-height:46px}
+}

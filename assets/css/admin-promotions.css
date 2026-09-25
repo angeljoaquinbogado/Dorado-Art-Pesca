@@ -1,0 +1,11 @@
+/* DORADO — panel de promociones */
+.promotions-grid{display:grid;grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr);gap:18px}
+.promo-form .field-row{align-items:end}
+.promo-help{font-size:11px;color:#777b82;line-height:1.6;margin-top:8px}
+.coupon-code-cell{font-weight:800;letter-spacing:.08em}
+.coupon-value{font-weight:800}
+.coupon-expired{opacity:.6}
+.promo-active-chip{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.06em;background:#e8f7ef;color:#176c45}
+.promo-active-chip.off{background:#f1f0ed;color:#767980}
+.discount-editor-note{font-size:10px;color:#7b7f86;line-height:1.5;margin-top:6px}
+@media(max-width:980px){.promotions-grid{grid-template-columns:1fr}}

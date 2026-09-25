@@ -8,8 +8,16 @@ function clean(value, max = 200) {
     return String(value ?? "").trim().slice(0, max);
 }
 
+function normalizeCoupon(value) {
+    return clean(value, 40).toUpperCase().replace(/\s+/g, "");
+}
+
 function emailValido(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function roundMoney(value) {
+    return Math.round((Number(value) || 0) * 100) / 100;
 }
 
 function originFromRequest(req) {
@@ -40,6 +48,48 @@ async function supabaseFetch(path, options = {}) {
     };
 
     return fetchWithTimeout(`${url}${path}`, { ...options, headers }, 8000);
+}
+
+async function validateCoupon(codeRaw, subtotal) {
+    const code = normalizeCoupon(codeRaw);
+    if (!code) return null;
+
+    const response = await supabaseFetch(
+        `/rest/v1/cupones?codigo=eq.${encodeURIComponent(code)}&select=id,codigo,tipo,valor,minimo_compra,activo,valido_desde,valido_hasta&limit=1`
+    );
+    const rows = await response.json().catch(() => []);
+
+    if (!response.ok || !Array.isArray(rows)) {
+        throw Object.assign(new Error("No pudimos validar el cupón."), { status: 502 });
+    }
+
+    const coupon = rows[0];
+    if (!coupon || !coupon.activo) {
+        throw Object.assign(new Error("El cupón no existe o no está activo."), { status: 409 });
+    }
+
+    const now = Date.now();
+    if (coupon.valido_desde && new Date(coupon.valido_desde).getTime() > now) {
+        throw Object.assign(new Error("Este cupón todavía no está vigente."), { status: 409 });
+    }
+    if (coupon.valido_hasta && new Date(coupon.valido_hasta).getTime() < now) {
+        throw Object.assign(new Error("Este cupón ya venció."), { status: 409 });
+    }
+
+    const minimum = Math.max(0, Number(coupon.minimo_compra) || 0);
+    if (subtotal + 0.001 < minimum) {
+        throw Object.assign(new Error("El carrito no alcanza el mínimo requerido por este cupón."), { status: 409 });
+    }
+
+    const value = Math.max(0, Number(coupon.valor) || 0);
+    const discount = coupon.tipo === "fijo"
+        ? Math.min(subtotal, value)
+        : Math.min(subtotal, subtotal * Math.min(100, value) / 100);
+
+    return {
+        code: normalizeCoupon(coupon.codigo),
+        discount: roundMoney(discount)
+    };
 }
 
 export default async function handler(req, res) {
@@ -97,6 +147,7 @@ export default async function handler(req, res) {
         const body = req.body && typeof req.body === "object" ? req.body : {};
         const clienteRaw = body.cliente || {};
         const itemsRaw = Array.isArray(body.items) ? body.items : [];
+        const couponCode = normalizeCoupon(body.coupon_code || "");
 
         const cliente = {
             nombre: clean(clienteRaw.nombre, 100),
@@ -120,6 +171,7 @@ export default async function handler(req, res) {
         ) {
             return res.status(400).json({ error: "Revisá los datos de contacto y entrega." });
         }
+
         if (esRetiro) {
             cliente.domicilio = cliente.domicilio || "Retiro en el local";
             cliente.ciudad = cliente.ciudad || "San Fernando";
@@ -153,7 +205,7 @@ export default async function handler(req, res) {
         }
 
         const catalogResponse = await supabaseFetch(
-            "/rest/v1/productos?select=id,nombre,precio,stock,activo&activo=eq.true"
+            "/rest/v1/productos?select=id,nombre,precio,descuento_porcentaje,stock,activo&activo=eq.true"
         );
 
         const catalog = await catalogResponse.json().catch(() => []);
@@ -165,7 +217,8 @@ export default async function handler(req, res) {
 
         const catalogMap = new Map(catalog.map(p => [String(p.id), p]));
         const orderItems = [];
-        let total = 0;
+        let subtotalLista = 0;
+        let subtotal = 0;
 
         for (const [id, cantidad] of cantidades) {
             const producto = catalogMap.get(id);
@@ -175,7 +228,9 @@ export default async function handler(req, res) {
             }
 
             const stock = Math.max(0, Number(producto.stock) || 0);
-            const precio = Math.max(0, Number(producto.precio) || 0);
+            const precioLista = Math.max(0, Number(producto.precio) || 0);
+            const descuento = Math.min(95, Math.max(0, Number(producto.descuento_porcentaje) || 0));
+            const precio = roundMoney(precioLista * (1 - descuento / 100));
 
             if (cantidad > stock) {
                 return res.status(409).json({
@@ -191,13 +246,25 @@ export default async function handler(req, res) {
                 producto_id: producto.id,
                 nombre: clean(producto.nombre, 160),
                 cantidad,
-                precio_unitario: precio
+                precio_unitario: precio,
+                precio_lista: precioLista
             });
 
-            total += precio * cantidad;
+            subtotalLista += precioLista * cantidad;
+            subtotal += precio * cantidad;
         }
 
-        total = Math.round(total * 100) / 100;
+        subtotalLista = roundMoney(subtotalLista);
+        subtotal = roundMoney(subtotal);
+
+        if (subtotal <= 0) {
+            return res.status(400).json({ error: "El total del pedido no es válido." });
+        }
+
+        const coupon = couponCode ? await validateCoupon(couponCode, subtotal) : null;
+        const descuentoCupon = coupon?.discount || 0;
+        const descuentoProductos = roundMoney(Math.max(0, subtotalLista - subtotal));
+        const total = roundMoney(Math.max(0, subtotal - descuentoCupon));
 
         if (total <= 0) {
             return res.status(400).json({ error: "El total del pedido no es válido." });
@@ -218,8 +285,13 @@ export default async function handler(req, res) {
                     codigo_postal: cliente.codigo_postal,
                     metodo_entrega: cliente.entrega || "retiro",
                     notas: cliente.notas || null,
+                    subtotal: subtotalLista,
+                    descuento_productos: descuentoProductos,
+                    descuento_cupon: descuentoCupon,
+                    cupon_codigo: coupon?.code || null,
                     total,
-                    estado: "pendiente"
+                    estado: "pendiente",
+                    expira_pago_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
                 })
             }
         );
@@ -260,15 +332,24 @@ export default async function handler(req, res) {
         }
 
         const origin = originFromRequest(req);
-
-        const preference = {
-            items: orderItems.map(item => ({
+        const preferenceItems = descuentoCupon > 0
+            ? [{
+                id: String(orderId),
+                title: `Pedido Dorado · cupón ${coupon.code}`,
+                quantity: 1,
+                unit_price: total,
+                currency_id: "ARS"
+            }]
+            : orderItems.map(item => ({
                 id: String(item.producto_id),
                 title: item.nombre,
                 quantity: item.cantidad,
                 unit_price: item.precio_unitario,
                 currency_id: "ARS"
-            })),
+            }));
+
+        const preference = {
+            items: preferenceItems,
             payer: {
                 name: cliente.nombre,
                 email: cliente.email,
@@ -284,7 +365,8 @@ export default async function handler(req, res) {
             auto_return: "approved",
             statement_descriptor: "DORADO PESCA",
             metadata: {
-                pedido_id: String(orderId)
+                pedido_id: String(orderId),
+                cupon_codigo: coupon?.code || ""
             }
         };
 
@@ -323,13 +405,18 @@ export default async function handler(req, res) {
             order_code: `DP-${String(orderId).replaceAll("-", "").slice(0, 10).toUpperCase()}`,
             tracking_token: trackingToken,
             tracking_url: `${origin}/pedido.html?id=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
-            init_point: mpData.init_point
+            init_point: mpData.init_point,
+            subtotal: subtotalLista,
+            discount: roundMoney(descuentoProductos + descuentoCupon),
+            total,
+            coupon_code: coupon?.code || null,
+            expires_at: order.expira_pago_at
         });
 
     } catch (error) {
         console.error("Checkout error:", error);
-        return res.status(500).json({
-            error: "Ocurrió un error preparando el pago. Intentá nuevamente."
+        return res.status(Number(error?.status) || 500).json({
+            error: error?.message || "Ocurrió un error preparando el pago. Intentá nuevamente."
         });
     }
 }

@@ -66,6 +66,33 @@ async function loadOrder(){
     document.getElementById("tracking-progress").innerHTML=renderProgress(info);
     document.getElementById("tracking-review").hidden=!info.review;
 
+    const pendingBox=document.getElementById("tracking-payment-pending");
+    const retryButton=document.getElementById("tracking-retry-payment");
+    const pendingTitle=document.getElementById("tracking-payment-title");
+    const pendingCopy=document.getElementById("tracking-payment-copy");
+    const paymentPending=["pendiente","fallido"].includes(String(data.status||"").toLowerCase());
+
+    if(pendingBox){
+      pendingBox.hidden=!paymentPending;
+      if(paymentPending){
+        const expires=data.expires_at ? new Date(data.expires_at) : null;
+        const validExpiry=expires && !Number.isNaN(expires.getTime());
+        const expired=validExpiry ? Date.now()>=expires.getTime() : !data.can_retry_payment;
+        if(pendingTitle) pendingTitle.textContent=expired
+          ? "El plazo para pagar este pedido venció."
+          : "Tu pago está pendiente.";
+        if(pendingCopy) pendingCopy.textContent=expired
+          ? "El pedido superó las 24 horas. Iniciá una nueva compra o escribinos por WhatsApp."
+          : `Podés volver a intentar el pago hasta ${expires.toLocaleString("es-AR",{dateStyle:"medium",timeStyle:"short"})} usando los medios disponibles en Mercado Pago.`;
+        if(retryButton){
+          retryButton.hidden=expired || !data.can_retry_payment;
+          retryButton.disabled=false;
+          retryButton.dataset.orderId=id;
+          retryButton.dataset.tracking=tracking;
+        }
+      }
+    }
+
     let units=0;
     const items=Array.isArray(data.items)?data.items:[];
     document.getElementById("tracking-items").innerHTML=items.map(item=>{
@@ -90,6 +117,33 @@ async function loadOrder(){
 }
 
 document.getElementById("tracking-refresh")?.addEventListener("click",loadOrder);
+document.getElementById("tracking-retry-payment")?.addEventListener("click",async e=>{
+  const button=e.currentTarget;
+  const id=String(button.dataset.orderId||"");
+  const tracking=String(button.dataset.tracking||"");
+  if(!id||!tracking)return;
+
+  const original=button.textContent;
+  button.disabled=true;
+  button.textContent="PREPARANDO PAGO…";
+
+  try{
+    const r=await fetch("/api/retry-payment",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify({id,tracking})
+    });
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(data.error||"No pudimos preparar el pago.");
+    if(!data.init_point)throw new Error("Mercado Pago no devolvió un enlace de pago.");
+    window.location.assign(data.init_point);
+  }catch(err){
+    button.disabled=false;
+    button.textContent=original;
+    const copy=document.getElementById("tracking-payment-copy");
+    if(copy)copy.textContent=err?.message||"No pudimos preparar el pago.";
+  }
+});
 document.getElementById("tracking-copy")?.addEventListener("click",async e=>{
   const button=e.currentTarget;
   const original=button.textContent;

@@ -1,6 +1,4 @@
-import { sendOrderConfirmationEmail } from "../lib/order-email.js";
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+import { sendOrderStatusEmail } from "../lib/order-email.js";
 import {
     consumeRateLimit,
     enforceRateLimit,
@@ -8,6 +6,8 @@ import {
     bodyTooLarge,
     fetchWithTimeout
 } from "../lib/security.js";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 async function supabaseFetch(path, options = {}) {
     const url = process.env.SUPABASE_URL;
@@ -37,6 +37,77 @@ function publicOrigin(req) {
     const proto = String(req.headers["x-forwarded-proto"] || "https").split(",")[0].trim();
     const host = String(req.headers.host || "dorado-art-pesca.vercel.app").trim();
     return `${proto === "http" ? "http" : "https"}://${host}`;
+}
+
+async function sendStatusEmailOnce({ order, event, req }) {
+    const claimResponse = await supabaseFetch(
+        "/rest/v1/rpc/claim_pedido_email_evento",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                p_pedido_id: order.id,
+                p_evento: event
+            })
+        }
+    );
+    const claimData = await claimResponse.json().catch(() => null);
+
+    if (!claimResponse.ok) {
+        throw new Error(`No se pudo reclamar el email ${event}`);
+    }
+    if (!claimData?.claimed) {
+        return { skipped: true, reason: claimData?.reason || "not_claimed" };
+    }
+
+    try {
+        const itemsResponse = await supabaseFetch(
+            `/rest/v1/pedido_items?pedido_id=eq.${encodeURIComponent(order.id)}&select=nombre,cantidad,precio_unitario,precio_lista&order=id.asc`
+        );
+        const items = await itemsResponse.json().catch(() => []);
+
+        if (!itemsResponse.ok || !Array.isArray(items)) {
+            throw new Error("No se pudo cargar el detalle para el email");
+        }
+
+        const result = await sendOrderStatusEmail({
+            order,
+            items,
+            event,
+            origin: publicOrigin(req)
+        });
+
+        await supabaseFetch(
+            "/rest/v1/rpc/finalizar_pedido_email_evento",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    p_pedido_id: order.id,
+                    p_evento: event,
+                    p_enviado: Boolean(result?.sent)
+                })
+            }
+        );
+
+        if (!result?.sent && !result?.skipped) {
+            throw new Error("El proveedor de email no confirmó el envío");
+        }
+
+        return result;
+    } catch (error) {
+        await supabaseFetch(
+            "/rest/v1/rpc/finalizar_pedido_email_evento",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    p_pedido_id: order.id,
+                    p_evento: event,
+                    p_enviado: false
+                })
+            }
+        ).catch(() => null);
+
+        throw error;
+    }
 }
 
 export default async function handler(req, res) {
@@ -73,24 +144,22 @@ export default async function handler(req, res) {
         if (enforceRateLimit(res, rate, "Demasiadas notificaciones.")) return;
 
         const topic = String(
-    req.query?.topic ||
-    req.query?.type ||
-    req.body?.type ||
-    req.body?.topic ||
-    ""
-).toLowerCase();
+            req.query?.topic ||
+            req.query?.type ||
+            req.body?.type ||
+            req.body?.topic ||
+            ""
+        ).toLowerCase();
 
-// Mercado Pago también puede enviar notificaciones de merchant_order.
-// Ese ID NO es un payment_id, por lo que no debemos consultarlo
-// mediante /v1/payments/:id.
-if (topic === "merchant_order") {
-    console.log("Webhook merchant_order ignorado correctamente");
-    return res.status(200).json({
-        ok: true,
-        ignored: true,
-        reason: "merchant_order"
-    });
-}
+        if (topic === "merchant_order") {
+            console.log("Webhook merchant_order ignorado correctamente");
+            return res.status(200).json({
+                ok: true,
+                ignored: true,
+                reason: "merchant_order"
+            });
+        }
+
         const paymentId = extractPaymentId(req);
 
         if (!paymentId) {
@@ -109,8 +178,6 @@ if (topic === "merchant_order") {
             return res.status(401).json({ error: "Firma inválida" });
         }
 
-        // Nunca confiamos en el cuerpo del webhook: consultamos el pago directamente
-        // a Mercado Pago con el token privado del comercio.
         const mpResponse = await fetchWithTimeout(
             `https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`,
             {
@@ -146,7 +213,7 @@ if (topic === "merchant_order") {
         }
 
         const orderResponse = await supabaseFetch(
-            `/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}&select=id,total,estado,mp_payment_id,cliente_nombre,cliente_email,tracking_token`
+            `/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}&select=id,total,subtotal,descuento_productos,descuento_cupon,cupon_codigo,estado,mp_payment_id,cliente_nombre,cliente_email,tracking_token,expira_pago_at`
         );
 
         const orders = await orderResponse.json().catch(() => []);
@@ -217,71 +284,14 @@ if (topic === "merchant_order") {
                 return res.status(500).json({ error: "No se pudo confirmar el pedido" });
             }
 
-            // El envío se reclama de forma atómica para evitar emails duplicados
-            // cuando Mercado Pago entrega dos webhooks casi al mismo tiempo.
             if (rpcData?.ok) {
-                const claimResponse = await supabaseFetch(
-                    "/rest/v1/rpc/claim_email_confirmacion",
-                    {
-                        method: "POST",
-                        body: JSON.stringify({ p_pedido_id: orderId })
-                    }
-                );
-                const claimData = await claimResponse.json().catch(() => null);
-
-                if (!claimResponse.ok) {
-                    console.error("claim_email_confirmacion failed", {
-                        status: claimResponse.status,
-                        orderId
+                try {
+                    await sendStatusEmailOnce({ order, event: "pagado", req });
+                } catch (emailError) {
+                    console.error("Order paid email failed:", emailError?.message || emailError);
+                    return res.status(500).json({
+                        error: "Pedido confirmado; email pendiente de reintento"
                     });
-                } else if (claimData?.claimed) {
-                    try {
-                        const itemsResponse = await supabaseFetch(
-                            `/rest/v1/pedido_items?pedido_id=eq.${encodeURIComponent(orderId)}&select=nombre,cantidad,precio_unitario&order=id.asc`
-                        );
-                        const items = await itemsResponse.json().catch(() => []);
-
-                        if (!itemsResponse.ok || !Array.isArray(items)) {
-                            throw new Error("No se pudo cargar el detalle para el email");
-                        }
-
-                        const emailResult = await sendOrderConfirmationEmail({
-                            order,
-                            items,
-                            origin: publicOrigin(req)
-                        });
-
-                        await supabaseFetch(
-                            "/rest/v1/rpc/finalizar_email_confirmacion",
-                            {
-                                method: "POST",
-                                body: JSON.stringify({
-                                    p_pedido_id: orderId,
-                                    p_enviado: Boolean(emailResult?.sent)
-                                })
-                            }
-                        );
-
-                        if (!emailResult?.sent && !emailResult?.skipped) {
-                            throw new Error("El proveedor de email no confirmó el envío");
-                        }
-                    } catch (emailError) {
-                        await supabaseFetch(
-                            "/rest/v1/rpc/finalizar_email_confirmacion",
-                            {
-                                method: "POST",
-                                body: JSON.stringify({
-                                    p_pedido_id: orderId,
-                                    p_enviado: false
-                                })
-                            }
-                        ).catch(() => null);
-
-                        console.error("Order confirmation email failed:", emailError?.message || emailError);
-                        return res.status(500).json({
-                            error: "Pedido confirmado; email pendiente de reintento"
-                        });
-                    }
                 }
             }
 
@@ -326,6 +336,22 @@ if (topic === "merchant_order") {
                 orderId
             });
             return res.status(500).json({ error: "No se pudo actualizar el pedido" });
+        }
+
+        const event =
+            status === "pending" || status === "in_process" ? "pendiente" :
+            status === "rejected" || status === "cancelled" ? "cancelado" :
+            "";
+
+        if (event && !stateData?.ignored) {
+            try {
+                await sendStatusEmailOnce({ order, event, req });
+            } catch (emailError) {
+                console.error(`Order ${event} email failed:`, emailError?.message || emailError);
+                return res.status(500).json({
+                    error: "Estado actualizado; email pendiente de reintento"
+                });
+            }
         }
 
         return res.status(200).json({ ok: true, result: stateData });

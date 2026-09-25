@@ -36,6 +36,10 @@ Refuerza seguridad y rate limiting para operaciones server-side.
 
 Capa final de hardening. Incluye control del estado de confirmación por email para reducir duplicados y otras protecciones.
 
+### `promotions-and-email-status.sql`
+
+Agrega descuentos por producto, cupones administrables, vencimiento de pago a 24 horas y deduplicación de emails por evento de pago. Para instalaciones nuevas ya está incluido al final de `dorado-complete-setup.sql`.
+
 ### `seed-demo-product.sql`
 
 Producto de referencia opcional. Se crea oculto y no debe utilizarse como inventario real.

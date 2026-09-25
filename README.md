@@ -31,9 +31,11 @@ El proyecto combina una experiencia de compra adaptada a desktop y mobile con ba
 - Catálogo dinámico con búsqueda y filtros por categoría.
 - Ficha de producto con galería de imágenes.
 - Carrito persistente y checkout responsive.
+- Descuentos por producto y cupones administrables desde el panel.
 - Métodos de coordinación por WhatsApp, transferencia y efectivo con retiro.
 - Integración de Mercado Pago preparada y bloqueada hasta activación comercial.
-- Seguimiento privado de pedidos mediante token.
+- Seguimiento privado de pedidos mediante token y reintento de pago durante 24 horas.
+- Emails automáticos para compra confirmada, pago pendiente y pago cancelado/rechazado.
 - Panel Admin para productos, stock, imágenes y estados de pedidos.
 - Dirección, mapa, horarios y estado abierto/cerrado.
 - Navegación móvil propia y experiencia desktop diferenciada.
@@ -90,7 +92,7 @@ Más detalle en [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
 
 **Preproducción.** La aplicación y la infraestructura técnica están preparadas. Antes de habilitar ventas completas faltan decisiones y datos comerciales que dependen del negocio:
 
-- email comercial definitivo y usuario Admin;
+- contraseña de aplicación de Gmail y usuario Admin;
 - credenciales productivas de Mercado Pago;
 - condiciones, costos y transportistas de envío;
 - carga del catálogo real con precios y stock;
