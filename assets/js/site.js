@@ -4,6 +4,7 @@ const DORADO_WHATSAPP = "5491168070039";
 
 const catalogoProductos = new Map();
 let productoModalActual = null;
+let checkoutCoupon = null;
 
 const formatoPesos = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -14,6 +15,23 @@ const formatoPesos = new Intl.NumberFormat("es-AR", {
 function formatearPrecio(valor) {
     const numero = Number(valor);
     return formatoPesos.format(Number.isFinite(numero) ? numero : 0);
+}
+
+function precioProductoInfo(producto) {
+    const final = Math.max(0, Number(producto?.precio) || 0);
+    const lista = Math.max(final, Number(producto?.precio_lista) || final);
+    const descuento = Math.min(95, Math.max(0, Number(producto?.descuento_porcentaje) || 0));
+    return { final, lista, descuento };
+}
+
+function precioProductoHtml(producto) {
+    const info = precioProductoInfo(producto);
+    if (info.descuento <= 0 || info.lista <= info.final + 0.009) {
+        return `<span class="price-current">${textoSeguro(formatearPrecio(info.final))}</span>`;
+    }
+    return `<span class="price-current">${textoSeguro(formatearPrecio(info.final))}</span>
+        <span class="price-old">${textoSeguro(formatearPrecio(info.lista))}</span>
+        <span class="discount-chip">${textoSeguro(String(info.descuento))}% OFF</span>`;
 }
 
 function textoSeguro(valor) {
@@ -143,7 +161,16 @@ function leerCarrito() {
 
 function guardarCarrito(carrito) {
     localStorage.setItem(DORADO_CART_KEY, JSON.stringify(carrito));
+    checkoutCoupon = null;
+    const couponInput = document.getElementById("checkout-coupon");
+    const couponMessage = document.getElementById("checkout-coupon-message");
+    if (couponInput) couponInput.value = "";
+    if (couponMessage) {
+        couponMessage.textContent = "";
+        couponMessage.className = "checkout-coupon-message";
+    }
     renderCarrito();
+    renderCheckoutResumen();
 }
 
 function cantidadTotal(carrito = leerCarrito()) {
@@ -291,7 +318,7 @@ async function cargarProductosDesdeSupabase() {
                     <p class="product-card-description">${textoSeguro(descripcionResumen(producto.descripcion || ""))}</p>
 
                     <div class="product-price">
-                        ${textoSeguro(formatearPrecio(producto.precio))}
+                        ${precioProductoHtml(producto)}
                     </div>
 
                     <div class="product-stock">
@@ -554,10 +581,10 @@ function verProducto(producto) {
     if (featuresSection) featuresSection.hidden = !featuresHtml;
 
     const precio = modal.querySelector(".dynamic-product-price");
-    if (precio) precio.textContent = formatearPrecio(producto.precio);
+    if (precio) precio.innerHTML = precioProductoHtml(producto);
 
     const precioMobile = modal.querySelector(".dynamic-product-price-mobile");
-    if (precioMobile) precioMobile.textContent = formatearPrecio(producto.precio);
+    if (precioMobile) precioMobile.innerHTML = precioProductoHtml(producto);
 
     const stockElemento = modal.querySelector(".dynamic-product-stock");
 
@@ -1032,20 +1059,22 @@ function finalizarPorWhatsApp() {
     }
 
     const unidades = cantidadTotal(carrito);
-    const total = carrito.reduce(
+    const subtotal = carrito.reduce(
         (suma, item) =>
             suma +
             (Number(item.precio) || 0) *
             Math.max(0, Number(item.cantidad) || 0),
         0
     );
+    const couponDiscount = Math.min(subtotal, Math.max(0, Number(checkoutCoupon?.discount) || 0));
+    const total = Math.max(0, subtotal - couponDiscount);
 
     const detalle = carrito
         .map((item, indice) => {
             const cantidad = Math.max(1, Number(item.cantidad) || 1);
-            const subtotal = (Number(item.precio) || 0) * cantidad;
+            const itemSubtotal = (Number(item.precio) || 0) * cantidad;
 
-            return `${indice + 1}. ${item.nombre}\n   Cantidad: ${cantidad}\n   Subtotal: ${formatearPrecio(subtotal)}`;
+            return `${indice + 1}. ${item.nombre}\n   Cantidad: ${cantidad}\n   Subtotal: ${formatearPrecio(itemSubtotal)}`;
         })
         .join("\n\n");
 
@@ -1057,10 +1086,11 @@ function finalizarPorWhatsApp() {
         detalle,
         "",
         `Unidades: ${unidades}`,
+        checkoutCoupon?.code ? `Cupón aplicado: ${checkoutCoupon.code} (−${formatearPrecio(couponDiscount)})` : "",
         `TOTAL: ${formatearPrecio(total)}`,
         "",
         "¿Me indican formas de pago y entrega?"
-    ].join("\n");
+    ].filter(Boolean).join("\n");
 
     const url = `https://wa.me/${DORADO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
@@ -1073,19 +1103,21 @@ function renderCheckoutResumen() {
     const lista = document.getElementById("checkout-summary-list");
     const totalEl = document.getElementById("checkout-summary-total");
     const unidadesEl = document.getElementById("checkout-summary-units");
+    const discountRow = document.getElementById("checkout-summary-discount-row");
+    const discountEl = document.getElementById("checkout-summary-discount");
 
     if (!lista) return;
 
     lista.innerHTML = "";
 
-    let total = 0;
+    let subtotal = 0;
     let unidades = 0;
 
     carrito.forEach(item => {
         const cantidad = Math.max(1, Number(item.cantidad) || 1);
         const precio = Number(item.precio) || 0;
-        const subtotal = precio * cantidad;
-        total += subtotal;
+        const itemSubtotal = precio * cantidad;
+        subtotal += itemSubtotal;
         unidades += cantidad;
 
         const fila = document.createElement("div");
@@ -1096,14 +1128,84 @@ function renderCheckoutResumen() {
                 <strong>${textoSeguro(item.nombre || "Producto")}</strong>
                 <small>${cantidad} × ${textoSeguro(formatearPrecio(precio))}</small>
             </div>
-            <div class="checkout-summary-price">${textoSeguro(formatearPrecio(subtotal))}</div>
+            <div class="checkout-summary-price">${textoSeguro(formatearPrecio(itemSubtotal))}</div>
         `;
         lista.appendChild(fila);
     });
 
+    const discount = Math.min(subtotal, Math.max(0, Number(checkoutCoupon?.discount) || 0));
+    const total = Math.max(0, subtotal - discount);
+
+    if (discountRow) discountRow.hidden = discount <= 0;
+    if (discountEl) discountEl.textContent = `− ${formatearPrecio(discount)}`;
     if (totalEl) totalEl.textContent = formatearPrecio(total);
     if (unidadesEl) {
         unidadesEl.textContent = `${unidades} ${unidades === 1 ? "unidad" : "unidades"}`;
+    }
+}
+
+function setCouponMessage(text="", type="") {
+    const el = document.getElementById("checkout-coupon-message");
+    if (!el) return;
+    el.textContent = text;
+    el.className = `checkout-coupon-message ${type}`.trim();
+}
+
+async function aplicarCuponCheckout() {
+    const input = document.getElementById("checkout-coupon");
+    const button = document.getElementById("checkout-coupon-apply");
+    if (!input || !button) return;
+
+    const code = String(input.value || "").trim().toUpperCase().replace(/\s+/g, "");
+    if (!code) {
+        checkoutCoupon = null;
+        setCouponMessage("Ingresá un código de cupón.", "error");
+        renderCheckoutResumen();
+        return;
+    }
+
+    const carrito = leerCarrito();
+    if (!carrito.length) {
+        setCouponMessage("Agregá productos antes de aplicar un cupón.", "error");
+        return;
+    }
+
+    button.disabled = true;
+    const original = button.textContent;
+    button.textContent = "VALIDANDO…";
+
+    try {
+        const items = carrito.map(item => ({
+            id: item.id,
+            cantidad: Math.max(1, Math.floor(Number(item.cantidad) || 1))
+        }));
+
+        const response = await fetch("/api/coupon", {
+            method: "POST",
+            headers: {"Content-Type":"application/json","Accept":"application/json"},
+            body: JSON.stringify({ code, items })
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data?.valid) {
+            throw new Error(data?.error || "El cupón no es válido.");
+        }
+
+        checkoutCoupon = {
+            code: String(data.code || code),
+            discount: Math.max(0, Number(data.discount) || 0),
+            total: Math.max(0, Number(data.total) || 0)
+        };
+        input.value = checkoutCoupon.code;
+        setCouponMessage(`Cupón ${checkoutCoupon.code} aplicado: ahorrás ${formatearPrecio(checkoutCoupon.discount)}.`, "ok");
+        renderCheckoutResumen();
+    } catch (error) {
+        checkoutCoupon = null;
+        setCouponMessage(error?.message || "No pudimos validar el cupón.", "error");
+        renderCheckoutResumen();
+    } finally {
+        button.disabled = false;
+        button.textContent = original;
     }
 }
 
@@ -1185,7 +1287,9 @@ async function iniciarPagoMercadoPago(evento) {
     };
 
     if (metodoPago !== "mercadopago") {
-        const total = carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+        const subtotal = carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+        const descuentoCupon = Math.min(subtotal,Math.max(0,Number(checkoutCoupon?.discount)||0));
+        const total = Math.max(0,subtotal-descuentoCupon);
         const detalle = carrito.map((item,i)=>{
             const cantidad=Math.max(1,Number(item.cantidad)||1);
             return `${i+1}. ${item.nombre} · ${cantidad} u. · ${formatearPrecio((Number(item.precio)||0)*cantidad)}`;
@@ -1195,6 +1299,7 @@ async function iniciarPagoMercadoPago(evento) {
         const mensaje = [
             "Hola Dorado Artículos de Pesca 👋",
             "Quiero confirmar este pedido desde la web:","",detalle,"",
+            checkoutCoupon?.code ? `Cupón: ${checkoutCoupon.code} (−${formatearPrecio(descuentoCupon)})` : "",
             `TOTAL PRODUCTOS: ${formatearPrecio(total)}`,
             `Pago: ${nombres[metodoPago] || "A coordinar"}`,
             `Entrega: ${entregas[entrega] || entrega}`,
@@ -1221,7 +1326,11 @@ async function iniciarPagoMercadoPago(evento) {
         const respuesta = await fetch("/api/checkout", {
             method: "POST",
             headers: {"Content-Type": "application/json","Accept": "application/json"},
-            body: JSON.stringify({ cliente, items })
+            body: JSON.stringify({
+                cliente,
+                items,
+                coupon_code: checkoutCoupon?.code || ""
+            })
         });
         const data = await respuesta.json().catch(() => ({}));
         if (!respuesta.ok) throw new Error(data?.error || "No pudimos iniciar el pago.");
@@ -2638,6 +2747,13 @@ comprobarRetornoPago();
 
     document.querySelector(".checkout-close")?.addEventListener("click", cerrarCheckout);
     document.querySelector(".checkout-whatsapp")?.addEventListener("click", finalizarPorWhatsApp);
+    document.getElementById("checkout-coupon-apply")?.addEventListener("click", aplicarCuponCheckout);
+    document.getElementById("checkout-coupon")?.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            aplicarCuponCheckout();
+        }
+    });
 
     document.getElementById("orders-overlay")?.addEventListener("click", cerrarMisPedidos);
     document.querySelector(".orders-close")?.addEventListener("click", cerrarMisPedidos);
