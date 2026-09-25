@@ -3,6 +3,7 @@ let CONFIG = null;
 let session = null;
 let productos = [];
 let pedidos = [];
+let cupones = [];
 let selectedOrders = new Set();
 let productGalleryDraft = [];
 let refreshPromise = null;
@@ -521,7 +522,7 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        const r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&order=id.asc",{
+        const r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         const d=await r.json().catch(()=>[]);
@@ -578,7 +579,14 @@ function renderProducts(){
         tr.innerHTML=`
             <td><div class="thumb-shell"><img class="product-thumb" src="${esc(resolveAdminImage(p.imagen))}" alt="" loading="lazy" decoding="async"></div></td>
             <td><strong class="product-name-cell">${esc(p.nombre)}</strong><div class="cell-sub">${esc(p.categoria||"Sin categoría")}</div></td>
-            <td><strong class="price-cell">${esc(money.format(Number(p.precio)||0))}</strong></td>
+            <td>${(()=>{
+                const list=Math.max(0,Number(p.precio)||0);
+                const discount=Math.min(95,Math.max(0,Number(p.descuento_porcentaje)||0));
+                const final=list*(1-discount/100);
+                return discount>0
+                    ? `<strong class="price-cell">${esc(money.format(final))}</strong><div class="cell-sub"><s>${esc(money.format(list))}</s> · ${esc(String(discount))}% OFF</div>`
+                    : `<strong class="price-cell">${esc(money.format(list))}</strong>`;
+            })()}</td>
             <td><span class="stock-pill ${stockClass}">${stockText}</span></td>
             <td><span class="badge ${p.activo?"on":"off"}">${p.activo?"ACTIVO":"OCULTO"}</span></td>
             <td><div class="row-actions"><button class="icon-btn edit" type="button">${icon("edit")}<span>EDITAR</span></button><button class="icon-btn remove" type="button">${icon("trash")}<span>ELIMINAR</span></button></div></td>
@@ -593,6 +601,7 @@ function resetProductForm(){
     document.getElementById("product-form").reset();
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
+    document.getElementById("product-discount").value="0";
     document.getElementById("product-form-title").textContent="Nuevo producto";
     document.getElementById("product-save").textContent="GUARDAR PRODUCTO";
     document.getElementById("product-cancel").classList.add("hidden");
@@ -608,6 +617,7 @@ function editProduct(id){
     document.getElementById("product-description").value=p.descripcion||"";
     document.getElementById("product-features").value=p.caracteristicas||"";
     document.getElementById("product-price").value=Number(p.precio)||0;
+    document.getElementById("product-discount").value=Math.min(95,Math.max(0,Number(p.descuento_porcentaje)||0));
     document.getElementById("product-stock").value=Number(p.stock)||0;
     document.getElementById("product-category").value=p.categoria||"";
     document.getElementById("product-image").value="";
@@ -679,6 +689,7 @@ async function saveProduct(event){
             descripcion:document.getElementById("product-description").value.trim(),
             caracteristicas:document.getElementById("product-features").value.trim(),
             precio:Number(document.getElementById("product-price").value),
+            descuento_porcentaje:Math.min(95,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
             categoria:document.getElementById("product-category").value.trim(),
             imagen:imagenes[0],
@@ -688,6 +699,9 @@ async function saveProduct(event){
 
         if(!payload.nombre||!Number.isFinite(payload.precio)||payload.precio<0){
             throw new Error("Revisá nombre y precio.");
+        }
+        if(!Number.isFinite(payload.descuento_porcentaje)||payload.descuento_porcentaje<0||payload.descuento_porcentaje>95){
+            throw new Error("El descuento debe estar entre 0% y 95%.");
         }
 
         const path=id?`/rest/v1/productos?id=eq.${encodeURIComponent(id)}`:"/rest/v1/productos";
@@ -732,6 +746,193 @@ async function deleteProduct(id,name){
     }
 }
 
+
+
+function normalizeCouponCode(value){
+    return String(value||"").trim().toUpperCase().replace(/\s+/g,"").slice(0,40);
+}
+
+function dateTimeLocalValue(value){
+    if(!value)return "";
+    const d=new Date(value);
+    if(Number.isNaN(d.getTime()))return "";
+    const pad=n=>String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function couponDateLabel(value){
+    if(!value)return "Sin límite";
+    const d=new Date(value);
+    if(Number.isNaN(d.getTime()))return "—";
+    return d.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"});
+}
+
+async function loadCoupons(){
+    const tbody=document.getElementById("coupons-table");
+    if(tbody)tbody.innerHTML='<tr><td colspan="6" class="loading">Cargando cupones...</td></tr>';
+
+    const r=await sb("/rest/v1/cupones?select=id,codigo,tipo,valor,minimo_compra,activo,valido_desde,valido_hasta,created_at,updated_at&order=created_at.desc");
+    const data=await r.json().catch(()=>[]);
+    if(!r.ok||!Array.isArray(data))throw new Error("No se pudieron cargar los cupones.");
+
+    cupones=data;
+    renderCoupons();
+}
+
+function renderCoupons(){
+    const tbody=document.getElementById("coupons-table");
+    if(!tbody)return;
+
+    const count=document.getElementById("coupon-list-count");
+    if(count)count.textContent=`${cupones.length} ${cupones.length===1?"cupón":"cupones"}`;
+
+    tbody.innerHTML="";
+    if(!cupones.length){
+        tbody.innerHTML='<tr><td colspan="6" class="loading empty-state">Todavía no hay cupones creados.</td></tr>';
+        return;
+    }
+
+    const now=Date.now();
+    cupones.forEach(coupon=>{
+        const tr=document.createElement("tr");
+        const until=coupon.valido_hasta?new Date(coupon.valido_hasta).getTime():0;
+        const expired=Boolean(until&&until<now);
+        if(expired)tr.classList.add("coupon-expired");
+
+        const value=Number(coupon.valor)||0;
+        const valueText=coupon.tipo==="fijo"
+            ? money.format(value)
+            : `${value}%`;
+        const min=money.format(Math.max(0,Number(coupon.minimo_compra)||0));
+        const period=`${couponDateLabel(coupon.valido_desde)} → ${couponDateLabel(coupon.valido_hasta)}`;
+
+        tr.innerHTML=`
+            <td><span class="coupon-code-cell">${esc(coupon.codigo)}</span></td>
+            <td><span class="coupon-value">${esc(valueText)}</span><div class="cell-sub">${coupon.tipo==="fijo"?"MONTO FIJO":"PORCENTAJE"}</div></td>
+            <td>${esc(min)}</td>
+            <td><span class="cell-sub">${esc(period)}</span></td>
+            <td><span class="promo-active-chip ${coupon.activo&&!expired?"":"off"}">${coupon.activo?(expired?"VENCIDO":"ACTIVO"):"INACTIVO"}</span></td>
+            <td><div class="row-actions"><button class="icon-btn edit" type="button">${icon("edit")}<span>EDITAR</span></button><button class="icon-btn remove" type="button">${icon("trash")}<span>ELIMINAR</span></button></div></td>
+        `;
+
+        tr.querySelector(".edit").onclick=()=>editCoupon(coupon.id);
+        tr.querySelector(".remove").onclick=()=>deleteCoupon(coupon.id,coupon.codigo);
+        tbody.appendChild(tr);
+    });
+}
+
+function resetCouponForm(){
+    const form=document.getElementById("coupon-form");
+    if(!form)return;
+    form.reset();
+    document.getElementById("coupon-id").value="";
+    document.getElementById("coupon-type").value="porcentaje";
+    document.getElementById("coupon-minimum").value="0";
+    document.getElementById("coupon-active").value="true";
+    document.getElementById("coupon-form-title").textContent="Nuevo cupón";
+    document.getElementById("coupon-save").textContent="GUARDAR CUPÓN";
+    document.getElementById("coupon-cancel").classList.add("hidden");
+    msg("coupon-message","");
+}
+
+function editCoupon(id){
+    const coupon=cupones.find(x=>String(x.id)===String(id));
+    if(!coupon)return;
+
+    document.getElementById("coupon-id").value=coupon.id;
+    document.getElementById("coupon-code").value=coupon.codigo||"";
+    document.getElementById("coupon-type").value=coupon.tipo||"porcentaje";
+    document.getElementById("coupon-value").value=Number(coupon.valor)||0;
+    document.getElementById("coupon-minimum").value=Math.max(0,Number(coupon.minimo_compra)||0);
+    document.getElementById("coupon-valid-from").value=dateTimeLocalValue(coupon.valido_desde);
+    document.getElementById("coupon-valid-until").value=dateTimeLocalValue(coupon.valido_hasta);
+    document.getElementById("coupon-active").value=String(Boolean(coupon.activo));
+    document.getElementById("coupon-form-title").textContent="Editar cupón";
+    document.getElementById("coupon-save").textContent="GUARDAR CAMBIOS";
+    document.getElementById("coupon-cancel").classList.remove("hidden");
+    document.getElementById("coupon-form").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function saveCoupon(event){
+    event.preventDefault();
+    const button=document.getElementById("coupon-save");
+    button.disabled=true;
+    msg("coupon-message","");
+
+    try{
+        const id=document.getElementById("coupon-id").value.trim();
+        const code=normalizeCouponCode(document.getElementById("coupon-code").value);
+        const type=document.getElementById("coupon-type").value;
+        const value=Number(document.getElementById("coupon-value").value);
+        const minimum=Math.max(0,Number(document.getElementById("coupon-minimum").value)||0);
+        const fromRaw=document.getElementById("coupon-valid-from").value;
+        const untilRaw=document.getElementById("coupon-valid-until").value;
+
+        if(!code)throw new Error("Ingresá un código de cupón.");
+        if(!["porcentaje","fijo"].includes(type))throw new Error("Elegí un tipo de descuento válido.");
+        if(!Number.isFinite(value)||value<=0)throw new Error("Ingresá un valor de descuento válido.");
+        if(type==="porcentaje"&&value>100)throw new Error("El porcentaje no puede superar 100%.");
+
+        const from=fromRaw?new Date(fromRaw):null;
+        const until=untilRaw?new Date(untilRaw):null;
+        if(from&&Number.isNaN(from.getTime()))throw new Error("La fecha de inicio no es válida.");
+        if(until&&Number.isNaN(until.getTime()))throw new Error("La fecha de fin no es válida.");
+        if(from&&until&&until<=from)throw new Error("La fecha de fin debe ser posterior al inicio.");
+
+        const payload={
+            codigo:code,
+            tipo:type,
+            valor:value,
+            minimo_compra:minimum,
+            activo:document.getElementById("coupon-active").value==="true",
+            valido_desde:from?from.toISOString():null,
+            valido_hasta:until?until.toISOString():null,
+            updated_at:new Date().toISOString()
+        };
+
+        const path=id?`/rest/v1/cupones?id=eq.${encodeURIComponent(id)}`:"/rest/v1/cupones";
+        const r=await sb(path,{
+            method:id?"PATCH":"POST",
+            headers:{Prefer:"return=minimal"},
+            body:JSON.stringify(payload)
+        });
+
+        if(!r.ok){
+            const data=await r.json().catch(()=>({}));
+            if(r.status===409||String(data.code||"")==="23505")throw new Error("Ya existe un cupón con ese código.");
+            throw new Error(data.message||"No se pudo guardar el cupón.");
+        }
+
+        msg("coupon-message",id?"Cambios guardados.":"Cupón creado.","ok");
+        showToast(id?"Cupón actualizado.":"Cupón creado correctamente.");
+        await loadCoupons();
+        setTimeout(resetCouponForm,500);
+    }catch(error){
+        msg("coupon-message",error.message||"No se pudo guardar el cupón.","error");
+    }finally{
+        button.disabled=false;
+    }
+}
+
+async function deleteCoupon(id,code){
+    const ok=await confirmAction({
+        title:"Eliminar cupón",
+        text:`Vas a eliminar el cupón “${code}”. Esta acción no se puede deshacer.`,
+        confirmText:"ELIMINAR",
+        danger:true
+    });
+    if(!ok)return;
+
+    const r=await sb(`/rest/v1/cupones?id=eq.${encodeURIComponent(id)}`,{method:"DELETE"});
+    if(!r.ok){
+        showToast("No se pudo eliminar el cupón.","error");
+        return;
+    }
+
+    showToast("Cupón eliminado.");
+    await loadCoupons();
+    resetCouponForm();
+}
 
 function updateOrderSelectionUI(){
     const checkboxes=Array.from(document.querySelectorAll(".order-checkbox"));
@@ -1077,6 +1278,7 @@ async function refreshAll(){
     const current=document.querySelector(".tab.active")?.dataset.tab;
     try{
         if(current==="orders")await loadOrders();
+        else if(current==="promotions")await loadCoupons();
         else await loadProducts();
     }catch(e){
         showToast(e.message||"No se pudo actualizar.","error");
@@ -1104,6 +1306,8 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
 
 document.getElementById("product-form").addEventListener("submit",saveProduct);
 document.getElementById("product-cancel").addEventListener("click",resetProductForm);
+document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
+document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
 document.getElementById("logout-button").addEventListener("click",()=>logout());
 document.getElementById("refresh-button").addEventListener("click",refreshAll);
 
@@ -1114,6 +1318,10 @@ document.querySelectorAll(".tab").forEach(button=>{
         document.getElementById(`${button.dataset.tab}-panel`).classList.add("active");
         if(button.dataset.tab==="orders"){
             try{await loadOrders();}catch(e){showToast(e.message||"No se pudieron cargar los pedidos.","error");}
+        }else if(button.dataset.tab==="promotions"){
+            try{await loadCoupons();}catch(e){showToast(e.message||"No se pudieron cargar los cupones.","error");}
+        }else if(button.dataset.tab==="products"){
+            try{await loadProducts();}catch(e){showToast(e.message||"No se pudieron cargar los productos.","error");}
         }
     });
 });
