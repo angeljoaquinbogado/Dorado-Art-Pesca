@@ -1,7 +1,15 @@
 {
   "name": "dorado-art-pesca",
+  "version": "1.0.0",
   "private": true,
+  "description": "E-commerce full stack para Dorado Artículos de Pesca.",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node scripts/check-project.mjs"
+  },
   "dependencies": {
     "nodemailer": "6.9.16"
   }
