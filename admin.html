@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="assets/css/admin-mobile.css"/>
 <link rel="stylesheet" href="assets/css/admin-gallery.css"/>
 <link rel="stylesheet" href="assets/css/admin-dorado.css"/>
+<link rel="stylesheet" href="assets/css/admin-promotions.css"/>
 </head>
 <body>
 
@@ -69,6 +70,9 @@
         </button>
         <button class="tab" data-tab="orders" type="button">
           <svg viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>PEDIDOS</span>
+        </button>
+        <button class="tab" data-tab="promotions" type="button">
+          <svg viewBox="0 0 24 24"><path d="M4 8h16v12H4z"/><path d="M8 8V5h8v3"/><path d="m9 13 6 0M12 10v6"/></svg><span>PROMOCIONES</span>
         </button>
       </nav>
       <div class="side-spacer"></div>
@@ -144,8 +148,13 @@
               <div class="form-section">
                 <div class="form-section-title">PRECIO Y DISPONIBILIDAD</div>
                 <div class="field-row">
-                  <div class="field"><label for="product-price">PRECIO (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
+                  <div class="field"><label for="product-price">PRECIO DE LISTA (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
                   <div class="field"><label for="product-stock">STOCK</label><input id="product-stock" type="number" min="0" step="1" required placeholder="10"></div>
+                </div>
+                <div class="field">
+                  <label for="product-discount">DESCUENTO DEL PRODUCTO (%)</label>
+                  <input id="product-discount" type="number" min="0" max="95" step="0.01" value="0" placeholder="0">
+                  <div class="discount-editor-note">Dejá 0 para precio normal. El descuento se calcula en servidor y se muestra automáticamente en la tienda.</div>
                 </div>
                 <datalist id="fishing-categories"><option value="Cañas"><option value="Reels"><option value="Señuelos"><option value="Líneas y Tanzas"><option value="Anzuelos y Terminales"><option value="Boyas"><option value="Accesorios"><option value="Indumentaria"><option value="Carnadas"><option value="Combos"></datalist>
                 <div class="field-row">
@@ -244,6 +253,102 @@
             </div>
 
             <div class="table-wrap"><table><thead><tr><th class="order-check-head"><input id="orders-select-all-head" type="checkbox" aria-label="Seleccionar todos los pedidos"></th><th>FECHA</th><th>CLIENTE</th><th>CONTACTO</th><th>TOTAL</th><th>PAGO</th><th>PREPARACIÓN</th><th>ACCIONES</th></tr></thead><tbody id="orders-table"><tr><td colspan="8" class="loading">Cargando pedidos...</td></tr></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="promotions-panel" class="panel">
+          <div class="promotions-grid">
+            <form id="coupon-form" class="card form-card promo-form">
+              <div class="card-head">
+                <div>
+                  <span class="section-tag">CUPONES</span>
+                  <h2 id="coupon-form-title" style="margin-top:10px">Nuevo cupón</h2>
+                  <p>Creá códigos de descuento para usar en el checkout.</p>
+                </div>
+              </div>
+
+              <input id="coupon-id" type="hidden">
+
+              <div class="field">
+                <label for="coupon-code">CÓDIGO</label>
+                <input id="coupon-code" maxlength="40" required placeholder="Ej: DORADO10" autocomplete="off">
+                <div class="promo-help">Se guarda en mayúsculas y sin espacios.</div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="coupon-type">TIPO</label>
+                  <select id="coupon-type">
+                    <option value="porcentaje">Porcentaje</option>
+                    <option value="fijo">Monto fijo</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="coupon-value">VALOR</label>
+                  <input id="coupon-value" type="number" min="0.01" step="0.01" required placeholder="10">
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="coupon-minimum">COMPRA MÍNIMA (ARS)</label>
+                <input id="coupon-minimum" type="number" min="0" step="0.01" value="0" placeholder="0">
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="coupon-valid-from">VÁLIDO DESDE</label>
+                  <input id="coupon-valid-from" type="datetime-local">
+                </div>
+                <div class="field">
+                  <label for="coupon-valid-until">VÁLIDO HASTA</label>
+                  <input id="coupon-valid-until" type="datetime-local">
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="coupon-active">ESTADO</label>
+                <select id="coupon-active">
+                  <option value="true">Activo</option>
+                  <option value="false">Inactivo</option>
+                </select>
+              </div>
+
+              <div id="coupon-message" class="message"></div>
+              <div class="form-actions">
+                <button id="coupon-save" class="primary" type="submit">GUARDAR CUPÓN</button>
+                <button id="coupon-cancel" class="secondary hidden" type="button">CANCELAR EDICIÓN</button>
+              </div>
+            </form>
+
+            <div class="card catalog-card">
+              <div class="catalog-toolbar">
+                <div class="catalog-title-row">
+                  <div>
+                    <h2>Cupones</h2>
+                    <p>Administrá promociones por porcentaje o monto fijo.</p>
+                  </div>
+                  <span id="coupon-list-count" class="catalog-count">0 cupones</span>
+                </div>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>CÓDIGO</th>
+                      <th>DESCUENTO</th>
+                      <th>MÍNIMO</th>
+                      <th>VIGENCIA</th>
+                      <th>ESTADO</th>
+                      <th>ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="coupons-table">
+                    <tr><td colspan="6" class="loading">Cargando cupones...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </section>
       </main>
