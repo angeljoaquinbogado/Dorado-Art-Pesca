@@ -1,4 +1,4 @@
-import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
+import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout, sameOriginRequest, publicSiteOrigin } from "../lib/security.js";
 import { productPrice, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
 import { sendOrderStatusEmail } from "../lib/order-email.js";
 
@@ -12,17 +12,6 @@ function clean(value, max = 200) {
 
 function emailValido(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function originFromRequest(req) {
-    const configured = clean(process.env.PUBLIC_SITE_URL || "", 250).replace(/\/$/, "");
-    if (/^https:\/\//i.test(configured)) return configured;
-
-    const forwarded = clean(req.headers["x-forwarded-proto"] || "https", 10);
-    const proto = forwarded === "http" ? "http" : "https";
-    const host = clean(req.headers.host || "", 200);
-    if (!host) return "https://dorado-art-pesca.vercel.app";
-    return `${proto}://${host}`;
 }
 
 async function supabaseFetch(path, options = {}) {
@@ -78,17 +67,8 @@ export default async function handler(req, res) {
         return res.status(413).json({ error: "La solicitud es demasiado grande." });
     }
 
-    const requestOrigin = String(req.headers.origin || "").trim();
-    const requestHost = String(req.headers.host || "").trim();
-
-    if (requestOrigin) {
-        try {
-            if (new URL(requestOrigin).host !== requestHost) {
-                return res.status(403).json({ error: "Origen no autorizado" });
-            }
-        } catch {
-            return res.status(403).json({ error: "Origen no autorizado" });
-        }
+    if (!sameOriginRequest(req)) {
+        return res.status(403).json({ error: "Origen no autorizado" });
     }
 
     const mpEnabled = String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true";
@@ -188,7 +168,7 @@ export default async function handler(req, res) {
         }
 
         if (!catalogResponse.ok || !Array.isArray(catalog)) {
-            console.error("Catalog validation error:", catalog);
+            console.error("Catalog validation error", { status: catalogResponse.status });
             return res.status(502).json({ error: "No pudimos validar el catálogo." });
         }
 
@@ -281,7 +261,7 @@ export default async function handler(req, res) {
         const orderData = await orderResponse.json().catch(() => []);
 
         if (!orderResponse.ok || !Array.isArray(orderData) || !orderData[0]?.id) {
-            console.error("Order insert error:", orderData);
+            console.error("Order insert error", { status: orderResponse.status });
             return res.status(500).json({ error: "No pudimos crear el pedido." });
         }
 
@@ -305,7 +285,7 @@ export default async function handler(req, res) {
         );
 
         if (!itemsResponse.ok) {
-            console.error("Order items insert error:", await itemsResponse.text());
+            console.error("Order items insert error", { status: itemsResponse.status, orderId });
             await supabaseFetch(`/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}`, {
                 method: "PATCH",
                 body: JSON.stringify({ estado: "error_items" })
@@ -313,7 +293,7 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "No pudimos guardar el detalle del pedido." });
         }
 
-        const origin = originFromRequest(req);
+        const origin = publicSiteOrigin(req);
         const paymentStartsAt = new Date();
         const paymentExpiresAt = new Date(paymentStartsAt.getTime() + 24 * 60 * 60 * 1000);
 
@@ -341,9 +321,9 @@ export default async function handler(req, res) {
             external_reference: String(orderId),
             notification_url: `${origin}/api/mercadopago-webhook`,
             back_urls: {
-                success: `${origin}/?checkout=success&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
-                pending: `${origin}/?checkout=pending&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
-                failure: `${origin}/?checkout=failure&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`
+                success: `${origin}/?checkout=success&order=${encodeURIComponent(orderId)}`,
+                pending: `${origin}/?checkout=pending&order=${encodeURIComponent(orderId)}`,
+                failure: `${origin}/?checkout=failure&order=${encodeURIComponent(orderId)}`
             },
             auto_return: "approved",
             expires: true,
@@ -368,7 +348,10 @@ export default async function handler(req, res) {
         const mpData = await mpResponse.json().catch(() => ({}));
 
         if (!mpResponse.ok || !mpData?.id || !mpData?.init_point) {
-            console.error("Mercado Pago preference error:", mpData);
+            console.error("Mercado Pago preference error", {
+                status: mpResponse.status,
+                code: String(mpData?.error || mpData?.status || "")
+            });
             await supabaseFetch(`/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}`, {
                 method: "PATCH",
                 body: JSON.stringify({ estado: "error_pago" })
@@ -413,7 +396,7 @@ export default async function handler(req, res) {
             order_id: orderId,
             order_code: `DP-${String(orderId).replaceAll("-", "").slice(0, 10).toUpperCase()}`,
             tracking_token: trackingToken,
-            tracking_url: `${origin}/pedido.html?id=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
+            tracking_url: `${origin}/pedido.html?id=${encodeURIComponent(orderId)}#tracking=${encodeURIComponent(trackingToken)}`,
             init_point: mpData.init_point
         });
 
