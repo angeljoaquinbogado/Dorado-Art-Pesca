@@ -3364,3 +3364,184 @@ comprobarRetornoPago();
         renderMarquee();
     })();
 })();
+
+/* DORADO — selectores visuales de provincia y entrega */
+(function configurarSelectoresCheckout(){
+    const configs=[
+        {
+            id:"checkout-province",
+            placeholder:"Elegí una provincia",
+            menuLabel:"Provincia",
+            helper:()=>"",
+            badge:()=>""
+        },
+        {
+            id:"checkout-delivery",
+            placeholder:"Elegí cómo recibir tu pedido",
+            menuLabel:"Entrega",
+            helper:(value)=>{
+                if(value==="retiro")return "Retirás tu pedido en el local.";
+                if(value==="local")return "Entrega local o en cercanías.";
+                if(value==="nacional")return "Envío al resto de Argentina.";
+                if(value==="coordinar")return "Coordinación directa por WhatsApp.";
+                return "";
+            },
+            badge:(value)=>{
+                if(value==="retiro")return "LOCAL";
+                if(value==="local")return "CERCANÍAS";
+                if(value==="nacional")return "ARGENTINA";
+                if(value==="coordinar")return "WHATSAPP";
+                return "";
+            }
+        }
+    ];
+
+    const closeAll=(except=null)=>{
+        document.querySelectorAll(".dorado-select.is-open").forEach(wrapper=>{
+            if(wrapper===except)return;
+            wrapper.classList.remove("is-open");
+            const menu=wrapper.querySelector(".dorado-select-menu");
+            const trigger=wrapper.querySelector(".dorado-select-trigger");
+            if(menu)menu.hidden=true;
+            if(trigger)trigger.setAttribute("aria-expanded","false");
+        });
+    };
+
+    configs.forEach(config=>{
+        const select=document.getElementById(config.id);
+        if(!select||select.dataset.doradoSelect==="true")return;
+
+        select.dataset.doradoSelect="true";
+        select.classList.add("dorado-native-select");
+
+        const wrapper=document.createElement("div");
+        wrapper.className="dorado-select";
+        wrapper.dataset.for=config.id;
+
+        const trigger=document.createElement("button");
+        trigger.type="button";
+        trigger.className="dorado-select-trigger";
+        trigger.id=`${config.id}-trigger`;
+        trigger.setAttribute("aria-haspopup","listbox");
+        trigger.setAttribute("aria-expanded","false");
+
+        const triggerCopy=document.createElement("span");
+        triggerCopy.className="dorado-select-trigger-copy";
+
+        const triggerKicker=document.createElement("span");
+        triggerKicker.className="dorado-select-kicker";
+        triggerKicker.textContent=config.menuLabel.toUpperCase();
+
+        const triggerValue=document.createElement("strong");
+        triggerValue.className="dorado-select-value";
+
+        triggerCopy.append(triggerKicker,triggerValue);
+
+        const chevron=document.createElement("svg");
+        chevron.className="ui-icon dorado-select-chevron";
+        chevron.setAttribute("aria-hidden","true");
+        chevron.innerHTML='<use href="#i-chevron"></use>';
+
+        trigger.append(triggerCopy,chevron);
+
+        const menu=document.createElement("div");
+        menu.className="dorado-select-menu";
+        menu.setAttribute("role","listbox");
+        menu.setAttribute("aria-label",config.menuLabel);
+        menu.hidden=true;
+
+        const options=Array.from(select.options);
+
+        const currentLabel=()=>{
+            const option=options.find(item=>item.value===select.value) || select.options[select.selectedIndex];
+            const text=String(option?.textContent||"").trim();
+            return text && option?.value ? text : config.placeholder;
+        };
+
+        const render=()=>{
+            triggerValue.textContent=currentLabel();
+            trigger.classList.toggle("has-value",Boolean(select.value));
+            menu.innerHTML="";
+
+            options.forEach(option=>{
+                if(!option.value)return;
+
+                const button=document.createElement("button");
+                button.type="button";
+                button.className="dorado-select-option";
+                button.dataset.value=option.value;
+                button.setAttribute("role","option");
+                button.setAttribute("aria-selected",option.value===select.value?"true":"false");
+                if(option.value===select.value)button.classList.add("is-selected");
+
+                const copy=document.createElement("span");
+                copy.className="dorado-select-option-copy";
+
+                const title=document.createElement("strong");
+                title.textContent=String(option.textContent||"").trim();
+                copy.appendChild(title);
+
+                const helperText=String(config.helper(option.value,title.textContent)||"").trim();
+                if(helperText){
+                    const helper=document.createElement("small");
+                    helper.textContent=helperText;
+                    copy.appendChild(helper);
+                }
+
+                const badgeText=String(config.badge(option.value)||"").trim();
+                if(badgeText){
+                    const badge=document.createElement("span");
+                    badge.className="dorado-select-badge";
+                    badge.textContent=badgeText;
+                    button.append(copy,badge);
+                }else{
+                    const check=document.createElement("span");
+                    check.className="dorado-select-check";
+                    check.textContent=option.value===select.value?"✓":"";
+                    button.append(copy,check);
+                }
+
+                button.addEventListener("click",()=>{
+                    select.value=option.value;
+                    select.dispatchEvent(new Event("change",{bubbles:true}));
+                    render();
+                    closeAll();
+                    trigger.focus({preventScroll:true});
+                });
+
+                menu.appendChild(button);
+            });
+        };
+
+        trigger.addEventListener("click",()=>{
+            const opening=menu.hidden;
+            closeAll(wrapper);
+            menu.hidden=!opening;
+            wrapper.classList.toggle("is-open",opening);
+            trigger.setAttribute("aria-expanded",opening?"true":"false");
+        });
+
+        select.addEventListener("change",render);
+
+        wrapper.append(trigger,menu);
+        select.insertAdjacentElement("afterend",wrapper);
+
+        const label=select.closest(".checkout-field")?.querySelector(`label[for="${config.id}"]`);
+        if(label)label.setAttribute("for",trigger.id);
+
+        render();
+    });
+
+    document.addEventListener("click",event=>{
+        if(!event.target.closest(".dorado-select"))closeAll();
+    });
+
+    document.addEventListener("keydown",event=>{
+        if(event.key==="Escape"){
+            const open=document.querySelector(".dorado-select.is-open");
+            closeAll();
+            open?.querySelector(".dorado-select-trigger")?.focus({preventScroll:true});
+        }
+    });
+})();
+/* FIN DORADO — selectores visuales de provincia y entrega */
