@@ -15,7 +15,7 @@
   ·
   <a href="./docs/DEPLOYMENT.md">Deploy</a>
   ·
-  <a href="./SECURITY.md">Seguridad</a>
+  <a href="./.github/SECURITY.md">Seguridad</a>
 </p>
 
 ![Quality Check](https://github.com/angeljoaquinbogado/Dorado-Art-Pesca/actions/workflows/quality-check.yml/badge.svg)
@@ -139,7 +139,7 @@ El mismo control se ejecuta en GitHub Actions para pushes y pull requests contra
 - [Configuración comercial](./docs/BUSINESS_CONFIGURATION.md)
 - [Checklist de preproducción](./docs/PRE_PRODUCTION_CHECKLIST.md)
 - [Base de datos](./database/README.md)
-- [Seguridad](./SECURITY.md)
+- [Seguridad](./.github/SECURITY.md)
 - [Historial de cambios](./CHANGELOG.md)
 - [Índice de documentación](./docs/README.md)
 

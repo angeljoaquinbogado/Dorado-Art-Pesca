@@ -88,6 +88,18 @@
   }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"¿El stock que veo en la web está actualizado?","acceptedAnswer":{"@type":"Answer","text":"El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito."}},
+    {"@type":"Question","name":"¿Cómo se coordina el envío?","acceptedAnswer":{"@type":"Answer","text":"El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido."}},
+    {"@type":"Question","name":"¿Puedo retirar en el local?","acceptedAnswer":{"@type":"Answer","text":"Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado."}},
+    {"@type":"Question","name":"¿Cómo sigo mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Cada compra genera un enlace privado para consultar el estado del pedido y, cuando corresponda, el seguimiento del transportista."}}
+  ]
+}
+</script>
 <link rel="preload" as="image" href="/assets/images/backgrounds/hero-bg-dorado.webp" type="image/webp" media="(min-width: 821px)" fetchpriority="high"/>
 <link rel="preload" as="image" href="/assets/images/backgrounds/hero-bg-dorado-mobile.webp" type="image/webp" media="(max-width: 820px)" fetchpriority="high"/>
 <link rel="preload" as="image" href="/assets/images/brand/logo-dorado-640.webp" type="image/webp" fetchpriority="high"/>
@@ -304,6 +316,16 @@
 </div>
 </div>
 </section>
+<section class="section best-sellers-section reveal" id="mas-elegidos" hidden>
+  <div class="best-sellers-shell">
+    <div class="section-head-copy">
+      <div class="kicker">MÁS ELEGIDOS</div>
+      <h2 class="section-title">Productos que más <span>eligen nuestros clientes.</span></h2>
+      <p class="section-desc">Esta sección aparece únicamente cuando existen compras pagadas reales.</p>
+    </div>
+    <div class="best-sellers-grid" id="best-sellers-grid"></div>
+  </div>
+</section>
 <section class="process reveal dorado-buy-flow" id="como-comprar">
   <div class="process-shell">
     <div class="process-intro">
@@ -334,6 +356,41 @@
   </div>
 </section>
 
+
+<section class="section trust-section reveal" id="opiniones">
+  <div class="trust-shell">
+    <div class="trust-copy">
+      <div class="section-index"><span>05</span><i></i><b>CONFIANZA</b></div>
+      <div class="kicker">OPINIONES REALES</div>
+      <h2>Lo que dicen nuestros clientes, <span>en Google.</span></h2>
+      <p>No mostramos testimonios inventados. Las opiniones públicas de Dorado se consultan directamente en su ficha de Google Maps.</p>
+    </div>
+    <div class="google-review-card">
+      <div class="google-review-mark">G</div>
+      <div><strong>Reseñas de Google Maps</strong><span>Fuente pública y verificable</span></div>
+      <a class="outline-btn" href="https://maps.app.goo.gl/TwX97iRfzjRwDdy38" target="_blank" rel="noopener">VER RESEÑAS EN GOOGLE</a>
+    </div>
+  </div>
+</section>
+
+<section class="section faq-section reveal" id="preguntas-frecuentes">
+  <div class="faq-shell">
+    <div class="faq-intro">
+      <div class="section-index"><span>06</span><i></i><b>AYUDA</b></div>
+      <div class="kicker">PREGUNTAS FRECUENTES</div>
+      <h2>Antes de comprar, <span>todo claro.</span></h2>
+      <p>Respuestas rápidas sobre stock, pagos, retiro, envíos y seguimiento.</p>
+    </div>
+    <div class="faq-list">
+      <details><summary>¿El stock que veo en la web está actualizado?</summary><p>El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito.</p></details>
+      <details><summary>¿Cómo se coordina el envío?</summary><p>El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido. El total del checkout corresponde a los productos.</p></details>
+      <details><summary>¿Puedo retirar en el local?</summary><p>Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado.</p></details>
+      <details><summary>¿Qué medios de pago están disponibles?</summary><p>La tienda permite coordinar por WhatsApp, transferencia y efectivo para retiro. Mercado Pago se habilita desde la configuración comercial cuando quede activo para producción.</p></details>
+      <details><summary>¿Cómo sigo mi pedido?</summary><p>Cada compra genera un enlace privado. Desde ahí podés ver el estado del pedido y, cuando corresponda, el transportista, código y enlace oficial de seguimiento.</p></details>
+    </div>
+  </div>
+</section>
+
 <!-- =========================
      UBICACIÓN
 ========================= -->
@@ -343,7 +400,7 @@
 <section class="location reveal" id="contacto">
 <div class="location-box">
 <div class="location-copy">
-<div class="section-index"><span>05</span><i></i><b>CONTACTO</b></div>
+<div class="section-index"><span>07</span><i></i><b>CONTACTO</b></div>
 <div class="kicker">CONTACTO &amp; UBICACIÓN</div>
 <h2>VENÍ A <span>CONOCERNOS.</span></h2>
 <p>Estamos en Las Heras 1680, Carupá, San Fernando. Consultanos por stock, asesoramiento, retiros y entregas, o abrí la ubicación exacta en Google Maps.</p>
@@ -392,6 +449,10 @@
 <section class="product-info-section dynamic-features-section reveal">
 <h3 class="product-info-section-title">Características principales</h3>
 <div class="dynamic-product-features"></div>
+</section>
+<section class="product-info-section related-products-section" hidden>
+<h3 class="product-info-section-title">También te puede interesar</h3>
+<div class="related-products-grid"></div>
 </section>
 <div class="dynamic-product-price">
                 $0

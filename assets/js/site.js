@@ -211,6 +211,38 @@ function configurarSelectorCantidad(contenedor, maximo, alCambiar = null) {
     actualizarBotonesCantidad(contenedor, max);
 }
 
+
+async function cargarMasElegidos(){
+    const section=document.getElementById("mas-elegidos");
+    const grid=document.getElementById("best-sellers-grid");
+    if(!section||!grid)return;
+    try{
+        const response=await fetch("/api/best-sellers",{headers:{Accept:"application/json"},cache:"no-store"});
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||!Array.isArray(data.ids))return;
+        const products=data.ids.map(id=>catalogoProductos.get(String(id))).filter(Boolean).filter(product=>Math.max(0,Number(product.stock)||0)>0).slice(0,6);
+        if(!products.length)return;
+        grid.innerHTML="";
+        products.forEach(product=>{
+            const button=document.createElement("button");
+            button.type="button";
+            button.className="best-seller-card";
+            button.innerHTML=`
+                <img src="${textoSeguro(imagenSegura(product.imagen))}" alt="" loading="lazy" decoding="async">
+                <span class="best-seller-category">${textoSeguro(product.categoria||"Producto")}</span>
+                <strong>${textoSeguro(product.nombre||"Producto")}</strong>
+                <span class="best-seller-price">${textoSeguro(formatearPrecio(product.precio))}</span>
+                <span class="best-seller-action">VER PRODUCTO →</span>
+            `;
+            button.addEventListener("click",()=>verProducto(product));
+            grid.appendChild(button);
+        });
+        section.hidden=false;
+    }catch{
+        section.hidden=true;
+    }
+}
+
 async function cargarProductosDesdeSupabase() {
     const contenedor = document.getElementById("products-grid");
 
@@ -396,6 +428,7 @@ async function cargarProductosDesdeSupabase() {
 
         construirFiltrosCategorias(productos);
         actualizarFiltroCatalogo();
+        cargarMasElegidos();
 
     } catch (error) {
         console.error("Error cargando productos:", error);
@@ -525,12 +558,36 @@ function renderGaleriaProducto(modal,producto){
     show(0);
 }
 
+
+function renderProductosRelacionados(modal, producto){
+    const wrap=modal.querySelector(".related-products-section");
+    const grid=modal.querySelector(".related-products-grid");
+    if(!wrap||!grid)return;
+    const categoria=String(producto?.categoria||"").trim().toLowerCase();
+    const relacionados=[...catalogoProductos.values()]
+        .filter(item=>String(item.id)!==String(producto?.id))
+        .filter(item=>Math.max(0,Number(item.stock)||0)>0)
+        .filter(item=>!categoria||String(item.categoria||"").trim().toLowerCase()===categoria)
+        .slice(0,3);
+    wrap.hidden=relacionados.length===0;
+    grid.innerHTML="";
+    relacionados.forEach(item=>{
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="related-product-card";
+        button.innerHTML=`<img src="${textoSeguro(imagenSegura(item.imagen))}" alt="" loading="lazy" decoding="async"><span><strong>${textoSeguro(item.nombre||"Producto")}</strong><small>${textoSeguro(formatearPrecio(item.precio))}</small></span>`;
+        button.addEventListener("click",()=>verProducto(item));
+        grid.appendChild(button);
+    });
+}
+
 function verProducto(producto) {
     const modal = document.getElementById("producto-dinamico");
 
     if (!modal) return;
 
     productoModalActual = producto;
+    renderProductosRelacionados(modal, producto);
 
     const stock = Math.max(0, Number(producto.stock) || 0);
     renderGaleriaProducto(modal, producto);

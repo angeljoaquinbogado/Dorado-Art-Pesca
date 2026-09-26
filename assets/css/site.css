@@ -3987,3 +3987,29 @@ body.orders-open{overflow:hidden}
   .checkout-coupon-row button{width:100%}
   .product-discount-badge{font-size:8px;min-height:22px}
 }
+
+
+/* DORADO — confianza, FAQ, relacionados y más elegidos */
+.trust-section,.faq-section{padding:clamp(54px,7vw,92px) 0;background:#f7f5ef}
+.trust-shell,.faq-shell,.best-sellers-shell{width:min(1180px,calc(100% - 36px));margin:auto}
+.trust-shell{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.72fr);gap:32px;align-items:center}
+.trust-copy h2,.faq-intro h2{margin:12px 0 0;font-size:clamp(32px,4vw,52px);line-height:1.02;letter-spacing:-.05em}
+.trust-copy h2 span,.faq-intro h2 span{color:#a97b16}.trust-copy p,.faq-intro p{max-width:680px;margin:14px 0 0;color:#777a80;font-size:11px;line-height:1.7}
+.google-review-card{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center;padding:20px;border:1px solid #e5dfd2;border-radius:22px;background:#fff;box-shadow:0 18px 50px rgba(20,20,20,.05)}
+.google-review-mark{width:46px;height:46px;border-radius:15px;background:#f5f2eb;display:grid;place-items:center;font-size:22px;font-weight:900;color:#2f66d0}
+.google-review-card strong{display:block;font-size:13px}.google-review-card span{display:block;margin-top:3px;color:#8a8d92;font-size:9px}.google-review-card .outline-btn{grid-column:1/-1;justify-content:center;width:100%;margin-top:4px}
+.faq-section{background:#fff}.faq-shell{display:grid;grid-template-columns:minmax(280px,.7fr) minmax(0,1fr);gap:48px;align-items:start}.faq-list{display:grid;gap:10px}
+.faq-list details{border:1px solid #e7e2d8;border-radius:17px;background:#fbfaf7;overflow:hidden}.faq-list summary{list-style:none;cursor:pointer;padding:17px 48px 17px 18px;position:relative;font-size:11px;font-weight:850}
+.faq-list summary::-webkit-details-marker{display:none}.faq-list summary::after{content:"+";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:20px;color:#a97b16}.faq-list details[open] summary::after{content:"–"}
+.faq-list details p{margin:0;padding:0 18px 17px;color:#71747a;font-size:10px;line-height:1.65}
+.related-products-section{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.related-products-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.related-product-card{min-width:0;border:1px solid #e8e3da;border-radius:13px;background:#faf9f5;padding:8px;display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:center;text-align:left;cursor:pointer}
+.related-product-card:hover{background:#fff;border-color:#d7c18a}.related-product-card img{width:48px;height:48px;object-fit:contain;border-radius:9px;background:#fff}
+.related-product-card strong,.related-product-card small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.related-product-card strong{font-size:8px}.related-product-card small{margin-top:3px;color:#9a7418;font-size:8px;font-weight:800}
+.best-sellers-section{padding:clamp(54px,7vw,88px) 0;background:#0d1117;color:#fff}.best-sellers-section .section-title{color:#fff}.best-sellers-section .section-desc{color:#9ea3aa}
+.best-sellers-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px}.best-seller-card{min-width:0;border:1px solid rgba(255,255,255,.09);border-radius:20px;background:#151a22;padding:14px;text-align:left;color:#fff;cursor:pointer;transition:transform .2s,border-color .2s}
+.best-seller-card:hover{transform:translateY(-3px);border-color:rgba(221,170,54,.5)}.best-seller-card img{width:100%;aspect-ratio:1.25/1;object-fit:contain;border-radius:14px;background:#fff;padding:10px}
+.best-seller-category{display:block;margin-top:12px;color:#d3aa42;font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.best-seller-card strong{display:block;margin-top:6px;font-size:11px;line-height:1.4}
+.best-seller-price{display:block;margin-top:8px;font-size:16px;font-weight:900}.best-seller-action{display:block;margin-top:10px;color:#aeb3ba;font-size:7px;font-weight:900;letter-spacing:.08em}
+@media(max-width:760px){.trust-shell,.faq-shell{grid-template-columns:1fr;gap:26px}.related-products-grid{grid-template-columns:1fr}.best-sellers-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.best-sellers-grid{grid-template-columns:1fr}}

@@ -62,7 +62,7 @@ La aplicación no debe confiar en precios o stock enviados por el cliente: el ba
 
 ## Seguimiento
 
-Los pedidos disponen de un token de seguimiento independiente del ID interno. El frontend de seguimiento consulta el endpoint correspondiente sin exponer acceso general a la tabla de pedidos.
+Los pedidos disponen de un token de seguimiento independiente del ID interno. El frontend consulta el endpoint correspondiente sin exponer acceso general a la tabla. El Admin puede registrar transportista, código, URL oficial y estado del envío; la página privada se actualiza automáticamente y queda preparada para una futura integración por API con el transportista.
 
 ## Email
 
@@ -70,4 +70,4 @@ Los pedidos disponen de un token de seguimiento independiente del ID interno. El
 
 ## Seguridad
 
-Ver [../SECURITY.md](../SECURITY.md) y los scripts de `database/`.
+Ver [../.github/SECURITY.md](../.github/SECURITY.md) y los scripts de `database/`.
