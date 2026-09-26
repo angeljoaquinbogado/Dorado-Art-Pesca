@@ -1,0 +1,30 @@
+{
+  "cSpell.language": "es,en",
+  "cSpell.words": [
+    "Carupá",
+    "Dorado",
+    "ecommerce",
+    "Gmail",
+    "MercadoPago",
+    "Nodemailer",
+    "serverless",
+    "Supabase",
+    "Vercel",
+    "webhook",
+    "webhooks"
+  ],
+  "cSpell.ignorePaths": [
+    "node_modules/**",
+    "package-lock.json",
+    "docs/archive/**"
+  ],
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/node_modules": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true
+  }
+}
