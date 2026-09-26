@@ -117,20 +117,20 @@ function confirmAction({title="Confirmar acción",text="¿Querés continuar?",co
 function resolveAdminImage(src){
     const value=String(src||"").trim();
     const legacy={
-        "logo-2.PNG":"assets/images/brand/logo-dorado.png",
-        "/logo-2.PNG":"assets/images/brand/logo-dorado.png",
-        "logo.PNG":"assets/images/brand/logo-dorado.png",
-        "/logo.PNG":"assets/images/brand/logo-dorado.png",
-        "logo.jpg":"assets/images/brand/logo-dorado.png",
-        "/logo.jpg":"assets/images/brand/logo-dorado.png",
-        "auriculares 2.PNG":"assets/images/brand/logo-dorado.png",
-        "/auriculares 2.PNG":"assets/images/brand/logo-dorado.png",
-        "assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png",
-        "/assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png",
-        "assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png",
-        "/assets/images/brand/logo-dorado.png":"assets/images/brand/logo-dorado.png"
+        "logo-2.PNG":"assets/images/brand/logo-dorado-640.webp",
+        "/logo-2.PNG":"assets/images/brand/logo-dorado-640.webp",
+        "logo.PNG":"assets/images/brand/logo-dorado-640.webp",
+        "/logo.PNG":"assets/images/brand/logo-dorado-640.webp",
+        "logo.jpg":"assets/images/brand/logo-dorado-640.webp",
+        "/logo.jpg":"assets/images/brand/logo-dorado-640.webp",
+        "auriculares 2.PNG":"assets/images/brand/logo-dorado-640.webp",
+        "/auriculares 2.PNG":"assets/images/brand/logo-dorado-640.webp",
+        "assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp",
+        "/assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp",
+        "assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp",
+        "/assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp"
     };
-    return legacy[value]||value||"assets/images/brand/logo-dorado.png";
+    return legacy[value]||value||"assets/images/brand/logo-dorado-640.webp";
 }
 
 function productGalleryUrls(product){
@@ -680,7 +680,7 @@ async function saveProduct(event){
 
         const imagenes=[...new Set(uploadedUrls.filter(Boolean))];
         if(!imagenes.length){
-            imagenes.push("assets/images/brand/logo-dorado.png");
+            imagenes.push("assets/images/brand/logo-dorado-640.webp");
         }
 
         const payload={

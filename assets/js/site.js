@@ -94,14 +94,14 @@ function caracteristicasFormateadas(valor) {
 function imagenSegura(valor) {
     const imagen = String(valor || "").trim();
     const legacyAssets = {
-        "logo-2.PNG": "assets/images/brand/logo-dorado.png",
-        "/logo-2.PNG": "assets/images/brand/logo-dorado.png",
-        "logo.PNG": "assets/images/brand/logo-dorado.png",
-        "/logo.PNG": "assets/images/brand/logo-dorado.png",
-        "logo.jpg": "assets/images/brand/logo-dorado.png",
-        "/logo.jpg": "assets/images/brand/logo-dorado.png",
-        "auriculares 2.PNG": "assets/images/brand/logo-dorado.png",
-        "/auriculares 2.PNG": "assets/images/brand/logo-dorado.png",
+        "logo-2.PNG": "assets/images/brand/logo-dorado-640.webp",
+        "/logo-2.PNG": "assets/images/brand/logo-dorado-640.webp",
+        "logo.PNG": "assets/images/brand/logo-dorado-640.webp",
+        "/logo.PNG": "assets/images/brand/logo-dorado-640.webp",
+        "logo.jpg": "assets/images/brand/logo-dorado-640.webp",
+        "/logo.jpg": "assets/images/brand/logo-dorado-640.webp",
+        "auriculares 2.PNG": "assets/images/brand/logo-dorado-640.webp",
+        "/auriculares 2.PNG": "assets/images/brand/logo-dorado-640.webp",
         "hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
         "/hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
         "sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
@@ -110,13 +110,13 @@ function imagenSegura(valor) {
         "/assets/images/backgrounds/hero-bg-dorado.png": "assets/images/backgrounds/hero-bg-dorado.webp",
         "assets/images/backgrounds/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
         "/assets/images/backgrounds/sobre-nosotros-bg.png": "assets/images/backgrounds/sobre-nosotros-bg.webp",
-        "assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.png",
-        "/assets/images/brand/logo-dorado.png": "assets/images/brand/logo-dorado.png",
-        "assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado.png",
-        "/assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado.png"
+        "assets/images/brand/logo-dorado-640.webp": "assets/images/brand/logo-dorado-640.webp",
+        "/assets/images/brand/logo-dorado-640.webp": "assets/images/brand/logo-dorado-640.webp",
+        "assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado-640.webp",
+        "/assets/images/products/auriculares-2.png": "assets/images/brand/logo-dorado-640.webp"
     };
 
-    if (!imagen) return "assets/images/brand/logo-dorado.png";
+    if (!imagen) return "assets/images/brand/logo-dorado-640.webp";
     if (legacyAssets[imagen]) return legacyAssets[imagen];
 
     if (
@@ -130,7 +130,7 @@ function imagenSegura(valor) {
         return imagen;
     }
 
-    return "assets/images/brand/logo-dorado.png";
+    return "assets/images/brand/logo-dorado-640.webp";
 }
 
 function leerCarrito() {
@@ -373,7 +373,7 @@ async function cargarProductosDesdeSupabase() {
             productImage?.addEventListener("error",()=>{
                 if(productImage.dataset.fallbackApplied === "1") return;
                 productImage.dataset.fallbackApplied = "1";
-                productImage.src = "assets/images/brand/logo-dorado.png";
+                productImage.src = "assets/images/brand/logo-dorado-640.webp";
                 productImage.classList.add("is-fallback-logo");
             },{once:true});
 
@@ -1873,9 +1873,20 @@ document.getElementById("product-search-clear")?.addEventListener("click",()=>{
 
 (function configurarUIVisual(){
     const header = document.getElementById("site-header");
-    const onScroll = () => header?.classList.toggle("scrolled", window.scrollY > 8);
+    let headerRaf = 0;
+    let headerScrolled = null;
+    const updateHeader = () => {
+        headerRaf = 0;
+        const next = window.scrollY > 8;
+        if (next === headerScrolled) return;
+        headerScrolled = next;
+        header?.classList.toggle("scrolled", next);
+    };
+    const onScroll = () => {
+        if (!headerRaf) headerRaf = requestAnimationFrame(updateHeader);
+    };
     window.addEventListener("scroll", onScroll, { passive:true });
-    onScroll();
+    updateHeader();
 
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
         const observer = new IntersectionObserver(entries => {
@@ -1922,18 +1933,35 @@ comprobarRetornoPago();
     const items = Array.from(document.querySelectorAll('.mobile-dock-item[data-dock]'));
     if (!items.length) return;
 
+    const productos = document.getElementById('productos');
+    let productosTop = productos?.offsetTop ?? Infinity;
+    let dockRaf = 0;
+    let dockState = null;
+
     const actualizar = () => {
-        const productos = document.getElementById('productos');
+        dockRaf = 0;
         const y = window.scrollY + window.innerHeight * 0.34;
-        const enProductos = productos && y >= productos.offsetTop;
+        const enProductos = y >= productosTop;
+        if (enProductos === dockState) return;
+        dockState = enProductos;
         items.forEach(item => {
             item.classList.toggle('active', enProductos ? item.dataset.dock === 'productos' : item.dataset.dock === 'inicio');
         });
     };
 
-    window.addEventListener('scroll', actualizar, { passive:true });
-    window.addEventListener('resize', actualizar);
-    actualizar();
+    const programarActualizacion = () => {
+        if (!dockRaf) dockRaf = requestAnimationFrame(actualizar);
+    };
+
+    const medir = () => {
+        productosTop = productos?.offsetTop ?? Infinity;
+        programarActualizacion();
+    };
+
+    window.addEventListener('scroll', programarActualizacion, { passive:true });
+    window.addEventListener('resize', medir, { passive:true });
+    window.addEventListener('load', medir, { once:true });
+    medir();
 })();
 
 // ==============================
@@ -2591,14 +2619,32 @@ comprobarRetornoPago();
                     splitIntroTitleIntoChars();
                     const titleChars=[...introTitle.querySelectorAll(".intro-char:not(.intro-space)")];
 
+                    /* Cacheamos una sola vez la geometría de las letras.
+                       Antes se hacía getBoundingClientRect() para cada letra en
+                       cada frame, lo que podía provocar tirones en la intro. */
+                    const charRects=titleChars.map((char)=>({
+                        char,
+                        rect:char.getBoundingClientRect()
+                    }));
+                    let pendingChars=charRects.length;
                     let sweepRaf=0;
-                    const hideTouchedChars=()=>{
+                    let lastSweepCheck=0;
+
+                    const hideTouchedChars=(timestamp=0)=>{
+                        /* ~30 comprobaciones por segundo son suficientes para
+                           una desaparición instantánea visual, con mucho menos
+                           trabajo de layout que hacerlo a 60/120 Hz. */
+                        if(timestamp-lastSweepCheck < 32){
+                            sweepRaf=requestAnimationFrame(hideTouchedChars);
+                            return;
+                        }
+                        lastSweepCheck=timestamp;
+
                         const logoNow=introLogo.getBoundingClientRect();
 
-                        titleChars.forEach((char)=>{
-                            if(char.classList.contains("swept")) return;
-                            const r=char.getBoundingClientRect();
-
+                        for(const item of charRects){
+                            if(item.char.classList.contains("swept")) continue;
+                            const r=item.rect;
                             const overlaps=
                                 logoNow.left <= r.right &&
                                 logoNow.right >= r.left &&
@@ -2606,12 +2652,12 @@ comprobarRetornoPago();
                                 logoNow.bottom >= r.top;
 
                             if(overlaps){
-                                /* Sin fade: desaparece de inmediato al tocarlo. */
-                                char.classList.add("swept");
+                                item.char.classList.add("swept");
+                                pendingChars--;
                             }
-                        });
+                        }
 
-                        if(titleChars.some((char)=>!char.classList.contains("swept"))){
+                        if(pendingChars>0){
                             sweepRaf=requestAnimationFrame(hideTouchedChars);
                         }
                     };
