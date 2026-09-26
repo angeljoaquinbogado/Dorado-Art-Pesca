@@ -7,6 +7,8 @@ let cupones = [];
 let selectedOrders = new Set();
 let productGalleryDraft = [];
 let refreshPromise = null;
+let recoveryAccessToken = "";
+let recoveryRefreshToken = "";
 
 const money = new Intl.NumberFormat("es-AR", {
     style:"currency",
@@ -482,6 +484,177 @@ async function login(email,password){
         await logout(false);
         throw new Error("Esta cuenta no está autorizada como administrador.");
     }
+}
+
+function setAuthView(view){
+    const loginForm=document.getElementById("login-form");
+    const requestForm=document.getElementById("recovery-request-form");
+    const updateForm=document.getElementById("recovery-update-form");
+
+    loginForm?.classList.toggle("hidden",view!=="login");
+    requestForm?.classList.toggle("hidden",view!=="request");
+    updateForm?.classList.toggle("hidden",view!=="update");
+}
+
+function recoveryRedirectUrl(){
+    return `${location.origin}${location.pathname}`;
+}
+
+function clearRecoveryUrl(){
+    if(location.hash){
+        history.replaceState({},document.title,`${location.pathname}${location.search}`);
+    }
+}
+
+async function requestPasswordRecovery(email){
+    const cfg=await loadConfig();
+    const redirectTo=recoveryRedirectUrl();
+    const r=await fetch(
+        `${cfg.supabaseUrl}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`,
+        {
+            method:"POST",
+            headers:{
+                apikey:cfg.supabasePublishableKey,
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({email})
+        }
+    );
+
+    if(r.status===429){
+        throw new Error("Demasiados intentos. Esperá unos minutos antes de volver a solicitar el enlace.");
+    }
+
+    if(!r.ok){
+        throw new Error("No se pudo iniciar la recuperación. Revisá la configuración de autenticación e intentá nuevamente.");
+    }
+
+    return true;
+}
+
+function recoveryParamsFromUrl(){
+    if(!location.hash)return null;
+    const params=new URLSearchParams(location.hash.slice(1));
+    const type=String(params.get("type")||"");
+    const error=String(params.get("error_description")||params.get("error")||"");
+
+    if(type!=="recovery"&&!error)return null;
+
+    return {
+        type,
+        error,
+        accessToken:String(params.get("access_token")||""),
+        refreshToken:String(params.get("refresh_token")||"")
+    };
+}
+
+async function verifyRecoveryAdmin(accessToken){
+    const cfg=await loadConfig();
+
+    const userResponse=await fetch(`${cfg.supabaseUrl}/auth/v1/user`,{
+        headers:{
+            apikey:cfg.supabasePublishableKey,
+            Authorization:`Bearer ${accessToken}`
+        }
+    });
+    const user=await userResponse.json().catch(()=>({}));
+    if(!userResponse.ok||!user?.id){
+        throw new Error("El enlace de recuperación no es válido o ya venció.");
+    }
+
+    const adminResponse=await fetch(
+        `${cfg.supabaseUrl}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(user.id)}&select=user_id`,
+        {
+            headers:{
+                apikey:cfg.supabasePublishableKey,
+                Authorization:`Bearer ${accessToken}`,
+                Accept:"application/json"
+            }
+        }
+    );
+    const rows=await adminResponse.json().catch(()=>[]);
+
+    if(!adminResponse.ok||!Array.isArray(rows)||rows.length===0){
+        throw new Error("Este enlace no corresponde a una cuenta administradora autorizada.");
+    }
+
+    return user;
+}
+
+async function handleRecoveryCallback(){
+    const params=recoveryParamsFromUrl();
+    if(!params)return false;
+
+    clearRecoveryUrl();
+    sessionStorage.removeItem(SESSION_KEY);
+    session=null;
+
+    if(params.error){
+        setAuthView("login");
+        msg("login-message","El enlace de recuperación no es válido o ya venció.");
+        return true;
+    }
+
+    if(params.type!=="recovery"||!params.accessToken){
+        setAuthView("login");
+        msg("login-message","El enlace de recuperación está incompleto. Solicitá uno nuevo.");
+        return true;
+    }
+
+    try{
+        await verifyRecoveryAdmin(params.accessToken);
+        recoveryAccessToken=params.accessToken;
+        recoveryRefreshToken=params.refreshToken;
+        setAuthView("update");
+        document.getElementById("recovery-new-password")?.focus();
+    }catch(error){
+        recoveryAccessToken="";
+        recoveryRefreshToken="";
+        setAuthView("login");
+        msg("login-message",error?.message||"No se pudo validar el enlace de recuperación.");
+    }
+
+    return true;
+}
+
+async function updateRecoveredPassword(password){
+    if(!recoveryAccessToken){
+        throw new Error("La sesión de recuperación venció. Solicitá un nuevo enlace.");
+    }
+
+    const cfg=await loadConfig();
+    const r=await fetch(`${cfg.supabaseUrl}/auth/v1/user`,{
+        method:"PUT",
+        headers:{
+            apikey:cfg.supabasePublishableKey,
+            Authorization:`Bearer ${recoveryAccessToken}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({password})
+    });
+
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){
+        const detail=String(d?.msg||d?.message||d?.error_description||"").trim();
+        if(r.status===422&&detail){
+            throw new Error(detail);
+        }
+        throw new Error("No se pudo actualizar la contraseña. Revisá los requisitos de seguridad e intentá nuevamente.");
+    }
+
+    try{
+        await fetch(`${cfg.supabaseUrl}/auth/v1/logout`,{
+            method:"POST",
+            headers:{
+                apikey:cfg.supabasePublishableKey,
+                Authorization:`Bearer ${recoveryAccessToken}`
+            }
+        });
+    }catch{}
+
+    recoveryAccessToken="";
+    recoveryRefreshToken="";
+    return true;
 }
 
 async function logout(reload=true){
@@ -1265,6 +1438,75 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
     }
 });
 
+document.getElementById("forgot-password-button")?.addEventListener("click",()=>{
+    const loginEmail=document.getElementById("login-email")?.value.trim()||"";
+    const recoveryEmail=document.getElementById("recovery-email");
+    if(recoveryEmail)recoveryEmail.value=loginEmail;
+    msg("recovery-request-message","");
+    setAuthView("request");
+    setTimeout(()=>recoveryEmail?.focus(),0);
+});
+
+document.getElementById("recovery-back-button")?.addEventListener("click",()=>{
+    msg("recovery-request-message","");
+    setAuthView("login");
+});
+
+document.getElementById("recovery-request-form")?.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const button=document.getElementById("recovery-send-button");
+    const email=document.getElementById("recovery-email")?.value.trim()||"";
+
+    button.disabled=true;
+    msg("recovery-request-message","");
+
+    try{
+        await requestPasswordRecovery(email);
+        msg(
+            "recovery-request-message",
+            "Si el email corresponde a una cuenta autorizada, vas a recibir un enlace para restablecer la contraseña. Revisá también Spam o Correo no deseado.",
+            "ok"
+        );
+    }catch(error){
+        msg("recovery-request-message",error?.message||"No se pudo enviar el enlace.");
+    }finally{
+        button.disabled=false;
+    }
+});
+
+document.getElementById("recovery-update-form")?.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const button=document.getElementById("recovery-update-button");
+    const password=document.getElementById("recovery-new-password")?.value||"";
+    const confirm=document.getElementById("recovery-confirm-password")?.value||"";
+
+    msg("recovery-update-message","");
+
+    if(password.length<8){
+        msg("recovery-update-message","La contraseña debe tener al menos 8 caracteres.");
+        return;
+    }
+
+    if(password!==confirm){
+        msg("recovery-update-message","Las contraseñas no coinciden.");
+        return;
+    }
+
+    button.disabled=true;
+    try{
+        await updateRecoveredPassword(password);
+        document.getElementById("recovery-new-password").value="";
+        document.getElementById("recovery-confirm-password").value="";
+        setAuthView("login");
+        msg("login-message","Contraseña actualizada correctamente. Ya podés ingresar al panel.","ok");
+        document.getElementById("login-password")?.focus();
+    }catch(error){
+        msg("recovery-update-message",error?.message||"No se pudo actualizar la contraseña.");
+    }finally{
+        button.disabled=false;
+    }
+});
+
 document.getElementById("product-form").addEventListener("submit",saveProduct);
 document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
 document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
@@ -1341,6 +1583,8 @@ document.addEventListener("keydown",e=>{
 (async function boot(){
     try{
         await loadConfig();
+        if(await handleRecoveryCallback())return;
+
         session=readSession();
         if(!session)return;
         if(!await verifyAdmin()){
