@@ -31,14 +31,17 @@ El proyecto combina una experiencia de compra adaptada a desktop y mobile con ba
 - Catálogo dinámico con búsqueda y filtros por categoría.
 - Ficha de producto con galería de imágenes.
 - Carrito persistente y checkout responsive.
-- Métodos de coordinación por WhatsApp, transferencia y efectivo con retiro.
+- Checkout de pagos preparado para Mercado Pago, MODO y tarjetas de débito/crédito.
 - Integración de Mercado Pago con checkout seguro, ventana de pago de 24 horas y reintentos.
+- Flujo de tarjeta diseñado para que los datos sensibles se ingresen en el procesador de pagos y no se almacenen en Dorado.
+- Integración visual de MODO preparada; la conexión productiva queda pendiente de credenciales y alta comercial.
 - Seguimiento privado de pedidos mediante token, con transportista, código, estado y enlace oficial cuando el pedido es despachado.
 - Actualización automática del seguimiento mientras el cliente mantiene abierta la página.
 - Panel Admin para productos, stock, imágenes, descuentos, cupones y estados de pedidos.
 - Métricas de pedidos, ingresos confirmados, ticket promedio y pedidos por despachar.
 - Exportación CSV de pedidos con información logística.
 - Productos relacionados, FAQ y sección de productos más elegidos basada únicamente en ventas pagadas reales.
+- Sistema de reseñas reales con carrusel automático de valoraciones destacadas y filtro explícito para consultar valoraciones bajas.
 - Dirección, mapa, horarios y estado abierto/cerrado.
 - Navegación móvil propia y experiencia desktop diferenciada.
 - SEO básico, sitemap, robots, PWA y página 404.
@@ -54,7 +57,7 @@ El proyecto combina una experiencia de compra adaptada a desktop y mobile con ba
 | Backend | Vercel Serverless Functions / Node.js |
 | Base de datos | Supabase + PostgreSQL |
 | Seguridad | Row Level Security, service role server-side, rate limiting |
-| Pagos | Mercado Pago Checkout Pro |
+| Pagos | Mercado Pago Checkout Pro + estructura preparada para MODO y tarjeta segura |
 | Email | Nodemailer / Gmail App Password (`doradoartpesca@gmail.com`) |
 | Deploy | Vercel |
 | Control de versiones | Git + GitHub |
@@ -98,6 +101,8 @@ Más detalle en [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
 
 - email comercial definitivo y usuario Admin;
 - credenciales productivas de Mercado Pago;
+- alta/credenciales de MODO para habilitar cobros reales;
+- sincronización de reseñas reales de Google Business Profile;
 - condiciones, costos y transportistas de envío;
 - carga del catálogo real con precios y stock;
 - compra real de validación end-to-end.

@@ -4,6 +4,17 @@ Los cambios relevantes del proyecto se documentan aquí. El historial completo s
 
 ## 2026-09-26
 
+### Pagos, reseñas y continuidad visual
+
+- Checkout rediseñado con Mercado Pago, MODO y tarjeta de débito/crédito como opciones finales.
+- La opción tarjeta evita campos propios de PAN/CVV y deriva el ingreso sensible al procesador seguro.
+- FAQ actualizada con los medios de pago finales.
+- Sección de FAQ integrada a la misma paleta cálida de la zona de confianza, eliminando el corte blanco.
+- Infraestructura `resenas_google` con RLS para almacenar únicamente reseñas reales sincronizadas.
+- Carrusel horizontal automático de reseñas destacadas, con movimiento de derecha a izquierda.
+- Las reseñas de menor calificación quedan fuera del carrusel y aparecen solo al abrir el filtro.
+- Endpoint `/api/reviews` agregado para servir reseñas sanitizadas al storefront.
+
 ### Operación, seguimiento y storefront
 
 - Seguimiento semiautomático de envíos con transportista, código, estado y enlace oficial.

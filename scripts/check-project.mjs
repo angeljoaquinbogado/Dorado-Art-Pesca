@@ -47,8 +47,10 @@ const required = [
   "api/checkout.js",
   "api/products.js",
   "api/best-sellers.js",
+  "api/reviews.js",
   "database/dorado-complete-setup.sql",
-  "database/shipping-tracking.sql"
+  "database/shipping-tracking.sql",
+  "database/google-reviews.sql"
 ];
 
 for (const rel of required) {

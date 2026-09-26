@@ -40,6 +40,10 @@ Capa final de hardening. Incluye control del estado de confirmación por email p
 
 Migración idempotente para una base ya existente. Agrega descuento porcentual por producto, cupones, datos de subtotal/descuento en pedidos, ventana de pago de 24 horas y control anti-duplicado para emails de estado.
 
+### `google-reviews.sql`
+
+Crea `resenas_google` con RLS y campos para autor, calificación, comentario, fecha, avatar y enlace de fuente. La tabla se diseñó para recibir reseñas reales sincronizadas desde Google Business Profile; no debe poblarse con testimonios inventados.
+
 ### `shipping-tracking.sql`
 
 Migración idempotente para instalaciones existentes. Agrega transportista, código de seguimiento, URL oficial, estado logístico y fechas de despacho/actualización sin borrar datos previos.

@@ -30,6 +30,22 @@
 - [ ] Probar pago rechazado o cancelado.
 - [ ] Confirmar que el stock se descuente una sola vez.
 
+## MODO y tarjetas
+
+- [ ] Confirmar alta comercial de MODO.
+- [ ] Obtener la documentación y credenciales productivas de MODO.
+- [ ] Implementar el endpoint productivo de MODO y probar pago aprobado/rechazado.
+- [ ] Para tarjeta, utilizar campos/tokenización del procesador; no enviar PAN, vencimiento ni CVV a servidores de Dorado.
+- [ ] Probar débito y crédito con una compra controlada.
+
+## Reseñas
+
+- [ ] Conectar la fuente real de Google Business Profile.
+- [ ] Sincronizar autor, calificación, comentario y fecha en `resenas_google`.
+- [ ] Confirmar que el carrusel principal muestre solo reseñas de 4–5 estrellas.
+- [ ] Confirmar que las reseñas de 1–3 estrellas aparezcan únicamente al abrir el filtro.
+- [ ] No cargar reseñas ficticias.
+
 ## Email
 
 - [ ] Configurar remitente.
