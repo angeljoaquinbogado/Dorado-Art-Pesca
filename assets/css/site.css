@@ -4400,3 +4400,34 @@ body.payment-confirm-open{overflow:hidden}
   .secure-card-fields input{min-height:52px!important;font-size:13px!important}
 }
 /* DORADO-PAYMENT-READABILITY-FIX:END */
+
+/* DORADO — efectivo SVG sin recorte */
+.payment-brand-cash{
+  width:62px!important;
+  height:62px!important;
+  flex:0 0 62px!important;
+  padding:4px!important;
+  overflow:visible!important;
+  border-radius:14px!important;
+  background:transparent!important;
+}
+.payment-brand-cash img{
+  width:54px!important;
+  height:54px!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+}
+@media(max-width:560px){
+  .payment-brand-cash{
+    width:58px!important;
+    height:58px!important;
+    flex-basis:58px!important;
+  }
+  .payment-brand-cash img{
+    width:50px!important;
+    height:50px!important;
+  }
+}
