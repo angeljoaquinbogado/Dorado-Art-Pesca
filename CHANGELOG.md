@@ -2,6 +2,18 @@
 
 Los cambios relevantes del proyecto se documentan aquí. El historial completo sigue disponible en Git.
 
+## 2026-09-25
+
+### Comercio y automatización
+
+- Emails automáticos de pedido pendiente, pago aprobado y pago cancelado/rechazado.
+- Ventana de 24 horas para completar o reintentar un pago pendiente.
+- Descuentos porcentuales por producto administrables desde el panel.
+- Cupones con porcentaje o monto fijo, compra mínima, vigencia, límite de usos y estado activo/inactivo.
+- Validación server-side de precios, descuentos y cupones.
+- Limpieza de documentación histórica sin uso operativo.
+
+
 ## 2026-09-24
 
 ### Portfolio / mantenimiento
@@ -30,4 +42,4 @@ Los cambios relevantes del proyecto se documentan aquí. El historial completo s
 
 ## Historial anterior
 
-Ver [docs/archive/](./docs/archive/) y el historial de commits.
+El historial detallado permanece disponible en Git.

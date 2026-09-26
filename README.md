@@ -32,12 +32,14 @@ El proyecto combina una experiencia de compra adaptada a desktop y mobile con ba
 - Ficha de producto con galería de imágenes.
 - Carrito persistente y checkout responsive.
 - Métodos de coordinación por WhatsApp, transferencia y efectivo con retiro.
-- Integración de Mercado Pago preparada y bloqueada hasta activación comercial.
+- Integración de Mercado Pago con checkout seguro, ventana de pago de 24 horas y reintentos.
 - Seguimiento privado de pedidos mediante token.
-- Panel Admin para productos, stock, imágenes y estados de pedidos.
+- Panel Admin para productos, stock, imágenes, descuentos, cupones y estados de pedidos.
 - Dirección, mapa, horarios y estado abierto/cerrado.
 - Navegación móvil propia y experiencia desktop diferenciada.
 - SEO básico, sitemap, robots, PWA y página 404.
+- Emails automáticos para pago pendiente, aprobado y cancelado/rechazado.
+- Descuentos por producto y cupones validados server-side.
 - Validación server-side, RLS, rate limiting y manejo de secretos fuera del frontend.
 
 ## Stack
@@ -49,7 +51,7 @@ El proyecto combina una experiencia de compra adaptada a desktop y mobile con ba
 | Base de datos | Supabase + PostgreSQL |
 | Seguridad | Row Level Security, service role server-side, rate limiting |
 | Pagos | Mercado Pago Checkout Pro |
-| Email | Nodemailer / Gmail App Password |
+| Email | Nodemailer / Gmail App Password (`doradoartpesca@gmail.com`) |
 | Deploy | Vercel |
 | Control de versiones | Git + GitHub |
 

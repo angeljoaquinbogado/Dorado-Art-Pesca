@@ -34,9 +34,11 @@ Mantener `MERCADOPAGO_ENABLED=false` hasta completar credenciales, webhook y una
 
 ### Email
 
-- `GMAIL_USER`
-- `GMAIL_APP_PASSWORD`
-- `EMAIL_REPLY_TO`
+- `GMAIL_USER=doradoartpesca@gmail.com`
+- `GMAIL_APP_PASSWORD` — contraseña de aplicación de Google, nunca la contraseña normal de Gmail.
+- `EMAIL_REPLY_TO=doradoartpesca@gmail.com`
+
+Los emails automáticos cubren pedido/pago pendiente, pago aprobado y pago cancelado/rechazado. El enlace de pago pendiente vence a las 24 horas.
 
 ## Deploy recomendado
 
@@ -50,6 +52,8 @@ Mantener `MERCADOPAGO_ENABLED=false` hasta completar credenciales, webhook y una
 ## Base de datos
 
 Para una instalación nueva, seguir [../database/README.md](../database/README.md).
+
+Para actualizar una base de Dorado ya existente, ejecutar primero `database/commerce-features.sql` en Supabase SQL Editor y recién después desplegar esta versión del código.
 
 ## Antes de activar pagos
 

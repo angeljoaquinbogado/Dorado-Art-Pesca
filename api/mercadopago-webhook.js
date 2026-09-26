@@ -1,4 +1,4 @@
-import { sendOrderConfirmationEmail } from "../lib/order-email.js";
+import { sendOrderConfirmationEmail, sendOrderStatusEmail } from "../lib/order-email.js";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 import {
@@ -37,6 +37,39 @@ function publicOrigin(req) {
     const proto = String(req.headers["x-forwarded-proto"] || "https").split(",")[0].trim();
     const host = String(req.headers.host || "dorado-art-pesca.vercel.app").trim();
     return `${proto === "http" ? "http" : "https"}://${host}`;
+}
+
+async function sendPaymentStatusEmail({ type, order, req }) {
+    const claimResponse = await supabaseFetch("/rest/v1/rpc/claim_order_email", {
+        method: "POST",
+        body: JSON.stringify({ p_pedido_id: order.id, p_tipo: type })
+    });
+    const claim = await claimResponse.json().catch(() => null);
+    if (!claimResponse.ok || !claim?.claimed) return;
+
+    let sent = false;
+    try {
+        const itemsResponse = await supabaseFetch(
+            `/rest/v1/pedido_items?pedido_id=eq.${encodeURIComponent(order.id)}&select=nombre,cantidad,precio_unitario&order=id.asc`
+        );
+        const items = await itemsResponse.json().catch(() => []);
+        if (!itemsResponse.ok || !Array.isArray(items)) throw new Error("No se pudo cargar el detalle para el email");
+
+        const result = await sendOrderStatusEmail({
+            kind: type,
+            order,
+            items,
+            origin: publicOrigin(req),
+            paymentUrl: String(order.mp_init_point || ""),
+            expiresAt: order.pago_expira_at || null
+        });
+        sent = Boolean(result?.sent);
+    } finally {
+        await supabaseFetch("/rest/v1/rpc/finalize_order_email", {
+            method: "POST",
+            body: JSON.stringify({ p_pedido_id: order.id, p_tipo: type, p_enviado: sent })
+        }).catch(() => null);
+    }
 }
 
 export default async function handler(req, res) {
@@ -145,11 +178,17 @@ if (topic === "merchant_order") {
             return res.status(200).json({ ok: true, ignored: true, reason: "invalid_order_reference" });
         }
 
-        const orderResponse = await supabaseFetch(
-            `/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}&select=id,total,estado,mp_payment_id,cliente_nombre,cliente_email,tracking_token`
+        let orderResponse = await supabaseFetch(
+            `/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}&select=id,total,subtotal,descuento_total,cupon_codigo,estado,mp_payment_id,mp_init_point,pago_expira_at,cliente_nombre,cliente_email,tracking_token`
         );
+        let orders = await orderResponse.json().catch(() => []);
 
-        const orders = await orderResponse.json().catch(() => []);
+        if (!orderResponse.ok) {
+            orderResponse = await supabaseFetch(
+                `/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}&select=id,total,estado,mp_payment_id,cliente_nombre,cliente_email,tracking_token`
+            );
+            orders = await orderResponse.json().catch(() => []);
+        }
 
         if (!orderResponse.ok || !Array.isArray(orders) || !orders[0]) {
             console.error("Order not found for payment:", orderId);
@@ -326,6 +365,22 @@ if (topic === "merchant_order") {
                 orderId
             });
             return res.status(500).json({ error: "No se pudo actualizar el pedido" });
+        }
+
+        const emailType = nuevoEstado === "pago_pendiente"
+            ? "pending"
+            : ["pago_rechazado", "pago_cancelado"].includes(nuevoEstado)
+                ? "cancelled"
+                : ["reembolsado", "contracargo"].includes(nuevoEstado)
+                    ? "refunded"
+                    : "";
+
+        if (emailType) {
+            try {
+                await sendPaymentStatusEmail({ type: emailType, order: { ...order, estado: nuevoEstado }, req });
+            } catch (emailError) {
+                console.error("Payment status email failed:", emailError?.message || emailError);
+            }
         }
 
         return res.status(200).json({ ok: true, result: stateData });

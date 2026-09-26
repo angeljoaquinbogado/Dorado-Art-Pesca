@@ -10,7 +10,7 @@ Para una base nueva, el punto de entrada recomendado es:
 dorado-complete-setup.sql
 ```
 
-Este archivo agrupa la configuración base del proyecto e incluye tablas, RLS y funciones necesarias para Dorado.
+Este archivo agrupa la configuración base del proyecto e incluye tablas, RLS, funciones, descuentos, cupones y soporte de emails de estado necesarios para Dorado.
 
 Antes de ejecutar scripts sobre producción, revisar siempre su contenido y tener una copia o backup del entorno.
 
@@ -35,6 +35,10 @@ Refuerza seguridad y rate limiting para operaciones server-side.
 ### `dorado-final-hardening.sql`
 
 Capa final de hardening. Incluye control del estado de confirmación por email para reducir duplicados y otras protecciones.
+
+### `commerce-features.sql`
+
+Migración idempotente para una base ya existente. Agrega descuento porcentual por producto, cupones, datos de subtotal/descuento en pedidos, ventana de pago de 24 horas y control anti-duplicado para emails de estado.
 
 ### `seed-demo-product.sql`
 

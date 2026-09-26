@@ -3,6 +3,7 @@ let CONFIG = null;
 let session = null;
 let productos = [];
 let pedidos = [];
+let cupones = [];
 let selectedOrders = new Set();
 let productGalleryDraft = [];
 let refreshPromise = null;
@@ -521,10 +522,16 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        const r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
-        const d=await r.json().catch(()=>[]);
+        let d=await r.json().catch(()=>[]);
+        if(!r.ok){
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&order=id.asc",{
+                headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
+            });
+            d=await r.json().catch(()=>[]);
+        }
         if(!r.ok)throw new Error("No se pudieron cargar los productos.");
         if(!Array.isArray(d))break;
         all.push(...d);
@@ -578,7 +585,7 @@ function renderProducts(){
         tr.innerHTML=`
             <td><div class="thumb-shell"><img class="product-thumb" src="${esc(resolveAdminImage(p.imagen))}" alt="" loading="lazy" decoding="async"></div></td>
             <td><strong class="product-name-cell">${esc(p.nombre)}</strong><div class="cell-sub">${esc(p.categoria||"Sin categoría")}</div></td>
-            <td><strong class="price-cell">${esc(money.format(Number(p.precio)||0))}</strong></td>
+            <td><strong class="price-cell">${esc(money.format((Number(p.precio)||0)*(1-Math.min(90,Math.max(0,Number(p.descuento_porcentaje)||0))/100)))}</strong>${Number(p.descuento_porcentaje)>0?`<div class="cell-sub"><s>${esc(money.format(Number(p.precio)||0))}</s> · -${Math.round(Number(p.descuento_porcentaje)||0)}%</div>`:""}</td>
             <td><span class="stock-pill ${stockClass}">${stockText}</span></td>
             <td><span class="badge ${p.activo?"on":"off"}">${p.activo?"ACTIVO":"OCULTO"}</span></td>
             <td><div class="row-actions"><button class="icon-btn edit" type="button">${icon("edit")}<span>EDITAR</span></button><button class="icon-btn remove" type="button">${icon("trash")}<span>ELIMINAR</span></button></div></td>
@@ -593,6 +600,7 @@ function resetProductForm(){
     document.getElementById("product-form").reset();
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
+    document.getElementById("product-discount").value="0";
     document.getElementById("product-form-title").textContent="Nuevo producto";
     document.getElementById("product-save").textContent="GUARDAR PRODUCTO";
     document.getElementById("product-cancel").classList.add("hidden");
@@ -608,6 +616,7 @@ function editProduct(id){
     document.getElementById("product-description").value=p.descripcion||"";
     document.getElementById("product-features").value=p.caracteristicas||"";
     document.getElementById("product-price").value=Number(p.precio)||0;
+    document.getElementById("product-discount").value=Math.max(0,Number(p.descuento_porcentaje)||0);
     document.getElementById("product-stock").value=Number(p.stock)||0;
     document.getElementById("product-category").value=p.categoria||"";
     document.getElementById("product-image").value="";
@@ -679,6 +688,7 @@ async function saveProduct(event){
             descripcion:document.getElementById("product-description").value.trim(),
             caracteristicas:document.getElementById("product-features").value.trim(),
             precio:Number(document.getElementById("product-price").value),
+            descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
             categoria:document.getElementById("product-category").value.trim(),
             imagen:imagenes[0],
@@ -958,8 +968,12 @@ async function loadOrders(){
     tbody.innerHTML='<tr><td colspan="8" class="loading">Cargando pedidos...</td></tr>';
     updateOrderSelectionUI();
 
-    const r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,total,estado,preparacion_estado,tracking_token&order=created_at.desc&limit=300");
-    const d=await r.json().catch(()=>[]);
+    let r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,subtotal,descuento_total,cupon_codigo,total,estado,preparacion_estado,tracking_token&order=created_at.desc&limit=300");
+    let d=await r.json().catch(()=>[]);
+    if(!r.ok){
+        r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,total,estado,preparacion_estado,tracking_token&order=created_at.desc&limit=300");
+        d=await r.json().catch(()=>[]);
+    }
     if(!r.ok)throw new Error("No se pudieron cargar los pedidos.");
 
     pedidos=Array.isArray(d)?d:[];
@@ -1027,7 +1041,7 @@ async function openOrder(order){
                 <div><span>CLIENTE</span><strong>${esc(order.cliente_nombre)}</strong></div>
                 <div><span>CONTACTO</span><strong>${esc(order.cliente_email)} · ${esc(order.cliente_telefono)}</strong></div>
                 <div><span>ENTREGA</span><strong>${esc(order.domicilio)}, ${esc(order.ciudad)}, ${esc(order.provincia)} · CP ${esc(order.codigo_postal)}</strong></div>
-                <div><span>TOTAL</span><strong>${esc(money.format(Number(order.total)||0))}</strong></div>
+                <div><span>TOTAL</span><strong>${esc(money.format(Number(order.total)||0))}</strong>${Number(order.descuento_total)>0?`<small>Subtotal ${esc(money.format(Number(order.subtotal)||0))} · Descuento -${esc(money.format(Number(order.descuento_total)||0))}${order.cupon_codigo?` · Cupón ${esc(order.cupon_codigo)}`:""}</small>`:""}</div>
                 <div><span>PAGO</span><strong>${esc(orderStatusLabel(order.estado))}</strong></div>
                 <div><span>PREPARACIÓN</span><strong>${esc(String(order.preparacion_estado||"nuevo").toUpperCase())}</strong></div>
             </div>
@@ -1073,10 +1087,159 @@ function closeOrder(){
     modal.setAttribute("aria-hidden","true");
 }
 
+
+function localDateTimeValue(value){
+    if(!value)return "";
+    const d=new Date(value);
+    if(!Number.isFinite(d.getTime()))return "";
+    const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);
+    return local.toISOString().slice(0,16);
+}
+
+function couponValidityText(c){
+    const from=c.vigente_desde?new Date(c.vigente_desde):null;
+    const to=c.vigente_hasta?new Date(c.vigente_hasta):null;
+    const fmt=d=>Number.isFinite(d?.getTime())?d.toLocaleDateString("es-AR"):"";
+    if(from&&to)return `${fmt(from)} → ${fmt(to)}`;
+    if(from)return `Desde ${fmt(from)}`;
+    if(to)return `Hasta ${fmt(to)}`;
+    return "Sin vencimiento";
+}
+
+function couponDiscountText(c){
+    const value=Math.max(0,Number(c.valor)||0);
+    return String(c.tipo||"")==="porcentaje" ? `${value}%` : money.format(value);
+}
+
+async function loadCoupons(){
+    const tbody=document.getElementById("coupons-table");
+    if(tbody)tbody.innerHTML='<tr><td colspan="6" class="loading">Cargando cupones...</td></tr>';
+    const r=await sb("/rest/v1/cupones?select=id,codigo,tipo,valor,minimo_compra,activo,vigente_desde,vigente_hasta,limite_usos,usos,created_at&order=created_at.desc");
+    const d=await r.json().catch(()=>[]);
+    if(!r.ok)throw new Error("No se pudieron cargar los cupones. Ejecutá la migración commerce-features.sql en Supabase.");
+    cupones=Array.isArray(d)?d:[];
+    document.getElementById("coupon-stat-total").textContent=cupones.length;
+    document.getElementById("coupon-stat-active").textContent=cupones.filter(c=>c.activo).length;
+    document.getElementById("coupon-stat-uses").textContent=cupones.reduce((sum,c)=>sum+Math.max(0,Number(c.usos)||0),0);
+    renderCoupons();
+}
+
+function renderCoupons(){
+    const tbody=document.getElementById("coupons-table");
+    if(!tbody)return;
+    const count=document.getElementById("coupon-list-count");
+    if(count)count.textContent=`${cupones.length} ${cupones.length===1?"cupón":"cupones"}`;
+    tbody.innerHTML="";
+    if(!cupones.length){
+        tbody.innerHTML='<tr><td colspan="6" class="loading">Todavía no hay cupones creados.</td></tr>';
+        return;
+    }
+    cupones.forEach(c=>{
+        const tr=document.createElement("tr");
+        const uses=Math.max(0,Number(c.usos)||0);
+        const limit=c.limite_usos==null?"∞":Math.max(0,Number(c.limite_usos)||0);
+        tr.innerHTML=`
+            <td><strong class="coupon-code-cell">${esc(c.codigo)}</strong><div class="cell-sub">Mínimo: ${esc(money.format(Number(c.minimo_compra)||0))}</div></td>
+            <td><strong>${esc(couponDiscountText(c))}</strong><div class="cell-sub">${c.tipo==="porcentaje"?"Porcentaje":"Monto fijo"}</div></td>
+            <td>${esc(couponValidityText(c))}</td>
+            <td>${uses} / ${limit}</td>
+            <td><span class="badge ${c.activo?"on":"off"}">${c.activo?"ACTIVO":"INACTIVO"}</span></td>
+            <td><div class="row-actions"><button class="icon-btn coupon-edit" type="button">${icon("edit")}<span>EDITAR</span></button><button class="icon-btn coupon-remove" type="button">${icon("trash")}<span>ELIMINAR</span></button></div></td>`;
+        tr.querySelector(".coupon-edit")?.addEventListener("click",()=>editCoupon(c.id));
+        tr.querySelector(".coupon-remove")?.addEventListener("click",()=>deleteCoupon(c.id,c.codigo));
+        tbody.appendChild(tr);
+    });
+}
+
+function resetCouponForm(){
+    const form=document.getElementById("coupon-form");
+    if(!form)return;
+    form.reset();
+    document.getElementById("coupon-id").value="";
+    document.getElementById("coupon-type").value="porcentaje";
+    document.getElementById("coupon-minimum").value="0";
+    document.getElementById("coupon-active").value="true";
+    document.getElementById("coupon-form-title").textContent="Nuevo cupón";
+    document.getElementById("coupon-save").textContent="GUARDAR CUPÓN";
+    document.getElementById("coupon-cancel").classList.add("hidden");
+    msg("coupon-message","");
+}
+
+function editCoupon(id){
+    const c=cupones.find(x=>String(x.id)===String(id));
+    if(!c)return;
+    document.getElementById("coupon-id").value=c.id;
+    document.getElementById("coupon-code").value=c.codigo||"";
+    document.getElementById("coupon-type").value=c.tipo||"porcentaje";
+    document.getElementById("coupon-value").value=Number(c.valor)||0;
+    document.getElementById("coupon-minimum").value=Number(c.minimo_compra)||0;
+    document.getElementById("coupon-limit").value=c.limite_usos==null?"":Number(c.limite_usos)||1;
+    document.getElementById("coupon-from").value=localDateTimeValue(c.vigente_desde);
+    document.getElementById("coupon-to").value=localDateTimeValue(c.vigente_hasta);
+    document.getElementById("coupon-active").value=String(Boolean(c.activo));
+    document.getElementById("coupon-form-title").textContent="Editar cupón";
+    document.getElementById("coupon-save").textContent="GUARDAR CAMBIOS";
+    document.getElementById("coupon-cancel").classList.remove("hidden");
+    document.getElementById("coupon-form").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function saveCoupon(event){
+    event.preventDefault();
+    const button=document.getElementById("coupon-save");
+    button.disabled=true;
+    msg("coupon-message","");
+    try{
+        const id=document.getElementById("coupon-id").value.trim();
+        const codigo=String(document.getElementById("coupon-code").value||"").trim().toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,40);
+        const tipo=document.getElementById("coupon-type").value;
+        const valor=Number(document.getElementById("coupon-value").value);
+        const minimo=Math.max(0,Number(document.getElementById("coupon-minimum").value)||0);
+        const limitRaw=document.getElementById("coupon-limit").value.trim();
+        const fromRaw=document.getElementById("coupon-from").value;
+        const toRaw=document.getElementById("coupon-to").value;
+        if(!codigo||!Number.isFinite(valor)||valor<=0)throw new Error("Revisá el código y el valor del cupón.");
+        if(tipo==="porcentaje"&&valor>100)throw new Error("Un cupón porcentual no puede superar el 100%.");
+        const from=fromRaw?new Date(fromRaw).toISOString():null;
+        const to=toRaw?new Date(toRaw).toISOString():null;
+        if(from&&to&&new Date(to)<=new Date(from))throw new Error("La fecha de finalización debe ser posterior al inicio.");
+        const payload={
+            codigo,tipo,valor,minimo_compra:minimo,
+            limite_usos:limitRaw?Math.max(1,Math.floor(Number(limitRaw)||1)):null,
+            vigente_desde:from,vigente_hasta:to,
+            activo:document.getElementById("coupon-active").value==="true",
+            updated_at:new Date().toISOString()
+        };
+        const path=id?`/rest/v1/cupones?id=eq.${encodeURIComponent(id)}`:"/rest/v1/cupones";
+        const r=await sb(path,{method:id?"PATCH":"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify(payload)});
+        if(!r.ok){
+            const d=await r.json().catch(()=>({}));
+            throw new Error(d?.code==="23505"?"Ya existe un cupón con ese código.":(d?.message||"No se pudo guardar el cupón."));
+        }
+        showToast(id?"Cupón actualizado.":"Cupón creado.");
+        await loadCoupons();
+        resetCouponForm();
+    }catch(error){
+        msg("coupon-message",error?.message||"No se pudo guardar el cupón.","error");
+    }finally{button.disabled=false;}
+}
+
+async function deleteCoupon(id,code){
+    const ok=await confirmAction({title:"Eliminar cupón",text:`Vas a eliminar el cupón “${code}”.`,confirmText:"ELIMINAR",danger:true});
+    if(!ok)return;
+    try{
+        const r=await sb(`/rest/v1/cupones?id=eq.${encodeURIComponent(id)}`,{method:"DELETE"});
+        if(!r.ok)throw new Error("No se pudo eliminar el cupón.");
+        await loadCoupons();
+        resetCouponForm();
+        showToast("Cupón eliminado.");
+    }catch(error){showToast(error?.message||"No se pudo eliminar.","error");}
+}
+
 async function refreshAll(){
     const current=document.querySelector(".tab.active")?.dataset.tab;
     try{
         if(current==="orders")await loadOrders();
+        else if(current==="coupons")await loadCoupons();
         else await loadProducts();
     }catch(e){
         showToast(e.message||"No se pudo actualizar.","error");
@@ -1103,6 +1266,9 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
 });
 
 document.getElementById("product-form").addEventListener("submit",saveProduct);
+document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
+document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
+document.getElementById("coupon-code")?.addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,"");});
 document.getElementById("product-cancel").addEventListener("click",resetProductForm);
 document.getElementById("logout-button").addEventListener("click",()=>logout());
 document.getElementById("refresh-button").addEventListener("click",refreshAll);
@@ -1114,6 +1280,8 @@ document.querySelectorAll(".tab").forEach(button=>{
         document.getElementById(`${button.dataset.tab}-panel`).classList.add("active");
         if(button.dataset.tab==="orders"){
             try{await loadOrders();}catch(e){showToast(e.message||"No se pudieron cargar los pedidos.","error");}
+        }else if(button.dataset.tab==="coupons"){
+            try{await loadCoupons();}catch(e){showToast(e.message||"No se pudieron cargar los cupones.","error");}
         }
     });
 });

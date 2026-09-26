@@ -1,4 +1,6 @@
 import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
+import { productPrice, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
+import { sendOrderStatusEmail } from "../lib/order-email.js";
 
 const MAX_ITEMS = 40;
 const MAX_QTY = 99;
@@ -40,6 +42,26 @@ async function supabaseFetch(path, options = {}) {
     };
 
     return fetchWithTimeout(`${url}${path}`, { ...options, headers }, 8000);
+}
+
+async function notifyOrderEmail({ type, order, items, origin, paymentUrl = "", expiresAt = null }) {
+    const claimResponse = await supabaseFetch("/rest/v1/rpc/claim_order_email", {
+        method: "POST",
+        body: JSON.stringify({ p_pedido_id: order.id, p_tipo: type })
+    });
+    const claim = await claimResponse.json().catch(() => null);
+    if (!claimResponse.ok || !claim?.claimed) return;
+
+    let sent = false;
+    try {
+        const result = await sendOrderStatusEmail({ kind: type, order, items, origin, paymentUrl, expiresAt });
+        sent = Boolean(result?.sent);
+    } finally {
+        await supabaseFetch("/rest/v1/rpc/finalize_order_email", {
+            method: "POST",
+            body: JSON.stringify({ p_pedido_id: order.id, p_tipo: type, p_enviado: sent })
+        }).catch(() => null);
+    }
 }
 
 export default async function handler(req, res) {
@@ -97,6 +119,7 @@ export default async function handler(req, res) {
         const body = req.body && typeof req.body === "object" ? req.body : {};
         const clienteRaw = body.cliente || {};
         const itemsRaw = Array.isArray(body.items) ? body.items : [];
+        const couponCode = normalizeCouponCode(body.cupon || body.coupon || "");
 
         const cliente = {
             nombre: clean(clienteRaw.nombre, 100),
@@ -152,11 +175,17 @@ export default async function handler(req, res) {
             cantidades.set(id, acumulada);
         }
 
-        const catalogResponse = await supabaseFetch(
-            "/rest/v1/productos?select=id,nombre,precio,stock,activo&activo=eq.true"
+        let catalogResponse = await supabaseFetch(
+            "/rest/v1/productos?select=id,nombre,precio,descuento_porcentaje,stock,activo&activo=eq.true"
         );
+        let catalog = await catalogResponse.json().catch(() => []);
 
-        const catalog = await catalogResponse.json().catch(() => []);
+        if (!catalogResponse.ok) {
+            catalogResponse = await supabaseFetch(
+                "/rest/v1/productos?select=id,nombre,precio,stock,activo&activo=eq.true"
+            );
+            catalog = await catalogResponse.json().catch(() => []);
+        }
 
         if (!catalogResponse.ok || !Array.isArray(catalog)) {
             console.error("Catalog validation error:", catalog);
@@ -175,7 +204,7 @@ export default async function handler(req, res) {
             }
 
             const stock = Math.max(0, Number(producto.stock) || 0);
-            const precio = Math.max(0, Number(producto.precio) || 0);
+            const precio = productPrice(producto).final;
 
             if (cantidad > stock) {
                 return res.status(409).json({
@@ -197,10 +226,31 @@ export default async function handler(req, res) {
             total += precio * cantidad;
         }
 
-        total = Math.round(total * 100) / 100;
+        total = roundMoney(total);
 
         if (total <= 0) {
             return res.status(400).json({ error: "El total del pedido no es válido." });
+        }
+
+        const subtotal = total;
+        let descuentoTotal = 0;
+        let coupon = null;
+
+        if (couponCode) {
+            const couponResponse = await supabaseFetch(
+                `/rest/v1/cupones?codigo=eq.${encodeURIComponent(couponCode)}&select=id,codigo,tipo,valor,minimo_compra,activo,vigente_desde,vigente_hasta,limite_usos,usos&limit=1`
+            );
+            const coupons = await couponResponse.json().catch(() => []);
+            if (!couponResponse.ok || !Array.isArray(coupons)) {
+                return res.status(502).json({ error: "No pudimos validar el cupón." });
+            }
+            coupon = coupons[0] || null;
+            const couponResult = couponStatus(coupon, subtotal);
+            if (!couponResult.valid) {
+                return res.status(400).json({ error: couponResult.reason || "El cupón no es válido." });
+            }
+            descuentoTotal = couponResult.discount;
+            total = couponResult.total;
         }
 
         const orderResponse = await supabaseFetch(
@@ -218,6 +268,10 @@ export default async function handler(req, res) {
                     codigo_postal: cliente.codigo_postal,
                     metodo_entrega: cliente.entrega || "retiro",
                     notas: cliente.notas || null,
+                    subtotal,
+                    descuento_total: descuentoTotal,
+                    cupon_id: coupon?.id || null,
+                    cupon_codigo: coupon?.codigo || null,
                     total,
                     estado: "pendiente"
                 })
@@ -260,15 +314,25 @@ export default async function handler(req, res) {
         }
 
         const origin = originFromRequest(req);
+        const paymentStartsAt = new Date();
+        const paymentExpiresAt = new Date(paymentStartsAt.getTime() + 24 * 60 * 60 * 1000);
 
         const preference = {
-            items: orderItems.map(item => ({
-                id: String(item.producto_id),
-                title: item.nombre,
-                quantity: item.cantidad,
-                unit_price: item.precio_unitario,
-                currency_id: "ARS"
-            })),
+            items: coupon
+                ? [{
+                    id: `pedido-${String(orderId)}`,
+                    title: `Pedido DORADO · Cupón ${coupon.codigo}`,
+                    quantity: 1,
+                    unit_price: total,
+                    currency_id: "ARS"
+                }]
+                : orderItems.map(item => ({
+                    id: String(item.producto_id),
+                    title: item.nombre,
+                    quantity: item.cantidad,
+                    unit_price: item.precio_unitario,
+                    currency_id: "ARS"
+                })),
             payer: {
                 name: cliente.nombre,
                 email: cliente.email,
@@ -282,6 +346,9 @@ export default async function handler(req, res) {
                 failure: `${origin}/?checkout=failure&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`
             },
             auto_return: "approved",
+            expires: true,
+            expiration_date_from: paymentStartsAt.toISOString(),
+            expiration_date_to: paymentExpiresAt.toISOString(),
             statement_descriptor: "DORADO PESCA",
             metadata: {
                 pedido_id: String(orderId)
@@ -314,9 +381,33 @@ export default async function handler(req, res) {
         await supabaseFetch(`/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}`, {
             method: "PATCH",
             body: JSON.stringify({
-                mp_preference_id: String(mpData.id)
+                mp_preference_id: String(mpData.id),
+                mp_init_point: String(mpData.init_point),
+                pago_expira_at: paymentExpiresAt.toISOString()
             })
         });
+
+        const emailOrder = {
+            ...order,
+            subtotal,
+            descuento_total: descuentoTotal,
+            cupon_codigo: coupon?.codigo || null,
+            total,
+            mp_init_point: String(mpData.init_point),
+            pago_expira_at: paymentExpiresAt.toISOString()
+        };
+        try {
+            await notifyOrderEmail({
+                type: "pending",
+                order: emailOrder,
+                items: orderItems,
+                origin,
+                paymentUrl: String(mpData.init_point),
+                expiresAt: paymentExpiresAt.toISOString()
+            });
+        } catch (emailError) {
+            console.error("Pending order email failed:", emailError?.message || emailError);
+        }
 
         return res.status(200).json({
             order_id: orderId,

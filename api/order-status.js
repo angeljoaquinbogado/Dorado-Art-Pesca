@@ -50,10 +50,17 @@ export default async function handler(req, res) {
     }
 
     try {
-        const orderResponse = await sb(
-            `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,total`
+        let orderResponse = await sb(
+            `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,subtotal,descuento_total,cupon_codigo,total,mp_init_point,pago_expira_at`
         );
-        const orders = await orderResponse.json().catch(() => []);
+        let orders = await orderResponse.json().catch(() => []);
+
+        if (!orderResponse.ok) {
+            orderResponse = await sb(
+                `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,total`
+            );
+            orders = await orderResponse.json().catch(() => []);
+        }
 
         if (!orderResponse.ok || !Array.isArray(orders) || !orders[0]) {
             return res.status(404).json({ error: "Pedido no encontrado" });
@@ -82,13 +89,25 @@ export default async function handler(req, res) {
             estado === "reembolsado" ? "reembolsado" :
             estado;
 
+        const expiresAt = order.pago_expira_at ? new Date(order.pago_expira_at) : null;
+        const canRetry = ["pendiente", "fallido"].includes(status)
+            && String(order.mp_init_point || "").startsWith("https://")
+            && expiresAt
+            && Number.isFinite(expiresAt.getTime())
+            && expiresAt.getTime() > Date.now();
+
         return res.status(200).json({
             id: order.id,
             code: orderCode,
             status,
             preparation_status: preparacion,
             created_at: order.created_at,
+            subtotal: Number(order.subtotal) || Number(order.total) || 0,
+            discount: Math.max(0, Number(order.descuento_total) || 0),
+            coupon_code: String(order.cupon_codigo || ""),
             total: Number(order.total) || 0,
+            payment_expires_at: order.pago_expira_at || null,
+            retry_url: canRetry ? String(order.mp_init_point) : "",
             items: items.map(item => ({
                 name: String(item.nombre || ""),
                 quantity: Math.max(1, Number(item.cantidad) || 1),

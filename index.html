@@ -608,6 +608,14 @@
 <aside class="checkout-side">
 <h3>Resumen del pedido</h3>
 <div class="checkout-summary-list" id="checkout-summary-list"></div>
+<div class="checkout-coupon" id="checkout-coupon">
+  <label for="checkout-coupon-code">¿TENÉS UN CUPÓN?</label>
+  <div class="checkout-coupon-row">
+    <input id="checkout-coupon-code" maxlength="40" autocomplete="off" placeholder="Ingresá tu código" type="text">
+    <button id="checkout-coupon-apply" type="button">APLICAR</button>
+  </div>
+  <div class="checkout-coupon-message" id="checkout-coupon-message" aria-live="polite"></div>
+</div>
 <div class="checkout-summary-total">
 <div class="checkout-summary-row">
 <span>Productos</span>
@@ -616,6 +624,10 @@
 <div class="checkout-summary-row">
 <span>Envío</span>
 <strong>A coordinar</strong>
+</div>
+<div class="checkout-summary-row checkout-discount-row" id="checkout-summary-discount-row" hidden>
+<span>Descuento <small id="checkout-summary-coupon-code"></small></span>
+<strong id="checkout-summary-discount">-$0</strong>
 </div>
 <div class="checkout-summary-row total">
 <span>TOTAL PRODUCTOS</span>

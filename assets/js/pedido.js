@@ -75,7 +75,31 @@ async function loadOrder(){
       return `<div class="tracking-item"><div><strong>${esc(item.name)}</strong><small>${qty} × ${esc(money.format(unit))}</small></div><strong>${esc(money.format(unit*qty))}</strong></div>`;
     }).join("") || '<div class="tracking-item"><div><strong>Sin detalle de productos</strong></div></div>';
     document.getElementById("tracking-units").textContent=`${units} ${units===1?"unidad":"unidades"}`;
+    const discount=Math.max(0,Number(data.discount)||0);
+    const subtotalRow=document.getElementById("tracking-subtotal-row");
+    const discountRow=document.getElementById("tracking-discount-row");
+    if(subtotalRow)subtotalRow.hidden=discount<=0;
+    if(discountRow)discountRow.hidden=discount<=0;
+    if(discount>0){
+      document.getElementById("tracking-subtotal").textContent=money.format(Number(data.subtotal)||0);
+      document.getElementById("tracking-discount").textContent=`-${money.format(discount)}`;
+      document.getElementById("tracking-coupon-code").textContent=data.coupon_code?`· ${data.coupon_code}`:"";
+    }
     document.getElementById("tracking-total").textContent=money.format(Number(data.total)||0);
+
+    const retryBox=document.getElementById("tracking-payment-retry");
+    const retryLink=document.getElementById("tracking-payment-retry-link");
+    const retryText=document.getElementById("tracking-payment-retry-text");
+    if(retryBox&&retryLink){
+      retryBox.hidden=!data.retry_url;
+      if(data.retry_url){
+        retryLink.href=data.retry_url;
+        if(data.payment_expires_at&&retryText){
+          const expires=new Date(data.payment_expires_at);
+          if(Number.isFinite(expires.getTime())) retryText.textContent=`Podés volver a intentar con los medios disponibles en Mercado Pago hasta ${expires.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"})}.`;
+        }
+      }
+    }
 
     const code=data.code||orderCode(data.id);
     document.getElementById("tracking-whatsapp").href=

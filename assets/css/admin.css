@@ -57,3 +57,17 @@ a{color:inherit;text-decoration:none}svg{width:19px;height:19px;fill:none;stroke
 }
 @media(max-width:380px){.side-brand img{width:104px}.tab{padding:8px 7px;font-size:9px}.stats{grid-template-columns:1fr}.stat:last-child{grid-column:auto}tbody td{grid-template-columns:72px minmax(0,1fr)}.row-actions{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* =========================================================
+   DORADO ADMIN — CUPONES Y DESCUENTOS
+========================================================= */
+.coupon-admin-grid{align-items:start}
+.coupon-code-cell{letter-spacing:.08em}
+#coupons-panel .catalog-card{min-width:0}
+#coupons-panel .table-wrap{overflow:auto}
+#coupons-panel table{min-width:760px}
+#coupon-code{text-transform:uppercase;letter-spacing:.08em;font-weight:750}
+#coupon-form input[type="datetime-local"]{min-height:44px}
+@media (max-width:760px){
+  .coupon-admin-grid{grid-template-columns:1fr!important}
+}

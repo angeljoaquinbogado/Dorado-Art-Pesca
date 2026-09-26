@@ -87,3 +87,10 @@ body{background:linear-gradient(180deg,#061019 0 230px,#f5f2eb 230px)!important}
   .track-progress::-webkit-scrollbar{display:none}
   .tracking-actions{position:relative}
 }
+
+/* Pago pendiente / descuentos */
+.notice.payment-retry{background:#fff9e9;border:1px solid #ead8a3;color:#5f4c1c}
+.notice.payment-retry .button{margin-top:8px;width:max-content;max-width:100%}
+.tracking-total.tracking-subtotal,.tracking-total.tracking-discount{font-size:13px;padding-top:8px;padding-bottom:0;border-top:0}
+.tracking-total.tracking-discount{color:#8b6818}
+.tracking-total[hidden]{display:none!important}

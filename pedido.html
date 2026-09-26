@@ -55,12 +55,26 @@
         <span>No vuelvas a pagar. Si necesitás ayuda, escribinos por WhatsApp.</span>
       </div>
 
+      <div class="notice payment-retry" id="tracking-payment-retry" hidden>
+        <strong>Tu pago todavía puede completarse.</strong>
+        <span id="tracking-payment-retry-text">Tenés hasta 24 horas desde la creación del pedido para volver a intentar.</span>
+        <a class="button primary" id="tracking-payment-retry-link" href="#" rel="noopener">REINTENTAR PAGO</a>
+      </div>
+
       <section class="items-block">
         <div class="section-title-row">
           <h2>Productos</h2>
           <span id="tracking-units"></span>
         </div>
         <div id="tracking-items"></div>
+        <div class="tracking-total tracking-subtotal" id="tracking-subtotal-row" hidden>
+          <span>Subtotal</span>
+          <strong id="tracking-subtotal">$0</strong>
+        </div>
+        <div class="tracking-total tracking-discount" id="tracking-discount-row" hidden>
+          <span>Descuento <small id="tracking-coupon-code"></small></span>
+          <strong id="tracking-discount">-$0</strong>
+        </div>
         <div class="tracking-total">
           <span>Total de productos</span>
           <strong id="tracking-total">$0</strong>

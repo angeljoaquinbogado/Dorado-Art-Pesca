@@ -3944,3 +3944,47 @@ body.orders-open{overflow:hidden}
 .skip-link{position:fixed;left:12px;top:10px;z-index:10000;transform:translateY(-160%);padding:11px 15px;border-radius:10px;background:#fff;color:#111;font-size:12px;font-weight:900;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .skip-link:focus{transform:translateY(0)}
 :where(a,button,input,select,textarea):focus-visible{outline:3px solid rgba(212,175,55,.72);outline-offset:3px}
+
+/* =========================================================
+   DORADO — DESCUENTOS Y CUPONES
+========================================================= */
+.product-price.has-discount,
+.dynamic-product-price.has-discount,
+.dynamic-product-price-mobile.has-discount{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+}
+.product-price-old{
+  color:#94908a;font-size:.66em;font-weight:650;text-decoration:line-through;text-decoration-thickness:1.5px;
+}
+.product-price-current{color:inherit;font:inherit;font-weight:inherit}
+.product-discount-badge{
+  display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border-radius:999px;
+  background:#17181b;color:#e8c665;font-size:9px;font-weight:850;letter-spacing:.08em;white-space:nowrap;
+}
+.checkout-coupon{
+  margin:18px 0 14px;padding:16px;border:1px solid rgba(167,132,46,.18);border-radius:16px;background:#fbfaf6;
+}
+.checkout-coupon label{display:block;margin-bottom:8px;color:#6d675c;font-size:9px;font-weight:850;letter-spacing:.12em}
+.checkout-coupon-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.checkout-coupon-row input{
+  min-width:0;height:42px;padding:0 12px;border:1px solid #ded9cf;border-radius:10px;background:#fff;color:#17181b;
+  font:inherit;font-size:12px;text-transform:uppercase;letter-spacing:.06em;outline:none;
+}
+.checkout-coupon-row input:focus{border-color:#b99339;box-shadow:0 0 0 3px rgba(185,147,57,.10)}
+.checkout-coupon-row button{
+  min-width:92px;height:42px;padding:0 14px;border:0;border-radius:10px;background:#161719;color:#fff;
+  font:inherit;font-size:9px;font-weight:850;letter-spacing:.1em;cursor:pointer;
+}
+.checkout-coupon-row button:disabled{opacity:.55;cursor:wait}
+.checkout-coupon-message{min-height:17px;margin-top:8px;color:#77736b;font-size:10px;line-height:1.5}
+.checkout-coupon-message.ok{color:#697429;font-weight:700}
+.checkout-coupon-message.error{color:#a33b32;font-weight:700}
+.checkout-discount-row{color:#8a681b}
+.checkout-discount-row[hidden]{display:none!important}
+.checkout-discount-row small{font:inherit;font-size:.9em}
+@media (max-width:620px){
+  .checkout-coupon{padding:13px;margin-top:14px}
+  .checkout-coupon-row{grid-template-columns:1fr}
+  .checkout-coupon-row button{width:100%}
+  .product-discount-badge{font-size:8px;min-height:22px}
+}

@@ -4,6 +4,7 @@ const DORADO_WHATSAPP = "5491168070039";
 
 const catalogoProductos = new Map();
 let productoModalActual = null;
+let checkoutCoupon = null;
 
 const formatoPesos = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -290,8 +291,10 @@ async function cargarProductosDesdeSupabase() {
 
                     <p class="product-card-description">${textoSeguro(descripcionResumen(producto.descripcion || ""))}</p>
 
-                    <div class="product-price">
-                        ${textoSeguro(formatearPrecio(producto.precio))}
+                    <div class="product-price ${Number(producto.descuento_porcentaje)>0?"has-discount":""}">
+                        ${Number(producto.descuento_porcentaje)>0
+                            ? `<span class="product-price-old">${textoSeguro(formatearPrecio(producto.precio_original))}</span><span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span><span class="product-discount-badge">-${Math.round(Number(producto.descuento_porcentaje)||0)}%</span>`
+                            : `<span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span>`}
                     </div>
 
                     <div class="product-stock">
@@ -553,11 +556,22 @@ function verProducto(producto) {
     if (features) features.innerHTML = featuresHtml;
     if (featuresSection) featuresSection.hidden = !featuresHtml;
 
+    const discount = Math.max(0, Number(producto.descuento_porcentaje) || 0);
+    const priceMarkup = discount > 0
+        ? `<span class="product-price-old">${textoSeguro(formatearPrecio(producto.precio_original))}</span><span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span><span class="product-discount-badge">-${Math.round(discount)}%</span>`
+        : `<span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span>`;
+
     const precio = modal.querySelector(".dynamic-product-price");
-    if (precio) precio.textContent = formatearPrecio(producto.precio);
+    if (precio) {
+        precio.classList.toggle("has-discount", discount > 0);
+        precio.innerHTML = priceMarkup;
+    }
 
     const precioMobile = modal.querySelector(".dynamic-product-price-mobile");
-    if (precioMobile) precioMobile.textContent = formatearPrecio(producto.precio);
+    if (precioMobile) {
+        precioMobile.classList.toggle("has-discount", discount > 0);
+        precioMobile.innerHTML = priceMarkup;
+    }
 
     const stockElemento = modal.querySelector(".dynamic-product-stock");
 
@@ -1101,9 +1115,81 @@ function renderCheckoutResumen() {
         lista.appendChild(fila);
     });
 
-    if (totalEl) totalEl.textContent = formatearPrecio(total);
+    const roundedSubtotal = Math.round(total * 100) / 100;
+    if (checkoutCoupon && Math.abs(Number(checkoutCoupon.subtotal || 0) - roundedSubtotal) > 0.01) {
+        checkoutCoupon = null;
+        const msg = document.getElementById("checkout-coupon-message");
+        if (msg) {
+            msg.textContent = "El carrito cambió. Volvé a aplicar el cupón.";
+            msg.className = "checkout-coupon-message error";
+        }
+    }
+
+    const discountRow = document.getElementById("checkout-summary-discount-row");
+    const discountEl = document.getElementById("checkout-summary-discount");
+    const couponCodeEl = document.getElementById("checkout-summary-coupon-code");
+    const discount = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.discount) || 0) : 0;
+    const finalTotal = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.total) || roundedSubtotal) : roundedSubtotal;
+
+    if (discountRow) discountRow.hidden = discount <= 0;
+    if (discountEl) discountEl.textContent = `-${formatearPrecio(discount)}`;
+    if (couponCodeEl) couponCodeEl.textContent = checkoutCoupon?.code ? `· ${checkoutCoupon.code}` : "";
+    if (totalEl) totalEl.textContent = formatearPrecio(finalTotal);
     if (unidadesEl) {
         unidadesEl.textContent = `${unidades} ${unidades === 1 ? "unidad" : "unidades"}`;
+    }
+}
+
+async function aplicarCuponCheckout() {
+    const input = document.getElementById("checkout-coupon-code");
+    const message = document.getElementById("checkout-coupon-message");
+    const button = document.getElementById("checkout-coupon-apply");
+    const code = String(input?.value || "").trim().toUpperCase();
+
+    if (!code) {
+        checkoutCoupon = null;
+        if (message) {
+            message.textContent = "Ingresá un código de cupón.";
+            message.className = "checkout-coupon-message error";
+        }
+        renderCheckoutResumen();
+        return;
+    }
+
+    const carrito = leerCarrito();
+    const items = carrito.map(item => ({
+        id: item.id,
+        cantidad: Math.max(1, Math.floor(Number(item.cantidad) || 1))
+    }));
+
+    if (button) { button.disabled = true; button.textContent = "VALIDANDO…"; }
+    if (message) { message.textContent = "Validando cupón…"; message.className = "checkout-coupon-message"; }
+
+    try {
+        const response = await fetch("/api/coupon", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({ code, items })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data?.error || "No pudimos validar el cupón.");
+
+        checkoutCoupon = data;
+        if (input) input.value = String(data.code || code);
+        if (message) {
+            message.textContent = `${data.message || "Cupón aplicado."} Ahorrás ${formatearPrecio(data.discount)}.`;
+            message.className = "checkout-coupon-message ok";
+        }
+        renderCheckoutResumen();
+    } catch (error) {
+        checkoutCoupon = null;
+        if (message) {
+            message.textContent = error?.message || "El cupón no es válido.";
+            message.className = "checkout-coupon-message error";
+        }
+        renderCheckoutResumen();
+    } finally {
+        if (button) { button.disabled = false; button.textContent = "APLICAR"; }
     }
 }
 
@@ -1185,7 +1271,10 @@ async function iniciarPagoMercadoPago(evento) {
     };
 
     if (metodoPago !== "mercadopago") {
-        const total = carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+        const subtotal = carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+        const total = checkoutCoupon && Math.abs(Number(checkoutCoupon.subtotal||0)-subtotal)<0.01
+            ? Number(checkoutCoupon.total)||subtotal
+            : subtotal;
         const detalle = carrito.map((item,i)=>{
             const cantidad=Math.max(1,Number(item.cantidad)||1);
             return `${i+1}. ${item.nombre} · ${cantidad} u. · ${formatearPrecio((Number(item.precio)||0)*cantidad)}`;
@@ -1195,6 +1284,7 @@ async function iniciarPagoMercadoPago(evento) {
         const mensaje = [
             "Hola Dorado Artículos de Pesca 👋",
             "Quiero confirmar este pedido desde la web:","",detalle,"",
+            checkoutCoupon ? `Cupón: ${checkoutCoupon.code} · Descuento: -${formatearPrecio(checkoutCoupon.discount)}` : "",
             `TOTAL PRODUCTOS: ${formatearPrecio(total)}`,
             `Pago: ${nombres[metodoPago] || "A coordinar"}`,
             `Entrega: ${entregas[entrega] || entrega}`,
@@ -1221,7 +1311,7 @@ async function iniciarPagoMercadoPago(evento) {
         const respuesta = await fetch("/api/checkout", {
             method: "POST",
             headers: {"Content-Type": "application/json","Accept": "application/json"},
-            body: JSON.stringify({ cliente, items })
+            body: JSON.stringify({ cliente, items, cupon: String(document.getElementById("checkout-coupon-code")?.value || "").trim().toUpperCase() })
         });
         const data = await respuesta.json().catch(() => ({}));
         if (!respuesta.ok) throw new Error(data?.error || "No pudimos iniciar el pago.");
@@ -2646,6 +2736,8 @@ comprobarRetornoPago();
     document.getElementById("cart-overlay")?.addEventListener("click", cerrarCarrito);
     document.querySelector(".cart-close")?.addEventListener("click", cerrarCarrito);
     document.getElementById("cart-checkout")?.addEventListener("click", abrirCheckout);
+    document.getElementById("checkout-coupon-apply")?.addEventListener("click", aplicarCuponCheckout);
+    document.getElementById("checkout-coupon-code")?.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); aplicarCuponCheckout(); } });
     document.getElementById("cart-continue")?.addEventListener("click", cerrarCarrito);
     document.getElementById("cart-clear")?.addEventListener("click", vaciarCarrito);
 })();
