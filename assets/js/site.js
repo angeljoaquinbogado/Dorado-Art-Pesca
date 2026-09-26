@@ -249,20 +249,79 @@ async function cargarProductosDesdeSupabase() {
     if (!contenedor) return;
 
     try {
-        const respuesta = await fetch("/api/products", {
-            headers: {
-                "Accept": "application/json"
-            }
-        });
+        let productos = null;
+        let ultimoError = null;
 
-        if (!respuesta.ok) {
-            throw new Error("No se pudieron cargar los productos");
+        // Primero intenta el endpoint del servidor. Un segundo intento cubre
+        // despliegues fríos o fallas transitorias de red en celular.
+        for (let intento = 0; intento < 2 && !productos; intento += 1) {
+            try {
+                const respuesta = await fetch("/api/products", {
+                    headers: { "Accept": "application/json" },
+                    cache: "no-store"
+                });
+                const data = await respuesta.json().catch(() => null);
+                if (!respuesta.ok || !Array.isArray(data)) {
+                    throw new Error(data?.error || "No se pudieron cargar los productos");
+                }
+                productos = data;
+            } catch (error) {
+                ultimoError = error;
+                if (intento === 0) {
+                    await new Promise(resolve => window.setTimeout(resolve, 650));
+                }
+            }
         }
 
-        const productos = await respuesta.json();
+        // Respaldo: la publishable key de Supabase es pública por diseño.
+        // Si la función /api/products falla pero /api/public-config responde,
+        // el catálogo puede seguir cargando sin exponer secretos.
+        if (!productos) {
+            try {
+                const configResponse = await fetch("/api/public-config", {
+                    headers: { "Accept": "application/json" },
+                    cache: "no-store"
+                });
+                const config = await configResponse.json().catch(() => ({}));
+                if (!configResponse.ok || !config.supabaseUrl || !config.supabasePublishableKey) {
+                    throw new Error("Configuración pública no disponible");
+                }
+
+                const query = "select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc";
+                const directResponse = await fetch(`${config.supabaseUrl}/rest/v1/productos?${query}`, {
+                    headers: {
+                        apikey: config.supabasePublishableKey,
+                        Authorization: `Bearer ${config.supabasePublishableKey}`,
+                        Accept: "application/json"
+                    },
+                    cache: "no-store"
+                });
+                const directRows = await directResponse.json().catch(() => null);
+                if (!directResponse.ok || !Array.isArray(directRows)) {
+                    throw new Error("No se pudo usar el respaldo del catálogo");
+                }
+
+                productos = directRows.map(producto => {
+                    const base = Math.max(0, Number(producto.precio) || 0);
+                    const percent = Math.min(90, Math.max(0, Number(producto.descuento_porcentaje) || 0));
+                    const final = Math.round(base * (1 - percent / 100) * 100) / 100;
+                    return {
+                        ...producto,
+                        precio: final,
+                        precio_original: Math.round(base * 100) / 100,
+                        descuento_porcentaje: percent,
+                        stock: Math.max(0, Number(producto.stock) || 0),
+                        activo: Boolean(producto.activo),
+                        imagenes: Array.isArray(producto.imagenes) ? producto.imagenes : []
+                    };
+                });
+            } catch (error) {
+                ultimoError = error;
+            }
+        }
 
         if (!Array.isArray(productos)) {
-            throw new Error("Respuesta de productos inválida");
+            throw ultimoError || new Error("Respuesta de productos inválida");
         }
 
         catalogoProductos.clear();
@@ -433,11 +492,23 @@ async function cargarProductosDesdeSupabase() {
     } catch (error) {
         console.error("Error cargando productos:", error);
 
+        const count = document.getElementById("product-result-count");
+        if (count) count.textContent = "Catálogo temporalmente no disponible";
+
         contenedor.innerHTML = `
             <div class="products-loading">
-                No pudimos cargar los productos. Intentá nuevamente en unos minutos.
+                <div class="catalog-error-state">
+                    <strong>No pudimos cargar el catálogo.</strong>
+                    <span>Puede ser una falla momentánea de conexión. Probá nuevamente sin recargar toda la página.</span>
+                    <button class="catalog-retry-btn" type="button">REINTENTAR</button>
+                </div>
             </div>
         `;
+        contenedor.querySelector(".catalog-retry-btn")?.addEventListener("click", () => {
+            contenedor.innerHTML = '<div class="products-loading"><span class="catalog-loader-dot" aria-hidden="true"></span><span>Cargando catálogo…</span></div>';
+            if (count) count.textContent = "Cargando catálogo…";
+            cargarProductosDesdeSupabase();
+        });
     }
 }
 
@@ -3358,6 +3429,16 @@ comprobarRetornoPago();
             const data=await response.json().catch(()=>({}));
             reviews=Array.isArray(data.reviews)?data.reviews:[];
         }catch{reviews=[];}
+
+        const section=document.getElementById("opiniones");
+        const hasReviews=reviews.length>0;
+        section?.classList.toggle("is-empty",!hasReviews);
+        filterButton.hidden=!hasReviews;
+        if(!hasReviews){
+            filterPanel.hidden=true;
+            filterButton.setAttribute("aria-expanded","false");
+        }
+
         renderMarquee();
     })();
 })();
