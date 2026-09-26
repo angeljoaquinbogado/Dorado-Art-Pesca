@@ -1,4 +1,12 @@
-import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
+import {
+    consumeRateLimit,
+    enforceRateLimit,
+    bodyTooLarge,
+    fetchWithTimeout,
+    publicSiteOrigin,
+    isSameOriginRequest,
+    requireJsonRequest
+} from "../lib/security.js";
 import { productPrice, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
 import { sendOrderStatusEmail } from "../lib/order-email.js";
 
@@ -14,16 +22,6 @@ function emailValido(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-function originFromRequest(req) {
-    const configured = clean(process.env.PUBLIC_SITE_URL || "", 250).replace(/\/$/, "");
-    if (/^https:\/\//i.test(configured)) return configured;
-
-    const forwarded = clean(req.headers["x-forwarded-proto"] || "https", 10);
-    const proto = forwarded === "http" ? "http" : "https";
-    const host = clean(req.headers.host || "", 200);
-    if (!host) return "https://dorado-art-pesca.vercel.app";
-    return `${proto}://${host}`;
-}
 
 async function supabaseFetch(path, options = {}) {
     const url = process.env.SUPABASE_URL;
@@ -73,22 +71,17 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: "Método no permitido" });
     }
 
+    if (!requireJsonRequest(req)) {
+        return res.status(415).json({ error: "Formato de solicitud no compatible." });
+    }
+
+    if (!isSameOriginRequest(req)) {
+        return res.status(403).json({ error: "Origen no autorizado" });
+    }
+
     const contentLength = Number(req.headers["content-length"] || 0);
     if (Number.isFinite(contentLength) && contentLength > 50_000) {
         return res.status(413).json({ error: "La solicitud es demasiado grande." });
-    }
-
-    const requestOrigin = String(req.headers.origin || "").trim();
-    const requestHost = String(req.headers.host || "").trim();
-
-    if (requestOrigin) {
-        try {
-            if (new URL(requestOrigin).host !== requestHost) {
-                return res.status(403).json({ error: "Origen no autorizado" });
-            }
-        } catch {
-            return res.status(403).json({ error: "Origen no autorizado" });
-        }
     }
 
     const mpEnabled = String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true";
@@ -164,7 +157,7 @@ export default async function handler(req, res) {
             const id = String(item?.id ?? "").trim();
             const cantidad = Math.floor(Number(item?.cantidad) || 0);
 
-            if (!id || cantidad < 1 || cantidad > MAX_QTY) {
+            if (!/^\d{1,19}$/.test(id) || cantidad < 1 || cantidad > MAX_QTY) {
                 return res.status(400).json({ error: "Hay una cantidad de producto inválida." });
             }
 
@@ -313,7 +306,7 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "No pudimos guardar el detalle del pedido." });
         }
 
-        const origin = originFromRequest(req);
+        const origin = publicSiteOrigin(req);
         const paymentStartsAt = new Date();
         const paymentExpiresAt = new Date(paymentStartsAt.getTime() + 24 * 60 * 60 * 1000);
 
@@ -368,7 +361,11 @@ export default async function handler(req, res) {
         const mpData = await mpResponse.json().catch(() => ({}));
 
         if (!mpResponse.ok || !mpData?.id || !mpData?.init_point) {
-            console.error("Mercado Pago preference error:", mpData);
+            console.error("Mercado Pago preference error", {
+                status: mpResponse.status,
+                error: String(mpData?.error || "").slice(0, 120),
+                message: String(mpData?.message || "").slice(0, 180)
+            });
             await supabaseFetch(`/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}`, {
                 method: "PATCH",
                 body: JSON.stringify({ estado: "error_pago" })

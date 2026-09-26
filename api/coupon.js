@@ -1,4 +1,11 @@
-import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
+import {
+    consumeRateLimit,
+    enforceRateLimit,
+    bodyTooLarge,
+    fetchWithTimeout,
+    isSameOriginRequest,
+    requireJsonRequest
+} from "../lib/security.js";
 import { productPrice, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
 
 const MAX_ITEMS = 40;
@@ -29,6 +36,12 @@ export default async function handler(req, res) {
         res.setHeader("Allow", "POST");
         return res.status(405).json({ error: "Método no permitido" });
     }
+    if (!requireJsonRequest(req)) {
+        return res.status(415).json({ error: "Formato de solicitud no compatible." });
+    }
+    if (!isSameOriginRequest(req)) {
+        return res.status(403).json({ error: "Origen no autorizado" });
+    }
     if (bodyTooLarge(req, 32 * 1024)) {
         return res.status(413).json({ error: "La solicitud es demasiado grande." });
     }
@@ -46,7 +59,7 @@ export default async function handler(req, res) {
         for (const item of items) {
             const id = String(item?.id ?? "").trim();
             const qty = Math.floor(Number(item?.cantidad) || 0);
-            if (!id || qty < 1 || qty > MAX_QTY) return res.status(400).json({ error: "El carrito no es válido." });
+            if (!/^\d{1,19}$/.test(id) || qty < 1 || qty > MAX_QTY) return res.status(400).json({ error: "El carrito no es válido." });
             const totalQty = (quantities.get(id) || 0) + qty;
             if (totalQty > MAX_QTY) return res.status(400).json({ error: "El carrito no es válido." });
             quantities.set(id, totalQty);

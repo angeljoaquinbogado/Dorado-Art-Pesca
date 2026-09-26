@@ -24,7 +24,7 @@ create policy "Admin can read own admin row"
 on public.admin_users
 for select
 to authenticated
-using (user_id = auth.uid());
+using (user_id = (select auth.uid()));
 
 -- Función segura reutilizable por las políticas
 create or replace function public.is_admin()
@@ -42,7 +42,8 @@ as $$
 $$;
 
 revoke all on function public.is_admin() from public;
-grant execute on function public.is_admin() to anon, authenticated;
+revoke execute on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;
 
 -- 2) Productos: crear la tabla base si todavía no existe
 create table if not exists public.productos (
@@ -1499,3 +1500,66 @@ grant execute on function public.confirmar_pago_pedido(uuid,text) to service_rol
 grant select, insert, update, delete on table public.productos to authenticated;
 
 -- Fin.
+
+-- =========================================================
+-- HARDENING FINAL 2026-09-26
+-- =========================================================
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+    select exists(
+        select 1
+        from public.admin_users
+        where user_id = (select auth.uid())
+    );
+$$;
+
+revoke all on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+
+drop policy if exists "Admin can read own admin row" on public.admin_users;
+create policy "Admin can read own admin row"
+on public.admin_users
+for select
+to authenticated
+using (user_id = (select auth.uid()));
+
+drop policy if exists "Admins can delete orders" on public.pedidos;
+create policy "Admins can delete orders"
+on public.pedidos
+for delete
+to authenticated
+using (public.is_admin());
+
+grant delete on table public.pedidos to authenticated;
+
+create or replace function public.admin_delete_orders(p_ids uuid[])
+returns integer
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+    v_deleted integer := 0;
+begin
+    if (select auth.uid()) is null or not public.is_admin() then
+        raise exception 'not_authorized' using errcode = '42501';
+    end if;
+    if p_ids is null or coalesce(array_length(p_ids,1),0)=0 or coalesce(array_length(p_ids,1),0)>200 then
+        raise exception 'invalid_order_ids' using errcode = '22023';
+    end if;
+    delete from public.pedidos where id = any(p_ids);
+    get diagnostics v_deleted = row_count;
+    return v_deleted;
+end;
+$$;
+
+revoke all on function public.admin_delete_orders(uuid[]) from public, anon;
+grant execute on function public.admin_delete_orders(uuid[]) to authenticated;
+
+create index if not exists pedido_items_producto_id_idx on public.pedido_items(producto_id);
+

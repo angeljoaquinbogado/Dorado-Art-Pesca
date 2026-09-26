@@ -1,4 +1,11 @@
-import { consumeRateLimit, enforceRateLimit, bodyTooLarge, fetchWithTimeout } from "../lib/security.js";
+import {
+    consumeRateLimit,
+    enforceRateLimit,
+    bodyTooLarge,
+    fetchWithTimeout,
+    isSameOriginRequest,
+    requireJsonRequest
+} from "../lib/security.js";
 
 const UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -13,6 +20,14 @@ export default async function handler(req,res){
     if(req.method!=="POST"){
         res.setHeader("Allow","POST");
         return res.status(405).json({error:"Método no permitido"});
+    }
+
+    if(!requireJsonRequest(req)){
+        return res.status(415).json({error:"Formato de solicitud no compatible."});
+    }
+
+    if(!isSameOriginRequest(req)){
+        return res.status(403).json({error:"Origen no autorizado."});
     }
 
     if(bodyTooLarge(req,32*1024)){
@@ -82,9 +97,7 @@ export default async function handler(req,res){
             }
 
             return res.status(502).json({
-                error:result?.message
-                    ? `Supabase rechazó el borrado: ${result.message}`
-                    : "No se pudieron eliminar los pedidos."
+                error:"No se pudieron eliminar los pedidos."
             });
         }
 

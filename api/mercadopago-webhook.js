@@ -30,14 +30,6 @@ function extractPaymentId(req) {
     return String(bodyId || queryId || "").trim();
 }
 
-function publicOrigin(req) {
-    const configured = String(process.env.PUBLIC_SITE_URL || "").trim().replace(/\/$/, "");
-    if (/^https:\/\//i.test(configured)) return configured;
-
-    const proto = String(req.headers["x-forwarded-proto"] || "https").split(",")[0].trim();
-    const host = String(req.headers.host || "dorado-art-pesca.vercel.app").trim();
-    return `${proto === "http" ? "http" : "https"}://${host}`;
-}
 
 async function sendPaymentStatusEmail({ type, order, req }) {
     const claimResponse = await supabaseFetch("/rest/v1/rpc/claim_order_email", {
@@ -59,7 +51,7 @@ async function sendPaymentStatusEmail({ type, order, req }) {
             kind: type,
             order,
             items,
-            origin: publicOrigin(req),
+            origin: publicSiteOrigin(req),
             paymentUrl: String(order.mp_init_point || ""),
             expiresAt: order.pago_expira_at || null
         });
@@ -287,7 +279,7 @@ if (topic === "merchant_order") {
                         const emailResult = await sendOrderConfirmationEmail({
                             order,
                             items,
-                            origin: publicOrigin(req)
+                            origin: publicSiteOrigin(req)
                         });
 
                         await supabaseFetch(

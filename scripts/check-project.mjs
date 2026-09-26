@@ -166,6 +166,41 @@ if (!errors.some(e => e.includes("FER ELECTRO"))) {
   pass("Sin referencias heredadas de FER ELECTRO");
 }
 
+
+// Seguridad: evita que credenciales reales lleguen al repositorio.
+const secretScanFiles = [
+  ...walk("api", rel => rel.endsWith(".js")),
+  ...walk("lib", rel => rel.endsWith(".js")),
+  ...walk(path.join("assets", "js"), rel => rel.endsWith(".js")),
+  ...walk("database", rel => rel.endsWith(".sql")),
+  ...walk("docs", rel => /\.(?:md|txt)$/i.test(rel)),
+  ...["README.md", "SECURITY.md", "vercel.json", ".env.example"].filter(exists)
+];
+
+const secretPatterns = [
+  ["Mercado Pago access token", /\b(?:APP_USR|TEST)-[A-Za-z0-9_-]{20,}\b/g],
+  ["GitHub token", /\b(?:ghp|github_pat)_[A-Za-z0-9_]{20,}\b/g],
+  ["Google API key", /\bAIza[0-9A-Za-z_-]{30,}\b/g],
+  ["AWS access key", /\bAKIA[0-9A-Z]{16}\b/g],
+  ["JWT hardcodeado", /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g],
+  ["Private key", /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g],
+  ["Credencial de base de datos", /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^\s"'`]+/gi]
+];
+
+for (const rel of [...new Set(secretScanFiles)]) {
+  const text = fs.readFileSync(path.join(root, rel), "utf8");
+  for (const [label, pattern] of secretPatterns) {
+    pattern.lastIndex = 0;
+    if (pattern.test(text)) fail(`Posible secreto expuesto (${label}) en ${rel}`);
+  }
+  if (/\b(?:NEXT_PUBLIC_|VITE_|EXPO_PUBLIC_)(?:SUPABASE_SERVICE_ROLE_KEY|MERCADOPAGO_ACCESS_TOKEN|MERCADOPAGO_WEBHOOK_SECRET|GMAIL_APP_PASSWORD|RATE_LIMIT_SECRET)\b/.test(text)) {
+    fail(`Variable privada marcada como pública en ${rel}`);
+  }
+}
+if (!errors.some(e => e.includes("secreto expuesto") || e.includes("marcada como pública"))) {
+  pass("Sin patrones conocidos de secretos expuestos");
+}
+
 console.log("\nDorado Artículos de Pesca — Quality Check\n");
 for (const message of ok) console.log(`✓ ${message}`);
 
