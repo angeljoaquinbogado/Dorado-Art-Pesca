@@ -96,6 +96,7 @@
     {"@type":"Question","name":"¿El stock que veo en la web está actualizado?","acceptedAnswer":{"@type":"Answer","text":"El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito."}},
     {"@type":"Question","name":"¿Cómo se coordina el envío?","acceptedAnswer":{"@type":"Answer","text":"El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido."}},
     {"@type":"Question","name":"¿Puedo retirar en el local?","acceptedAnswer":{"@type":"Answer","text":"Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado."}},
+    {"@type":"Question","name":"¿Qué medios de pago están disponibles?","acceptedAnswer":{"@type":"Answer","text":"El checkout está preparado para Mercado Pago, MODO y tarjetas de débito o crédito. Los datos sensibles de tarjeta se ingresan en el formulario seguro del procesador y Dorado no los almacena."}},
     {"@type":"Question","name":"¿Cómo sigo mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Cada compra genera un enlace privado para consultar el estado del pedido y, cuando corresponda, el seguimiento del transportista."}}
   ]
 }
@@ -358,17 +359,37 @@
 
 
 <section class="section trust-section reveal" id="opiniones">
-  <div class="trust-shell">
-    <div class="trust-copy">
-      <div class="section-index"><span>05</span><i></i><b>CONFIANZA</b></div>
-      <div class="kicker">OPINIONES REALES</div>
-      <h2>Lo que dicen nuestros clientes, <span>en Google.</span></h2>
-      <p>No mostramos testimonios inventados. Las opiniones públicas de Dorado se consultan directamente en su ficha de Google Maps.</p>
+  <div class="trust-shell trust-shell-wide">
+    <div class="trust-head">
+      <div class="trust-copy">
+        <div class="section-index"><span>05</span><i></i><b>CONFIANZA</b></div>
+        <div class="kicker">OPINIONES REALES</div>
+        <h2>Experiencias de clientes, <span>sin inventar nada.</span></h2>
+        <p>Las reseñas sincronizadas desde la ficha de Dorado se muestran de forma destacada. Las valoraciones más bajas quedan fuera del carrusel principal y aparecen solamente cuando el visitante abre el filtro.</p>
+      </div>
+      <div class="reviews-actions">
+        <button class="reviews-filter-button" id="reviews-filter-toggle" type="button" aria-expanded="false" aria-controls="reviews-filter-panel">FILTRAR RESEÑAS</button>
+        <a class="reviews-google-link" href="https://maps.app.goo.gl/TwX97iRfzjRwDdy38" target="_blank" rel="noopener">VER EN GOOGLE ↗</a>
+      </div>
     </div>
-    <div class="google-review-card">
-      <div class="google-review-mark">G</div>
-      <div><strong>Reseñas de Google Maps</strong><span>Fuente pública y verificable</span></div>
-      <a class="outline-btn" href="https://maps.app.goo.gl/TwX97iRfzjRwDdy38" target="_blank" rel="noopener">VER RESEÑAS EN GOOGLE</a>
+    <div class="reviews-marquee-shell" id="reviews-marquee-shell" hidden aria-label="Mejores reseñas de Dorado Artículos de Pesca">
+      <div class="reviews-marquee-track" id="reviews-marquee-track"></div>
+    </div>
+    <div class="reviews-empty" id="reviews-empty">
+      <span class="reviews-empty-mark">G</span>
+      <div><strong>La sección ya está preparada para las reseñas reales.</strong><p>Cuando se sincronice la ficha de Google Business Profile, las mejores reseñas van a recorrer esta fila automáticamente de derecha a izquierda.</p></div>
+    </div>
+    <div class="reviews-filter-panel" id="reviews-filter-panel" hidden>
+      <div class="reviews-filter-head">
+        <div><span>FILTRO</span><strong>Explorar todas las opiniones</strong></div>
+        <select id="reviews-rating-filter" aria-label="Filtrar reseñas por calificación">
+          <option value="all">Todas las calificaciones</option>
+          <option value="5">Solo 5 estrellas</option>
+          <option value="4">4 estrellas o más</option>
+          <option value="low">3 estrellas o menos</option>
+        </select>
+      </div>
+      <div class="reviews-grid" id="reviews-grid"></div>
     </div>
   </div>
 </section>
@@ -385,7 +406,7 @@
       <details><summary>¿El stock que veo en la web está actualizado?</summary><p>El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito.</p></details>
       <details><summary>¿Cómo se coordina el envío?</summary><p>El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido. El total del checkout corresponde a los productos.</p></details>
       <details><summary>¿Puedo retirar en el local?</summary><p>Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado.</p></details>
-      <details><summary>¿Qué medios de pago están disponibles?</summary><p>La tienda permite coordinar por WhatsApp, transferencia y efectivo para retiro. Mercado Pago se habilita desde la configuración comercial cuando quede activo para producción.</p></details>
+      <details><summary>¿Qué medios de pago están disponibles?</summary><p>El checkout está preparado para Mercado Pago, MODO y tarjetas de débito o crédito. En la opción tarjeta, los datos se ingresan en el formulario seguro del procesador de pagos: Dorado no recibe ni guarda el número, vencimiento ni código de seguridad.</p></details>
       <details><summary>¿Cómo sigo mi pedido?</summary><p>Cada compra genera un enlace privado. Desde ahí podés ver el estado del pedido y, cuando corresponda, el transportista, código y enlace oficial de seguimiento.</p></details>
     </div>
   </div>
@@ -571,7 +592,7 @@
 <div class="checkout-kicker">COMPRA SEGURA</div>
 <h2 class="checkout-title" id="checkout-title">Finalizá tu compra</h2>
 <p class="checkout-intro">
-                Completá tus datos y elegí cómo pagar. Transferencia, efectivo con retiro y coordinación por WhatsApp están disponibles. Mercado Pago se habilita al completar la configuración comercial.
+                Completá tus datos y elegí entre Mercado Pago, MODO o tarjeta de débito/crédito. Los medios se activan en producción cuando estén cargadas y verificadas las credenciales comerciales.
             </p>
 <form class="checkout-form" id="checkout-form" novalidate="">
 <div class="checkout-form-grid">
@@ -638,16 +659,41 @@
 <option value="coordinar">Coordinar por WhatsApp</option>
 </select>
 </div>
-<div class="checkout-field full payment-method-field">
-<label for="checkout-payment-method">FORMA DE PAGO</label>
-<select id="checkout-payment-method" name="metodo_pago" required>
-<option value="whatsapp">Coordinar pago por WhatsApp</option>
-<option value="transferencia">Transferencia bancaria</option>
-<option value="efectivo">Efectivo — solo retiro</option>
-<option value="mercadopago" disabled>Mercado Pago / tarjetas — próximo a habilitar</option>
-</select>
+<fieldset class="checkout-field full payment-method-field">
+<legend>FORMA DE PAGO</legend>
+<div class="payment-method-grid" role="radiogroup" aria-label="Elegí cómo pagar">
+<label class="payment-method-option">
+<input type="radio" name="metodo_pago" value="mercadopago" required>
+<span class="payment-method-icon payment-method-mp">MP</span>
+<span class="payment-method-copy"><strong>Mercado Pago</strong><small>Saldo, QR y medios disponibles en tu cuenta.</small></span>
+<span class="payment-method-state" data-payment-status="mp">A activar</span>
+</label>
+<label class="payment-method-option">
+<input type="radio" name="metodo_pago" value="modo" required>
+<span class="payment-method-icon payment-method-modo">MODO</span>
+<span class="payment-method-copy"><strong>MODO</strong><small>Pago desde la app o banco compatible.</small></span>
+<span class="payment-method-state">Integración pendiente</span>
+</label>
+<label class="payment-method-option">
+<input type="radio" name="metodo_pago" value="tarjeta" required>
+<span class="payment-method-icon payment-method-card"><svg class="ui-icon"><use href="#i-card"></use></svg></span>
+<span class="payment-method-copy"><strong>Débito / crédito</strong><small>Ingresás tus datos en un formulario seguro del procesador.</small></span>
+<span class="payment-method-state" data-payment-status="card">A activar</span>
+</label>
+</div>
+</fieldset>
+<div class="checkout-card-safe-panel" id="checkout-card-safe-panel" hidden>
+  <div class="secure-payment-head">
+    <span class="secure-payment-lock"><svg class="ui-icon"><use href="#i-lock"></use></svg></span>
+    <div><strong>Pago con tarjeta protegido</strong><small>Los datos de la tarjeta no pasan por los servidores de Dorado.</small></div>
+  </div>
+  <div class="secure-card-preview" aria-hidden="true">
+    <span class="secure-card-preview-number">•••• •••• •••• ••••</span><span>MM/AA</span><span>CVV</span>
+  </div>
+  <p>Al continuar se abre el formulario seguro de Mercado Pago para que ingreses número de tarjeta, vencimiento, titular y código de seguridad.</p>
 </div>
 <div class="checkout-field full">
+<label for="checkout-notes">ACLARACIONES (OPCIONAL)</label><div class="checkout-field full">
 <label for="checkout-notes">ACLARACIONES (OPCIONAL)</label>
 <textarea id="checkout-notes" maxlength="500" name="notas" placeholder="Piso, departamento, referencias, horario, etc."></textarea>
 </div>
@@ -664,8 +710,8 @@
                     </span>
 </label>
 <div class="checkout-error" id="checkout-error" role="alert"></div>
-<button class="gold-btn checkout-pay" id="checkout-pay" type="submit"><svg class="ui-icon"><use href="#i-lock"></use></svg><span>Coordinar pedido por WhatsApp</span></button>
-<div class="checkout-secure" id="checkout-payment-help">Te enviamos el resumen completo del carrito por WhatsApp para coordinar pago y entrega.</div>
+<button class="gold-btn checkout-pay" id="checkout-pay" type="submit"><svg class="ui-icon"><use href="#i-lock"></use></svg><span>Elegí un medio de pago</span></button>
+<div class="checkout-secure" id="checkout-payment-help">🔒 Los pagos se procesan mediante proveedores externos seguros. Dorado no almacena datos sensibles de tarjeta.</div>
 </form>
 </section>
 <aside class="checkout-side">

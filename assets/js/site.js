@@ -1288,102 +1288,76 @@ function mostrarErrorCheckout(mensaje = "") {
 
 async function iniciarPagoMercadoPago(evento) {
     evento?.preventDefault();
-
-    const form = document.getElementById("checkout-form");
-    const boton = document.getElementById("checkout-pay");
-    if (!form || !boton) return;
+    const form=document.getElementById("checkout-form");
+    const boton=document.getElementById("checkout-pay");
+    if(!form||!boton)return;
 
     mostrarErrorCheckout("");
-    if (!form.reportValidity()) return;
+    if(!form.reportValidity())return;
 
-    const carrito = leerCarrito();
-    if (carrito.length === 0) {
-        mostrarErrorCheckout("Tu carrito está vacío.");
+    const carrito=leerCarrito();
+    if(!carrito.length){mostrarErrorCheckout("Tu carrito está vacío.");return;}
+
+    const datos=new FormData(form);
+    const metodoPago=String(datos.get("metodo_pago")||"").trim();
+    const entrega=String(datos.get("entrega")||"retiro").trim();
+    if(!metodoPago){mostrarErrorCheckout("Elegí un medio de pago para continuar.");return;}
+
+    if(metodoPago==="modo"){
+        mostrarErrorCheckout("MODO ya está contemplado en el checkout, pero todavía falta conectar las credenciales comerciales para procesar pagos reales.");
+        return;
+    }
+    if(!["mercadopago","tarjeta"].includes(metodoPago)){
+        mostrarErrorCheckout("El medio de pago seleccionado todavía no está disponible.");
         return;
     }
 
-    const datos = new FormData(form);
-    const metodoPago = String(datos.get("metodo_pago") || "whatsapp").trim();
-    const entrega = String(datos.get("entrega") || "retiro").trim();
-
-    if (metodoPago === "efectivo" && entrega !== "retiro") {
-        mostrarErrorCheckout("El pago en efectivo está disponible únicamente para retiro en el local.");
-        return;
-    }
-
-    const cliente = {
-        nombre: String(datos.get("nombre") || "").trim(),
-        email: String(datos.get("email") || "").trim(),
-        telefono: String(datos.get("telefono") || "").trim(),
-        domicilio: String(datos.get("domicilio") || "").trim(),
-        ciudad: String(datos.get("ciudad") || "").trim(),
-        provincia: String(datos.get("provincia") || "").trim(),
-        codigo_postal: String(datos.get("codigo_postal") || "").trim(),
+    const cliente={
+        nombre:String(datos.get("nombre")||"").trim(),
+        email:String(datos.get("email")||"").trim(),
+        telefono:String(datos.get("telefono")||"").trim(),
+        domicilio:String(datos.get("domicilio")||"").trim(),
+        ciudad:String(datos.get("ciudad")||"").trim(),
+        provincia:String(datos.get("provincia")||"").trim(),
+        codigo_postal:String(datos.get("codigo_postal")||"").trim(),
         entrega,
-        notas: String(datos.get("notas") || "").trim()
+        notas:String(datos.get("notas")||"").trim()
     };
+    const items=carrito.map(item=>({id:item.id,cantidad:Math.max(1,Math.floor(Number(item.cantidad)||1))}));
 
-    if (metodoPago !== "mercadopago") {
-        const subtotal = carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
-        const total = checkoutCoupon && Math.abs(Number(checkoutCoupon.subtotal||0)-subtotal)<0.01
-            ? Number(checkoutCoupon.total)||subtotal
-            : subtotal;
-        const detalle = carrito.map((item,i)=>{
-            const cantidad=Math.max(1,Number(item.cantidad)||1);
-            return `${i+1}. ${item.nombre} · ${cantidad} u. · ${formatearPrecio((Number(item.precio)||0)*cantidad)}`;
-        }).join("\n");
-        const nombres = {transferencia:"Transferencia bancaria",efectivo:"Efectivo al retirar",whatsapp:"A coordinar"};
-        const entregas = {retiro:"Retiro en el local",local:"Envío local",nacional:"Envío al resto de Argentina",coordinar:"A coordinar"};
-        const mensaje = [
-            "Hola Dorado Artículos de Pesca 👋",
-            "Quiero confirmar este pedido desde la web:","",detalle,"",
-            checkoutCoupon ? `Cupón: ${checkoutCoupon.code} · Descuento: -${formatearPrecio(checkoutCoupon.discount)}` : "",
-            `TOTAL PRODUCTOS: ${formatearPrecio(total)}`,
-            `Pago: ${nombres[metodoPago] || "A coordinar"}`,
-            `Entrega: ${entregas[entrega] || entrega}`,
-            "",`Nombre: ${cliente.nombre}`,`Teléfono: ${cliente.telefono}`,
-            cliente.domicilio ? `Domicilio: ${cliente.domicilio}` : "",
-            cliente.ciudad ? `Localidad: ${cliente.ciudad}` : "",
-            cliente.notas ? `Aclaraciones: ${cliente.notas}` : "",
-            "","¿Me confirman disponibilidad y los datos para continuar?"
-        ].filter(Boolean).join("\n");
-        window.open(`https://wa.me/${DORADO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`, "_blank", "noopener,noreferrer");
-        return;
-    }
+    boton.disabled=true;
+    const htmlOriginal=boton.innerHTML;
+    boton.innerHTML='<span>Preparando pago seguro…</span>';
 
-    const items = carrito.map(item => ({
-        id: item.id,
-        cantidad: Math.max(1, Math.floor(Number(item.cantidad) || 1))
-    }));
-
-    boton.disabled = true;
-    const htmlOriginal = boton.innerHTML;
-    boton.innerHTML = '<span>Preparando pago…</span>';
-
-    try {
-        const respuesta = await fetch("/api/checkout", {
-            method: "POST",
-            headers: {"Content-Type": "application/json","Accept": "application/json"},
-            body: JSON.stringify({ cliente, items, cupon: String(document.getElementById("checkout-coupon-code")?.value || "").trim().toUpperCase() })
+    try{
+        const respuesta=await fetch("/api/checkout",{
+            method:"POST",
+            headers:{"Content-Type":"application/json","Accept":"application/json"},
+            body:JSON.stringify({
+                cliente,
+                items,
+                payment_method:metodoPago,
+                cupon:String(document.getElementById("checkout-coupon-code")?.value||"").trim().toUpperCase()
+            })
         });
-        const data = await respuesta.json().catch(() => ({}));
-        if (!respuesta.ok) throw new Error(data?.error || "No pudimos iniciar el pago.");
-        if (!data?.init_point) throw new Error("Mercado Pago no devolvió un enlace de pago.");
+        const data=await respuesta.json().catch(()=>({}));
+        if(!respuesta.ok)throw new Error(data?.error||"No pudimos iniciar el pago.");
+        if(!data?.init_point)throw new Error("El procesador no devolvió un enlace de pago seguro.");
 
-        const orderId = String(data.order_id || "");
-        const trackingToken = String(data.tracking_token || "");
-        if (orderId && trackingToken) guardarReferenciaPedido(orderId, trackingToken);
-        sessionStorage.setItem("doradoUltimoPedido", orderId);
+        const orderId=String(data.order_id||"");
+        const trackingToken=String(data.tracking_token||"");
+        if(orderId&&trackingToken)guardarReferenciaPedido(orderId,trackingToken);
+        sessionStorage.setItem("doradoUltimoPedido",orderId);
         window.location.assign(data.init_point);
-    } catch (error) {
-        console.error("Error iniciando pago:", error);
-        mostrarErrorCheckout(error?.message || "No pudimos iniciar el pago. Probá nuevamente o coordiná por WhatsApp.");
-        boton.disabled = false;
-        boton.innerHTML = htmlOriginal;
+    }catch(error){
+        console.error("Error iniciando pago:",error);
+        mostrarErrorCheckout(error?.message||"No pudimos iniciar el pago. Probá nuevamente.");
+        boton.disabled=false;
+        boton.innerHTML=htmlOriginal;
     }
 }
 
-function leerReferenciasPedidos() {
+function leerReferenciasPedidos() {function leerReferenciasPedidos() {
     try {
         const value = JSON.parse(localStorage.getItem(DORADO_ORDERS_KEY) || "[]");
         if (!Array.isArray(value)) return [];
@@ -2781,35 +2755,43 @@ comprobarRetornoPago();
         }
     }
 
-    const payment=document.getElementById("checkout-payment-method");
+    const paymentInputs=Array.from(document.querySelectorAll('input[name="metodo_pago"]'));
     const delivery=document.getElementById("checkout-delivery");
     const payButton=document.getElementById("checkout-pay");
     const help=document.getElementById("checkout-payment-help");
+    const cardPanel=document.getElementById("checkout-card-safe-panel");
     const addressFields=["checkout-address","checkout-city","checkout-province","checkout-postal"].map(id=>document.getElementById(id)).filter(Boolean);
+    const selectedMethod=()=>paymentInputs.find(input=>input.checked)?.value||"";
 
     const updateCheckout=()=>{
-        const method=payment?.value||"whatsapp";
+        const method=selectedMethod();
         const retiro=delivery?.value==="retiro";
-        addressFields.forEach(el=>{el.required=!retiro; el.closest?.(".checkout-field")?.classList.toggle("optional-for-pickup",retiro);});
+        addressFields.forEach(el=>{el.required=!retiro;el.closest?.(".checkout-field")?.classList.toggle("optional-for-pickup",retiro);});
+        document.querySelectorAll(".payment-method-option").forEach(label=>{
+            const radio=label.querySelector('input[name="metodo_pago"]');
+            label.classList.toggle("selected",Boolean(radio?.checked));
+        });
+        if(cardPanel)cardPanel.hidden=method!=="tarjeta";
         if(!payButton)return;
         const span=payButton.querySelector("span");
         if(method==="mercadopago"){
             if(span)span.textContent="Pagar con Mercado Pago";
-            if(help)help.textContent="🔒 Tarjetas y saldo se procesan en Mercado Pago. Dorado no recibe ni guarda los datos de tu tarjeta.";
-        }else if(method==="transferencia"){
-            if(span)span.textContent="Coordinar transferencia por WhatsApp";
-            if(help)help.textContent="La web arma tu pedido y abre WhatsApp para recibir los datos de transferencia y coordinar la entrega.";
-        }else if(method==="efectivo"){
-            if(span)span.textContent="Coordinar efectivo por WhatsApp";
-            if(help)help.textContent="El efectivo está disponible únicamente con retiro en el local.";
+            if(help)help.textContent="🔒 El pago continúa en Mercado Pago. Dorado no recibe ni guarda datos sensibles.";
+        }else if(method==="modo"){
+            if(span)span.textContent="Continuar con MODO";
+            if(help)help.textContent="MODO está contemplado en el diseño final; falta conectar las credenciales comerciales para habilitar cobros reales.";
+        }else if(method==="tarjeta"){
+            if(span)span.textContent="Continuar con tarjeta";
+            if(help)help.textContent="🔒 En el siguiente paso ingresás los datos de la tarjeta en el formulario seguro del procesador.";
         }else{
-            if(span)span.textContent="Coordinar pedido por WhatsApp";
-            if(help)help.textContent="Te enviamos el resumen completo del carrito por WhatsApp para coordinar pago y entrega.";
+            if(span)span.textContent="Elegí un medio de pago";
+            if(help)help.textContent="🔒 Los pagos se procesan mediante proveedores externos seguros. Dorado no almacena datos sensibles de tarjeta.";
         }
     };
-    payment?.addEventListener("change",updateCheckout);
+    paymentInputs.forEach(input=>input.addEventListener("change",updateCheckout));
     delivery?.addEventListener("change",updateCheckout);
     updateCheckout();
+})();    updateCheckout();
 })();
 
 /* =========================================================
@@ -3049,4 +3031,85 @@ comprobarRetornoPago();
   };
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",run,{once:true});
   else run();
+})();
+
+
+(function configurarEstadoNuevosPagos(){
+  const run=async()=>{
+    const states=Array.from(document.querySelectorAll('[data-payment-status="mp"],[data-payment-status="card"]'));
+    if(!states.length)return;
+    try{
+      const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
+      const data=await response.json().catch(()=>({}));
+      const enabled=Boolean(response.ok&&data?.mercadoPagoEnabled);
+      states.forEach(el=>{el.textContent=enabled?"Disponible":"A activar";el.classList.toggle("ready",enabled);});
+    }catch{
+      states.forEach(el=>{el.textContent="A activar";el.classList.remove("ready");});
+    }
+  };
+  run();
+})();
+
+(function configurarResenasReales(){
+    const marquee=document.getElementById("reviews-marquee-shell");
+    const track=document.getElementById("reviews-marquee-track");
+    const empty=document.getElementById("reviews-empty");
+    const filterButton=document.getElementById("reviews-filter-toggle");
+    const filterPanel=document.getElementById("reviews-filter-panel");
+    const ratingFilter=document.getElementById("reviews-rating-filter");
+    const grid=document.getElementById("reviews-grid");
+    if(!marquee||!track||!empty||!filterButton||!filterPanel||!ratingFilter||!grid)return;
+
+    let reviews=[];
+    const stars=rating=>"★".repeat(Math.max(1,Math.min(5,Number(rating)||1)))+"☆".repeat(Math.max(0,5-(Number(rating)||1)));
+    const safePhoto=url=>{try{const parsed=new URL(String(url||""));return parsed.protocol==="https:"?parsed.toString():"";}catch{return "";}};
+    const dateLabel=value=>{const date=new Date(value||"");return Number.isFinite(date.getTime())?date.toLocaleDateString("es-AR",{year:"numeric",month:"short"}):"";};
+    const cardMarkup=review=>{
+        const photo=safePhoto(review.avatar_url);
+        const initial=textoSeguro(String(review.autor||"Cliente").trim().charAt(0).toUpperCase()||"C");
+        return `<article class="review-card">
+          <div class="review-card-top">
+            <span class="review-avatar">${photo?`<img src="${textoSeguro(photo)}" alt="" loading="lazy" decoding="async">`:initial}</span>
+            <span class="review-author"><strong>${textoSeguro(review.autor||"Cliente")}</strong><small>${textoSeguro(dateLabel(review.fecha_resena))}</small></span>
+            <span class="review-source" aria-label="Google">G</span>
+          </div>
+          <div class="review-stars" aria-label="${Number(review.calificacion)||0} de 5 estrellas">${stars(review.calificacion)}</div>
+          <p>${textoSeguro(review.comentario||"Sin comentario escrito.")}</p>
+        </article>`;
+    };
+    const renderMarquee=()=>{
+        const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,24);
+        if(!best.length){marquee.hidden=true;empty.hidden=false;return;}
+        empty.hidden=true;marquee.hidden=false;
+        const set=best.map(cardMarkup).join("");
+        track.innerHTML=`<div class="reviews-marquee-set">${set}</div><div class="reviews-marquee-set" aria-hidden="true">${set}</div>`;
+    };
+    const renderFilter=()=>{
+        const value=ratingFilter.value;
+        const filtered=reviews.filter(review=>{
+            const rating=Number(review.calificacion)||0;
+            if(value==="5")return rating===5;
+            if(value==="4")return rating>=4;
+            if(value==="low")return rating<=3;
+            return true;
+        });
+        grid.innerHTML=filtered.length?filtered.map(cardMarkup).join(""):'<div class="reviews-filter-empty">No hay reseñas para este filtro.</div>';
+    };
+    filterButton.addEventListener("click",()=>{
+        const opening=filterPanel.hidden;
+        filterPanel.hidden=!opening;
+        filterButton.setAttribute("aria-expanded",String(opening));
+        filterButton.textContent=opening?"CERRAR FILTRO":"FILTRAR RESEÑAS";
+        if(opening)renderFilter();
+    });
+    ratingFilter.addEventListener("change",renderFilter);
+
+    (async()=>{
+        try{
+            const response=await fetch("/api/reviews",{headers:{Accept:"application/json"},cache:"no-store"});
+            const data=await response.json().catch(()=>({}));
+            reviews=Array.isArray(data.reviews)?data.reviews:[];
+        }catch{reviews=[];}
+        renderMarquee();
+    })();
 })();
