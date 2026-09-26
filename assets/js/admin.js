@@ -1,4 +1,3 @@
-const SESSION_KEY = "doradoAdminSession";
 let CONFIG = null;
 let session = null;
 let productos = [];
@@ -125,8 +124,6 @@ function resolveAdminImage(src){
         "/logo.jpg":"assets/images/brand/logo-dorado-640.webp",
         "auriculares 2.PNG":"assets/images/brand/logo-dorado-640.webp",
         "/auriculares 2.PNG":"assets/images/brand/logo-dorado-640.webp",
-        "assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp",
-        "/assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp",
         "assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp",
         "/assets/images/brand/logo-dorado-640.webp":"assets/images/brand/logo-dorado-640.webp"
     };
@@ -393,43 +390,56 @@ async function loadConfig(){
 }
 
 function saveSession(data){
+    if(!data?.access_token||!data?.user?.id){
+        throw new Error("Sesión inválida.");
+    }
     session={
-        access_token:data.access_token,
-        refresh_token:data.refresh_token,
-        user:data.user,
-        expires_at:Date.now()+(Number(data.expires_in||3600)*1000)
+        access_token:String(data.access_token),
+        user:{
+            id:String(data.user.id),
+            email:String(data.user.email||"")
+        },
+        expires_at:Date.now()+(Math.max(60,Number(data.expires_in)||3600)*1000)
     };
-    sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));
 }
 
-function readSession(){
-    try{
-        const value=JSON.parse(sessionStorage.getItem(SESSION_KEY));
-        if(value?.access_token&&value?.refresh_token&&value?.user)return value;
-    }catch{}
-    return null;
+async function adminAuth(action,payload={}){
+    const headers={
+        "Content-Type":"application/json",
+        Accept:"application/json"
+    };
+    if(session?.access_token&&action==="logout"){
+        headers.Authorization=`Bearer ${session.access_token}`;
+    }
+
+    const r=await fetch("/api/admin-auth",{
+        method:"POST",
+        headers,
+        credentials:"same-origin",
+        cache:"no-store",
+        body:JSON.stringify({action,...payload})
+    });
+    const d=await r.json().catch(()=>({}));
+    return {r,d};
+}
+
+async function restoreSession(){
+    const {r,d}=await adminAuth("refresh");
+    if(!r.ok)return false;
+    saveSession(d);
+    return true;
 }
 
 async function refreshSessionIfNeeded(){
-    if(!session)throw new Error("Sesión no iniciada.");
-    if((session.expires_at||0)-Date.now()>60000)return session;
+    if(session&&(session.expires_at||0)-Date.now()>60000)return session;
     if(refreshPromise)return refreshPromise;
 
     refreshPromise=(async()=>{
-        const cfg=await loadConfig();
-        const currentRefreshToken=session?.refresh_token;
-        if(!currentRefreshToken)throw new Error("La sesión venció. Volvé a ingresar.");
-
-        const r=await fetch(`${cfg.supabaseUrl}/auth/v1/token?grant_type=refresh_token`,{
-            method:"POST",
-            headers:{
-                apikey:cfg.supabasePublishableKey,
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({refresh_token:currentRefreshToken})
-        });
-        const d=await r.json().catch(()=>({}));
-        if(!r.ok)throw new Error("La sesión venció. Volvé a ingresar.");
+        const {r,d}=await adminAuth("refresh");
+        if(!r.ok){
+            session=null;
+            throw new Error("La sesión venció. Volvé a ingresar.");
+        }
         saveSession(d);
         return session;
     })();
@@ -438,7 +448,7 @@ async function refreshSessionIfNeeded(){
     finally{refreshPromise=null;}
 }
 
-async function sb(path, options={}){
+async function sb(path,options={}){
     await refreshSessionIfNeeded();
     const cfg=await loadConfig();
     const headers={
@@ -447,61 +457,45 @@ async function sb(path, options={}){
         Accept:"application/json",
         ...(options.headers||{})
     };
-    if(options.body && !(options.body instanceof Blob) && !(options.body instanceof File)){
+    if(options.body&&!(options.body instanceof Blob)&&!(options.body instanceof File)){
         headers["Content-Type"]="application/json";
     }
     const r=await fetch(`${cfg.supabaseUrl}${path}`,{...options,headers});
     if(r.status===401){
-        void logout(false);
+        await logout(false);
         throw new Error("La sesión venció.");
     }
     return r;
 }
 
 async function verifyAdmin(){
+    if(!session?.user?.id)return false;
     const r=await sb(`/rest/v1/admin_users?user_id=eq.${encodeURIComponent(session.user.id)}&select=user_id`);
     const d=await r.json().catch(()=>[]);
     return r.ok&&Array.isArray(d)&&d.length>0;
 }
 
 async function login(email,password){
-    const cfg=await loadConfig();
-    const r=await fetch(`${cfg.supabaseUrl}/auth/v1/token?grant_type=password`,{
-        method:"POST",
-        headers:{
-            apikey:cfg.supabasePublishableKey,
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({email,password})
-    });
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok)throw new Error("Email o contraseña incorrectos.");
+    const {r,d}=await adminAuth("login",{email,password});
+    if(!r.ok)throw new Error(d?.error||"Email o contraseña incorrectos.");
     saveSession(d);
-
-    if(!await verifyAdmin()){
-        await logout(false);
-        throw new Error("Esta cuenta no está autorizada como administrador.");
-    }
 }
 
 async function logout(reload=true){
-    const previous=session;
-    session=null;
-    sessionStorage.removeItem(SESSION_KEY);
-
-    if(previous?.access_token){
-        try{
-            const cfg=await loadConfig();
-            await fetch(`${cfg.supabaseUrl}/auth/v1/logout`,{
+    const hadSession=Boolean(session?.access_token);
+    try{
+        if(hadSession)await adminAuth("logout");
+        else{
+            await fetch("/api/admin-auth",{
                 method:"POST",
-                headers:{
-                    apikey:cfg.supabasePublishableKey,
-                    Authorization:`Bearer ${previous.access_token}`
-                }
+                headers:{"Content-Type":"application/json",Accept:"application/json"},
+                credentials:"same-origin",
+                cache:"no-store",
+                body:JSON.stringify({action:"logout"})
             });
-        }catch{}
-    }
-
+        }
+    }catch{}
+    session=null;
     if(reload)location.reload();
 }
 
@@ -1256,6 +1250,7 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
             document.getElementById("login-email").value.trim(),
             document.getElementById("login-password").value
         );
+        document.getElementById("login-password").value="";
         showApp();
         await loadProducts();
     }catch(err){
@@ -1341,8 +1336,7 @@ document.addEventListener("keydown",e=>{
 (async function boot(){
     try{
         await loadConfig();
-        session=readSession();
-        if(!session)return;
+        if(!await restoreSession())return;
         if(!await verifyAdmin()){
             logout(false);
             return;
