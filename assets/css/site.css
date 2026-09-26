@@ -4074,3 +4074,134 @@ body.orders-open{overflow:hidden}
 .payment-confirm-dialog{width:min(440px,100%);padding:26px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:#f7f5ef;box-shadow:0 30px 90px rgba(0,0,0,.28);text-align:center}.payment-confirm-icon{width:48px;height:48px;margin:0 auto 12px;border-radius:15px;background:#14171b;color:#d6ae45;display:grid;place-items:center}.payment-confirm-icon .ui-icon{width:21px;height:21px}.payment-confirm-kicker{display:block;color:#9b771d;font-size:7px;font-weight:900;letter-spacing:.13em}.payment-confirm-dialog h3{margin:8px 0 0;font-size:23px;letter-spacing:-.04em}.payment-confirm-dialog p{margin:10px auto 0;max-width:340px;color:#6f7175;font-size:10px;line-height:1.6}.payment-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}.payment-confirm-actions button{min-height:44px;border-radius:12px;font:inherit;font-size:8px;font-weight:900;letter-spacing:.06em}.payment-confirm-cancel{border:1px solid #d5cec1;background:#fff;color:#333}.payment-confirm-accept{border:1px solid #17191d;background:#17191d;color:#fff}
 body.payment-confirm-open{overflow:hidden}
 @media(max-width:620px){.bank-details-grid,.secure-card-fields{grid-template-columns:1fr}.secure-card-fields label:first-child,.secure-card-fields label:nth-child(2){grid-column:auto}.payment-confirm-actions{grid-template-columns:1fr}.payment-confirm-dialog{padding:22px 18px}}
+
+
+/* DORADO — logos visuales de medios de pago */
+.payment-brand-logo{
+  overflow:hidden;
+  background:transparent!important;
+}
+.payment-brand-logo svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.payment-brand-whatsapp{
+  width:42px;
+  height:42px;
+  color:#21c063;
+}
+.payment-brand-transfer{
+  width:42px;
+  height:42px;
+  padding:8px;
+  border-radius:12px;
+  background:#9b751c!important;
+  color:#fff;
+}
+.payment-brand-cash{
+  width:42px;
+  height:42px;
+  padding:7px;
+  border-radius:12px;
+  background:#24272c!important;
+  color:#fff;
+}
+.payment-brand-mp{
+  width:58px;
+  height:40px;
+  border-radius:12px;
+}
+.payment-brand-modo{
+  width:66px;
+  height:40px;
+  border-radius:12px;
+}
+.payment-brand-card{
+  width:42px;
+  height:42px;
+  padding:7px;
+  border-radius:12px;
+  background:#17191d!important;
+  color:#fff;
+}
+
+.card-brands-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:13px;
+}
+.card-brand{
+  position:relative;
+  min-width:76px;
+  min-height:38px;
+  padding:0 10px;
+  border:1px solid #ded9cf;
+  border-radius:10px;
+  background:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  overflow:hidden;
+}
+.card-brand b{
+  position:relative;
+  z-index:2;
+  font-size:8px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.01em;
+}
+.card-brand-visa b{
+  color:#1a1f71;
+  font-size:12px;
+  font-style:italic;
+  letter-spacing:-.08em;
+}
+.card-brand-mastercard{
+  min-width:104px;
+  justify-content:flex-start;
+  padding-left:10px;
+}
+.card-brand-mastercard b{
+  margin-left:30px;
+  color:#222;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.mc-circle,.maestro-circle{
+  position:absolute;
+  top:50%;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  transform:translateY(-50%);
+}
+.mc-left{left:10px;background:#eb001b}
+.mc-right{left:21px;background:#f79e1b;mix-blend-mode:multiply}
+.card-brand-maestro{
+  min-width:92px;
+  justify-content:flex-start;
+  padding-left:10px;
+}
+.card-brand-maestro b{
+  margin-left:29px;
+  color:#222;
+  font-size:7px;
+  font-weight:700;
+}
+.maestro-left{left:10px;background:#0099df}
+.maestro-right{left:21px;background:#ed0006;mix-blend-mode:multiply}
+.card-brand-cabal b{
+  color:#007f6f;
+  font-size:9px;
+  letter-spacing:.02em;
+}
+@media(max-width:520px){
+  .card-brands-row{gap:6px}
+  .card-brand{min-width:70px;flex:1 1 calc(50% - 6px)}
+  .card-brand-mastercard,.card-brand-maestro{min-width:calc(50% - 6px)}
+}
