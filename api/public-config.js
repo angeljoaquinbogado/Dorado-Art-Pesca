@@ -18,6 +18,13 @@ export default function handler(req, res) {
     return res.status(200).json({
         supabaseUrl: url,
         supabasePublishableKey: key,
-        mercadoPagoEnabled: String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true"
+        mercadoPagoEnabled: String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true",
+        modoEnabled: String(process.env.MODO_ENABLED || "").toLowerCase() === "true",
+        bankTransfer: {
+            alias: String(process.env.BANK_TRANSFER_ALIAS || "").trim(),
+            cbu: String(process.env.BANK_TRANSFER_CBU || "").trim(),
+            holder: String(process.env.BANK_TRANSFER_HOLDER || "").trim(),
+            bank: String(process.env.BANK_TRANSFER_BANK || "").trim()
+        }
     });
 }

@@ -6,6 +6,11 @@ Los cambios relevantes del proyecto se documentan aquí. El historial completo s
 
 ### Pagos, reseñas y continuidad visual
 
+- Selector compacto de forma de pago, equivalente al selector de entrega, con detalle contextual debajo.
+- Transferencia preparada para mostrar alias, CBU/CVU, titular y banco desde variables públicas controladas.
+- Confirmación previa antes de redirigir a Mercado Pago o MODO.
+- Tarjeta preparada para integrar campos seguros/tokenizados sin almacenar PAN, vencimiento ni CVV en Dorado.
+
 - Restaurados WhatsApp, transferencia y efectivo junto a Mercado Pago, MODO y débito/crédito; las opciones nuevas se suman sin reemplazar las existentes.
 - FAQ ajustada para usar el mismo fondo de la sección, sin tarjetas blancas.
 - Respuesta de seguimiento reescrita con un tono más natural y directo.

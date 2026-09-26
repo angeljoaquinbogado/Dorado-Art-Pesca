@@ -30,6 +30,14 @@
 - [ ] Probar pago rechazado o cancelado.
 - [ ] Confirmar que el stock se descuente una sola vez.
 
+## Datos de transferencia
+
+- [ ] Confirmar alias real del negocio (`BANK_TRANSFER_ALIAS`).
+- [ ] Confirmar CBU/CVU real (`BANK_TRANSFER_CBU`).
+- [ ] Confirmar titular de la cuenta (`BANK_TRANSFER_HOLDER`).
+- [ ] Confirmar banco o nombre de cuenta (`BANK_TRANSFER_BANK`).
+- [ ] No publicar datos inventados.
+
 ## MODO y tarjetas
 
 - [ ] Confirmar alta comercial de MODO.

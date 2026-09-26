@@ -659,58 +659,81 @@
 <option value="coordinar">Coordinar por WhatsApp</option>
 </select>
 </div>
-<fieldset class="checkout-field full payment-method-field">
-<legend>FORMA DE PAGO</legend>
-<div class="payment-method-grid" role="radiogroup" aria-label="Elegí cómo pagar">
-<label class="payment-method-option">
-<input type="radio" name="metodo_pago" value="whatsapp" required>
-<span class="payment-method-icon payment-method-whatsapp"><svg class="ui-icon"><use href="#i-whatsapp"></use></svg></span>
-<span class="payment-method-copy"><strong>Coordinar por WhatsApp</strong><small>Te enviamos el resumen del pedido para coordinar el pago directamente.</small></span>
-<span class="payment-method-state ready">Disponible</span>
-</label>
-<label class="payment-method-option">
-<input type="radio" name="metodo_pago" value="transferencia" required>
-<span class="payment-method-icon payment-method-transfer">CBU</span>
-<span class="payment-method-copy"><strong>Transferencia bancaria</strong><small>Coordinamos los datos de transferencia y la entrega por WhatsApp.</small></span>
-<span class="payment-method-state ready">Disponible</span>
-</label>
-<label class="payment-method-option">
-<input type="radio" name="metodo_pago" value="efectivo" required>
-<span class="payment-method-icon payment-method-cash">$</span>
-<span class="payment-method-copy"><strong>Efectivo</strong><small>Disponible para pedidos con retiro en el local.</small></span>
-<span class="payment-method-state ready">Disponible</span>
-</label>
-<label class="payment-method-option">
-<input type="radio" name="metodo_pago" value="mercadopago" required>
-<span class="payment-method-icon payment-method-mp">MP</span>
-<span class="payment-method-copy"><strong>Mercado Pago</strong><small>Saldo, QR y medios disponibles en tu cuenta.</small></span>
-<span class="payment-method-state" data-payment-status="mp">A activar</span>
-</label>
-<label class="payment-method-option">
-<input type="radio" name="metodo_pago" value="modo" required>
-<span class="payment-method-icon payment-method-modo">MODO</span>
-<span class="payment-method-copy"><strong>MODO</strong><small>Pago desde la app o banco compatible.</small></span>
-<span class="payment-method-state">Integración pendiente</span>
-</label>
-<label class="payment-method-option">
-<input type="radio" name="metodo_pago" value="tarjeta" required>
-<span class="payment-method-icon payment-method-card"><svg class="ui-icon"><use href="#i-card"></use></svg></span>
-<span class="payment-method-copy"><strong>Débito / crédito</strong><small>Ingresás tus datos en el formulario seguro del procesador.</small></span>
-<span class="payment-method-state" data-payment-status="card">A activar</span>
-</label>
+<div class="checkout-field full payment-method-field">
+<label for="checkout-payment-method">FORMA DE PAGO</label>
+<select id="checkout-payment-method" name="metodo_pago" required>
+  <option value="">Elegí cómo pagar</option>
+  <option value="whatsapp">Coordinar por WhatsApp</option>
+  <option value="transferencia">Transferencia bancaria</option>
+  <option value="efectivo">Efectivo al retirar</option>
+  <option value="mercadopago">Mercado Pago</option>
+  <option value="modo">MODO</option>
+  <option value="tarjeta">Tarjeta de débito / crédito</option>
+</select>
 </div>
-</fieldset>
-<div class="checkout-card-safe-panel" id="checkout-card-safe-panel" hidden>
-  <div class="secure-payment-head">
-    <span class="secure-payment-lock"><svg class="ui-icon"><use href="#i-lock"></use></svg></span>
-    <div><strong>Pago con tarjeta protegido</strong><small>Los datos de la tarjeta no pasan por los servidores de Dorado.</small></div>
-  </div>
-  <div class="secure-card-preview" aria-hidden="true">
-    <span class="secure-card-preview-number">•••• •••• •••• ••••</span><span>MM/AA</span><span>CVV</span>
-  </div>
-  <p>Al continuar se abre el formulario seguro de Mercado Pago para que ingreses número de tarjeta, vencimiento, titular y código de seguridad.</p>
+
+<div class="checkout-payment-detail full" id="checkout-payment-detail" hidden>
+  <section class="payment-detail-panel" data-payment-panel="whatsapp" hidden>
+    <div class="payment-detail-head">
+      <span class="payment-detail-icon payment-method-whatsapp"><svg class="ui-icon"><use href="#i-whatsapp"></use></svg></span>
+      <div><strong>Coordinar por WhatsApp</strong><small>Te preparamos el mensaje con el pedido completo para que coordines el pago y la entrega.</small></div>
+    </div>
+  </section>
+
+  <section class="payment-detail-panel" data-payment-panel="transferencia" hidden>
+    <div class="payment-detail-head">
+      <span class="payment-detail-icon payment-method-transfer">CBU</span>
+      <div><strong>Datos para transferir</strong><small>Usá estos datos únicamente para pagar tu pedido de Dorado.</small></div>
+    </div>
+    <div class="bank-details-grid">
+      <div><span>ALIAS</span><strong id="bank-transfer-alias">Pendiente de configurar</strong><button type="button" class="copy-bank-data" data-copy-target="bank-transfer-alias">COPIAR</button></div>
+      <div><span>CBU / CVU</span><strong id="bank-transfer-cbu">Pendiente de configurar</strong><button type="button" class="copy-bank-data" data-copy-target="bank-transfer-cbu">COPIAR</button></div>
+      <div><span>TITULAR</span><strong id="bank-transfer-holder">Pendiente de configurar</strong></div>
+      <div><span>BANCO / CUENTA</span><strong id="bank-transfer-bank">Pendiente de configurar</strong></div>
+    </div>
+    <p class="payment-detail-note" id="bank-transfer-note">Cuando el negocio confirme sus datos bancarios reales, van a aparecer acá automáticamente.</p>
+  </section>
+
+  <section class="payment-detail-panel" data-payment-panel="efectivo" hidden>
+    <div class="payment-detail-head">
+      <span class="payment-detail-icon payment-method-cash">$</span>
+      <div><strong>Pago en efectivo</strong><small>Disponible únicamente si elegís retiro en el local.</small></div>
+    </div>
+  </section>
+
+  <section class="payment-detail-panel" data-payment-panel="mercadopago" hidden>
+    <div class="payment-detail-head">
+      <span class="payment-detail-icon payment-method-mp">MP</span>
+      <div><strong>Mercado Pago</strong><small>Cuando continúes te vamos a avisar antes de redirigirte al pago seguro.</small></div>
+    </div>
+    <p class="payment-detail-note">Si preferís otro medio, podés cambiar la opción antes de confirmar.</p>
+  </section>
+
+  <section class="payment-detail-panel" data-payment-panel="modo" hidden>
+    <div class="payment-detail-head">
+      <span class="payment-detail-icon payment-method-modo">MODO</span>
+      <div><strong>MODO</strong><small>Cuando continúes te vamos a avisar antes de salir de Dorado para completar el pago.</small></div>
+    </div>
+    <p class="payment-detail-note">La integración real se habilita cuando el negocio conecte su cuenta comercial de MODO.</p>
+  </section>
+
+  <section class="payment-detail-panel" data-payment-panel="tarjeta" hidden>
+    <div class="payment-detail-head">
+      <span class="payment-detail-icon payment-method-card"><svg class="ui-icon"><use href="#i-card"></use></svg></span>
+      <div><strong>Tarjeta de débito / crédito</strong><small>Los datos sensibles se completan mediante campos seguros del procesador de pagos.</small></div>
+    </div>
+    <div class="secure-card-fields" aria-label="Campos de tarjeta preparados para integración segura">
+      <label><span>NÚMERO DE TARJETA</span><input autocomplete="cc-number" inputmode="numeric" placeholder="Se habilita con el procesador seguro" disabled></label>
+      <label><span>TITULAR</span><input autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" disabled></label>
+      <label><span>VENCIMIENTO</span><input autocomplete="cc-exp" inputmode="numeric" placeholder="MM/AA" disabled></label>
+      <label><span>CÓDIGO DE SEGURIDAD</span><input autocomplete="cc-csc" inputmode="numeric" placeholder="CVV" disabled></label>
+    </div>
+    <p class="payment-detail-note"><svg class="ui-icon"><use href="#i-lock"></use></svg> Estos campos se habilitan con la integración segura de Mercado Pago; Dorado no debe guardar número, vencimiento ni CVV.</p>
+  </section>
 </div>
+
 <div class="checkout-field full">
+<label for="checkout-notes">ACLARACIONES (OPCIONAL)</label><div class="checkout-field full">
 <label for="checkout-notes">ACLARACIONES (OPCIONAL)</label><div class="checkout-field full">
 <label for="checkout-notes">ACLARACIONES (OPCIONAL)</label>
 <textarea id="checkout-notes" maxlength="500" name="notas" placeholder="Piso, departamento, referencias, horario, etc."></textarea>
@@ -771,6 +794,20 @@
 </aside>
 </div>
 </div>
+
+<div class="payment-confirm-overlay" id="payment-confirm-overlay" hidden>
+  <section class="payment-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-confirm-title">
+    <span class="payment-confirm-icon"><svg class="ui-icon"><use href="#i-lock"></use></svg></span>
+    <span class="payment-confirm-kicker">PAGO SEGURO</span>
+    <h3 id="payment-confirm-title">Vas a continuar al proveedor de pago</h3>
+    <p id="payment-confirm-text">Te vamos a redirigir para confirmar tu compra.</p>
+    <div class="payment-confirm-actions">
+      <button type="button" class="payment-confirm-cancel" id="payment-confirm-cancel">ELEGIR OTRO MÉTODO</button>
+      <button type="button" class="payment-confirm-accept" id="payment-confirm-accept">ACEPTAR Y CONTINUAR</button>
+    </div>
+  </section>
+</div>
+
 <!-- =========================
      MIS PEDIDOS
 ========================= -->

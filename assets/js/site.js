@@ -1286,6 +1286,42 @@ function mostrarErrorCheckout(mensaje = "") {
     caja.classList.toggle("active", Boolean(mensaje));
 }
 
+function confirmarRedireccionPago(metodo){
+    const overlay=document.getElementById("payment-confirm-overlay");
+    const title=document.getElementById("payment-confirm-title");
+    const text=document.getElementById("payment-confirm-text");
+    const accept=document.getElementById("payment-confirm-accept");
+    const cancel=document.getElementById("payment-confirm-cancel");
+    if(!overlay||!title||!text||!accept||!cancel)return Promise.resolve(true);
+
+    const provider=metodo==="modo"?"MODO":"Mercado Pago";
+    title.textContent=`Vas a continuar a ${provider}`;
+    text.textContent=`Te vamos a redirigir a ${provider} para confirmar tu compra de forma segura. Si preferís otro medio de pago, podés volver y cambiarlo.`;
+    overlay.hidden=false;
+    document.body.classList.add("payment-confirm-open");
+    window.setTimeout(()=>accept.focus(),0);
+
+    return new Promise(resolve=>{
+        const close=value=>{
+            overlay.hidden=true;
+            document.body.classList.remove("payment-confirm-open");
+            accept.removeEventListener("click",onAccept);
+            cancel.removeEventListener("click",onCancel);
+            overlay.removeEventListener("click",onOverlay);
+            document.removeEventListener("keydown",onKey);
+            resolve(value);
+        };
+        const onAccept=()=>close(true);
+        const onCancel=()=>close(false);
+        const onOverlay=event=>{if(event.target===overlay)close(false);};
+        const onKey=event=>{if(event.key==="Escape")close(false);};
+        accept.addEventListener("click",onAccept);
+        cancel.addEventListener("click",onCancel);
+        overlay.addEventListener("click",onOverlay);
+        document.addEventListener("keydown",onKey);
+    });
+}
+
 async function iniciarPagoMercadoPago(evento) {
     evento?.preventDefault();
     const form=document.getElementById("checkout-form");
@@ -1305,11 +1341,6 @@ async function iniciarPagoMercadoPago(evento) {
 
     if(metodoPago==="efectivo" && entrega!=="retiro"){
         mostrarErrorCheckout("El pago en efectivo está disponible únicamente para retiro en el local.");
-        return;
-    }
-
-    if(metodoPago==="modo"){
-        mostrarErrorCheckout("MODO está listo en el checkout, pero todavía falta conectar la cuenta comercial para habilitar pagos reales.");
         return;
     }
 
@@ -1359,6 +1390,20 @@ async function iniciarPagoMercadoPago(evento) {
         ].filter(Boolean).join("\n");
         window.open(`https://wa.me/${DORADO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`,"_blank","noopener,noreferrer");
         return;
+    }
+
+    if(metodoPago==="tarjeta"){
+        const confirmed=await confirmarRedireccionPago("mercadopago");
+        if(!confirmed)return;
+    }
+
+    if(["mercadopago","modo"].includes(metodoPago)){
+        const confirmed=await confirmarRedireccionPago(metodoPago);
+        if(!confirmed)return;
+        if(metodoPago==="modo"){
+            mostrarErrorCheckout("MODO todavía no está conectado a la cuenta comercial. Podés elegir otro medio de pago mientras terminamos esa integración.");
+            return;
+        }
     }
 
     const items=carrito.map(item=>({id:item.id,cantidad:Math.max(1,Math.floor(Number(item.cantidad)||1))}));
@@ -2793,51 +2838,91 @@ comprobarRetornoPago();
         }
     }
 
-    const paymentInputs=Array.from(document.querySelectorAll('input[name="metodo_pago"]'));
+    const payment=document.getElementById("checkout-payment-method");
     const delivery=document.getElementById("checkout-delivery");
     const payButton=document.getElementById("checkout-pay");
     const help=document.getElementById("checkout-payment-help");
-    const cardPanel=document.getElementById("checkout-card-safe-panel");
+    const detail=document.getElementById("checkout-payment-detail");
+    const panels=Array.from(document.querySelectorAll("[data-payment-panel]"));
     const addressFields=["checkout-address","checkout-city","checkout-province","checkout-postal"].map(id=>document.getElementById(id)).filter(Boolean);
-    const selectedMethod=()=>paymentInputs.find(input=>input.checked)?.value||"";
 
     const updateCheckout=()=>{
-        const method=selectedMethod();
+        const method=String(payment?.value||"");
         const retiro=delivery?.value==="retiro";
         addressFields.forEach(el=>{el.required=!retiro;el.closest?.(".checkout-field")?.classList.toggle("optional-for-pickup",retiro);});
-        document.querySelectorAll(".payment-method-option").forEach(label=>{
-            const radio=label.querySelector('input[name="metodo_pago"]');
-            label.classList.toggle("selected",Boolean(radio?.checked));
-        });
-        if(cardPanel)cardPanel.hidden=method!=="tarjeta";
+
+        if(detail)detail.hidden=!method;
+        panels.forEach(panel=>{panel.hidden=panel.dataset.paymentPanel!==method;});
+
         if(!payButton)return;
         const span=payButton.querySelector("span");
         if(method==="mercadopago"){
-            if(span)span.textContent="Pagar con Mercado Pago";
-            if(help)help.textContent="🔒 El pago continúa en Mercado Pago. Dorado no recibe ni guarda datos sensibles.";
+            if(span)span.textContent="Continuar con Mercado Pago";
+            if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
         }else if(method==="modo"){
             if(span)span.textContent="Continuar con MODO";
-            if(help)help.textContent="MODO queda habilitado cuando se conecte la cuenta comercial del negocio.";
+            if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
         }else if(method==="tarjeta"){
             if(span)span.textContent="Continuar con tarjeta";
-            if(help)help.textContent="🔒 En el siguiente paso ingresás los datos de la tarjeta en el formulario seguro del procesador.";
+            if(help)help.textContent="🔒 Los datos sensibles se ingresan mediante el procesador seguro, no en los servidores de Dorado.";
         }else if(method==="transferencia"){
-            if(span)span.textContent="Coordinar transferencia por WhatsApp";
-            if(help)help.textContent="Te enviamos el pedido por WhatsApp para coordinar los datos de transferencia y la entrega.";
+            if(span)span.textContent="Confirmar transferencia por WhatsApp";
+            if(help)help.textContent="Revisá alias, CBU y titular antes de continuar.";
         }else if(method==="efectivo"){
-            if(span)span.textContent="Coordinar efectivo por WhatsApp";
-            if(help)help.textContent="El pago en efectivo está disponible con retiro en el local.";
+            if(span)span.textContent="Confirmar pago en efectivo";
+            if(help)help.textContent=retiro?"Pagás al retirar tu pedido en el local.":"Elegí retiro en el local para pagar en efectivo.";
         }else if(method==="whatsapp"){
             if(span)span.textContent="Coordinar pedido por WhatsApp";
-            if(help)help.textContent="Te enviamos el resumen del carrito para coordinar el pago y la entrega.";
+            if(help)help.textContent="Te preparamos el resumen completo del pedido para coordinar.";
         }else{
             if(span)span.textContent="Elegí un medio de pago";
             if(help)help.textContent="Elegí la opción que te resulte más cómoda para continuar.";
         }
     };
-    paymentInputs.forEach(input=>input.addEventListener("change",updateCheckout));
+
+    payment?.addEventListener("change",updateCheckout);
     delivery?.addEventListener("change",updateCheckout);
-    updateCheckout();
+
+    document.querySelectorAll(".copy-bank-data").forEach(button=>{
+        button.addEventListener("click",async()=>{
+            const target=document.getElementById(button.dataset.copyTarget||"");
+            const value=String(target?.textContent||"").trim();
+            if(!value||/pendiente/i.test(value))return;
+            try{
+                await navigator.clipboard.writeText(value);
+                const original=button.textContent;
+                button.textContent="COPIADO";
+                window.setTimeout(()=>button.textContent=original,1200);
+            }catch{}
+        });
+    });
+
+    (async()=>{
+        try{
+            const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
+            const data=await response.json().catch(()=>({}));
+            const bank=data?.bankTransfer||{};
+            const fields={
+                "bank-transfer-alias":bank.alias,
+                "bank-transfer-cbu":bank.cbu,
+                "bank-transfer-holder":bank.holder,
+                "bank-transfer-bank":bank.bank
+            };
+            Object.entries(fields).forEach(([id,value])=>{
+                const el=document.getElementById(id);
+                if(el&&value)el.textContent=String(value);
+            });
+            const complete=Boolean(bank.alias&&bank.cbu&&bank.holder);
+            const note=document.getElementById("bank-transfer-note");
+            if(note&&complete)note.textContent="Cuando transfieras, guardá el comprobante. Podés enviarlo por WhatsApp junto con tu número de pedido.";
+            document.querySelectorAll(".copy-bank-data").forEach(button=>{
+                const target=document.getElementById(button.dataset.copyTarget||"");
+                button.disabled=!target||/pendiente/i.test(String(target.textContent||""));
+            });
+        }catch{}
+        updateCheckout();
+    })();
+})();    updateCheckout();
 })();
 
 /* =========================================================
@@ -3003,7 +3088,8 @@ comprobarRetornoPago();
         document.getElementById("checkout-modal"),
         document.getElementById("cart-drawer"),
         document.getElementById("orders-drawer"),
-        document.getElementById("payment-result")
+        document.getElementById("payment-result"),
+        document.getElementById("payment-confirm-overlay")
     ].filter(Boolean);
 
     const activeContainer=()=>containers.find(el=>el.classList.contains("active")&&el.getAttribute("aria-hidden")!=="true");
