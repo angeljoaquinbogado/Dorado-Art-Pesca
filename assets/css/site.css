@@ -4719,3 +4719,66 @@ body.payment-confirm-open{overflow:hidden}
   .dorado-select-option-copy small{font-size:9px}
 }
 /* FIN DORADO — selectores premium de provincia y entrega */
+
+/* DORADO — CTA compra mayorista en checkout */
+.checkout-wholesale-card{
+  margin-top:14px;
+  padding:16px;
+  border:1px solid #d9cfba;
+  border-radius:18px;
+  background:linear-gradient(145deg,#fbf8f0 0%,#f3ecdc 100%);
+}
+.checkout-wholesale-copy{display:grid;gap:5px}
+.checkout-wholesale-kicker{
+  color:#947021;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+.checkout-wholesale-copy strong{
+  color:#17191d;
+  font-size:13px;
+  line-height:1.3;
+}
+.checkout-wholesale-copy p{
+  margin:0;
+  color:#666b72;
+  font-size:9px;
+  line-height:1.55;
+}
+.checkout-wholesale{
+  width:100%;
+  min-height:46px;
+  margin-top:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  border:1px solid #17191d;
+  border-radius:999px;
+  background:#17191d;
+  color:#fff;
+  font:inherit;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.045em;
+  cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.checkout-wholesale .ui-icon{width:17px;height:17px}
+.checkout-wholesale:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px rgba(23,25,29,.16);
+  background:#22252a;
+}
+.checkout-wholesale:focus-visible{
+  outline:0;
+  box-shadow:0 0 0 4px rgba(183,139,46,.15);
+}
+@media(max-width:640px){
+  .checkout-wholesale-card{padding:15px}
+  .checkout-wholesale-copy strong{font-size:13px}
+  .checkout-wholesale-copy p{font-size:10px}
+  .checkout-wholesale{min-height:48px;font-size:8.5px}
+}
+/* FIN DORADO — CTA compra mayorista en checkout */

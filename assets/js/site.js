@@ -1087,19 +1087,19 @@ function cerrarCarrito() {
     document.body.classList.remove("cart-open");
 }
 
-function finalizarPorWhatsApp() {
+function consultarCompraMayorista() {
     const carrito = leerCarrito();
 
     if (carrito.length === 0) {
         mostrarToastCarrito(
             "Carrito vacío",
-            "Agregá al menos un producto antes de finalizar."
+            "Agregá productos para consultar una compra mayorista."
         );
         return;
     }
 
     const unidades = cantidadTotal(carrito);
-    const total = carrito.reduce(
+    const totalActual = carrito.reduce(
         (suma, item) =>
             suma +
             (Number(item.precio) || 0) *
@@ -1110,27 +1110,24 @@ function finalizarPorWhatsApp() {
     const detalle = carrito
         .map((item, indice) => {
             const cantidad = Math.max(1, Number(item.cantidad) || 1);
-            const subtotal = (Number(item.precio) || 0) * cantidad;
-
-            return `${indice + 1}. ${item.nombre}\n   Cantidad: ${cantidad}\n   Subtotal: ${formatearPrecio(subtotal)}`;
+            return `${indice + 1}. ${item.nombre} · ${cantidad} u.`;
         })
-        .join("\n\n");
+        .join("\n");
 
     const mensaje = [
         "Hola Dorado Artículos de Pesca 👋",
         "",
-        "Quiero realizar este pedido:",
+        "Quiero consultar por una compra mayorista con estos productos:",
         "",
         detalle,
         "",
-        `Unidades: ${unidades}`,
-        `TOTAL: ${formatearPrecio(total)}`,
+        `Unidades totales: ${unidades}`,
+        `Total actual del carrito: ${formatearPrecio(totalActual)}`,
         "",
-        "¿Me indican formas de pago y entrega?"
+        "¿Me pueden indicar precio mayorista, disponibilidad y forma de entrega?"
     ].join("\n");
 
     const url = `https://wa.me/${DORADO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
-
     window.open(url, "_blank", "noopener,noreferrer");
 }
 
@@ -3052,7 +3049,7 @@ comprobarRetornoPago();
     document.querySelector(".mobile-dock-cart")?.addEventListener("click", abrirCarrito);
 
     document.querySelector(".checkout-close")?.addEventListener("click", cerrarCheckout);
-    document.querySelector(".checkout-whatsapp")?.addEventListener("click", finalizarPorWhatsApp);
+    document.querySelector(".checkout-wholesale")?.addEventListener("click", consultarCompraMayorista);
 
     document.getElementById("orders-overlay")?.addEventListener("click", cerrarMisPedidos);
     document.querySelector(".orders-close")?.addEventListener("click", cerrarMisPedidos);
