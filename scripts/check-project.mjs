@@ -181,6 +181,7 @@ const secretPatterns = [
   ["Mercado Pago access token", /\b(?:APP_USR|TEST)-[A-Za-z0-9_-]{20,}\b/g],
   ["GitHub token", /\b(?:ghp|github_pat)_[A-Za-z0-9_]{20,}\b/g],
   ["Google API key", /\bAIza[0-9A-Za-z_-]{30,}\b/g],
+  ["OpenAI/API-style secret", /\bsk-[A-Za-z0-9_-]{20,}\b/g],
   ["AWS access key", /\bAKIA[0-9A-Z]{16}\b/g],
   ["JWT hardcodeado", /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g],
   ["Private key", /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g],
@@ -199,6 +200,30 @@ for (const rel of [...new Set(secretScanFiles)]) {
 }
 if (!errors.some(e => e.includes("secreto expuesto") || e.includes("marcada como pública"))) {
   pass("Sin patrones conocidos de secretos expuestos");
+}
+
+// .env.example debe documentar nombres, nunca contener secretos privados reales.
+if (exists(".env.example")) {
+  const envText = fs.readFileSync(path.join(root, ".env.example"), "utf8");
+  const sensitiveNames = new Set([
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "RATE_LIMIT_SECRET",
+    "MERCADOPAGO_ACCESS_TOKEN",
+    "MERCADOPAGO_WEBHOOK_SECRET",
+    "GMAIL_APP_PASSWORD"
+  ]);
+
+  for (const line of envText.split(/\r?\n/)) {
+    const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (!match || !sensitiveNames.has(match[1])) continue;
+    const value = match[2].replace(/^['"]|['"]$/g, "").trim();
+    if (value && !/^(?:changeme|example|your[_-].*|<.*>)$/i.test(value)) {
+      fail(`.env.example contiene un valor no vacío para ${match[1]}`);
+    }
+  }
+}
+if (!errors.some(e => e.includes(".env.example contiene"))) {
+  pass(".env.example sin secretos privados");
 }
 
 console.log("\nDorado Artículos de Pesca — Quality Check\n");

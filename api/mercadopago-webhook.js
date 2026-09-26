@@ -6,7 +6,8 @@ import {
     enforceRateLimit,
     verifyMercadoPagoSignature,
     bodyTooLarge,
-    fetchWithTimeout
+    fetchWithTimeout,
+    publicSiteOrigin
 } from "../lib/security.js";
 
 async function supabaseFetch(path, options = {}) {
@@ -120,6 +121,12 @@ if (topic === "merchant_order") {
 
         if (!paymentId) {
             return res.status(200).json({ ok: true, ignored: true });
+        }
+
+        // Los IDs de pagos de Mercado Pago son numéricos. Rechazar cualquier
+        // otra forma evita consultas arbitrarias al endpoint privado de pagos.
+        if (!/^\d{1,30}$/.test(paymentId)) {
+            return res.status(200).json({ ok: true, ignored: true, reason: "invalid_payment_id" });
         }
 
         const signature = verifyMercadoPagoSignature(req, paymentId);
