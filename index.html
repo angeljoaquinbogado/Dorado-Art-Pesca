@@ -660,16 +660,66 @@
 </select>
 </div>
 <div class="checkout-field full payment-method-field">
-<label for="checkout-payment-method">FORMA DE PAGO</label>
-<select id="checkout-payment-method" name="metodo_pago" required>
+<label for="payment-picker-trigger">FORMA DE PAGO</label>
+<select id="checkout-payment-method" name="metodo_pago" class="payment-native-select" aria-hidden="true" tabindex="-1">
   <option value="">Elegí cómo pagar</option>
+  <option value="efectivo">Efectivo al retirar</option>
   <option value="whatsapp">Coordinar por WhatsApp</option>
   <option value="transferencia">Transferencia bancaria</option>
-  <option value="efectivo">Efectivo al retirar</option>
+  <option value="tarjeta">Tarjeta de débito / crédito</option>
   <option value="mercadopago">Mercado Pago</option>
   <option value="modo">MODO</option>
-  <option value="tarjeta">Tarjeta de débito / crédito</option>
 </select>
+
+<div class="payment-picker" id="payment-picker">
+  <button class="payment-picker-trigger" id="payment-picker-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="payment-picker-menu">
+    <span class="payment-picker-trigger-copy">
+      <span>MEDIO DE PAGO</span>
+      <strong id="payment-picker-label">Elegí cómo pagar</strong>
+    </span>
+    <svg class="ui-icon payment-picker-chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
+  </button>
+
+  <div class="payment-picker-menu" id="payment-picker-menu" role="listbox" aria-label="Elegí cómo pagar" hidden>
+    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="efectivo">
+      <span class="payment-picker-icon payment-picker-icon-cash"><img src="assets/images/payment/efectivo.svg" alt="" loading="lazy" decoding="async"></span>
+      <span class="payment-picker-copy"><strong>Efectivo al retirar</strong><small>Pagás cuando retirás el pedido en el local.</small></span>
+      <span class="payment-picker-status">Disponible</span>
+    </button>
+
+    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="whatsapp">
+      <span class="payment-picker-icon"><img src="assets/images/payment/whatsapp.svg" alt="" loading="lazy" decoding="async"></span>
+      <span class="payment-picker-copy"><strong>Coordinar por WhatsApp</strong><small>Coordinás el pago y la entrega directamente con Dorado.</small></span>
+      <span class="payment-picker-status">Disponible</span>
+    </button>
+
+    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="transferencia">
+      <span class="payment-picker-icon payment-picker-icon-bank" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M4 12.2 16 5l12 7.2v2.1H4v-2.1Z" fill="currentColor"/><path d="M7 16h3v8H7zm5 0h3v8h-3zm5 0h3v8h-3zm5 0h3v8h-3zM4 26h24v2H4z" fill="currentColor"/></svg>
+      </span>
+      <span class="payment-picker-copy"><strong>Transferencia bancaria</strong><small>Alias, CVU y datos del titular visibles antes de pagar.</small></span>
+      <span class="payment-picker-status">Disponible</span>
+    </button>
+
+    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="tarjeta">
+      <span class="payment-picker-icon payment-picker-icon-card" aria-hidden="true"><svg class="ui-icon"><use href="#i-card"></use></svg></span>
+      <span class="payment-picker-copy"><strong>Tarjeta de débito / crédito</strong><small>Pago mediante procesador seguro.</small></span>
+      <span class="payment-picker-status">A activar</span>
+    </button>
+
+    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="mercadopago">
+      <span class="payment-picker-icon payment-picker-logo payment-picker-logo-mp"><img src="assets/images/payment/mercado-pago.svg" alt="" loading="lazy" decoding="async"></span>
+      <span class="payment-picker-copy"><strong>Mercado Pago</strong><small>Pago online mediante Mercado Pago.</small></span>
+      <span class="payment-picker-status">A activar</span>
+    </button>
+
+    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="modo">
+      <span class="payment-picker-icon payment-picker-logo payment-picker-logo-modo"><img src="assets/images/payment/modo.svg" alt="" loading="lazy" decoding="async"></span>
+      <span class="payment-picker-copy"><strong>MODO</strong><small>Disponible cuando se conecte la cuenta comercial.</small></span>
+      <span class="payment-picker-status">A activar</span>
+    </button>
+  </div>
+</div>
 </div>
 
 <div class="checkout-payment-detail full" id="checkout-payment-detail" hidden>

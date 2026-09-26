@@ -2939,6 +2939,105 @@ comprobarRetornoPago();
     })();
 })();
 
+/* DORADO — selector visual de medios de pago */
+(function configurarSelectorVisualDePago(){
+    const payment=document.getElementById("checkout-payment-method");
+    const delivery=document.getElementById("checkout-delivery");
+    const picker=document.getElementById("payment-picker");
+    const trigger=document.getElementById("payment-picker-trigger");
+    const menu=document.getElementById("payment-picker-menu");
+    const label=document.getElementById("payment-picker-label");
+    const options=Array.from(document.querySelectorAll(".payment-picker-option[data-payment-value]"));
+    if(!payment||!picker||!trigger||!menu||!label||!options.length)return;
+
+    const labels={
+        efectivo:"Efectivo al retirar",
+        whatsapp:"Coordinar por WhatsApp",
+        transferencia:"Transferencia bancaria",
+        tarjeta:"Tarjeta de débito / crédito",
+        mercadopago:"Mercado Pago",
+        modo:"MODO"
+    };
+
+    const closeMenu=()=>{
+        menu.hidden=true;
+        picker.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded","false");
+    };
+
+    const openMenu=()=>{
+        menu.hidden=false;
+        picker.classList.add("is-open");
+        trigger.setAttribute("aria-expanded","true");
+    };
+
+    const availabilityFor=value=>{
+        if(value==="efectivo") return delivery?.value==="retiro" ? {enabled:true,label:"Disponible"} : {enabled:false,label:"Solo retiro"};
+        if(value==="whatsapp"||value==="transferencia") return {enabled:true,label:"Disponible"};
+        const availability=window.doradoPaymentAvailability;
+        if(value==="tarjeta"||value==="mercadopago"){
+            const enabled=Boolean(availability?.mercadoPago);
+            return {enabled,label:enabled?"Disponible":"A activar"};
+        }
+        if(value==="modo"){
+            const enabled=Boolean(availability?.modo);
+            return {enabled,label:enabled?"Disponible":"A activar"};
+        }
+        return {enabled:true,label:"Disponible"};
+    };
+
+    const sync=()=>{
+        const selected=String(payment.value||"");
+        label.textContent=labels[selected]||"Elegí cómo pagar";
+        trigger.classList.toggle("has-value",Boolean(selected));
+
+        options.forEach(option=>{
+            const value=String(option.dataset.paymentValue||"");
+            const selectedOption=value===selected;
+            const availability=availabilityFor(value);
+            const status=option.querySelector(".payment-picker-status");
+
+            option.classList.toggle("is-selected",selectedOption);
+            option.classList.toggle("is-unavailable",!availability.enabled);
+            option.setAttribute("aria-selected",selectedOption?"true":"false");
+            option.disabled=!availability.enabled;
+            if(status)status.textContent=availability.label;
+        });
+    };
+
+    trigger.addEventListener("click",()=>{
+        if(menu.hidden)openMenu();
+        else closeMenu();
+    });
+
+    options.forEach(option=>{
+        option.addEventListener("click",()=>{
+            if(option.disabled)return;
+            payment.value=String(option.dataset.paymentValue||"");
+            payment.dispatchEvent(new Event("change",{bubbles:true}));
+            closeMenu();
+            trigger.focus({preventScroll:true});
+        });
+    });
+
+    payment.addEventListener("change",sync);
+    delivery?.addEventListener("change",sync);
+
+    document.addEventListener("click",event=>{
+        if(!picker.contains(event.target))closeMenu();
+    });
+
+    document.addEventListener("keydown",event=>{
+        if(event.key==="Escape"&&!menu.hidden){
+            closeMenu();
+            trigger.focus({preventScroll:true});
+        }
+    });
+
+    sync();
+})();
+/* FIN DORADO — selector visual de medios de pago */
+
 /* =========================================================
    EVENTOS SIN JAVASCRIPT INLINE
    Mantiene una CSP más estricta contra XSS.

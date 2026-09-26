@@ -4464,3 +4464,157 @@ body.payment-confirm-open{overflow:hidden}
   }
 }
 /* FIN DORADO — efectivo SVG final */
+
+/* DORADO — selector premium y paneles de pago a ancho completo */
+.payment-native-select{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+.payment-picker{width:100%;position:relative}
+.payment-picker-trigger{
+  width:100%;
+  min-height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:11px 15px;
+  border:1px solid #d7d0c3;
+  border-radius:15px;
+  background:linear-gradient(180deg,#fff 0%,#fbfaf7 100%);
+  color:#17191d;
+  text-align:left;
+  box-shadow:0 5px 18px rgba(20,22,26,.04);
+  cursor:pointer;
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.payment-picker-trigger:hover{border-color:#b99b52;box-shadow:0 8px 24px rgba(20,22,26,.08)}
+.payment-picker-trigger:focus-visible{outline:0;border-color:#b78b2e;box-shadow:0 0 0 4px rgba(183,139,46,.12)}
+.payment-picker-trigger-copy{display:grid;gap:3px;min-width:0}
+.payment-picker-trigger-copy>span{font-size:8px;font-weight:900;letter-spacing:.11em;color:#9a7b2e}
+.payment-picker-trigger-copy>strong{font-size:13px;line-height:1.25;color:#17191d}
+.payment-picker-chevron{width:19px;height:19px;flex:0 0 auto;transition:transform .18s ease}
+.payment-picker.is-open .payment-picker-chevron{transform:rotate(90deg)}
+
+.payment-picker-menu{
+  margin-top:9px;
+  padding:8px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  border:1px solid #ddd5c6;
+  border-radius:18px;
+  background:#f7f4ed;
+  box-shadow:0 18px 44px rgba(19,20,23,.12);
+}
+.payment-picker-menu[hidden]{display:none!important}
+
+.payment-picker-option{
+  position:relative;
+  min-width:0;
+  min-height:74px;
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:11px 11px;
+  border:1px solid #e2dbce;
+  border-radius:14px;
+  background:#fff;
+  color:#1b1d20;
+  text-align:left;
+  font:inherit;
+  cursor:pointer;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.payment-picker-option:hover:not(:disabled){border-color:#c5a85f;box-shadow:0 8px 20px rgba(20,22,26,.07);transform:translateY(-1px)}
+.payment-picker-option.is-selected{border-color:#b58a29;background:#fffaf0;box-shadow:0 0 0 2px rgba(181,138,41,.10)}
+.payment-picker-option:focus-visible{outline:0;border-color:#b58a29;box-shadow:0 0 0 3px rgba(181,138,41,.13)}
+.payment-picker-option.is-unavailable{opacity:.58;cursor:not-allowed;background:#f4f2ed}
+
+.payment-picker-icon{
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#f3f0e9;
+  overflow:hidden;
+}
+.payment-picker-icon img{display:block;max-width:39px;max-height:39px;width:auto;height:auto;object-fit:contain}
+.payment-picker-icon-cash img{max-width:42px;max-height:42px}
+.payment-picker-icon-bank,.payment-picker-icon-card{background:#101a25;color:#fff}
+.payment-picker-icon-bank svg,.payment-picker-icon-card svg{width:27px;height:27px;display:block}
+.payment-picker-logo{background:#fff}
+.payment-picker-logo-mp{width:64px}
+.payment-picker-logo-mp img{max-width:58px;max-height:30px}
+.payment-picker-logo-modo{width:58px}
+.payment-picker-logo-modo img{max-width:52px;max-height:28px}
+
+.payment-picker-copy{display:grid;gap:3px;min-width:0}
+.payment-picker-copy strong{font-size:11px;line-height:1.25}
+.payment-picker-copy small{font-size:8.5px;line-height:1.35;color:#777a80}
+.payment-picker-status{
+  align-self:start;
+  margin-top:2px;
+  padding:5px 7px;
+  border-radius:999px;
+  background:#f1ecdf;
+  color:#7b6428;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.04em;
+  white-space:nowrap;
+}
+.payment-picker-option.is-selected .payment-picker-status{background:#1b1d20;color:#fff}
+.payment-picker-option.is-unavailable .payment-picker-status{background:#ebe8e1;color:#85827b}
+
+.checkout-payment-detail.full{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.checkout-payment-detail.full .payment-detail-panel{width:100%!important;max-width:none!important}
+.checkout-payment-detail.full .bank-details-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+.checkout-payment-detail.full .bank-details-grid>div{min-width:0!important}
+.checkout-payment-detail.full .bank-details-grid strong{
+  word-break:normal!important;
+  overflow-wrap:anywhere!important;
+}
+.checkout-payment-detail.full .secure-card-fields{width:100%!important}
+.checkout-payment-detail.full .card-brands-row{width:100%!important}
+
+@media (min-width:900px){
+  .checkout-payment-detail.full .bank-details-grid{gap:12px!important}
+  .checkout-payment-detail.full .bank-details-grid>div{min-height:92px!important;padding:16px 58px 16px 16px!important}
+  .checkout-payment-detail.full .bank-details-grid strong{font-size:14px!important;line-height:1.35!important}
+  .checkout-payment-detail.full .secure-card-fields{grid-template-columns:1fr 1fr!important;gap:14px!important}
+  .checkout-payment-detail.full .secure-card-fields label:first-child,
+  .checkout-payment-detail.full .secure-card-fields label:nth-child(2){grid-column:1 / -1!important}
+  .checkout-payment-detail.full .card-brands-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+
+@media (max-width:760px){
+  .payment-picker-menu{grid-template-columns:1fr}
+  .payment-picker-option{grid-template-columns:44px minmax(0,1fr) auto}
+  .payment-picker-logo-mp,.payment-picker-logo-modo{width:52px}
+}
+
+@media (max-width:620px){
+  .checkout-payment-detail.full .bank-details-grid{grid-template-columns:1fr!important}
+  .payment-picker-option{min-height:70px;padding:10px}
+  .payment-picker-copy small{font-size:8px}
+}
+/* FIN DORADO — selector premium y paneles de pago a ancho completo */
