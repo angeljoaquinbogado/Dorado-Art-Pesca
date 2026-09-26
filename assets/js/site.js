@@ -2936,7 +2936,6 @@ comprobarRetornoPago();
         }catch{}
         updateCheckout();
     })();
-})();    updateCheckout();
 })();
 
 /* =========================================================
