@@ -6,6 +6,10 @@ Los cambios relevantes del proyecto se documentan aquí. El historial completo s
 
 ### Pagos, reseñas y continuidad visual
 
+- Restaurados WhatsApp, transferencia y efectivo junto a Mercado Pago, MODO y débito/crédito; las opciones nuevas se suman sin reemplazar las existentes.
+- FAQ ajustada para usar el mismo fondo de la sección, sin tarjetas blancas.
+- Respuesta de seguimiento reescrita con un tono más natural y directo.
+
 - Checkout rediseñado con Mercado Pago, MODO y tarjeta de débito/crédito como opciones finales.
 - La opción tarjeta evita campos propios de PAN/CVV y deriva el ingreso sensible al procesador seguro.
 - FAQ actualizada con los medios de pago finales.

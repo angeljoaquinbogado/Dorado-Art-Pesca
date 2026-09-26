@@ -1303,12 +1303,13 @@ async function iniciarPagoMercadoPago(evento) {
     const entrega=String(datos.get("entrega")||"retiro").trim();
     if(!metodoPago){mostrarErrorCheckout("Elegí un medio de pago para continuar.");return;}
 
-    if(metodoPago==="modo"){
-        mostrarErrorCheckout("MODO ya está contemplado en el checkout, pero todavía falta conectar las credenciales comerciales para procesar pagos reales.");
+    if(metodoPago==="efectivo" && entrega!=="retiro"){
+        mostrarErrorCheckout("El pago en efectivo está disponible únicamente para retiro en el local.");
         return;
     }
-    if(!["mercadopago","tarjeta"].includes(metodoPago)){
-        mostrarErrorCheckout("El medio de pago seleccionado todavía no está disponible.");
+
+    if(metodoPago==="modo"){
+        mostrarErrorCheckout("MODO está listo en el checkout, pero todavía falta conectar la cuenta comercial para habilitar pagos reales.");
         return;
     }
 
@@ -1323,6 +1324,43 @@ async function iniciarPagoMercadoPago(evento) {
         entrega,
         notas:String(datos.get("notas")||"").trim()
     };
+    if(["whatsapp","transferencia","efectivo"].includes(metodoPago)){
+        const subtotal=carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+        const total=checkoutCoupon && Math.abs(Number(checkoutCoupon.subtotal||0)-subtotal)<0.01
+            ? Number(checkoutCoupon.total)||subtotal
+            : subtotal;
+        const detalle=carrito.map((item,i)=>{
+            const cantidad=Math.max(1,Number(item.cantidad)||1);
+            return `${i+1}. ${item.nombre} · ${cantidad} u. · ${formatearPrecio((Number(item.precio)||0)*cantidad)}`;
+        }).join("\n");
+        const pagos={
+            whatsapp:"A coordinar por WhatsApp",
+            transferencia:"Transferencia bancaria",
+            efectivo:"Efectivo al retirar"
+        };
+        const entregas={
+            retiro:"Retiro en el local",
+            local:"Envío local",
+            nacional:"Envío al resto de Argentina",
+            coordinar:"A coordinar"
+        };
+        const mensaje=[
+            "Hola Dorado Artículos de Pesca 👋",
+            "Quiero confirmar este pedido desde la web:","",detalle,"",
+            checkoutCoupon?`Cupón: ${checkoutCoupon.code} · Descuento: -${formatearPrecio(checkoutCoupon.discount)}`:"",
+            `TOTAL PRODUCTOS: ${formatearPrecio(total)}`,
+            `Pago: ${pagos[metodoPago]||"A coordinar"}`,
+            `Entrega: ${entregas[entrega]||entrega}`,
+            "",`Nombre: ${cliente.nombre}`,`Teléfono: ${cliente.telefono}`,
+            cliente.domicilio?`Domicilio: ${cliente.domicilio}`:"",
+            cliente.ciudad?`Localidad: ${cliente.ciudad}`:"",
+            cliente.notas?`Aclaraciones: ${cliente.notas}`:"",
+            "","¿Me confirman disponibilidad y cómo seguimos?"
+        ].filter(Boolean).join("\n");
+        window.open(`https://wa.me/${DORADO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`,"_blank","noopener,noreferrer");
+        return;
+    }
+
     const items=carrito.map(item=>({id:item.id,cantidad:Math.max(1,Math.floor(Number(item.cantidad)||1))}));
 
     boton.disabled=true;
@@ -2779,13 +2817,22 @@ comprobarRetornoPago();
             if(help)help.textContent="🔒 El pago continúa en Mercado Pago. Dorado no recibe ni guarda datos sensibles.";
         }else if(method==="modo"){
             if(span)span.textContent="Continuar con MODO";
-            if(help)help.textContent="MODO está contemplado en el diseño final; falta conectar las credenciales comerciales para habilitar cobros reales.";
+            if(help)help.textContent="MODO queda habilitado cuando se conecte la cuenta comercial del negocio.";
         }else if(method==="tarjeta"){
             if(span)span.textContent="Continuar con tarjeta";
             if(help)help.textContent="🔒 En el siguiente paso ingresás los datos de la tarjeta en el formulario seguro del procesador.";
+        }else if(method==="transferencia"){
+            if(span)span.textContent="Coordinar transferencia por WhatsApp";
+            if(help)help.textContent="Te enviamos el pedido por WhatsApp para coordinar los datos de transferencia y la entrega.";
+        }else if(method==="efectivo"){
+            if(span)span.textContent="Coordinar efectivo por WhatsApp";
+            if(help)help.textContent="El pago en efectivo está disponible con retiro en el local.";
+        }else if(method==="whatsapp"){
+            if(span)span.textContent="Coordinar pedido por WhatsApp";
+            if(help)help.textContent="Te enviamos el resumen del carrito para coordinar el pago y la entrega.";
         }else{
             if(span)span.textContent="Elegí un medio de pago";
-            if(help)help.textContent="🔒 Los pagos se procesan mediante proveedores externos seguros. Dorado no almacena datos sensibles de tarjeta.";
+            if(help)help.textContent="Elegí la opción que te resulte más cómoda para continuar.";
         }
     };
     paymentInputs.forEach(input=>input.addEventListener("change",updateCheckout));

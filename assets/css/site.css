@@ -4037,3 +4037,22 @@ body.orders-open{overflow:hidden}
 @media(max-width:820px){.trust-head{grid-template-columns:1fr}.reviews-actions{justify-content:flex-start}.reviews-grid{grid-template-columns:1fr 1fr}.reviews-filter-head{align-items:flex-start;flex-direction:column}.reviews-filter-head select{width:100%}}
 @media(max-width:560px){.trust-shell,.faq-shell{width:calc(100% - 26px)!important}.reviews-grid{grid-template-columns:1fr}.review-card{width:min(300px,82vw)}}
 @media(prefers-reduced-motion:reduce){.reviews-marquee-shell{overflow:auto;mask-image:none}.reviews-marquee-track{animation:none}.reviews-marquee-set[aria-hidden="true"]{display:none}}
+
+
+/* DORADO — corrección de medios de pago + FAQ integrada */
+.payment-method-whatsapp{background:#1fa463}
+.payment-method-whatsapp .ui-icon{width:20px;height:20px}
+.payment-method-transfer{background:#87681f;font-size:8px;letter-spacing:.03em}
+.payment-method-cash{background:#2a2c31;font-size:16px}
+
+.faq-list details{
+  background:transparent!important;
+  box-shadow:none!important;
+  border-color:rgba(116,101,73,.22)!important;
+}
+.faq-list details[open]{
+  background:rgba(183,146,46,.055)!important;
+}
+.faq-list summary{
+  background:transparent!important;
+}

@@ -96,8 +96,8 @@
     {"@type":"Question","name":"¿El stock que veo en la web está actualizado?","acceptedAnswer":{"@type":"Answer","text":"El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito."}},
     {"@type":"Question","name":"¿Cómo se coordina el envío?","acceptedAnswer":{"@type":"Answer","text":"El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido."}},
     {"@type":"Question","name":"¿Puedo retirar en el local?","acceptedAnswer":{"@type":"Answer","text":"Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado."}},
-    {"@type":"Question","name":"¿Qué medios de pago están disponibles?","acceptedAnswer":{"@type":"Answer","text":"El checkout está preparado para Mercado Pago, MODO y tarjetas de débito o crédito. Los datos sensibles de tarjeta se ingresan en el formulario seguro del procesador y Dorado no los almacena."}},
-    {"@type":"Question","name":"¿Cómo sigo mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Cada compra genera un enlace privado para consultar el estado del pedido y, cuando corresponda, el seguimiento del transportista."}}
+    {"@type":"Question","name":"¿Qué medios de pago están disponibles?","acceptedAnswer":{"@type":"Answer","text":"Podés pagar por Mercado Pago, MODO, tarjeta de débito o crédito, transferencia, efectivo si retirás en el local, o coordinar el pago por WhatsApp."}},
+    {"@type":"Question","name":"¿Cómo sigo mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Cuando hacés una compra recibís un enlace privado para ver si el pedido está en preparación, enviado o entregado y, cuando corresponde, consultar el transporte y el código de seguimiento."}}
   ]
 }
 </script>
@@ -406,8 +406,8 @@
       <details><summary>¿El stock que veo en la web está actualizado?</summary><p>El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito.</p></details>
       <details><summary>¿Cómo se coordina el envío?</summary><p>El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido. El total del checkout corresponde a los productos.</p></details>
       <details><summary>¿Puedo retirar en el local?</summary><p>Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado.</p></details>
-      <details><summary>¿Qué medios de pago están disponibles?</summary><p>El checkout está preparado para Mercado Pago, MODO y tarjetas de débito o crédito. En la opción tarjeta, los datos se ingresan en el formulario seguro del procesador de pagos: Dorado no recibe ni guarda el número, vencimiento ni código de seguridad.</p></details>
-      <details><summary>¿Cómo sigo mi pedido?</summary><p>Cada compra genera un enlace privado. Desde ahí podés ver el estado del pedido y, cuando corresponda, el transportista, código y enlace oficial de seguimiento.</p></details>
+      <details><summary>¿Qué medios de pago están disponibles?</summary><p>Podés pagar por Mercado Pago, MODO, tarjeta de débito o crédito, transferencia, efectivo si retirás en el local, o coordinar el pago por WhatsApp.</p></details>
+      <details><summary>¿Cómo sigo mi pedido?</summary><p>Cuando hacés una compra te damos un enlace privado para seguirla. Ahí vas a ver si el pedido está en preparación, enviado o entregado y, si corresponde, también el transporte y el código de seguimiento.</p></details>
     </div>
   </div>
 </section>
@@ -663,6 +663,24 @@
 <legend>FORMA DE PAGO</legend>
 <div class="payment-method-grid" role="radiogroup" aria-label="Elegí cómo pagar">
 <label class="payment-method-option">
+<input type="radio" name="metodo_pago" value="whatsapp" required>
+<span class="payment-method-icon payment-method-whatsapp"><svg class="ui-icon"><use href="#i-whatsapp"></use></svg></span>
+<span class="payment-method-copy"><strong>Coordinar por WhatsApp</strong><small>Te enviamos el resumen del pedido para coordinar el pago directamente.</small></span>
+<span class="payment-method-state ready">Disponible</span>
+</label>
+<label class="payment-method-option">
+<input type="radio" name="metodo_pago" value="transferencia" required>
+<span class="payment-method-icon payment-method-transfer">CBU</span>
+<span class="payment-method-copy"><strong>Transferencia bancaria</strong><small>Coordinamos los datos de transferencia y la entrega por WhatsApp.</small></span>
+<span class="payment-method-state ready">Disponible</span>
+</label>
+<label class="payment-method-option">
+<input type="radio" name="metodo_pago" value="efectivo" required>
+<span class="payment-method-icon payment-method-cash">$</span>
+<span class="payment-method-copy"><strong>Efectivo</strong><small>Disponible para pedidos con retiro en el local.</small></span>
+<span class="payment-method-state ready">Disponible</span>
+</label>
+<label class="payment-method-option">
 <input type="radio" name="metodo_pago" value="mercadopago" required>
 <span class="payment-method-icon payment-method-mp">MP</span>
 <span class="payment-method-copy"><strong>Mercado Pago</strong><small>Saldo, QR y medios disponibles en tu cuenta.</small></span>
@@ -677,7 +695,7 @@
 <label class="payment-method-option">
 <input type="radio" name="metodo_pago" value="tarjeta" required>
 <span class="payment-method-icon payment-method-card"><svg class="ui-icon"><use href="#i-card"></use></svg></span>
-<span class="payment-method-copy"><strong>Débito / crédito</strong><small>Ingresás tus datos en un formulario seguro del procesador.</small></span>
+<span class="payment-method-copy"><strong>Débito / crédito</strong><small>Ingresás tus datos en el formulario seguro del procesador.</small></span>
 <span class="payment-method-state" data-payment-status="card">A activar</span>
 </label>
 </div>
