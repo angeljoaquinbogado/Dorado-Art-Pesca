@@ -46,7 +46,9 @@ const required = [
   "assets/css/dorado-theme.css",
   "api/checkout.js",
   "api/products.js",
-  "database/dorado-complete-setup.sql"
+  "api/best-sellers.js",
+  "database/dorado-complete-setup.sql",
+  "database/shipping-tracking.sql"
 ];
 
 for (const rel of required) {
@@ -174,7 +176,7 @@ const secretScanFiles = [
   ...walk(path.join("assets", "js"), rel => rel.endsWith(".js")),
   ...walk("database", rel => rel.endsWith(".sql")),
   ...walk("docs", rel => /\.(?:md|txt)$/i.test(rel)),
-  ...["README.md", "SECURITY.md", "vercel.json", ".env.example"].filter(exists)
+  ...["README.md", ".github/SECURITY.md", "vercel.json", ".env.example"].filter(exists)
 ];
 
 const secretPatterns = [

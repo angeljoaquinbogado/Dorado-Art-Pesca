@@ -2,6 +2,21 @@
 
 Los cambios relevantes del proyecto se documentan aquí. El historial completo sigue disponible en Git.
 
+## 2026-09-26
+
+### Operación, seguimiento y storefront
+
+- Seguimiento semiautomático de envíos con transportista, código, estado y enlace oficial.
+- Actualización automática del seguimiento privado del cliente.
+- Métricas del Admin: ingresos confirmados, ticket promedio y pedidos por despachar.
+- Exportación CSV ampliada con datos logísticos.
+- Productos relacionados por categoría y stock.
+- Sección “Más elegidos” alimentada únicamente por compras pagadas reales.
+- Sección de opiniones con acceso a la ficha real de Google Maps, sin testimonios inventados.
+- FAQ visible y datos estructurados FAQPage para SEO.
+- Migración idempotente `database/shipping-tracking.sql`.
+- Ajustes responsive del panel Admin y controles adicionales en Quality Check.
+
 ## 2026-09-25
 
 ### Comercio y automatización

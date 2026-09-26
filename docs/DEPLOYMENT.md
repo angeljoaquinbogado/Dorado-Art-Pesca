@@ -53,7 +53,7 @@ Los emails automáticos cubren pedido/pago pendiente, pago aprobado y pago cance
 
 Para una instalación nueva, seguir [../database/README.md](../database/README.md).
 
-Para actualizar una base de Dorado ya existente, ejecutar primero `database/commerce-features.sql` en Supabase SQL Editor y recién después desplegar esta versión del código.
+Para actualizar una base de Dorado ya existente, aplicar las migraciones idempotentes que correspondan. Para esta versión, `database/commerce-features.sql` agrega las funciones comerciales y `database/shipping-tracking.sql` agrega el seguimiento semiautomático de envíos. En la base conectada de Dorado, la migración de seguimiento ya fue aplicada.
 
 ## Antes de activar pagos
 

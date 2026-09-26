@@ -6,6 +6,7 @@
 - [ ] Crear usuario Admin definitivo.
 - [ ] Agregar el usuario autorizado a `admin_users`.
 - [ ] Confirmar transportistas, zonas, costos y tiempos.
+- [ ] Probar en un pedido real el código y enlace oficial de seguimiento del transportista.
 - [ ] Revisar políticas comerciales definitivas.
 
 ## Catálogo
@@ -47,7 +48,8 @@
 - [ ] Ficha de producto.
 - [ ] Carrito.
 - [ ] Checkout.
-- [ ] Seguimiento.
+- [ ] Seguimiento privado.
+- [ ] Seguimiento de transportista: transportista, código, URL oficial y actualización de estado.
 - [ ] Admin.
 - [ ] WhatsApp y redes.
 - [ ] Google Maps.

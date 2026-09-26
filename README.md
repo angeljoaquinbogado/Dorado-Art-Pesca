@@ -33,8 +33,12 @@ El proyecto combina una experiencia de compra adaptada a desktop y mobile con ba
 - Carrito persistente y checkout responsive.
 - Métodos de coordinación por WhatsApp, transferencia y efectivo con retiro.
 - Integración de Mercado Pago con checkout seguro, ventana de pago de 24 horas y reintentos.
-- Seguimiento privado de pedidos mediante token.
+- Seguimiento privado de pedidos mediante token, con transportista, código, estado y enlace oficial cuando el pedido es despachado.
+- Actualización automática del seguimiento mientras el cliente mantiene abierta la página.
 - Panel Admin para productos, stock, imágenes, descuentos, cupones y estados de pedidos.
+- Métricas de pedidos, ingresos confirmados, ticket promedio y pedidos por despachar.
+- Exportación CSV de pedidos con información logística.
+- Productos relacionados, FAQ y sección de productos más elegidos basada únicamente en ventas pagadas reales.
 - Dirección, mapa, horarios y estado abierto/cerrado.
 - Navegación móvil propia y experiencia desktop diferenciada.
 - SEO básico, sitemap, robots, PWA y página 404.

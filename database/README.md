@@ -40,6 +40,10 @@ Capa final de hardening. Incluye control del estado de confirmación por email p
 
 Migración idempotente para una base ya existente. Agrega descuento porcentual por producto, cupones, datos de subtotal/descuento en pedidos, ventana de pago de 24 horas y control anti-duplicado para emails de estado.
 
+### `shipping-tracking.sql`
+
+Migración idempotente para instalaciones existentes. Agrega transportista, código de seguimiento, URL oficial, estado logístico y fechas de despacho/actualización sin borrar datos previos.
+
 ### `seed-demo-product.sql`
 
 Producto de referencia opcional. Se crea oculto y no debe utilizarse como inventario real.
