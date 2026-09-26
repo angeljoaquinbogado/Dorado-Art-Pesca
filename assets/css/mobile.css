@@ -819,3 +819,88 @@
   .mobile-dock-item{font-size:7px!important}
 }
 /* FIN DORADO — MOBILE CONSOLIDADO 2026 */
+
+/* DORADO — FIX MOVIL 2026-09-26 C */
+@media (max-width:900px){
+  /* Volver al dock oscuro que tenía la tienda antes del último ajuste. */
+  .mobile-dock{
+    background:rgba(4,10,15,.98)!important;
+    border-color:rgba(255,255,255,.10)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    box-shadow:0 14px 42px rgba(0,0,0,.28)!important;
+  }
+  .mobile-dock-item{
+    color:#9ba4aa!important;
+    background:transparent!important;
+  }
+  .mobile-dock-item.active{
+    color:#f0a027!important;
+    background:rgba(240,160,39,.12)!important;
+    box-shadow:inset 0 0 0 1px rgba(240,160,39,.28)!important;
+  }
+  .mobile-dock-item[href*="wa.me"]{color:#55dc83!important}
+
+  /* En móvil estas secciones no deben depender de animaciones de entrada:
+     evita huecos gigantes en Safari cuando un observer no dispara. */
+  .trust-section,
+  .faq-section{
+    min-height:0!important;
+    height:auto!important;
+    overflow:visible!important;
+  }
+
+  html.motion-enhanced .trust-section .motion-item,
+  html.motion-enhanced .faq-section .motion-item,
+  .trust-section .motion-item,
+  .faq-section .motion-item{
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+
+  .trust-head,
+  .trust-copy,
+  .trust-copy h2,
+  .trust-copy p,
+  .reviews-actions,
+  .reviews-empty,
+  .faq-shell,
+  .faq-intro,
+  .faq-intro h2,
+  .faq-intro p,
+  .faq-list,
+  .faq-list details{
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+  }
+
+  .faq-shell{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    align-items:start!important;
+  }
+  .faq-intro{display:block!important}
+  .faq-list{display:grid!important}
+
+  /* Evita que una regla vieja vuelva a dar altura de pantalla completa. */
+  .trust-section::before,
+  .trust-section::after,
+  .faq-section::before,
+  .faq-section::after{
+    min-height:0!important;
+  }
+}
+
+@media (max-width:640px){
+  .trust-section{padding:44px 0!important}
+  .trust-section.is-empty{padding:38px 0 42px!important}
+  .faq-section{padding:42px 0 52px!important}
+  .trust-head{gap:14px!important}
+  .faq-shell{gap:18px!important}
+  .reviews-empty{margin-top:14px!important}
+}
+/* FIN DORADO — FIX MOVIL 2026-09-26 C */
