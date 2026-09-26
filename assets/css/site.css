@@ -4431,3 +4431,36 @@ body.payment-confirm-open{overflow:hidden}
     height:50px!important;
   }
 }
+
+
+/* DORADO — efectivo SVG final */
+.payment-brand-cash{
+  width:58px!important;
+  height:50px!important;
+  flex:0 0 58px!important;
+  padding:0!important;
+  overflow:visible!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.payment-brand-cash img{
+  width:56px!important;
+  height:48px!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+}
+@media(max-width:560px){
+  .payment-brand-cash{
+    width:54px!important;
+    height:46px!important;
+    flex-basis:54px!important;
+  }
+  .payment-brand-cash img{
+    width:52px!important;
+    height:44px!important;
+  }
+}
+/* FIN DORADO — efectivo SVG final */
