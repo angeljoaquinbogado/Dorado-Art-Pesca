@@ -49,8 +49,45 @@
         <label for="login-password">CONTRASEÑA</label>
         <input id="login-password" type="password" autocomplete="current-password" required minlength="8" placeholder="••••••••">
       </div>
+      <div class="login-help-row">
+        <button id="forgot-password-button" class="login-link-button" type="button">¿OLVIDASTE TU CONTRASEÑA?</button>
+      </div>
       <div id="login-message" class="message error"></div>
       <button id="login-button" class="primary" type="submit">INGRESAR AL PANEL</button>
+    </form>
+
+    <form id="recovery-request-form" class="login-card hidden">
+      <div class="login-card-head">
+        <span>RECUPERAR ACCESO</span>
+        <h2>Restablecé tu contraseña</h2>
+        <p>Ingresá el email de la cuenta administradora. Si está autorizado, vas a recibir un enlace seguro para crear una nueva contraseña.</p>
+      </div>
+      <div class="field">
+        <label for="recovery-email">EMAIL DEL ADMINISTRADOR</label>
+        <input id="recovery-email" type="email" autocomplete="email" required placeholder="tu@email.com">
+      </div>
+      <div id="recovery-request-message" class="message"></div>
+      <button id="recovery-send-button" class="primary" type="submit">ENVIAR ENLACE DE RECUPERACIÓN</button>
+      <button id="recovery-back-button" class="login-subaction" type="button">VOLVER AL INICIO DE SESIÓN</button>
+    </form>
+
+    <form id="recovery-update-form" class="login-card hidden">
+      <div class="login-card-head">
+        <span>NUEVA CONTRASEÑA</span>
+        <h2>Creá una contraseña nueva</h2>
+        <p>El enlace fue validado. Elegí una contraseña que cumpla con las reglas de seguridad configuradas en Supabase.</p>
+      </div>
+      <div class="field">
+        <label for="recovery-new-password">NUEVA CONTRASEÑA</label>
+        <input id="recovery-new-password" type="password" autocomplete="new-password" required minlength="8" placeholder="••••••••">
+      </div>
+      <div class="field">
+        <label for="recovery-confirm-password">REPETIR CONTRASEÑA</label>
+        <input id="recovery-confirm-password" type="password" autocomplete="new-password" required minlength="8" placeholder="••••••••">
+      </div>
+      <div class="file-help login-password-hint">No reutilices contraseñas de otros servicios.</div>
+      <div id="recovery-update-message" class="message"></div>
+      <button id="recovery-update-button" class="primary" type="submit">GUARDAR NUEVA CONTRASEÑA</button>
     </form>
   </div>
 </section>
