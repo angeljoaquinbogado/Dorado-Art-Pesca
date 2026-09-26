@@ -1298,12 +1298,16 @@ function confirmarRedireccionPago(metodo){
     title.textContent=`Vas a continuar a ${provider}`;
     text.textContent=`Te vamos a redirigir a ${provider} para confirmar tu compra de forma segura. Si preferís otro medio de pago, podés volver y cambiarlo.`;
     overlay.hidden=false;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden","false");
     document.body.classList.add("payment-confirm-open");
     window.setTimeout(()=>accept.focus(),0);
 
     return new Promise(resolve=>{
         const close=value=>{
             overlay.hidden=true;
+            overlay.classList.remove("active");
+            overlay.setAttribute("aria-hidden","true");
             document.body.classList.remove("payment-confirm-open");
             accept.removeEventListener("click",onAccept);
             cancel.removeEventListener("click",onCancel);
@@ -1404,6 +1408,16 @@ async function iniciarPagoMercadoPago(evento) {
             mostrarErrorCheckout("MODO todavía no está conectado a la cuenta comercial. Podés elegir otro medio de pago mientras terminamos esa integración.");
             return;
         }
+    }
+
+    const availability=window.doradoPaymentAvailability||{};
+    if(["mercadopago","tarjeta"].includes(metodoPago) && availability.mercadoPago===false){
+        mostrarErrorCheckout("Mercado Pago y tarjetas todavía no están habilitados para cobrar. Podés elegir transferencia, efectivo o WhatsApp.");
+        return;
+    }
+    if(metodoPago==="modo" && availability.modo===false){
+        mostrarErrorCheckout("MODO todavía no está habilitado para cobrar. Podés elegir otro medio de pago.");
+        return;
     }
 
     const items=carrito.map(item=>({id:item.id,cantidad:Math.max(1,Math.floor(Number(item.cantidad)||1))}));
@@ -3116,18 +3130,24 @@ comprobarRetornoPago();
   const run=async()=>{
     const payment=document.getElementById("checkout-payment-method");
     const mpOption=payment?.querySelector('option[value="mercadopago"]');
-    if(payment&&mpOption){
+    const cardOption=payment?.querySelector('option[value="tarjeta"]');
+    const modoOption=payment?.querySelector('option[value="modo"]');
+    if(payment){
       try{
         const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
         const data=await response.json().catch(()=>({}));
-        const enabled=Boolean(response.ok&&data?.mercadoPagoEnabled);
-        mpOption.disabled=!enabled;
-        mpOption.textContent=enabled ? "Mercado Pago / tarjetas" : "Mercado Pago / tarjetas — próximo a habilitar";
-        if(!enabled&&payment.value==="mercadopago") payment.value="whatsapp";
+        const mpEnabled=Boolean(response.ok&&data?.mercadoPagoEnabled);
+        const modoEnabled=Boolean(response.ok&&data?.modoEnabled);
+        window.doradoPaymentAvailability={mercadoPago:mpEnabled,modo:modoEnabled};
+        if(mpOption)mpOption.textContent=mpEnabled?"Mercado Pago":"Mercado Pago — a activar";
+        if(cardOption)cardOption.textContent=mpEnabled?"Tarjeta de débito / crédito":"Tarjeta de débito / crédito — a activar";
+        if(modoOption)modoOption.textContent=modoEnabled?"MODO":"MODO — a activar";
         payment.dispatchEvent(new Event("change",{bubbles:true}));
       }catch{
-        mpOption.disabled=true;
-        mpOption.textContent="Mercado Pago / tarjetas — próximo a habilitar";
+        window.doradoPaymentAvailability={mercadoPago:false,modo:false};
+        if(mpOption)mpOption.textContent="Mercado Pago — a activar";
+        if(cardOption)cardOption.textContent="Tarjeta de débito / crédito — a activar";
+        if(modoOption)modoOption.textContent="MODO — a activar";
       }
     }
 

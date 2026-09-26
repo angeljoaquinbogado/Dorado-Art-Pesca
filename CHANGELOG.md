@@ -6,6 +6,9 @@ Los cambios relevantes del proyecto se documentan aquí. El historial completo s
 
 ### Pagos, reseñas y continuidad visual
 
+- Corregida la estructura HTML del bloque de checkout y el foco del diálogo de confirmación.
+- Mercado Pago, MODO y tarjeta permanecen visibles en el selector aunque todavía estén por activar; al intentar usarlos se informa el estado real sin fingir un cobro.
+
 - Selector compacto de forma de pago, equivalente al selector de entrega, con detalle contextual debajo.
 - Transferencia preparada para mostrar alias, CBU/CVU, titular y banco desde variables públicas controladas.
 - Confirmación previa antes de redirigir a Mercado Pago o MODO.
