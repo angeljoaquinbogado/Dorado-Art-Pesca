@@ -1357,7 +1357,7 @@ async function iniciarPagoMercadoPago(evento) {
     }
 }
 
-function leerReferenciasPedidos() {function leerReferenciasPedidos() {
+function leerReferenciasPedidos() {
     try {
         const value = JSON.parse(localStorage.getItem(DORADO_ORDERS_KEY) || "[]");
         if (!Array.isArray(value)) return [];
@@ -2791,7 +2791,6 @@ comprobarRetornoPago();
     paymentInputs.forEach(input=>input.addEventListener("change",updateCheckout));
     delivery?.addEventListener("change",updateCheckout);
     updateCheckout();
-})();    updateCheckout();
 })();
 
 /* =========================================================
