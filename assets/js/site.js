@@ -2920,6 +2920,7 @@ comprobarRetornoPago();
                 "bank-transfer-alias":bank.alias,
                 "bank-transfer-cbu":bank.cbu,
                 "bank-transfer-holder":bank.holder,
+                "bank-transfer-tax-id":bank.taxId,
                 "bank-transfer-bank":bank.bank
             };
             Object.entries(fields).forEach(([id,value])=>{
