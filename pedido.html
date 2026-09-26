@@ -50,6 +50,18 @@
 
       <div class="track-progress" id="tracking-progress" aria-label="Progreso del pedido"></div>
 
+      <section class="shipment-card" id="tracking-shipment" hidden aria-labelledby="tracking-shipment-title">
+        <div class="shipment-card-head"><div><span>ENVÍO</span><h2 id="tracking-shipment-title">Seguimiento del transporte</h2></div><span class="shipment-status" id="tracking-shipment-status">Pendiente</span></div>
+        <div class="shipment-grid">
+          <div><span>TRANSPORTISTA</span><strong id="tracking-shipment-carrier">A coordinar</strong></div>
+          <div id="tracking-shipment-code-row"><span>CÓDIGO</span><strong id="tracking-shipment-code">—</strong></div>
+          <div id="tracking-shipment-date-row"><span>DESPACHADO</span><strong id="tracking-shipment-date">—</strong></div>
+          <div><span>ACTUALIZACIÓN</span><strong id="tracking-shipment-updated">—</strong></div>
+        </div>
+        <a class="button shipment-link" id="tracking-shipment-link" href="#" target="_blank" rel="noopener" hidden>SEGUIR EN EL SITIO DEL TRANSPORTISTA</a>
+        <p class="shipment-note">Esta información se actualiza desde Dorado. Si el transportista ofrece seguimiento online, vas a encontrar el acceso oficial acá.</p>
+      </section>
+
       <div class="notice review" id="tracking-review" hidden>
         <strong>Tu pago está registrado y el pedido necesita una revisión manual.</strong>
         <span>No vuelvas a pagar. Si necesitás ayuda, escribinos por WhatsApp.</span>

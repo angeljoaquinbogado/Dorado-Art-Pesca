@@ -94,3 +94,13 @@ body{background:linear-gradient(180deg,#061019 0 230px,#f5f2eb 230px)!important}
 .tracking-total.tracking-subtotal,.tracking-total.tracking-discount{font-size:13px;padding-top:8px;padding-bottom:0;border-top:0}
 .tracking-total.tracking-discount{color:#8b6818}
 .tracking-total[hidden]{display:none!important}
+
+
+/* DORADO — seguimiento del transportista */
+.shipment-card{margin:0 0 24px;padding:18px;border:1px solid #e6decf;border-radius:20px;background:linear-gradient(180deg,#fffdf8,#faf6eb)}
+.shipment-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.shipment-card-head>div>span,.shipment-grid span{display:block;font-size:7px;font-weight:900;letter-spacing:.11em;color:#8a8375}
+.shipment-card-head h2{margin:5px 0 0;font-size:17px;letter-spacing:-.03em}.shipment-status{padding:7px 9px;border-radius:999px;background:#efe5c9;color:#735612;font-size:7px;font-weight:900;letter-spacing:.07em;text-align:center}
+.shipment-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.shipment-grid>div{padding:11px 12px;border:1px solid #ece4d5;border-radius:13px;background:#fff}.shipment-grid strong{display:block;margin-top:5px;font-size:10px;overflow-wrap:anywhere}
+.shipment-link{margin-top:12px;background:#111419!important;border-color:#111419!important;color:#fff!important}.shipment-note{margin:10px 2px 0;color:#7f7b73;font-size:8px;line-height:1.55}
+@media(max-width:620px){.shipment-grid{grid-template-columns:1fr}}

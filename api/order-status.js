@@ -2,6 +2,15 @@ import { consumeRateLimit, enforceRateLimit, fetchWithTimeout } from "../lib/sec
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+function safeHttpsUrl(value) {
+    try {
+        const url = new URL(String(value || "").trim());
+        return url.protocol === "https:" ? url.toString() : "";
+    } catch {
+        return "";
+    }
+}
+
 async function sb(path) {
     const url = process.env.SUPABASE_URL;
     const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -51,7 +60,7 @@ export default async function handler(req, res) {
 
     try {
         let orderResponse = await sb(
-            `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,subtotal,descuento_total,cupon_codigo,total,mp_init_point,pago_expira_at`
+            `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}&tracking_token=eq.${encodeURIComponent(tracking)}&select=id,estado,preparacion_estado,created_at,subtotal,descuento_total,cupon_codigo,total,mp_init_point,pago_expira_at,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at`
         );
         let orders = await orderResponse.json().catch(() => []);
 
@@ -108,6 +117,14 @@ export default async function handler(req, res) {
             total: Number(order.total) || 0,
             payment_expires_at: order.pago_expira_at || null,
             retry_url: canRetry ? String(order.mp_init_point) : "",
+            shipping: {
+                carrier: String(order.envio_transportista || "").slice(0, 80),
+                tracking_code: String(order.envio_tracking_codigo || "").slice(0, 160),
+                tracking_url: safeHttpsUrl(order.envio_tracking_url),
+                status: String(order.envio_estado || "pendiente"),
+                dispatched_at: order.envio_despachado_at || null,
+                updated_at: order.envio_actualizado_at || null
+            },
             items: items.map(item => ({
                 name: String(item.nombre || ""),
                 quantity: Math.max(1, Number(item.cantidad) || 1),

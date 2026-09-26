@@ -1,5 +1,6 @@
 const WHATSAPP = "5491168070039";
 const money = new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0});
+let autoRefreshTimer=null;
 
 function esc(value){
   return String(value ?? "")
@@ -13,8 +14,14 @@ function orderCode(id){
 function statusInfo(data){
   const payment=String(data.status||"").toLowerCase();
   const prep=String(data.preparation_status||"nuevo").toLowerCase();
+  const shipping=String(data.shipping?.status||"pendiente").toLowerCase();
 
   if(prep==="cancelado") return {label:"CANCELADO",step:-1,kind:"bad"};
+  if(shipping==="incidencia"&&payment==="pagado") return {label:"ENVÍO A REVISAR",step:3,kind:"warn"};
+  if(shipping==="entregado"&&payment==="pagado") return {label:"ENTREGADO",step:4,kind:"ok"};
+  if(shipping==="en_distribucion"&&payment==="pagado") return {label:"EN DISTRIBUCIÓN",step:3,kind:"ok"};
+  if(shipping==="en_transito"&&payment==="pagado") return {label:"EN TRÁNSITO",step:3,kind:"ok"};
+  if(shipping==="despachado"&&payment==="pagado") return {label:"DESPACHADO",step:3,kind:"ok"};
   if(payment==="revision") return {label:"PAGO EN REVISIÓN",step:1,kind:"warn",review:true};
   if(payment==="reembolsado") return {label:"REEMBOLSADO",step:-1,kind:"bad"};
   if(payment==="fallido") return {label:"PAGO NO COMPLETADO",step:0,kind:"bad"};
@@ -66,6 +73,28 @@ async function loadOrder(){
     document.getElementById("tracking-progress").innerHTML=renderProgress(info);
     document.getElementById("tracking-review").hidden=!info.review;
 
+    const shipping=data.shipping&&typeof data.shipping==="object"?data.shipping:{};
+    const shipmentCard=document.getElementById("tracking-shipment");
+    const shipmentStatus=document.getElementById("tracking-shipment-status");
+    const shipmentCarrier=document.getElementById("tracking-shipment-carrier");
+    const shipmentCode=document.getElementById("tracking-shipment-code");
+    const shipmentCodeRow=document.getElementById("tracking-shipment-code-row");
+    const shipmentDate=document.getElementById("tracking-shipment-date");
+    const shipmentDateRow=document.getElementById("tracking-shipment-date-row");
+    const shipmentUpdated=document.getElementById("tracking-shipment-updated");
+    const shipmentLink=document.getElementById("tracking-shipment-link");
+    const shippingStatus=String(shipping.status||"pendiente");
+    const hasShipping=Boolean(shipping.carrier||shipping.tracking_code||shipping.tracking_url||shippingStatus!=="pendiente");
+    if(shipmentCard)shipmentCard.hidden=!hasShipping;
+    if(shipmentStatus)shipmentStatus.textContent=shippingStatus.replaceAll("_"," ").toUpperCase();
+    if(shipmentCarrier)shipmentCarrier.textContent=shipping.carrier||"A coordinar";
+    if(shipmentCode)shipmentCode.textContent=shipping.tracking_code||"—";
+    if(shipmentCodeRow)shipmentCodeRow.hidden=!shipping.tracking_code;
+    if(shipmentDateRow)shipmentDateRow.hidden=!shipping.dispatched_at;
+    if(shipmentDate&&shipping.dispatched_at){const d=new Date(shipping.dispatched_at);shipmentDate.textContent=Number.isFinite(d.getTime())?d.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"}):"—";}
+    if(shipmentUpdated){const d=new Date(shipping.updated_at||data.created_at||"");shipmentUpdated.textContent=Number.isFinite(d.getTime())?d.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"}):"—";}
+    if(shipmentLink){const url=String(shipping.tracking_url||"");shipmentLink.hidden=!url;if(url)shipmentLink.href=url;}
+
     let units=0;
     const items=Array.isArray(data.items)?data.items:[];
     document.getElementById("tracking-items").innerHTML=items.map(item=>{
@@ -107,6 +136,8 @@ async function loadOrder(){
 
     loading.hidden=true; content.hidden=false;
     document.title=`${code} | Seguimiento Dorado`;
+    clearTimeout(autoRefreshTimer);
+    if(info.label!=="ENTREGADO"&&info.label!=="CANCELADO"&&info.label!=="REEMBOLSADO")autoRefreshTimer=setTimeout(loadOrder,60000);
   }catch(err){
     loading.hidden=true; error.hidden=false;
     errorText.textContent=err?.message||"No se pudo consultar el pedido.";
@@ -114,6 +145,7 @@ async function loadOrder(){
 }
 
 document.getElementById("tracking-refresh")?.addEventListener("click",loadOrder);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){clearTimeout(autoRefreshTimer);loadOrder();}});
 document.getElementById("tracking-copy")?.addEventListener("click",async e=>{
   const button=e.currentTarget;
   const original=button.textContent;

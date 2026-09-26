@@ -55,6 +55,21 @@ function trackingLink(order){
         : "";
 }
 
+function safeHttpsUrl(value){
+    try{
+        const url=new URL(String(value||"").trim());
+        return url.protocol==="https:"?url.toString():"";
+    }catch{
+        return "";
+    }
+}
+
+function shippingStatusLabel(value){
+    const status=String(value||"pendiente").toLowerCase();
+    const labels={pendiente:"PENDIENTE",despachado:"DESPACHADO",en_transito:"EN TRÁNSITO",en_distribucion:"EN DISTRIBUCIÓN",entregado:"ENTREGADO",incidencia:"INCIDENCIA"};
+    return labels[status]||"PENDIENTE";
+}
+
 function esc(value){
     return String(value ?? "")
         .replaceAll("&","&amp;")
@@ -1046,7 +1061,7 @@ function exportFilteredOrders(){
         return;
     }
 
-    const header=["Pedido","Fecha","Cliente","Email","Teléfono","Total ARS","Pago","Preparación","Ciudad","Provincia"];
+    const header=["Pedido","Fecha","Cliente","Email","Teléfono","Total ARS","Pago","Preparación","Transportista","Tracking","Estado envío","Ciudad","Provincia"];
     const lines=[header.map(csvCell).join(",")];
 
     rows.forEach(order=>{
@@ -1059,6 +1074,9 @@ function exportFilteredOrders(){
             Number(order.total)||0,
             orderStatusLabel(order.estado),
             String(order.preparacion_estado||"nuevo").toUpperCase(),
+            order.envio_transportista||"",
+            order.envio_tracking_codigo||"",
+            shippingStatusLabel(order.envio_estado),
             order.ciudad,
             order.provincia
         ].map(csvCell).join(","));
@@ -1141,10 +1159,10 @@ async function loadOrders(){
     tbody.innerHTML='<tr><td colspan="8" class="loading">Cargando pedidos...</td></tr>';
     updateOrderSelectionUI();
 
-    let r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,subtotal,descuento_total,cupon_codigo,total,estado,preparacion_estado,tracking_token&order=created_at.desc&limit=300");
+    let r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,subtotal,descuento_total,cupon_codigo,total,estado,preparacion_estado,tracking_token,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at&order=created_at.desc&limit=300");
     let d=await r.json().catch(()=>[]);
     if(!r.ok){
-        r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,total,estado,preparacion_estado,tracking_token&order=created_at.desc&limit=300");
+        r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,total,estado,preparacion_estado,tracking_token,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at&order=created_at.desc&limit=300");
         d=await r.json().catch(()=>[]);
     }
     if(!r.ok)throw new Error("No se pudieron cargar los pedidos.");
@@ -1154,9 +1172,18 @@ async function loadOrders(){
     const totalEl=document.getElementById("order-stat-total");
     const paidEl=document.getElementById("order-stat-paid");
     const pendingEl=document.getElementById("order-stat-pending");
+    const revenueEl=document.getElementById("order-stat-revenue");
+    const ticketEl=document.getElementById("order-stat-ticket");
+    const toShipEl=document.getElementById("order-stat-to-ship");
+    const paidOrders=pedidos.filter(o=>orderPaymentGroup(o.estado)==="pagado");
+    const paidRevenue=paidOrders.reduce((sum,o)=>sum+Math.max(0,Number(o.total)||0),0);
+    const toShip=paidOrders.filter(o=>["nuevo","preparando"].includes(String(o.preparacion_estado||"nuevo"))).length;
     if(totalEl)totalEl.textContent=pedidos.length;
-    if(paidEl)paidEl.textContent=pedidos.filter(o=>orderPaymentGroup(o.estado)==="pagado").length;
+    if(paidEl)paidEl.textContent=paidOrders.length;
     if(pendingEl)pendingEl.textContent=pedidos.filter(o=>orderPaymentGroup(o.estado)==="pendiente").length;
+    if(revenueEl)revenueEl.textContent=money.format(paidRevenue);
+    if(ticketEl)ticketEl.textContent=money.format(paidOrders.length?paidRevenue/paidOrders.length:0);
+    if(toShipEl)toShipEl.textContent=toShip;
 
     renderOrders();
 }
@@ -1218,6 +1245,30 @@ async function openOrder(order){
                 <div><span>PAGO</span><strong>${esc(orderStatusLabel(order.estado))}</strong></div>
                 <div><span>PREPARACIÓN</span><strong>${esc(String(order.preparacion_estado||"nuevo").toUpperCase())}</strong></div>
             </div>
+            <section class="order-shipping-card" aria-label="Seguimiento del envío">
+                <div class="order-shipping-head">
+                    <div><span class="section-tag">LOGÍSTICA</span><h3>Seguimiento del envío</h3></div>
+                    <span class="shipping-state-chip">${esc(shippingStatusLabel(order.envio_estado))}</span>
+                </div>
+                <div class="shipping-form-grid">
+                    <label><span>TRANSPORTISTA</span><input class="shipping-carrier" maxlength="80" value="${esc(order.envio_transportista||"")}" placeholder="Ej: Andreani"></label>
+                    <label><span>CÓDIGO DE SEGUIMIENTO</span><input class="shipping-code" maxlength="160" value="${esc(order.envio_tracking_codigo||"")}" placeholder="Código del transporte"></label>
+                    <label><span>ESTADO DEL ENVÍO</span><select class="shipping-status">
+                        <option value="pendiente" ${String(order.envio_estado||"pendiente")==="pendiente"?"selected":""}>Pendiente</option>
+                        <option value="despachado" ${order.envio_estado==="despachado"?"selected":""}>Despachado</option>
+                        <option value="en_transito" ${order.envio_estado==="en_transito"?"selected":""}>En tránsito</option>
+                        <option value="en_distribucion" ${order.envio_estado==="en_distribucion"?"selected":""}>En distribución</option>
+                        <option value="entregado" ${order.envio_estado==="entregado"?"selected":""}>Entregado</option>
+                        <option value="incidencia" ${order.envio_estado==="incidencia"?"selected":""}>Incidencia</option>
+                    </select></label>
+                    <label><span>URL OFICIAL DE TRACKING</span><input class="shipping-url" type="url" maxlength="1000" value="${esc(safeHttpsUrl(order.envio_tracking_url))}" placeholder="https://..."></label>
+                </div>
+                <p class="shipping-help">El cliente verá estos datos en su seguimiento privado. No se exponen domicilio, teléfono ni email.</p>
+                <div class="order-shipping-actions">
+                    <button class="primary save-shipping" type="button">GUARDAR SEGUIMIENTO</button>
+                    ${safeHttpsUrl(order.envio_tracking_url)?`<a class="secondary shipping-official-link" href="${esc(safeHttpsUrl(order.envio_tracking_url))}" target="_blank" rel="noopener">ABRIR TRACKING OFICIAL</a>`:""}
+                </div>
+            </section>
             ${order.notas?`<div class="order-note"><strong>Aclaraciones:</strong> ${esc(order.notas)}</div>`:""}
             <div class="order-modal-actions">
                 ${link?`<button class="secondary copy-tracking-link" type="button">COPIAR LINK DE SEGUIMIENTO</button>`:""}
@@ -1236,6 +1287,40 @@ async function openOrder(order){
                 `).join("") || '<div class="loading">Sin ítems.</div>'}
             </div>
         `;
+
+        content.querySelector(".save-shipping")?.addEventListener("click",async e=>{
+            const button=e.currentTarget;
+            const original=button.textContent;
+            const carrier=String(content.querySelector(".shipping-carrier")?.value||"").trim();
+            const codeValue=String(content.querySelector(".shipping-code")?.value||"").trim();
+            const statusValue=String(content.querySelector(".shipping-status")?.value||"pendiente").trim();
+            const rawUrl=String(content.querySelector(".shipping-url")?.value||"").trim();
+            const trackingUrl=rawUrl?safeHttpsUrl(rawUrl):"";
+            const allowed=["pendiente","despachado","en_transito","en_distribucion","entregado","incidencia"];
+            if(rawUrl&&!trackingUrl){showToast("La URL de seguimiento debe comenzar con https://","error");return;}
+            if(!allowed.includes(statusValue)){showToast("Estado de envío inválido.","error");return;}
+
+            button.disabled=true;
+            button.textContent="GUARDANDO...";
+            try{
+                const now=new Date().toISOString();
+                const nextPrep=statusValue==="entregado"?"entregado":(["despachado","en_transito","en_distribucion","incidencia"].includes(statusValue)?"enviado":String(order.preparacion_estado||"nuevo"));
+                const payload={envio_transportista:carrier||null,envio_tracking_codigo:codeValue||null,envio_tracking_url:trackingUrl||null,envio_estado:statusValue,envio_actualizado_at:now,preparacion_estado:nextPrep};
+                if(statusValue!=="pendiente"&&!order.envio_despachado_at)payload.envio_despachado_at=now;
+                const response=await sb(`/rest/v1/pedidos?id=eq.${encodeURIComponent(order.id)}`,{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify(payload)});
+                if(!response.ok)throw new Error("No se pudo guardar el seguimiento del envío.");
+                Object.assign(order,payload);
+                content.querySelector(".shipping-state-chip").textContent=shippingStatusLabel(statusValue);
+                let official=content.querySelector(".shipping-official-link");
+                if(trackingUrl){
+                    if(!official){official=document.createElement("a");official.className="secondary shipping-official-link";official.target="_blank";official.rel="noopener";official.textContent="ABRIR TRACKING OFICIAL";content.querySelector(".order-shipping-actions")?.appendChild(official);}
+                    official.href=trackingUrl;
+                }else official?.remove();
+                renderOrders();
+                showToast("Seguimiento del envío actualizado.");
+            }catch(error){showToast(error?.message||"No se pudo guardar el seguimiento.","error");}
+            finally{button.disabled=false;button.textContent=original;}
+        });
 
         content.querySelector(".copy-tracking-link")?.addEventListener("click",async e=>{
             const button=e.currentTarget;
