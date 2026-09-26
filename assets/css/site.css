@@ -4328,3 +4328,75 @@ body.payment-confirm-open{overflow:hidden}
     height:48px!important;
   }
 }
+
+/* DORADO-PAYMENT-READABILITY-FIX:START */
+/* Ajuste de legibilidad y tamaño en medios de pago */
+.checkout-payment-detail{margin-top:14px!important}
+.payment-detail-panel{padding:20px!important;border-radius:20px!important}
+.payment-detail-head{gap:14px!important;align-items:center!important}
+.payment-detail-head strong{font-size:14px!important;line-height:1.25!important}
+.payment-detail-head small{margin-top:4px!important;font-size:11px!important;line-height:1.5!important;color:#73777d!important}
+.payment-detail-note{margin-top:14px!important;font-size:11px!important;line-height:1.65!important;color:#70747a!important}
+.payment-detail-note .ui-icon{width:16px!important;height:16px!important}
+
+.payment-brand-whatsapp{width:60px!important;height:60px!important;flex:0 0 60px!important;overflow:visible!important}
+.payment-brand-whatsapp img{width:56px!important;height:56px!important;max-width:none!important;max-height:none!important;object-fit:contain!important}
+
+.payment-brand-transfer{width:50px!important;height:50px!important;flex:0 0 50px!important}
+.payment-brand-transfer svg{width:31px!important;height:31px!important}
+
+.payment-brand-cash{width:78px!important;height:62px!important;flex:0 0 78px!important;overflow:visible!important;padding:0!important;border-radius:0!important}
+.payment-brand-cash img{width:74px!important;height:60px!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center!important;display:block!important;overflow:visible!important}
+
+.payment-brand-mp{width:112px!important;height:42px!important;flex:0 0 112px!important}
+.payment-brand-modo{width:108px!important;height:42px!important;flex:0 0 108px!important}
+
+.payment-brand-card{width:50px!important;height:50px!important;flex:0 0 50px!important;padding:8px!important;border-radius:13px!important;background:#17191d!important;color:#f7f5ef!important;overflow:visible!important}
+.payment-brand-card svg{width:32px!important;height:32px!important;max-width:none!important;max-height:none!important;display:block!important}
+
+.card-brands-row{gap:12px!important;margin-top:16px!important}
+.card-brand{min-height:52px!important;padding:0 15px!important;border-radius:14px!important}
+.card-brand img{max-width:104px!important;max-height:31px!important}
+.card-brand-visa img{max-height:23px!important}
+.card-brand-mastercard img,.card-brand-maestro img{max-height:31px!important}
+.card-brand-cabal img{max-height:35px!important}
+
+.secure-card-fields{gap:13px!important;margin-top:18px!important}
+.secure-card-fields label{gap:8px!important}
+.secure-card-fields label>span{font-size:10px!important;letter-spacing:.09em!important}
+.secure-card-fields input{min-height:56px!important;padding:0 15px!important;border-radius:14px!important;font-size:14px!important}
+
+.bank-details-grid{gap:11px!important;margin-top:17px!important}
+.bank-details-grid>div{padding:15px 54px 15px 15px!important;border-radius:14px!important}
+.bank-details-grid span{font-size:9px!important}
+.bank-details-grid strong{margin-top:6px!important;font-size:13px!important}
+.copy-bank-data{padding:8px 10px!important;font-size:8px!important}
+
+@media (min-width:900px){
+  .payment-detail-panel{padding:24px!important}
+  .payment-detail-head strong{font-size:16px!important}
+  .payment-detail-head small{font-size:12px!important}
+  .payment-detail-note{font-size:12px!important}
+  .secure-card-fields input{min-height:60px!important;font-size:15px!important}
+  .secure-card-fields label>span{font-size:10px!important}
+  .card-brand{min-height:56px!important}
+}
+
+@media (max-width:560px){
+  .payment-detail-panel{padding:18px!important}
+  .payment-detail-head{gap:12px!important}
+  .payment-detail-head strong{font-size:13px!important}
+  .payment-detail-head small{font-size:10.5px!important}
+  .payment-detail-note{font-size:10.5px!important}
+  .payment-brand-whatsapp{width:56px!important;height:56px!important;flex-basis:56px!important}
+  .payment-brand-whatsapp img{width:52px!important;height:52px!important}
+  .payment-brand-cash{width:70px!important;height:56px!important;flex-basis:70px!important}
+  .payment-brand-cash img{width:66px!important;height:54px!important}
+  .payment-brand-mp{width:100px!important;height:38px!important;flex-basis:100px!important}
+  .payment-brand-modo{width:98px!important;height:38px!important;flex-basis:98px!important}
+  .card-brands-row{gap:8px!important}
+  .card-brand{min-height:48px!important;padding:0 11px!important}
+  .card-brand img{max-width:92px!important;max-height:28px!important}
+  .secure-card-fields input{min-height:52px!important;font-size:13px!important}
+}
+/* DORADO-PAYMENT-READABILITY-FIX:END */
