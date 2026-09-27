@@ -2332,3 +2332,50 @@ body::-webkit-scrollbar-corner{
     white-space:normal!important;
   }
 }
+
+
+/* =========================================================
+   CATALOGO — FILTROS DE CATEGORÍAS REALES
+   Las categorías se generan desde los productos activos.
+   ========================================================= */
+.dorado-catalog .category-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+}
+
+.dorado-catalog .category-chip-count{
+  display:inline-grid!important;
+  place-items:center!important;
+  min-width:19px!important;
+  height:19px!important;
+  padding:0 5px!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.09)!important;
+  color:currentColor!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+
+.dorado-catalog .category-chip:not(.active) .category-chip-count{
+  background:rgba(215,161,58,.12)!important;
+  color:#d7a13a!important;
+}
+
+@media(max-width:700px){
+  .dorado-catalog .category-chips{
+    padding-bottom:10px!important;
+    scroll-padding-inline:14px!important;
+  }
+
+  .dorado-catalog .category-chip{
+    min-height:42px!important;
+    padding-inline:14px!important;
+  }
+
+  .dorado-catalog .category-chip-count{
+    min-width:20px!important;
+    height:20px!important;
+  }
+}
