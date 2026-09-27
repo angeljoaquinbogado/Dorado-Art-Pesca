@@ -741,6 +741,7 @@ async function loadProducts(){
     }
 
     renderProducts();
+    renderCategoryManager();
 }
 
 function renderProducts(){
@@ -1174,6 +1175,12 @@ async function saveProduct(event){
             imagenes.push("assets/images/brand/logo-dorado-640.webp");
         }
 
+        const categoryName=normalizeCategoryName(document.getElementById("product-category").value);
+        if(categoryName){
+            const category=await persistCategory(categoryName,{silent:true});
+            document.getElementById("product-category").value=category.nombre;
+        }
+
         const payload={
             nombre:document.getElementById("product-name").value.trim(),
             descripcion:document.getElementById("product-description").value.trim(),
@@ -1181,7 +1188,7 @@ async function saveProduct(event){
             precio:Number(document.getElementById("product-price").value),
             descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
-            categoria:document.getElementById("product-category").value.trim(),
+            categoria:normalizeCategoryName(document.getElementById("product-category").value),
             imagen:imagenes[0],
             imagenes,
             activo:document.getElementById("product-active").value==="true"
@@ -1817,6 +1824,7 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
         );
         showApp();
         await loadProducts();
+        await loadCategories();
     }catch(err){
         msg("login-message",err.message||"No se pudo iniciar sesión.");
     }finally{
@@ -1946,6 +1954,51 @@ ordersTable?.addEventListener("click",event=>{
     const order=pedidos.find(item=>String(item.id)===id);
     if(order)openOrder(order);
 });
+
+const categoryInput=document.getElementById("product-category");
+categoryInput?.addEventListener("focus",renderCategorySuggestions);
+categoryInput?.addEventListener("input",renderCategorySuggestions);
+categoryInput?.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){
+        hideCategorySuggestions();
+        return;
+    }
+    if(event.key==="Enter"&&!event.shiftKey){
+        const box=document.getElementById("category-suggestions");
+        const first=box?.querySelector(".category-suggestion");
+        if(first&&!box.hidden){
+            event.preventDefault();
+            first.click();
+        }
+    }
+});
+
+document.getElementById("category-create")?.addEventListener("click",createCategoryFromInput);
+
+document.getElementById("category-manage-toggle")?.addEventListener("click",event=>{
+    const manager=document.getElementById("category-manager");
+    if(!manager)return;
+    manager.hidden=!manager.hidden;
+    event.currentTarget.setAttribute("aria-expanded",String(!manager.hidden));
+    if(!manager.hidden)renderCategoryManager();
+});
+
+document.getElementById("category-manager-close")?.addEventListener("click",()=>{
+    const manager=document.getElementById("category-manager");
+    const toggle=document.getElementById("category-manage-toggle");
+    if(manager)manager.hidden=true;
+    toggle?.setAttribute("aria-expanded","false");
+});
+
+document.getElementById("category-delete-selected")?.addEventListener("click",()=>{
+    deleteCategories(categorias.filter(item=>selectedCategories.has(String(item.id))));
+});
+
+document.getElementById("category-delete-all")?.addEventListener("click",deleteAllCategories);
+
+document.addEventListener("pointerdown",event=>{
+    if(!event.target.closest?.(".category-admin-field"))hideCategorySuggestions();
+},{passive:true});
 
 document.getElementById("product-search")?.addEventListener("input",renderProducts);
 document.getElementById("product-filter")?.addEventListener("change",renderProducts);
