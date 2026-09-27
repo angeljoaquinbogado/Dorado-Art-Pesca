@@ -1717,3 +1717,256 @@ body::-webkit-scrollbar-corner{
     color:#f3eee6!important;
   }
 }
+
+
+/* =========================================================
+   CART PREMIUM FINISH — 2026-09-27
+   Replace the flat/basic drawer appearance with a restrained
+   premium navy + bronze composition while preserving contrast.
+   ========================================================= */
+
+.cart-drawer{
+  background:
+    radial-gradient(circle at 105% -5%,rgba(215,161,58,.11),transparent 28%),
+    linear-gradient(180deg,#0e1c26 0%,#10212d 48%,#0d1a23 100%)!important;
+  border-left:1px solid rgba(232,211,169,.12)!important;
+  box-shadow:
+    -34px 0 80px rgba(2,8,13,.34),
+    inset 1px 0 0 rgba(255,255,255,.025)!important;
+}
+
+.cart-head{
+  background:
+    linear-gradient(180deg,rgba(26,50,64,.96),rgba(19,39,52,.94))!important;
+  border-bottom:1px solid rgba(228,184,92,.12)!important;
+  box-shadow:0 10px 28px rgba(2,8,13,.10)!important;
+}
+
+.cart-head-copy strong{
+  color:#f5efe5!important;
+  font-size:21px!important;
+  letter-spacing:-.045em!important;
+}
+
+.cart-head-copy span{
+  color:#93a3ac!important;
+  font-size:8.5px!important;
+}
+
+.cart-close{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  color:#e8e3da!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.01)!important;
+}
+
+.cart-close:hover{
+  background:rgba(215,161,58,.11)!important;
+  border-color:rgba(215,161,58,.35)!important;
+  color:#f7f1e7!important;
+}
+
+.cart-items{
+  background:
+    linear-gradient(180deg,rgba(12,27,37,.88),rgba(14,30,40,.94))!important;
+  padding-top:16px!important;
+}
+
+.cart-item{
+  position:relative!important;
+  margin-bottom:10px!important;
+  padding:14px!important;
+  border:1px solid rgba(233,223,205,.085)!important;
+  border-radius:18px!important;
+  background:
+    linear-gradient(145deg,rgba(26,50,64,.78),rgba(19,39,52,.88))!important;
+  box-shadow:
+    0 10px 24px rgba(2,8,13,.12),
+    inset 0 1px 0 rgba(255,255,255,.018)!important;
+}
+
+.cart-item:hover{
+  border-color:rgba(215,161,58,.20)!important;
+  background:
+    linear-gradient(145deg,rgba(29,55,70,.86),rgba(20,42,55,.92))!important;
+}
+
+.cart-item-image{
+  background:
+    linear-gradient(145deg,#eee7dc,#dcd1c3)!important;
+  border:1px solid rgba(215,161,58,.16)!important;
+  box-shadow:0 8px 18px rgba(2,8,13,.10)!important;
+}
+
+.cart-item-name{
+  color:#f7f1e8!important;
+  font-size:11.5px!important;
+  letter-spacing:-.015em!important;
+}
+
+.cart-item-category{
+  color:#8fa2ab!important;
+  font-size:7.5px!important;
+  letter-spacing:.075em!important;
+}
+
+.cart-item-unit{
+  color:#91a4ad!important;
+  font-size:7.5px!important;
+}
+
+.cart-item-subtotal{
+  color:#f6efe6!important;
+  font-size:13px!important;
+  letter-spacing:-.02em!important;
+}
+
+.cart-item .quantity-selector{
+  background:rgba(8,22,30,.50)!important;
+  border:1px solid rgba(233,223,205,.10)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;
+}
+
+.cart-item .qty-btn{
+  color:#b9c7ce!important;
+}
+
+.cart-item .qty-btn:hover{
+  background:rgba(215,161,58,.10)!important;
+  color:#f6efe6!important;
+}
+
+.cart-item .qty-input{
+  color:#f5efe6!important;
+  font-weight:800!important;
+}
+
+.cart-remove{
+  color:#7f929d!important;
+}
+
+.cart-remove:hover{
+  background:rgba(213,86,77,.12)!important;
+  color:#ff8c84!important;
+}
+
+.cart-footer{
+  position:relative!important;
+  background:
+    linear-gradient(180deg,rgba(20,41,54,.98),rgba(14,29,39,.995))!important;
+  border-top:1px solid rgba(228,184,92,.13)!important;
+  box-shadow:
+    0 -20px 42px rgba(2,8,13,.20),
+    inset 0 1px 0 rgba(255,255,255,.018)!important;
+}
+
+.cart-footer::before{
+  content:""!important;
+  position:absolute!important;
+  left:20px!important;
+  right:20px!important;
+  top:0!important;
+  height:1px!important;
+  background:linear-gradient(90deg,transparent,rgba(215,161,58,.35),transparent)!important;
+  pointer-events:none!important;
+}
+
+.cart-summary-row{
+  color:#a9b7be!important;
+  font-size:9px!important;
+}
+
+.cart-summary-row strong{
+  color:#e0b456!important;
+  font-size:10px!important;
+}
+
+.cart-total-row{
+  margin-top:9px!important;
+  color:#b9c4c9!important;
+}
+
+.cart-total-row span{
+  font-size:10px!important;
+  letter-spacing:.04em!important;
+}
+
+.cart-total-row strong{
+  color:#f8f1e7!important;
+  font-size:28px!important;
+  letter-spacing:-.055em!important;
+  text-shadow:0 2px 18px rgba(0,0,0,.16)!important;
+}
+
+.cart-checkout{
+  min-height:50px!important;
+  margin-top:15px!important;
+  border-radius:16px!important;
+  background:
+    linear-gradient(135deg,#eab33f 0%,#d68d18 100%)!important;
+  color:#0f1e28!important;
+  border:1px solid rgba(255,218,142,.28)!important;
+  box-shadow:
+    0 12px 26px rgba(204,133,18,.20),
+    inset 0 1px 0 rgba(255,255,255,.22)!important;
+  font-weight:900!important;
+}
+
+.cart-checkout:hover:not(:disabled){
+  background:
+    linear-gradient(135deg,#f0bd51 0%,#df9a24 100%)!important;
+  box-shadow:
+    0 14px 30px rgba(204,133,18,.24),
+    inset 0 1px 0 rgba(255,255,255,.24)!important;
+  transform:translateY(-1px)!important;
+}
+
+.cart-checkout-note{
+  margin-top:9px!important;
+  color:#81939d!important;
+  font-size:7.5px!important;
+  line-height:1.5!important;
+}
+
+.cart-footer-actions{
+  gap:24px!important;
+  margin-top:14px!important;
+}
+
+.cart-link-button{
+  color:#aab8bf!important;
+  font-size:8px!important;
+  letter-spacing:.055em!important;
+}
+
+.cart-link-button:hover{
+  color:#f4eee5!important;
+}
+
+.cart-link-danger{
+  color:#ee7971!important;
+}
+
+.cart-link-danger:hover{
+  color:#ff928a!important;
+}
+
+/* Make the empty-cart state feel part of the same premium system. */
+.cart-empty-icon{
+  background:
+    linear-gradient(145deg,rgba(30,55,70,.85),rgba(19,39,52,.92))!important;
+  border:1px solid rgba(215,161,58,.15)!important;
+  color:#e4b04b!important;
+  box-shadow:0 10px 24px rgba(2,8,13,.12)!important;
+}
+
+@media (max-width:900px){
+  .cart-item{
+    margin-bottom:8px!important;
+    border-radius:16px!important;
+  }
+
+  .cart-footer{
+    border-top-color:rgba(228,184,92,.12)!important;
+  }
+}
