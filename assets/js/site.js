@@ -2063,35 +2063,22 @@ document.getElementById("product-search-clear")?.addEventListener("click",()=>{
 
 (function configurarUIVisual(){
     const header = document.getElementById("site-header");
-    let headerRaf = 0;
-    let headerScrolled = null;
-    const updateHeader = () => {
-        headerRaf = 0;
-        const next = window.scrollY > 8;
-        if (next === headerScrolled) return;
-        headerScrolled = next;
-        header?.classList.toggle("scrolled", next);
-    };
-    const onScroll = () => {
-        if (!headerRaf) headerRaf = requestAnimationFrame(updateHeader);
-    };
-    window.addEventListener("scroll", onScroll, { passive:true });
-    updateHeader();
+    if(header && "IntersectionObserver" in window){
+        const sentinel=document.createElement("span");
+        sentinel.className="nav-scroll-sentinel";
+        sentinel.setAttribute("aria-hidden","true");
+        document.body.insertBefore(sentinel,document.body.firstChild);
 
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("is-visible");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold:.10, rootMargin:"0px 0px -5% 0px" });
-
-        document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
-    } else {
-        document.querySelectorAll(".reveal").forEach(el => el.classList.add("is-visible"));
+        const navObserver=new IntersectionObserver(([entry])=>{
+            header.classList.toggle("scrolled",!entry.isIntersecting);
+        },{threshold:0});
+        navObserver.observe(sentinel);
     }
+
+    // El sistema motion-enhanced anima únicamente los elementos que lo necesitan.
+    // Marcamos los contenedores reveal como visibles para evitar dos sistemas de
+    // animación compitiendo entre sí.
+    document.querySelectorAll(".reveal").forEach(el => el.classList.add("is-visible"));
 
     // Hero depth only on pointer devices; mobile remains static and lightweight.
     const stage = document.querySelector(".hero-product-stage");
@@ -2271,41 +2258,22 @@ comprobarRetornoPago();
     });
   };
 
-  group('.features .feature', ['left','up','up','right'], 95, 0);
+  // Focal secondary moment: the four service pillars arrive as one rhythm.
+  group('.features .feature', ['up'], 48, 0);
 
-  group('.catalog-section .section-index', ['down'], 0, 0);
-  group('.catalog-section .kicker', ['left'], 0, 55);
-  group('.catalog-section .section-title', ['left'], 0, 110, true);
-  group('.catalog-section .section-desc', ['up'], 0, 175);
-  group('.catalog-section .catalog-tools', ['right'], 0, 120);
+  // Story: image and copy establish the brand, then the three proof points follow.
+  group('.dorado-story-visual', ['scale'], 0, 0);
+  group('.dorado-story-copy', ['up'], 0, 70);
+  group('.about-highlights .about-highlight', ['up'], 45, 130);
 
-  group('.process-intro .section-index', ['down'], 0, 0);
-  group('.process-intro .kicker', ['left'], 0, 60);
-  group('.process-intro h2', ['left'], 0, 115, true);
-  group('.process-intro > p', ['up'], 0, 180);
-  group('.process-intro .process-link', ['up'], 0, 230);
-  group('.process-steps .process-step', ['right'], 115, 55);
+  // Catalog: one composed header entrance. Product cards remain the actual staggered list.
+  group('.catalog-heading-row', ['up'], 0, 0);
 
-  group('.about-copy .section-index', ['down'], 0, 0);
-  group('.about-meta-row', ['right'], 0, 65);
-  group('.about-copy .kicker', ['left'], 0, 105);
-  group('.about-copy h2', ['left'], 0, 145, true);
-  group('.about-copy > p', ['up'], 0, 205);
-  group('.about-copy-note', ['up'], 0, 250);
-  group('.about-highlights .about-highlight', ['left','up','right'], 105, 100);
+  // Purchase flow: explanation first, then numbered steps in sequence.
+  group('.process-intro', ['left'], 0, 0);
+  group('.process-steps .process-step', ['right'], 48, 70);
 
-  group('.location-copy .section-index', ['down'], 0, 0);
-  group('.location-copy .kicker', ['left'], 0, 55);
-  group('.location-copy h2', ['left'], 0, 110, true);
-  group('.location-copy > p', ['up'], 0, 170);
-  group('.contact-list .contact-line', ['up'], 105, 120);
-  group('.contact-actions', ['up'], 0, 240);
-  group('.location .map', ['right'], 0, 110);
-
-  group('.site-footer .footer-brand-box', ['left'], 0, 0);
-  group('.site-footer .footer-column', ['up'], 95, 80);
-  group('.site-footer .footer-wordmark', ['scale'], 0, 110, true);
-  group('.site-footer .footer-bottom', ['up'], 0, 170);
+  // Contact and footer remain stable; motion there added noise without explaining state.
 
   const productGrid = document.getElementById('products-grid');
   const registerProducts = () => {

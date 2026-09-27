@@ -281,3 +281,197 @@ html.motion-enhanced .motion-item.motion-visible{
     animation:none!important;
   }
 }
+
+
+/* =========================================================
+   DORADO — MOTION CRAFT V2
+   Thesis: one authored entrance, quiet continuity, tactile feedback.
+   No layout-property animation, no permanent GPU layers.
+   ========================================================= */
+
+:root{
+  --motion-arrive:cubic-bezier(.16,1,.3,1);
+  --motion-move:cubic-bezier(.77,0,.175,1);
+  --motion-drawer:cubic-bezier(.32,.72,0,1);
+  --motion-fast:140ms;
+  --motion-ui:220ms;
+  --motion-layout:380ms;
+  --motion-focal:620ms;
+}
+
+/* Sentinels are layout-neutral and never visible. */
+.nav-scroll-sentinel,
+.products-scroll-sentinel{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  pointer-events:none!important;
+  opacity:0!important;
+}
+
+/* One-shot reveals: smaller travel, faster opacity, no sticky will-change. */
+html.motion-enhanced .motion-item{
+  --motion-x:0px;
+  --motion-y:14px;
+  --motion-scale:1;
+  opacity:0!important;
+  transform:translate3d(var(--motion-x),var(--motion-y),0) scale(var(--motion-scale))!important;
+  transition:
+    opacity 320ms var(--motion-arrive) var(--motion-delay),
+    transform var(--motion-focal) var(--motion-arrive) var(--motion-delay)!important;
+  will-change:auto!important;
+}
+
+html.motion-enhanced .motion-left{--motion-x:-18px;--motion-y:0}
+html.motion-enhanced .motion-right{--motion-x:18px;--motion-y:0}
+html.motion-enhanced .motion-up{--motion-y:14px}
+html.motion-enhanced .motion-down{--motion-y:-12px}
+html.motion-enhanced .motion-scale{--motion-y:8px;--motion-scale:.982}
+
+html.motion-enhanced .motion-item.motion-visible{
+  opacity:1!important;
+  transform:translate3d(0,0,0) scale(1)!important;
+}
+
+/* Authored hero: content arrives in a tight editorial sequence. */
+@media (prefers-reduced-motion:no-preference){
+  .hero-content .eyebrow,
+  .hero-content h1,
+  .hero-content .hero-lead,
+  .hero-content .hero-actions,
+  .hero-content .hero-proof{
+    animation-duration:var(--motion-focal)!important;
+    animation-timing-function:var(--motion-arrive)!important;
+  }
+
+  .hero-content .eyebrow{animation-delay:40ms!important}
+  .hero-content h1{animation-delay:90ms!important}
+  .hero-content .hero-lead{animation-delay:150ms!important}
+  .hero-content .hero-actions{animation-delay:210ms!important}
+  .hero-content .hero-proof{animation-delay:260ms!important}
+}
+
+/* CTA feedback: the icon carries direction, the button itself stays calm. */
+:is(.hero-btn,.process-link,.cart-checkout,.map-open-button) .ui-icon{
+  transition:transform var(--motion-ui) var(--motion-arrive)!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  :is(.hero-btn,.process-link,.cart-checkout,.map-open-button):hover .ui-icon{
+    transform:translate3d(4px,0,0)!important;
+  }
+
+  .product .product-real-image{
+    transition:transform 360ms var(--motion-arrive)!important;
+  }
+
+  .product:hover .product-real-image{
+    transform:scale(1.018)!important;
+  }
+
+  .category-chip,
+  .catalog-search,
+  .faq-list details,
+  .contact-line{
+    transition:
+      transform var(--motion-ui) var(--motion-arrive),
+      border-color var(--motion-ui) ease,
+      background-color var(--motion-ui) ease!important;
+  }
+
+  .category-chip:hover{
+    transform:translate3d(0,-1px,0)!important;
+  }
+}
+
+/* Press feedback: small, physical, immediate. */
+:is(
+  .gold-btn,.outline-btn,.hero-secondary,.nav-cta,.cart-trigger,.orders-trigger,
+  .view-product,.add-card-product,.dynamic-add-cart,.dynamic-add-cart-mobile,
+  .cart-checkout,.checkout-pay,.checkout-wholesale,.reviews-filter-button,
+  .reviews-google-link,.catalog-retry-btn,.map-open-button,.category-chip,
+  .mobile-dock-item
+):active:not(:disabled){
+  transform:scale(.985)!important;
+  transition-duration:var(--motion-fast)!important;
+}
+
+/* Drawers and overlays explain spatial continuity. */
+.cart-drawer,
+.orders-drawer{
+  transition:transform 420ms var(--motion-drawer)!important;
+}
+
+.product-detail-inner,
+.checkout-card,
+.payment-result-card{
+  transition:
+    opacity 220ms var(--motion-arrive),
+    transform var(--motion-layout) var(--motion-drawer)!important;
+}
+
+.product-detail:not(.active) .product-detail-inner,
+.checkout-modal:not(.active) .checkout-card,
+.payment-result:not(.active) .payment-result-card{
+  opacity:0!important;
+  transform:translate3d(0,12px,0) scale(.985)!important;
+}
+
+/* FAQ answer appears as state feedback; no height animation/layout thrash. */
+.faq-list details[open] > p{
+  animation:doradoFaqAnswerIn 260ms var(--motion-arrive) both;
+}
+
+@keyframes doradoFaqAnswerIn{
+  from{opacity:0;transform:translate3d(0,-5px,0)}
+  to{opacity:1;transform:none}
+}
+
+/* Mobile navigation behaves like a panel, not a generic fade. */
+@media(max-width:980px){
+  .navlinks{
+    transition:
+      opacity 220ms var(--motion-arrive),
+      transform 360ms var(--motion-drawer),
+      visibility 220ms linear!important;
+  }
+
+  .mobile-dock-item{
+    transition:
+      transform var(--motion-fast) var(--motion-arrive),
+      color var(--motion-ui) ease,
+      background-color var(--motion-ui) ease!important;
+  }
+}
+
+/* The single continuous marquee remains constant velocity. */
+.reviews-marquee-track{
+  animation-timing-function:linear!important;
+}
+
+/* Accessibility: remove spatial movement but retain state feedback. */
+@media(prefers-reduced-motion:reduce){
+  html.motion-enhanced .motion-item{
+    opacity:1!important;
+    transform:none!important;
+    transition:opacity 140ms ease!important;
+  }
+
+  .hero-content .eyebrow,
+  .hero-content h1,
+  .hero-content .hero-lead,
+  .hero-content .hero-actions,
+  .hero-content .hero-proof,
+  .faq-list details[open] > p{
+    animation:none!important;
+  }
+
+  .reviews-marquee-track{
+    animation:none!important;
+  }
+
+  :is(.hero-btn,.process-link,.cart-checkout,.map-open-button) .ui-icon,
+  .product .product-real-image{
+    transition:none!important;
+  }
+}
