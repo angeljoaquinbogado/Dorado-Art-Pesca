@@ -53,22 +53,22 @@ body{
 /* ---------- Arrival: authored once, then completely idle ---------- */
 html.motion-enhanced .motion-item{
   --motion-x:0px;
-  --motion-y:13px;
+  --motion-y:26px;
   --motion-scale:1;
   --motion-delay:0ms;
   opacity:0!important;
   transform:translate3d(var(--motion-x),var(--motion-y),0) scale(var(--motion-scale))!important;
   transition:
-    opacity 300ms var(--ease-arrive) var(--motion-delay),
-    transform var(--motion-focal) var(--ease-arrive) var(--motion-delay)!important;
+    opacity 420ms var(--ease-arrive) var(--motion-delay),
+    transform 680ms var(--ease-arrive) var(--motion-delay)!important;
   will-change:auto!important;
 }
 
-html.motion-enhanced .motion-left{--motion-x:-18px;--motion-y:0}
-html.motion-enhanced .motion-right{--motion-x:18px;--motion-y:0}
-html.motion-enhanced .motion-up{--motion-y:13px}
-html.motion-enhanced .motion-down{--motion-y:-11px}
-html.motion-enhanced .motion-scale{--motion-y:7px;--motion-scale:.984}
+html.motion-enhanced .motion-left{--motion-x:-44px;--motion-y:0}
+html.motion-enhanced .motion-right{--motion-x:44px;--motion-y:0}
+html.motion-enhanced .motion-up{--motion-y:28px}
+html.motion-enhanced .motion-down{--motion-y:-24px}
+html.motion-enhanced .motion-scale{--motion-y:12px;--motion-scale:.975}
 
 html.motion-enhanced .motion-item.motion-visible{
   opacity:1!important;
@@ -351,6 +351,14 @@ html.motion-enhanced .motion-item.motion-visible{
 :is(button,a,input,select,textarea,[tabindex]):focus-visible{
   outline:2px solid rgba(224,184,78,.92)!important;
   outline-offset:3px!important;
+}
+
+
+@media (max-width:700px) and (prefers-reduced-motion:no-preference){
+  html.motion-enhanced .motion-left{--motion-x:-24px}
+  html.motion-enhanced .motion-right{--motion-x:24px}
+  html.motion-enhanced .motion-up{--motion-y:22px}
+  html.motion-enhanced .motion-down{--motion-y:-18px}
 }
 
 /* ---------- Accessibility preferences ---------- */

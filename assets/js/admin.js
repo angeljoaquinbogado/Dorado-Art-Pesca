@@ -1687,3 +1687,90 @@ document.addEventListener("keydown",e=>{
 
 /* Libera previews temporales del editor al salir del panel. */
 window.addEventListener("beforeunload",releaseDraftPreviews,{once:true});
+
+
+/* =========================================================
+   DORADO ADMIN — SCROLL MOTION V2
+   Entradas alternadas tipo editorial/Apple. Se ejecutan una sola vez,
+   usan sólo transform + opacity y respetan reduced motion.
+   ========================================================= */
+(function configurarAdminScrollMotion(){
+    const reduce=window.matchMedia("(prefers-reduced-motion: reduce)");
+    const canObserve="IntersectionObserver" in window;
+    document.documentElement.classList.add("admin-motion-enhanced");
+
+    let observer=null;
+    const watched=new WeakSet();
+
+    const reveal=el=>{
+        if(!el)return;
+        el.classList.add("admin-motion-visible");
+        observer?.unobserve(el);
+    };
+
+    const watch=(el,direction="up",delay=0)=>{
+        if(!el||watched.has(el))return;
+        watched.add(el);
+        el.classList.add("admin-motion-item",`admin-motion-${direction}`);
+        el.style.setProperty("--admin-motion-delay",`${Math.min(Math.max(0,delay),180)}ms`);
+
+        if(reduce.matches||!canObserve){
+            reveal(el);
+            return;
+        }
+
+        const rect=el.getBoundingClientRect();
+        const visible=rect.width>0&&rect.height>0&&rect.top<innerHeight*.88&&rect.bottom>0;
+        if(visible){
+            requestAnimationFrame(()=>reveal(el));
+        }else{
+            observer?.observe(el);
+        }
+    };
+
+    if(!reduce.matches&&canObserve){
+        observer=new IntersectionObserver(entries=>{
+            for(const entry of entries){
+                if(entry.isIntersecting)reveal(entry.target);
+            }
+        },{threshold:.12,rootMargin:"0px 0px -12% 0px"});
+    }
+
+    const registerPanel=panel=>{
+        if(!panel)return;
+        const hero=document.querySelector(".hero-head");
+        if(hero)watch(hero,"scale",0);
+
+        panel.querySelectorAll(":scope > .stats .stat").forEach((el,index)=>{
+            watch(el,["left","up","right"][index%3],Math.min(index*45,135));
+        });
+
+        const major=Array.from(panel.querySelectorAll(":scope > .grid > .card, :scope > .grid > .form-card, :scope > .card, :scope > .catalog-card, :scope > .orders-card"));
+        major.forEach((el,index)=>watch(el,index%2===0?"left":"right",Math.min(index*55,110)));
+    };
+
+    document.querySelectorAll(".panel").forEach(registerPanel);
+
+    /* Hidden tabs get geometry only when activated. Registering again is cheap
+       because WeakSet prevents duplicate observers/listeners. */
+    document.addEventListener("click",event=>{
+        const tab=event.target.closest?.(".tab[data-tab]");
+        if(!tab)return;
+        requestAnimationFrame(()=>{
+            const panel=document.getElementById(`${tab.dataset.tab}-panel`);
+            registerPanel(panel);
+            panel?.querySelectorAll(".admin-motion-item").forEach(el=>{
+                if(el.classList.contains("admin-motion-visible"))return;
+                const rect=el.getBoundingClientRect();
+                if(rect.width>0&&rect.height>0&&rect.top<innerHeight*.9&&rect.bottom>0)reveal(el);
+            });
+        });
+    },{passive:true});
+
+    reduce.addEventListener?.("change",()=>{
+        if(reduce.matches){
+            document.querySelectorAll(".admin-motion-item").forEach(reveal);
+            observer?.disconnect();
+        }
+    });
+})();

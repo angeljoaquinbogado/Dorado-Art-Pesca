@@ -1,3 +1,12 @@
+# 2026-09-27 — Admin polish + full-page directional motion
+
+- Rediseñada la barra de filtros y acciones masivas de Pedidos en Admin.
+- Selects, fechas, búsqueda, CSV, checkboxes y borrado comparten ahora el mismo lenguaje visual.
+- Nuevo sistema de entrada por scroll en Admin con direcciones alternadas y ejecución única.
+- Movimiento público ampliado a catálogo, productos, proceso, reseñas, FAQ, contacto y footer.
+- Animaciones limitadas a `transform` + `opacity`, con `prefers-reduced-motion`.
+- Sin dependencias nuevas ni cambios en lógica de pedidos, stock, checkout o pagos.
+
 # Changelog
 
 Los cambios relevantes del proyecto se documentan aquí. El historial completo sigue disponible en Git.

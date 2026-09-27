@@ -28,6 +28,12 @@
 - [x] Drag de drawers sólo actualiza `transform` + opacidad del overlay.
 - [x] `prefers-reduced-motion` desactiva el gesto físico y los desplazamientos no esenciales.
 - [x] Query strings de CSS/JS actualizadas para invalidar caché estática.
+- [x] Barra de filtros de Pedidos estilizada y responsive.
+- [x] Preview aislado de Pedidos a 1280 px sin overflow horizontal.
+- [x] Preview aislado de Pedidos a 390 px sin overflow horizontal.
+- [x] Scroll motion público ampliado con direcciones alternadas.
+- [x] Scroll motion del Admin agregado para hero, métricas y cards.
+- [x] Motion V2 limitado a `transform` + `opacity` y `prefers-reduced-motion`.
 
 ## Revisado en código
 

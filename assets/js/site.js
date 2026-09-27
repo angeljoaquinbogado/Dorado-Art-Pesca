@@ -2225,22 +2225,30 @@ comprobarRetornoPago();
   document.documentElement.classList.add('motion-enhanced');
 
   let observer = null;
+  const watched = new WeakSet();
+
+  const show = (el) => {
+    if (!el) return;
+    el.classList.add('motion-visible');
+    observer?.unobserve(el);
+  };
 
   const watch = (el, direction='up', delay=0, heading=false) => {
-    if (!el || el.classList.contains('motion-item')) return;
+    if (!el || watched.has(el)) return;
+    watched.add(el);
     el.classList.add('motion-item', `motion-${direction}`);
     if (heading) el.classList.add('motion-heading');
-    el.style.setProperty('--motion-delay', `${Math.max(0, delay)}ms`);
+    el.style.setProperty('--motion-delay', `${Math.min(Math.max(0, delay), 180)}ms`);
 
     if (reduce || !canObserve) {
-      el.classList.add('motion-visible');
+      show(el);
       return;
     }
 
     const rect = el.getBoundingClientRect();
-    const inView = rect.top < window.innerHeight * .80 && rect.bottom > 0;
+    const inView = rect.width > 0 && rect.height > 0 && rect.top < window.innerHeight * .86 && rect.bottom > 0;
     if (inView) {
-      requestAnimationFrame(() => el.classList.add('motion-visible'));
+      requestAnimationFrame(() => show(el));
       return;
     }
     observer?.observe(el);
@@ -2249,45 +2257,73 @@ comprobarRetornoPago();
   if (!reduce && canObserve) {
     observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('motion-visible');
-        observer.unobserve(entry.target);
+        if (entry.isIntersecting) show(entry.target);
       });
-    }, { threshold:.16, rootMargin:'0px 0px -20% 0px' });
+    }, { threshold:.14, rootMargin:'0px 0px -14% 0px' });
   }
 
-  const group = (selector, directions=['up'], step=50, start=0, heading=false) => {
-    const stagger = Math.min(Math.max(0, step), 60);
-    const initial = Math.min(Math.max(0, start), 120);
+  const group = (selector, directions=['up'], step=48, start=0, heading=false) => {
     document.querySelectorAll(selector).forEach((el, i) => {
-      watch(el, directions[i % directions.length], initial + i * stagger, heading);
+      watch(el, directions[i % directions.length], Math.min(start + i * step, 180), heading);
     });
   };
 
-  // Focal secondary moment: the four service pillars arrive as one rhythm.
-  group('.features .feature', ['up'], 48, 0);
+  /* Servicio: entra desde ambos costados, como una sola composición. */
+  group('.features .feature', ['left','right','left','right'], 42, 0);
 
-  // Story: image and copy establish the brand, then the three proof points follow.
-  group('.dorado-story-visual', ['scale'], 0, 0);
-  group('.dorado-story-copy', ['up'], 0, 70);
-  group('.about-highlights .about-highlight', ['up'], 45, 130);
+  /* Historia: imagen y texto se encuentran desde lados opuestos. */
+  group('.dorado-story-visual', ['left'], 0, 0);
+  group('.dorado-story-copy', ['right'], 0, 45);
+  group('.about-highlights .about-highlight', ['left','up','right'], 42, 90);
 
-  // Catalog: one composed header entrance. Product cards remain the actual staggered list.
-  group('.catalog-heading-row', ['up'], 0, 0);
+  /* Catálogo: encabezado y herramientas llegan desde lados distintos. */
+  group('.catalog-heading-row .catalog-copy', ['left'], 0, 0, true);
+  group('.catalog-tools', ['right'], 0, 70);
+  group('.catalog-promises > *', ['up'], 35, 85);
 
-  // Purchase flow: explanation first, then numbered steps in sequence.
-  group('.process-intro', ['left'], 0, 0);
-  group('.process-steps .process-step', ['right'], 48, 70);
-
-  // Contact and footer remain stable; motion there added noise without explaining state.
-
+  /* Productos: alternancia controlada. No se anima durante el scroll una vez visibles. */
   const productGrid = document.getElementById('products-grid');
   const registerProducts = () => {
     if (!productGrid) return;
     productGrid.querySelectorAll('.product').forEach((card, i) => {
-      watch(card, 'up', Math.min((i % 4) * 45, 135));
+      const dirs=['left','up','right','up'];
+      watch(card, dirs[i % dirs.length], Math.min((i % 4) * 36, 108));
     });
   };
+
+  /* Más elegidos: heading + cards reales si la sección existe. */
+  group('#mas-elegidos .section-head-copy', ['left'], 0, 0, true);
+  const bestGrid=document.getElementById('best-sellers-grid');
+  const registerBest=()=>{
+    bestGrid?.querySelectorAll('.best-seller-card').forEach((card,i)=>{
+      watch(card,['left','up','right'][i%3],Math.min(i*45,135));
+    });
+  };
+
+  /* Compra: texto estable y pasos que se alternan desde cada lado. */
+  group('.process-intro', ['left'], 0, 0, true);
+  group('.process-steps .process-step', ['right','left','right','left'], 48, 55);
+
+  /* Confianza: título y acciones se encuentran, contenido sube suavemente. */
+  group('.trust-section .section-head-copy', ['left'], 0, 0, true);
+  group('.trust-section .reviews-actions', ['right'], 0, 55);
+  group('.reviews-marquee-shell', ['up'], 0, 80);
+  group('.reviews-filter-panel', ['scale'], 0, 40);
+
+  /* FAQ: dos columnas desde lados opuestos. */
+  group('.faq-intro', ['left'], 0, 0, true);
+  group('.faq-list', ['right'], 0, 55);
+
+  /* Contacto: información y mapa se encuentran desde ambos lados. */
+  group('.location-copy', ['left'], 0, 0, true);
+  group('.location-box > .map', ['right'], 0, 55);
+  group('.contact-list .contact-line', ['left','right'], 38, 80);
+  group('.contact-actions', ['up'], 0, 120);
+
+  /* Footer: cierre editorial, más corto para no sentirse teatral. */
+  group('.footer-brand-box', ['left'], 0, 0);
+  group('.footer-column', ['up','right','up'], 35, 30);
+  group('.footer-bottom', ['up'], 0, 55);
 
   if (productGrid) {
     registerProducts();
@@ -2300,6 +2336,12 @@ comprobarRetornoPago();
       });
     });
     productObserver.observe(productGrid, { childList:true });
+  }
+
+  if(bestGrid){
+    registerBest();
+    const bestObserver=new MutationObserver(registerBest);
+    bestObserver.observe(bestGrid,{childList:true});
   }
 })();
 

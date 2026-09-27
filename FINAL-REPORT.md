@@ -184,3 +184,14 @@ Limitación de verificación: el entorno disponible no incluye un browser automa
 ## Resultado
 
 El proyecto queda con las funciones existentes conservadas, los cuatro problemas concretos anteriores corregidos y la validación local disponible en verde. Se evitó una reescritura masiva del CSS o arquitectura porque, sin pruebas visuales reales automatizadas del sitio desplegado, eso violaría la prioridad de no romper funciones ya operativas.
+
+## Actualización 2026-09-27 — Admin polish + scroll motion V2
+
+- Se creó `assets/css/admin-apple-fluid.css` para corregir la barra de filtros de Pedidos, que no tenía una capa visual completa propia.
+- Se rediseñaron búsqueda, filtros de pago/preparación, fechas, CSV, selección masiva, checkbox y borrado seleccionado.
+- Se agregó responsive específico para 1220 / 980 / 700 px sin modificar la lógica de pedidos.
+- Se amplió el sistema de aparición por scroll en la tienda: servicios, historia, catálogo, productos, más elegidos, proceso, reseñas, FAQ, contacto y footer alternan entradas desde izquierda/derecha/abajo.
+- Se agregó el mismo principio al Admin para hero, métricas y cards de cada panel.
+- Las entradas usan únicamente `transform` + `opacity`, se ejecutan una sola vez y respetan `prefers-reduced-motion`.
+- Se validó estáticamente el proyecto con `npm run check` y `node --check`.
+- Se generaron previews aislados del bloque de Pedidos a 1280 px y 390 px para comprobar grid, alturas, radios y ausencia de overflow horizontal. No reemplaza una prueba autenticada contra Supabase/Vercel.
