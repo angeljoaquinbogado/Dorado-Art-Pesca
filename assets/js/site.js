@@ -2344,6 +2344,8 @@ comprobarRetornoPago();
     let suppressNextInput = false;
     let selectedAddressValue = "";
     let selectingSuggestion = false;
+    const addressCache = new Map();
+    const MAX_ADDRESS_CACHE = 30;
 
     function normalizar(value) {
         return String(value || "")
@@ -2552,6 +2554,16 @@ comprobarRetornoPago();
             params.set("provincia", provinceSelect.value);
         }
 
+        const cacheKey = `${normalizar(q)}|${normalizar(provinceSelect.value)}`;
+        const cached = addressCache.get(cacheKey);
+        if (cached) {
+            renderSuggestions(cached);
+            if (!cached.length) {
+                helper.textContent = "No encontramos coincidencias. Podés escribirla manualmente.";
+            }
+            return;
+        }
+
         helper.textContent = "Buscando dirección…";
         helper.classList.remove("selected");
 
@@ -2566,9 +2578,14 @@ comprobarRetornoPago();
 
             if (String(input.value || "").trim() !== q) return;
 
-            renderSuggestions(data?.suggestions || []);
+            const freshSuggestions = Array.isArray(data?.suggestions) ? data.suggestions : [];
+            addressCache.set(cacheKey, freshSuggestions);
+            if (addressCache.size > MAX_ADDRESS_CACHE) {
+                addressCache.delete(addressCache.keys().next().value);
+            }
+            renderSuggestions(freshSuggestions);
 
-            if (!data?.suggestions?.length) {
+            if (!freshSuggestions.length) {
                 helper.textContent = data?.unavailable
                     ? "Podés completar la dirección manualmente."
                     : "No encontramos coincidencias. Podés escribirla manualmente.";
@@ -3396,7 +3413,6 @@ comprobarRetornoPago();
           <div class="review-card-top">
             <span class="review-avatar">${photo?`<img src="${textoSeguro(photo)}" alt="" loading="lazy" decoding="async">`:initial}</span>
             <span class="review-author"><strong>${textoSeguro(review.autor||"Cliente")}</strong><small>${textoSeguro(dateLabel(review))}</small></span>
-            <span class="review-source" aria-label="Google">G</span>
           </div>
           <div class="review-stars" aria-label="${Number(review.calificacion)||0} de 5 estrellas">${stars(review.calificacion)}</div>
           <p>${textoSeguro(review.comentario||"Sin comentario escrito.")}</p>

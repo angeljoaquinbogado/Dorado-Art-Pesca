@@ -13,6 +13,7 @@ import { sendOrderStatusEmail } from "../lib/order-email.js";
 const MAX_ITEMS = 40;
 const MAX_QTY = 99;
 const DELIVERY_METHODS = new Set(["retiro", "local", "nacional", "coordinar"]);
+const ONLINE_PAYMENT_METHODS = new Set(["mercadopago", "tarjeta"]);
 
 function clean(value, max = 200) {
     return String(value ?? "").trim().slice(0, max);
@@ -110,9 +111,14 @@ export default async function handler(req, res) {
         )) return;
 
         const body = req.body && typeof req.body === "object" ? req.body : {};
+        const paymentMethod = clean(body.payment_method || body.paymentMethod, 30).toLowerCase();
         const clienteRaw = body.cliente || {};
         const itemsRaw = Array.isArray(body.items) ? body.items : [];
         const couponCode = normalizeCouponCode(body.cupon || body.coupon || "");
+
+        if (!ONLINE_PAYMENT_METHODS.has(paymentMethod)) {
+            return res.status(400).json({ error: "El método de pago online no es válido." });
+        }
 
         const cliente = {
             nombre: clean(clienteRaw.nombre, 100),
