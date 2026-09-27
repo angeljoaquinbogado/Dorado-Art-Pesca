@@ -797,6 +797,7 @@ function resetProductForm(){
     document.getElementById("product-cancel").classList.add("hidden");
     resetProductGallery();
     msg("product-message","");
+    requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
 }
 
 function editProduct(id){
@@ -816,6 +817,7 @@ function editProduct(id){
     document.getElementById("product-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("product-cancel").classList.remove("hidden");
     resetProductGallery(p);
+    requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
     document.getElementById("product-form").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
@@ -1420,6 +1422,7 @@ function resetCouponForm(){
     document.getElementById("coupon-save").textContent="GUARDAR CUPÓN";
     document.getElementById("coupon-cancel").classList.add("hidden");
     msg("coupon-message","");
+    requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
 }
 
 function editCoupon(id){
@@ -1437,6 +1440,7 @@ function editCoupon(id){
     document.getElementById("coupon-form-title").textContent="Editar cupón";
     document.getElementById("coupon-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("coupon-cancel").classList.remove("hidden");
+    requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
     document.getElementById("coupon-form").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
@@ -1697,14 +1701,14 @@ document.addEventListener("keydown",e=>{
 });
 
 /* =========================================================
-   DORADO ADMIN — SELECTS VISUALES
-   Reemplaza exclusivamente los filtros superiores de Pedidos.
-   El <select> real queda sincronizado para conservar la lógica existente,
-   pero nunca se abre el menú nativo de Windows/macOS/Android.
+   DORADO ADMIN — SELECTS VISUALES GLOBALES
+   Reemplaza todos los <select> del panel por controles propios.
+   El <select> real queda sincronizado para conservar toda la lógica
+   y evitar los menús nativos de Windows/macOS/Android.
    ========================================================= */
 (function configurarAdminSelects(){
-    const ids=["order-payment-filter","order-prep-filter"];
     const wrappers=[];
+    let uid=0;
 
     const closeAll=(except=null)=>{
         wrappers.forEach(wrapper=>{
@@ -1724,25 +1728,32 @@ document.addEventListener("keydown",e=>{
         options[safe].focus({preventScroll:true});
     };
 
-    ids.forEach(id=>{
-        const select=document.getElementById(id);
-        if(!select||select.dataset.adminSelect==="true")return;
+    const enhanceSelect=select=>{
+        if(!(select instanceof HTMLSelectElement)||select.dataset.adminSelect==="true")return;
+        if(select.closest(".admin-select"))return;
+
+        uid+=1;
+        if(!select.id)select.id=`admin-select-native-${uid}`;
+
         select.dataset.adminSelect="true";
         select.classList.add("admin-native-select");
+        select.tabIndex=-1;
+        select.setAttribute("aria-hidden","true");
 
         const wrapper=document.createElement("div");
         wrapper.className="admin-select";
-        wrapper.dataset.for=id;
+        wrapper.dataset.for=select.id;
 
         const trigger=document.createElement("button");
         trigger.type="button";
         trigger.className="admin-select-trigger";
-        trigger.id=`${id}-trigger`;
+        trigger.id=`${select.id}-trigger`;
         trigger.setAttribute("aria-haspopup","listbox");
         trigger.setAttribute("aria-expanded","false");
 
         const value=document.createElement("span");
         value.className="admin-select-value";
+
         const chevron=document.createElement("span");
         chevron.className="admin-select-chevron";
         chevron.setAttribute("aria-hidden","true");
@@ -1751,9 +1762,9 @@ document.addEventListener("keydown",e=>{
 
         const menu=document.createElement("div");
         menu.className="admin-select-menu";
-        menu.id=`${id}-menu`;
+        menu.id=`${select.id}-menu`;
         menu.setAttribute("role","listbox");
-        menu.setAttribute("aria-label",select.getAttribute("aria-label")||"Opciones");
+        menu.setAttribute("aria-label",select.getAttribute("aria-label")||select.closest(".field")?.querySelector("label")?.textContent?.trim()||"Opciones");
         menu.hidden=true;
         trigger.setAttribute("aria-controls",menu.id);
 
@@ -1769,16 +1780,19 @@ document.addEventListener("keydown",e=>{
                 button.className="admin-select-option";
                 button.dataset.value=option.value;
                 button.setAttribute("role","option");
+
                 const active=option.value===select.value;
                 button.setAttribute("aria-selected",active?"true":"false");
                 if(active)button.classList.add("is-selected");
 
                 const label=document.createElement("span");
                 label.textContent=String(option.textContent||"").trim();
+
                 const check=document.createElement("span");
                 check.className="admin-select-check";
                 check.setAttribute("aria-hidden","true");
                 check.textContent=active?"✓":"";
+
                 button.append(label,check);
 
                 button.addEventListener("click",()=>{
@@ -1790,11 +1804,13 @@ document.addEventListener("keydown",e=>{
                     closeAll();
                     trigger.focus({preventScroll:true});
                 });
+
                 menu.appendChild(button);
             });
         };
 
         const open=()=>{
+            render();
             closeAll(wrapper);
             wrapper.classList.add("is-open");
             menu.hidden=false;
@@ -1802,6 +1818,7 @@ document.addEventListener("keydown",e=>{
             const selectedIndex=Math.max(0,[...select.options].findIndex(option=>option.value===select.value));
             requestAnimationFrame(()=>focusOption(menu,selectedIndex));
         };
+
         const close=()=>{
             wrapper.classList.remove("is-open");
             menu.hidden=true;
@@ -1819,6 +1836,7 @@ document.addEventListener("keydown",e=>{
                 else focusOption(menu,event.key==="Home"?0:select.selectedIndex);
             }
         });
+
         menu.addEventListener("keydown",event=>{
             const options=[...menu.querySelectorAll(".admin-select-option")];
             const current=options.indexOf(document.activeElement);
@@ -1836,20 +1854,50 @@ document.addEventListener("keydown",e=>{
             event.preventDefault();
             if(event.key==="Home")return focusOption(menu,0);
             if(event.key==="End")return focusOption(menu,options.length-1);
-            focusOption(menu,current+(event.key==="ArrowDown"?1:-1));
+            focusOption(menu,Math.max(0,current+(event.key==="ArrowDown"?1:-1)));
         });
 
         select.addEventListener("change",render);
-        wrapper.append(trigger,menu);
+
+        const label=document.querySelector(`label[for="${CSS.escape(select.id)}"]`);
+        if(label)label.setAttribute("for",trigger.id);
+
         select.insertAdjacentElement("afterend",wrapper);
+        wrapper.append(trigger,menu);
         wrappers.push(wrapper);
+
+        select._adminSelectRender=render;
         render();
+    };
+
+    const scan=root=>{
+        if(root instanceof HTMLSelectElement)enhanceSelect(root);
+        root?.querySelectorAll?.("select").forEach(enhanceSelect);
+    };
+
+    window.__doradoRefreshAdminSelects=()=>{
+        document.querySelectorAll("select[data-admin-select='true']").forEach(select=>{
+            select._adminSelectRender?.();
+        });
+    };
+
+    scan(document);
+
+    const observer=new MutationObserver(records=>{
+        for(const record of records){
+            record.addedNodes.forEach(node=>{
+                if(node.nodeType===1)scan(node);
+            });
+        }
     });
+    observer.observe(document.body,{childList:true,subtree:true});
 
     document.addEventListener("pointerdown",event=>{
         if(!event.target.closest?.(".admin-select"))closeAll();
     },{passive:true});
+
     window.addEventListener("resize",()=>closeAll(),{passive:true});
+    window.addEventListener("scroll",()=>closeAll(),{passive:true,capture:true});
 })();
 
 /* Adaptación de coste visual sin quitar datos, controles ni entradas por scroll. */
