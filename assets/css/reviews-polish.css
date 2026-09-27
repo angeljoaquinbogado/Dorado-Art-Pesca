@@ -511,3 +511,42 @@
     font-size:9.9px!important;
   }
 }
+
+
+/* =========================================================
+   REVIEW READABILITY + COMPOSITOR PASS — 2026-09-27
+   Desktop readability without changing the mobile composition.
+   ========================================================= */
+@media (min-width:821px){
+  #opiniones .review-author strong{
+    font-size:13.25px!important;
+    line-height:1.22!important;
+  }
+
+  #opiniones .review-author small{
+    margin-top:5px!important;
+    font-size:10px!important;
+    line-height:1.25!important;
+  }
+
+  #opiniones .review-stars{
+    font-size:17.5px!important;
+  }
+
+  #opiniones .review-card p{
+    font-size:12px!important;
+    line-height:1.58!important;
+  }
+
+  #opiniones .review-google-logo{
+    width:22px!important;
+    height:22px!important;
+  }
+}
+
+/* Moving shadows are expensive when the entire rail is composited.
+   The cards keep their border/depth but do not rasterize a large shadow
+   on every animation frame. */
+#opiniones .reviews-marquee-shell .review-card{
+  box-shadow:none!important;
+}
