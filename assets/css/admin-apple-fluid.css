@@ -667,3 +667,103 @@ td .admin-select .admin-select-trigger{
     max-width:none;
   }
 }
+
+
+/* =========================================================
+   ADMIN LAYOUT FIX — PEDIDOS + PRODUCTO
+   Evita overflow horizontal y alinea campos con/sin ayuda.
+   ========================================================= */
+
+/* Los campos dentro de una fila no deben estirarse a la altura del
+   hermano que tenga texto de ayuda. Así labels e inputs quedan alineados. */
+#product-form .field-row > .field{
+  align-self:start!important;
+  align-content:start!important;
+  min-width:0!important;
+}
+
+/* Pedidos: seis controles principales en la primera fila.
+   El contador ocupa una segunda línea mínima y nunca empuja Exportar CSV. */
+.orders-filterbar{
+  grid-template-columns:
+    minmax(220px,1.45fr)
+    minmax(132px,.72fr)
+    minmax(142px,.78fr)
+    minmax(138px,.68fr)
+    minmax(138px,.68fr)
+    minmax(124px,max-content)!important;
+  width:100%!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+
+.orders-filterbar > *{
+  min-width:0!important;
+  max-width:100%!important;
+}
+
+.orders-filterbar .export-orders{
+  width:100%!important;
+  min-width:0!important;
+  padding-inline:14px!important;
+}
+
+.orders-filterbar .catalog-count{
+  grid-column:1/-1!important;
+  justify-self:end!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:2px 2px 0!important;
+}
+
+/* En anchos de notebook bajamos a una distribución de dos filas antes
+   de que cualquier control pueda salirse de la tarjeta. */
+@media (max-width:1380px){
+  .orders-filterbar{
+    grid-template-columns:
+      minmax(220px,1.4fr)
+      minmax(138px,.78fr)
+      minmax(148px,.82fr)
+      minmax(138px,.72fr)
+      minmax(138px,.72fr)!important;
+  }
+
+  .orders-filterbar .export-orders{
+    grid-column:1/-1!important;
+    justify-self:end!important;
+    width:auto!important;
+    min-width:132px!important;
+  }
+
+  .orders-filterbar .catalog-count{
+    grid-column:1/-1!important;
+    justify-self:end!important;
+  }
+}
+
+@media (max-width:980px){
+  .orders-filterbar{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  }
+
+  .orders-filterbar .export-orders,
+  .orders-filterbar .catalog-count{
+    grid-column:1/-1!important;
+    width:100%!important;
+    justify-self:stretch!important;
+  }
+
+  .orders-filterbar .catalog-count{
+    text-align:left!important;
+  }
+}
+
+@media (max-width:700px){
+  .orders-filterbar{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  #product-form .field-row > .field{
+    width:100%!important;
+  }
+}
