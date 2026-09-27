@@ -578,3 +578,92 @@ html.admin-low-power .admin-select-menu{
   .admin-select-trigger,.admin-select-menu{border-color:#514b43!important}
   .admin-select-option.is-selected{outline:2px solid currentColor;outline-offset:-2px}
 }
+
+
+/* =========================================================
+   DORADO ADMIN — SELECTS VISUALES GLOBALES
+   Oculta el control nativo y usa el componente custom en todo
+   el panel: productos, pedidos, cupones y estados dinámicos.
+   ========================================================= */
+
+.admin-native-select{
+  position:absolute!important;
+  inline-size:1px!important;
+  block-size:1px!important;
+  margin:-1px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  clip:rect(0 0 0 0)!important;
+  clip-path:inset(50%)!important;
+  white-space:nowrap!important;
+  border:0!important;
+  pointer-events:none!important;
+  opacity:0!important;
+}
+
+.field > .admin-select,
+.catalog-filters > .admin-select,
+.orders-filterbar > .admin-select,
+.shipping-form-grid .admin-select,
+td .admin-select{
+  width:100%;
+  min-width:0;
+}
+
+.field > .admin-select .admin-select-trigger{
+  min-height:46px;
+  border-radius:12px;
+  font-size:11px;
+}
+
+.catalog-filters > .admin-select .admin-select-trigger{
+  height:42px;
+  min-height:42px;
+  border-radius:13px;
+  background:#faf9f7;
+  font-size:10px;
+  font-weight:700;
+}
+
+.shipping-form-grid .admin-select .admin-select-trigger{
+  min-height:44px;
+  border-radius:12px;
+  font-size:10px;
+}
+
+td .admin-select .admin-select-trigger{
+  min-height:38px;
+  border-radius:10px;
+  padding-inline:10px;
+  font-size:9px;
+}
+
+#products-panel .catalog-card,
+#orders-panel .orders-card{
+  overflow:visible!important;
+}
+
+/* La tabla mantiene su propio scroll; el encabezado/tarjeta ya no recorta
+   los menús de filtros superiores. */
+#products-panel .table-wrap,
+#orders-panel .table-wrap{
+  position:relative;
+}
+
+@media(max-width:700px){
+  .field > .admin-select .admin-select-trigger,
+  .catalog-filters > .admin-select .admin-select-trigger,
+  .shipping-form-grid .admin-select .admin-select-trigger,
+  td .admin-select .admin-select-trigger{
+    min-height:48px;
+    height:auto;
+    border-radius:14px;
+    padding-inline:14px;
+    font-size:16px;
+  }
+
+  .admin-select-menu{
+    width:100%;
+    max-width:none;
+  }
+}
