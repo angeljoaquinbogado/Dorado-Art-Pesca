@@ -1343,3 +1343,85 @@ td .admin-select .admin-select-trigger{
     font-size:8px!important;
   }
 }
+
+
+/* =========================================================
+   ADMIN LOGIN MOBILE — VIEWPORT LOCK
+   Evita que el fondo decorativo genere overflow horizontal/vertical
+   y mantiene el formulario fijo al ancho real del dispositivo.
+   ========================================================= */
+@media(max-width:700px){
+  html,
+  body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-x:none!important;
+  }
+
+  #login-screen.login-screen{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:100svh!important;
+    min-height:100dvh!important;
+    padding:0!important;
+    margin:0!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior-x:none!important;
+    background:#fff!important;
+    touch-action:pan-y!important;
+  }
+
+  /* En móvil el fondo fotográfico no aporta nada detrás del formulario
+     y su inset negativo era la causa del área desplazable. */
+  #login-screen.login-screen::before{
+    display:none!important;
+    content:none!important;
+    inset:0!important;
+  }
+
+  #login-screen .login-shell{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:100svh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    overflow-x:hidden!important;
+    overflow-y:visible!important;
+    box-shadow:none!important;
+    transform:none;
+  }
+
+  #login-screen .login-visual{
+    display:none!important;
+  }
+
+  #login-screen .login-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:100svh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+
+  #login-screen .login-card > *,
+  #login-screen .field,
+  #login-screen .field input{
+    max-width:100%!important;
+    min-width:0!important;
+  }
+}
+
+/* La animación de llegada usa transform; en móvil no hace falta y puede
+   provocar un frame inicial más ancho en algunos Safari/Chromium. */
+@media(max-width:700px) and (prefers-reduced-motion:no-preference){
+  #login-screen .login-shell{
+    animation:none!important;
+  }
+}
