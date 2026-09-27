@@ -371,7 +371,8 @@ async function cargarProductosDesdeSupabase() {
         productos.forEach(producto => {
             const tarjeta = document.createElement("article");
             tarjeta.className = "product";
-            tarjeta.dataset.category = String(producto.categoria || "Otros").trim();
+            tarjeta.dataset.category = String(producto.categoria || "").trim();
+            tarjeta.dataset.categoryKey = normalizarClaveCategoria(producto.categoria);
             tarjeta.dataset.search = [
                 producto.nombre || "",
                 producto.categoria || "",
@@ -2020,17 +2021,66 @@ document.getElementById("payment-result")?.addEventListener("click", evento => {
 
 
 // Visual UX enhancements — no external library.
-let categoriaActiva = "Todos";
+let categoriaActiva = "todos";
+
+function normalizarClaveCategoria(value){
+    const text=String(value||"").trim();
+    if(!text)return "sin-categoria";
+    return text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLocaleLowerCase("es")
+        .replace(/[^a-z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"") || "sin-categoria";
+}
+
+function etiquetaCategoria(value){
+    const text=String(value||"").trim();
+    if(!text)return "Sin categoría";
+    return text
+        .toLocaleLowerCase("es")
+        .replace(/(^|[\s\-/])([a-záéíóúñü])/g,(m,sep,char)=>sep+char.toLocaleUpperCase("es"));
+}
 
 function construirFiltrosCategorias(productos = []) {
     const wrap = document.getElementById("categorias");
     if (!wrap) return;
-    const preferidas = ["Cañas","Reels","Señuelos","Líneas y Tanzas","Anzuelos y Terminales","Boyas","Accesorios","Indumentaria","Carnadas"];
-    const detectadas = [...new Set(productos.map(p => String(p.categoria || "Otros").trim()).filter(Boolean))];
-    const categorias = ["Todos", ...preferidas.filter(x=>detectadas.includes(x)), ...detectadas.filter(x=>!preferidas.includes(x)).sort((a,b)=>a.localeCompare(b,"es"))];
-    wrap.innerHTML = categorias.map(cat => `<button class="category-chip${cat===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat)}" aria-pressed="${cat===categoriaActiva?"true":"false"}">${textoSeguro(cat)}</button>`).join("");
+
+    const byKey=new Map();
+    productos.forEach(producto=>{
+        const raw=String(producto?.categoria||"").trim();
+        const key=normalizarClaveCategoria(raw);
+        if(!byKey.has(key)){
+            byKey.set(key,{
+                key,
+                label:key==="sin-categoria"?"Sin categoría":etiquetaCategoria(raw),
+                count:0
+            });
+        }
+        byKey.get(key).count+=1;
+    });
+
+    const categorias=[...byKey.values()].sort((a,b)=>{
+        if(a.key==="sin-categoria")return 1;
+        if(b.key==="sin-categoria")return -1;
+        return a.label.localeCompare(b.label,"es",{sensitivity:"base"});
+    });
+
+    if(categoriaActiva!=="todos"&&!byKey.has(categoriaActiva)){
+        categoriaActiva="todos";
+    }
+
+    const total=productos.length;
+    const allButton=`<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`;
+    const categoryButtons=categorias.map(cat=>`
+        <button class="category-chip${cat.key===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat.key)}" aria-pressed="${cat.key===categoriaActiva?"true":"false"}">
+            ${textoSeguro(cat.label)} <span class="category-chip-count">${cat.count}</span>
+        </button>`).join("");
+
+    wrap.innerHTML=allButton+categoryButtons;
+
     wrap.querySelectorAll(".category-chip").forEach(btn=>btn.addEventListener("click",()=>{
-        categoriaActiva = btn.dataset.category || "Todos";
+        categoriaActiva=btn.dataset.category||"todos";
         wrap.querySelectorAll(".category-chip").forEach(b=>{
             const active=b===btn;
             b.classList.toggle("active",active);
@@ -2051,7 +2101,7 @@ function actualizarFiltroCatalogo() {
 
     cards.forEach(card => {
         const coincideTexto = !query || String(card.dataset.search || card.textContent || "").includes(query);
-        const coincideCategoria = categoriaActiva === "Todos" || String(card.dataset.category || "Otros") === categoriaActiva;
+        const coincideCategoria = categoriaActiva === "todos" || String(card.dataset.categoryKey || "sin-categoria") === categoriaActiva;
         const coincide = coincideTexto && coincideCategoria;
         card.hidden = !coincide;
         if (coincide) visibles += 1;
@@ -2060,7 +2110,7 @@ function actualizarFiltroCatalogo() {
     if (clear) clear.hidden = !query;
 
     let empty = grid?.querySelector(".catalog-empty-filter");
-    if (cards.length && visibles === 0 && (query || categoriaActiva !== "Todos")) {
+    if (cards.length && visibles === 0 && (query || categoriaActiva !== "todos")) {
         if (!empty && grid) {
             empty = document.createElement("div");
             empty.className = "catalog-empty-filter";
@@ -2079,7 +2129,7 @@ function actualizarFiltroCatalogo() {
 
     if (contador) {
         if (!cards.length) contador.textContent = "Sin productos disponibles";
-        else if (query || categoriaActiva !== "Todos") contador.textContent = `${visibles} ${visibles === 1 ? "resultado" : "resultados"}`;
+        else if (query || categoriaActiva !== "todos") contador.textContent = `${visibles} ${visibles === 1 ? "resultado" : "resultados"}`;
         else contador.textContent = `${cards.length} ${cards.length === 1 ? "producto" : "productos"} disponibles`;
     }
 }
