@@ -1138,15 +1138,8 @@ function renderOrders(){
             </td>
             <td><button class="icon-btn order-view" type="button">${icon("eye")}<span>VER PEDIDO</span></button></td>
         `;
-        const checkbox=tr.querySelector(".order-checkbox");
-        checkbox?.addEventListener("change",()=>{
-            const id=String(o.id);
-            if(checkbox.checked)selectedOrders.add(id);
-            else selectedOrders.delete(id);
-            updateOrderSelectionUI();
-        });
-        tr.querySelector(".fulfillment-select")?.addEventListener("change",e=>updateFulfillment(o.id,e.target.value));
-        tr.querySelector(".order-view")?.addEventListener("click",()=>openOrder(o));
+        tr.querySelector(".fulfillment-select")?.setAttribute("data-order-id",String(o.id));
+        tr.querySelector(".order-view")?.setAttribute("data-order-id",String(o.id));
         tbody.appendChild(tr);
     });
 
@@ -1618,6 +1611,34 @@ document.getElementById("orders-select-all")?.addEventListener("change",e=>setAl
 document.getElementById("orders-select-all-head")?.addEventListener("change",e=>setAllVisibleOrdersSelected(e.target.checked));
 document.getElementById("delete-selected-orders")?.addEventListener("click",deleteSelectedOrders);
 
+/* Delegación: la tabla puede crecer sin sumar 2-3 listeners por pedido. */
+const ordersTable=document.getElementById("orders-table");
+ordersTable?.addEventListener("change",event=>{
+    const checkbox=event.target.closest?.(".order-checkbox");
+    if(checkbox){
+        const id=String(checkbox.dataset.orderId||"");
+        if(id){
+            if(checkbox.checked)selectedOrders.add(id);
+            else selectedOrders.delete(id);
+            updateOrderSelectionUI();
+        }
+        return;
+    }
+
+    const select=event.target.closest?.(".fulfillment-select");
+    if(select){
+        const id=String(select.dataset.orderId||"");
+        if(id)updateFulfillment(id,select.value);
+    }
+});
+ordersTable?.addEventListener("click",event=>{
+    const button=event.target.closest?.(".order-view[data-order-id]");
+    if(!button)return;
+    const id=String(button.dataset.orderId||"");
+    const order=pedidos.find(item=>String(item.id)===id);
+    if(order)openOrder(order);
+});
+
 document.getElementById("product-search")?.addEventListener("input",renderProducts);
 document.getElementById("product-filter")?.addEventListener("change",renderProducts);
 
@@ -1625,7 +1646,11 @@ const rerenderOrderFilters=()=>{
     selectedOrders.clear();
     renderOrders();
 };
-document.getElementById("order-search")?.addEventListener("input",rerenderOrderFilters);
+let orderSearchTimer=0;
+document.getElementById("order-search")?.addEventListener("input",()=>{
+    clearTimeout(orderSearchTimer);
+    orderSearchTimer=setTimeout(rerenderOrderFilters,110);
+});
 document.getElementById("order-payment-filter")?.addEventListener("change",rerenderOrderFilters);
 document.getElementById("order-prep-filter")?.addEventListener("change",rerenderOrderFilters);
 document.getElementById("order-date-from")?.addEventListener("change",rerenderOrderFilters);
@@ -1664,6 +1689,172 @@ document.getElementById("order-modal").addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{
     if(e.key==="Escape"&&document.getElementById("order-modal").classList.contains("active"))closeOrder();
 });
+
+/* =========================================================
+   DORADO ADMIN — SELECTS VISUALES
+   Reemplaza exclusivamente los filtros superiores de Pedidos.
+   El <select> real queda sincronizado para conservar la lógica existente,
+   pero nunca se abre el menú nativo de Windows/macOS/Android.
+   ========================================================= */
+(function configurarAdminSelects(){
+    const ids=["order-payment-filter","order-prep-filter"];
+    const wrappers=[];
+
+    const closeAll=(except=null)=>{
+        wrappers.forEach(wrapper=>{
+            if(wrapper===except)return;
+            wrapper.classList.remove("is-open");
+            const trigger=wrapper.querySelector(".admin-select-trigger");
+            const menu=wrapper.querySelector(".admin-select-menu");
+            trigger?.setAttribute("aria-expanded","false");
+            if(menu)menu.hidden=true;
+        });
+    };
+
+    const focusOption=(menu,index)=>{
+        const options=[...menu.querySelectorAll(".admin-select-option")];
+        if(!options.length)return;
+        const safe=Math.max(0,Math.min(options.length-1,index));
+        options[safe].focus({preventScroll:true});
+    };
+
+    ids.forEach(id=>{
+        const select=document.getElementById(id);
+        if(!select||select.dataset.adminSelect==="true")return;
+        select.dataset.adminSelect="true";
+        select.classList.add("admin-native-select");
+
+        const wrapper=document.createElement("div");
+        wrapper.className="admin-select";
+        wrapper.dataset.for=id;
+
+        const trigger=document.createElement("button");
+        trigger.type="button";
+        trigger.className="admin-select-trigger";
+        trigger.id=`${id}-trigger`;
+        trigger.setAttribute("aria-haspopup","listbox");
+        trigger.setAttribute("aria-expanded","false");
+
+        const value=document.createElement("span");
+        value.className="admin-select-value";
+        const chevron=document.createElement("span");
+        chevron.className="admin-select-chevron";
+        chevron.setAttribute("aria-hidden","true");
+        chevron.innerHTML='<svg viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg>';
+        trigger.append(value,chevron);
+
+        const menu=document.createElement("div");
+        menu.className="admin-select-menu";
+        menu.id=`${id}-menu`;
+        menu.setAttribute("role","listbox");
+        menu.setAttribute("aria-label",select.getAttribute("aria-label")||"Opciones");
+        menu.hidden=true;
+        trigger.setAttribute("aria-controls",menu.id);
+
+        const render=()=>{
+            const options=[...select.options];
+            const selected=options.find(option=>option.value===select.value)||options[0];
+            value.textContent=String(selected?.textContent||"").trim();
+            menu.replaceChildren();
+
+            options.forEach(option=>{
+                const button=document.createElement("button");
+                button.type="button";
+                button.className="admin-select-option";
+                button.dataset.value=option.value;
+                button.setAttribute("role","option");
+                const active=option.value===select.value;
+                button.setAttribute("aria-selected",active?"true":"false");
+                if(active)button.classList.add("is-selected");
+
+                const label=document.createElement("span");
+                label.textContent=String(option.textContent||"").trim();
+                const check=document.createElement("span");
+                check.className="admin-select-check";
+                check.setAttribute("aria-hidden","true");
+                check.textContent=active?"✓":"";
+                button.append(label,check);
+
+                button.addEventListener("click",()=>{
+                    if(select.value!==option.value){
+                        select.value=option.value;
+                        select.dispatchEvent(new Event("change",{bubbles:true}));
+                    }
+                    render();
+                    closeAll();
+                    trigger.focus({preventScroll:true});
+                });
+                menu.appendChild(button);
+            });
+        };
+
+        const open=()=>{
+            closeAll(wrapper);
+            wrapper.classList.add("is-open");
+            menu.hidden=false;
+            trigger.setAttribute("aria-expanded","true");
+            const selectedIndex=Math.max(0,[...select.options].findIndex(option=>option.value===select.value));
+            requestAnimationFrame(()=>focusOption(menu,selectedIndex));
+        };
+        const close=()=>{
+            wrapper.classList.remove("is-open");
+            menu.hidden=true;
+            trigger.setAttribute("aria-expanded","false");
+        };
+
+        trigger.addEventListener("click",()=>menu.hidden?open():close());
+        trigger.addEventListener("keydown",event=>{
+            if(["ArrowDown","ArrowUp","Home","End"].includes(event.key)){
+                event.preventDefault();
+                open();
+                const count=menu.querySelectorAll(".admin-select-option").length;
+                if(event.key==="End")focusOption(menu,count-1);
+                else if(event.key==="ArrowUp")focusOption(menu,Math.max(0,select.selectedIndex-1));
+                else focusOption(menu,event.key==="Home"?0:select.selectedIndex);
+            }
+        });
+        menu.addEventListener("keydown",event=>{
+            const options=[...menu.querySelectorAll(".admin-select-option")];
+            const current=options.indexOf(document.activeElement);
+            if(event.key==="Escape"){
+                event.preventDefault();
+                close();
+                trigger.focus({preventScroll:true});
+                return;
+            }
+            if(event.key==="Tab"){
+                close();
+                return;
+            }
+            if(!["ArrowDown","ArrowUp","Home","End"].includes(event.key))return;
+            event.preventDefault();
+            if(event.key==="Home")return focusOption(menu,0);
+            if(event.key==="End")return focusOption(menu,options.length-1);
+            focusOption(menu,current+(event.key==="ArrowDown"?1:-1));
+        });
+
+        select.addEventListener("change",render);
+        wrapper.append(trigger,menu);
+        select.insertAdjacentElement("afterend",wrapper);
+        wrappers.push(wrapper);
+        render();
+    });
+
+    document.addEventListener("pointerdown",event=>{
+        if(!event.target.closest?.(".admin-select"))closeAll();
+    },{passive:true});
+    window.addEventListener("resize",()=>closeAll(),{passive:true});
+})();
+
+/* Adaptación de coste visual sin quitar datos, controles ni entradas por scroll. */
+(function detectarCapacidadAdmin(){
+    const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    const memory=Number(navigator.deviceMemory||0);
+    const cores=Number(navigator.hardwareConcurrency||0);
+    const saveData=Boolean(connection?.saveData);
+    const low=saveData||(memory>0&&memory<=4)||(cores>0&&cores<=4);
+    document.documentElement.classList.toggle("admin-low-power",low);
+})();
 
 (async function boot(){
     try{

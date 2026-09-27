@@ -72,7 +72,7 @@ Cuando el estado sea el esperado:
 ```powershell
 git add -A
 git status
-git commit -m "Refine fluid motion, touch gestures and interaction polish"
+git commit -m "Replace native admin filters and harden adaptive performance"
 git push origin main
 ```
 
@@ -124,7 +124,9 @@ Abrí el sitio desplegado y completá `TEST-CHECKLIST.md`, especialmente:
 
 ## Importante sobre Supabase
 
-Esta entrega no agrega una migration nueva. No ejecutes SQL destructivo ni vuelvas a correr archivos de setup completos sobre producción sin revisar primero qué migrations ya están aplicadas.
+Esta entrega agrega **una migration nueva y no destructiva**: `database/performance-scale-2026-09-27.sql`. Crea índices con `CREATE INDEX IF NOT EXISTS`; no borra productos, pedidos ni reseñas.
+
+Antes de tráfico alto, abrí Supabase > SQL Editor, revisá el archivo y ejecutalo una vez. Si preferís desplegar primero la UI, el sitio seguirá funcionando sin esta migration; los índices son una optimización de escala. No vuelvas a correr archivos de setup completos sobre producción.
 
 
 ## 11. Comprobación específica de motion

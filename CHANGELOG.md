@@ -104,3 +104,13 @@ Los cambios relevantes del proyecto se documentan aquí. El historial completo s
 ## Historial anterior
 
 El historial detallado permanece disponible en Git.
+
+
+## 2026-09-27 — Adaptive V3
+
+- Reemplazo visual de filtros nativos de Pedidos por selects custom accesibles.
+- Debounce de búsqueda y event delegation en tabla de pedidos.
+- Ajustes adaptativos para hardware/red limitada sin quitar información o controles.
+- Carga diferida de reseñas.
+- Mayor caching CDN de endpoints públicos.
+- Migration idempotente de índices: `database/performance-scale-2026-09-27.sql`.

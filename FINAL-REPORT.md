@@ -108,7 +108,7 @@ No se afirma “60 FPS garantizados”. No se ejecutó un benchmark real con Chr
 
 ## Supabase / base de datos
 
-No fue necesario crear una migration nueva para los cambios de esta entrega.
+Esta versión agrega `database/performance-scale-2026-09-27.sql`, una migration **idempotente y no destructiva** con índices para las consultas públicas más frecuentes (`productos`, pedidos pagados, `pedido_items` y reseñas). No se ejecutó contra una base real desde este entorno.
 
 El proyecto ya incluye funciones y hardening para:
 
@@ -195,3 +195,29 @@ El proyecto queda con las funciones existentes conservadas, los cuatro problemas
 - Las entradas usan únicamente `transform` + `opacity`, se ejecutan una sola vez y respetan `prefers-reduced-motion`.
 - Se validó estáticamente el proyecto con `npm run check` y `node --check`.
 - Se generaron previews aislados del bloque de Pedidos a 1280 px y 390 px para comprobar grid, alturas, radios y ausencia de overflow horizontal. No reemplaza una prueba autenticada contra Supabase/Vercel.
+
+
+## Actualización 2026-09-27 — Custom selects + adaptive performance V3
+
+- Los filtros **Todos los pagos** y **Toda preparación** ya no dependen del menú nativo de Windows/macOS/Android. El `<select>` real queda sincronizado para conservar la lógica, pero la interfaz visible es un listbox propio con botones, check de selección, foco, Escape, flechas, Home/End y cierre al tocar fuera.
+- La tarjeta de Pedidos permite overflow visible para que los menús personalizados no queden recortados por el radio del contenedor.
+- La búsqueda de pedidos usa debounce corto (110 ms) para evitar reconstruir la tabla en cada tecla cuando hay muchas filas.
+- Los listeners de checkbox/estado/Ver pedido fueron reemplazados por delegación en `#orders-table`, reduciendo listeners por fila.
+- Se agregó detección conservadora de hardware/red limitada (`deviceMemory`, `hardwareConcurrency`, `saveData`). No se quitan datos, botones ni secciones: sólo se acortan recorridos de motion y se reducen sombras/coste de composición.
+- En tienda pública se conserva la dirección de las animaciones en equipos limitados, pero con menor desplazamiento. Los objetivos táctiles importantes se mantienen en al menos 44 px en tablet/móvil.
+- La carga de reseñas se difiere a tiempo ocioso para aliviar el arranque sin eliminar la sección.
+- Se ampliaron caches CDN: catálogo 60 s + stale 10 min; reseñas 10 min + stale 60 min; configuración pública 5 min + stale 30 min; “Más elegidos” 5 min + stale 30 min. El checkout sigue validando stock/precios en servidor, por lo que el catálogo puede ser brevemente stale sin convertir esa vista en autoridad de compra.
+- Se agregó `database/performance-scale-2026-09-27.sql` con índices idempotentes para reducir coste de consultas bajo carga.
+
+### Escalabilidad: límite de lo que puede afirmarse
+
+Estos cambios reducen trabajo por visitante y llamadas repetidas al origen, pero **no se afirma que el sitio soporte cientos de miles de usuarios simultáneos**. Esa capacidad depende del plan/límites de Vercel, Supabase, Mercado Pago, ancho de banda, cache-hit ratio y del patrón real de tráfico. Para afirmar una cifra concreta hace falta load test en staging/producción controlada y revisar métricas de Vercel/Supabase.
+
+### Verificación de esta versión
+
+- `npm run check`: PASS.
+- `node --check assets/js/site.js`: PASS.
+- `node --check assets/js/admin.js`: PASS.
+- `node --check` de APIs modificadas: PASS.
+- `npm audit --offline --omit=dev`: 0 vulnerabilidades reportadas con la metadata local.
+- No se pudo ejecutar una prueba visual automatizada del dropdown en navegador dentro de este entorno; debe verificarse después del deploy en Windows, Android/iPhone y tablet.

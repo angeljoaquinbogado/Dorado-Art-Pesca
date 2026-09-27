@@ -429,3 +429,54 @@ html.motion-enhanced .motion-item.motion-visible{
     outline-width:3px!important;
   }
 }
+
+/* =========================================================
+   DORADO — ADAPTIVE PERFORMANCE V3
+   Misma información/interacciones en todos los equipos. En hardware
+   limitado se conserva la dirección de las entradas pero se reduce el
+   recorrido y el coste de composición para sostener fluidez.
+   ========================================================= */
+html.low-power-device.motion-enhanced .motion-left{--motion-x:-22px}
+html.low-power-device.motion-enhanced .motion-right{--motion-x:22px}
+html.low-power-device.motion-enhanced .motion-up{--motion-y:18px}
+html.low-power-device.motion-enhanced .motion-down{--motion-y:-16px}
+html.low-power-device.motion-enhanced .motion-scale{--motion-y:8px;--motion-scale:.986}
+html.low-power-device.motion-enhanced .motion-item{
+  transition-duration:320ms,500ms!important;
+}
+html.low-power-device .product,
+html.low-power-device .feature,
+html.low-power-device .process-step,
+html.low-power-device .about-highlight,
+html.low-power-device .best-seller-card,
+html.low-power-device .review-card{
+  box-shadow:none!important;
+}
+html.low-power-device .product .product-real-image,
+html.low-power-device .best-seller-card img,
+html.low-power-device .related-product-card img{
+  transition-duration:240ms!important;
+}
+html.very-low-power-device .hero-glow,
+html.very-low-power-device .about-dust,
+html.very-low-power-device .about-light{
+  animation-duration:1120ms!important;
+}
+
+/* Componentes táctiles: mismo contenido, objetivos cómodos incluso a 320px. */
+@media (max-width:980px){
+  :is(.gold-btn,.outline-btn,.hero-btn,.hero-secondary,.nav-cta,.cart-trigger,.orders-trigger,
+  .menu-toggle,.view-product,.add-card-product,.dynamic-add-cart,.dynamic-add-cart-mobile,
+  .cart-checkout,.checkout-pay,.checkout-wholesale,.reviews-filter-button,.reviews-google-link,
+  .catalog-retry-btn,.map-open-button,.category-chip,.mobile-dock-item,.cart-close,.orders-close,
+  .checkout-close,.product-detail-close){
+    min-height:44px;
+  }
+}
+
+@media (max-width:430px){
+  html.motion-enhanced .motion-left{--motion-x:-18px}
+  html.motion-enhanced .motion-right{--motion-x:18px}
+  html.motion-enhanced .motion-up{--motion-y:18px}
+  html.motion-enhanced .motion-down{--motion-y:-14px}
+}

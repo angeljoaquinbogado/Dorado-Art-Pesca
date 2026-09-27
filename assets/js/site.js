@@ -1,3 +1,24 @@
+/* Perfil de capacidad: conserva contenido/controles y ajusta sólo coste visual. */
+const DORADO_DEVICE_PROFILE = (()=>{
+    const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    const memory=Number(navigator.deviceMemory||0);
+    const cores=Number(navigator.hardwareConcurrency||0);
+    const saveData=Boolean(connection?.saveData);
+    const veryLow=saveData||(memory>0&&memory<=2)||(cores>0&&cores<=2);
+    const low=veryLow||((memory>0&&memory<=4)&&(cores>0&&cores<=4));
+    document.documentElement.classList.toggle("low-power-device",low);
+    document.documentElement.classList.toggle("very-low-power-device",veryLow);
+    return {low,veryLow,saveData,memory,cores};
+})();
+
+function ejecutarCuandoHayaTiempo(callback,timeout=1400){
+    if("requestIdleCallback" in window){
+        window.requestIdleCallback(()=>callback(),{timeout});
+    }else{
+        window.setTimeout(callback,DORADO_DEVICE_PROFILE.low?420:120);
+    }
+}
+
 const DORADO_CART_KEY = "doradoCarrito";
 const DORADO_ORDERS_KEY = "doradoMisPedidos";
 const DORADO_WHATSAPP = "5491168070039";
@@ -234,7 +255,7 @@ async function cargarMasElegidos(){
     const grid=document.getElementById("best-sellers-grid");
     if(!section||!grid)return;
     try{
-        const response=await fetch("/api/best-sellers",{headers:{Accept:"application/json"}});
+        const response=await fetch("/api/best-sellers",{headers:{Accept:"application/json"},cache:"default"});
         const data=await response.json().catch(()=>({}));
         if(!response.ok||!Array.isArray(data.ids))return;
         const products=data.ids.map(id=>catalogoProductos.get(String(id))).filter(Boolean).filter(product=>Math.max(0,Number(product.stock)||0)>0).slice(0,6);
@@ -282,6 +303,7 @@ async function cargarProductosDesdeSupabase() {
                     headers: {
                         "Accept": "application/json"
                     },
+                    cache: "default",
                     signal: controller.signal
                 });
             } finally {
@@ -3493,9 +3515,9 @@ comprobarRetornoPago();
     });
     ratingFilter.addEventListener("change",renderFilter);
 
-    (async()=>{
+    const cargarResenas=async()=>{
         try{
-            const response=await fetch("/api/reviews",{headers:{Accept:"application/json"}});
+            const response=await fetch("/api/reviews",{headers:{Accept:"application/json"},cache:"default"});
             const data=await response.json().catch(()=>({}));
             reviews=Array.isArray(data.reviews)?data.reviews:[];
             if(googleLink&&data?.maps_url)googleLink.href=String(data.maps_url);
@@ -3529,7 +3551,9 @@ comprobarRetornoPago();
         }
 
         renderMarquee();
-    })();
+    };
+
+    ejecutarCuandoHayaTiempo(cargarResenas,DORADO_DEVICE_PROFILE.low?2200:1200);
 })();
 
 /* DORADO — selectores visuales de provincia y entrega */

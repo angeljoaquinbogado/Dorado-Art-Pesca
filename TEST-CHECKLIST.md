@@ -92,3 +92,20 @@
 ## Criterio de salida
 
 No considerar el sitio completamente validado en producción hasta completar la sección posterior al deploy, porque requiere servicios externos y un navegador real.
+
+## Adaptive V3 — comprobado en código
+
+- [x] Los filtros de Pago y Preparación usan UI custom y mantienen el `<select>` nativo sincronizado.
+- [x] UI custom tiene roles ARIA, `aria-expanded`, listbox/options y navegación por teclado.
+- [x] Menús custom no dependen del popup nativo del sistema operativo.
+- [x] `orders-card` permite desplegar los menús sin recortarlos.
+- [x] Búsqueda de pedidos tiene debounce de 110 ms.
+- [x] Tabla de pedidos usa delegación para checkbox, preparación y “Ver pedido”.
+- [x] Perfil de hardware/red limitada no elimina contenido ni controles.
+- [x] Motion de gama baja conserva dirección con menor recorrido/coste.
+- [x] Reseñas se cargan en tiempo ocioso.
+- [x] APIs públicas modificadas usan CDN cache + stale-while-revalidate.
+- [x] Migration de índices de escala es idempotente y no destructiva.
+- [ ] Verificar visualmente ambos dropdowns custom en Windows después del deploy.
+- [ ] Verificar ambos dropdowns custom a 320/390/768/1024/1440 px.
+- [ ] Ejecutar load test controlado si se quiere establecer una cifra real de concurrencia.

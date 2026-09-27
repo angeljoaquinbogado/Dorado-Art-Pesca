@@ -63,3 +63,6 @@ El usuario de Authentication que gestione el comercio debe autorizarse en `admin
 - Ejecutar migraciones primero en un entorno controlado.
 - Verificar funciones `security definer` y su `search_path`.
 - No usar el producto demo como catálogo productivo.
+
+### `performance-scale-2026-09-27.sql`
+Índices idempotentes para las consultas públicas más frecuentes (`productos`, reseñas) y el cálculo de “Más elegidos”. No borra ni transforma datos. Recomendado antes de campañas o tráfico alto; aplicar primero en staging/backup y verificar en Supabase.
