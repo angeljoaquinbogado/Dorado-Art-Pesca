@@ -1517,3 +1517,203 @@ body::-webkit-scrollbar-corner{
       contrast(1.06)!important;
   }
 }
+
+
+/* =========================================================
+   CART DRAWER CONTRAST — 2026-09-27
+   Explicit dark cart palette so global light/dark inheritance
+   can never make product names, prices or totals unreadable.
+   ========================================================= */
+
+.cart-drawer{
+  background:#10212d!important;
+  color:#f3eee6!important;
+  border-left:1px solid rgba(241,236,227,.10)!important;
+  box-shadow:-28px 0 70px rgba(4,11,17,.30)!important;
+}
+
+.cart-head{
+  background:#132734!important;
+  border-bottom-color:rgba(241,236,227,.10)!important;
+}
+
+.cart-head-copy strong{
+  color:#f4efe7!important;
+}
+
+.cart-head-copy span{
+  color:#9facb4!important;
+}
+
+.cart-close{
+  background:#19313f!important;
+  color:#f3eee6!important;
+  border-color:rgba(241,236,227,.14)!important;
+}
+
+.cart-close:hover{
+  background:#213c4b!important;
+  color:#fff!important;
+  border-color:rgba(241,236,227,.24)!important;
+}
+
+.cart-items{
+  background:#10212d!important;
+  color:#f3eee6!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:#536b79 #10212d!important;
+}
+
+.cart-items::-webkit-scrollbar{width:8px!important}
+.cart-items::-webkit-scrollbar-track{background:#10212d!important}
+.cart-items::-webkit-scrollbar-thumb{
+  background:#536b79!important;
+  border:2px solid #10212d!important;
+  border-radius:999px!important;
+}
+
+.cart-item{
+  border-bottom-color:rgba(241,236,227,.10)!important;
+  color:#f3eee6!important;
+}
+
+.cart-item-image{
+  background:#e8e1d5!important;
+  border:1px solid rgba(215,161,58,.12)!important;
+}
+
+.cart-item-name{
+  color:#f4efe7!important;
+}
+
+.cart-item-category{
+  color:#98a6ae!important;
+}
+
+.cart-item-unit{
+  color:#9eabb2!important;
+}
+
+.cart-item-subtotal{
+  color:#f4efe7!important;
+}
+
+.cart-item .quantity-selector{
+  background:#152b38!important;
+  border-color:rgba(241,236,227,.15)!important;
+}
+
+.cart-item .qty-btn{
+  background:transparent!important;
+  color:#dce3e6!important;
+  border-color:rgba(241,236,227,.10)!important;
+}
+
+.cart-item .qty-btn:hover{
+  background:rgba(241,236,227,.08)!important;
+  color:#fff!important;
+}
+
+.cart-item .qty-input{
+  background:transparent!important;
+  color:#f4efe7!important;
+  border-color:rgba(241,236,227,.10)!important;
+}
+
+.cart-remove{
+  color:#aeb9bf!important;
+}
+
+.cart-remove:hover{
+  background:rgba(211,81,73,.13)!important;
+  color:#ff7f78!important;
+}
+
+.cart-remove svg{
+  stroke:currentColor!important;
+}
+
+.cart-empty{
+  color:#f3eee6!important;
+}
+
+.cart-empty-icon{
+  background:#19313f!important;
+  color:#d7a13a!important;
+}
+
+.cart-empty h3{
+  color:#f4efe7!important;
+}
+
+.cart-empty p{
+  color:#a5b1b7!important;
+}
+
+.cart-footer{
+  background:#132734!important;
+  border-top-color:rgba(241,236,227,.10)!important;
+  color:#f3eee6!important;
+  box-shadow:0 -12px 30px rgba(4,11,17,.14)!important;
+}
+
+.cart-summary-row{
+  color:#aeb9bf!important;
+}
+
+.cart-summary-row strong{
+  color:#d9b45d!important;
+}
+
+.cart-total-row{
+  color:#b8c2c7!important;
+}
+
+.cart-total-row strong{
+  color:#f4efe7!important;
+}
+
+.cart-checkout{
+  background:linear-gradient(135deg,#f0aa2e,#d89018)!important;
+  color:#10212d!important;
+  border-color:#e6a126!important;
+  box-shadow:0 12px 26px rgba(216,144,24,.16)!important;
+}
+
+.cart-checkout:hover:not(:disabled){
+  background:linear-gradient(135deg,#f4b64d,#e39a24)!important;
+  color:#10212d!important;
+}
+
+.cart-checkout-note{
+  color:#94a2aa!important;
+}
+
+.cart-link-button{
+  color:#b9c3c8!important;
+}
+
+.cart-link-button:hover{
+  color:#fff!important;
+}
+
+.cart-link-danger{
+  color:#ef7c74!important;
+}
+
+.cart-link-danger:hover{
+  color:#ff918a!important;
+  background:rgba(211,81,73,.10)!important;
+}
+
+@media (max-width:900px){
+  .cart-head{
+    background:#132734!important;
+  }
+
+  .cart-drawer,
+  .cart-items,
+  .cart-footer{
+    color:#f3eee6!important;
+  }
+}
