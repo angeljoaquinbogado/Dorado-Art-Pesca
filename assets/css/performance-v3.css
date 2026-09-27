@@ -69,21 +69,6 @@ body.intro-finished .dorado-field-strip{
   filter:none!important;
 }
 
-/* En pantallas táctiles priorizamos scroll perfecto: ninguna animación decorativa
-   permanente en el primer viewport. Se preservan todos los elementos. */
-@media (pointer:coarse), (max-width:820px){
-  .hero-combined-scene *,
-  .hero *{
-    animation-duration:.001ms;
-    animation-iteration-count:1;
-  }
-
-  .brand-intro:not(.hide) *{
-    animation-duration:inherit;
-    animation-iteration-count:inherit;
-  }
-}
-
 /* El botón flotante no necesita una capa compleja permanente. */
 .float-wa{
   -webkit-backdrop-filter:none!important;
