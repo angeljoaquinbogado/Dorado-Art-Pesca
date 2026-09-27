@@ -1295,3 +1295,51 @@ td .admin-select .admin-select-trigger{
     font-size:11px!important;
   }
 }
+
+
+/* =========================================================
+   SIDEBAR — BOTÓN CERRAR SESIÓN
+   Evita que herede el estilo claro de .secondary.
+   ========================================================= */
+#logout-button{
+  width:100%!important;
+  min-height:40px!important;
+  padding:10px 14px!important;
+  border:1px solid rgba(255,255,255,.11)!important;
+  border-radius:12px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.035))!important;
+  color:#f2f4f5!important;
+  box-shadow:none!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  letter-spacing:.065em!important;
+  opacity:1!important;
+}
+
+#logout-button:hover{
+  background:rgba(190,62,52,.14)!important;
+  border-color:rgba(226,108,98,.34)!important;
+  color:#ffb1aa!important;
+  box-shadow:none!important;
+  transform:translateY(-1px)!important;
+}
+
+#logout-button:active{
+  transform:scale(.985)!important;
+  background:rgba(190,62,52,.19)!important;
+}
+
+#logout-button:focus-visible{
+  outline:2px solid #ed9d23!important;
+  outline-offset:2px!important;
+}
+
+@media(max-width:900px){
+  #logout-button{
+    width:auto!important;
+    min-height:36px!important;
+    padding:8px 11px!important;
+    border-radius:10px!important;
+    font-size:8px!important;
+  }
+}
