@@ -1956,7 +1956,10 @@ ordersTable?.addEventListener("click",event=>{
 });
 
 const categoryInput=document.getElementById("product-category");
-categoryInput?.addEventListener("input",()=>{\n    if(normalizeCategoryName(categoryInput.value))renderCategorySuggestions();\n    else hideCategorySuggestions();\n});
+categoryInput?.addEventListener("input",()=>{
+    if(normalizeCategoryName(categoryInput.value))renderCategorySuggestions();
+    else hideCategorySuggestions();
+});
 categoryInput?.addEventListener("keydown",event=>{
     if(event.key==="Escape"){
         hideCategorySuggestions();
