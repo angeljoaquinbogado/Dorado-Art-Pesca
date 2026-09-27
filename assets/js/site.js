@@ -3433,7 +3433,7 @@ comprobarRetornoPago();
         </article>`;
     };
     const renderMarquee=()=>{
-        const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,24);
+        const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,6);
         if(!best.length){marquee.hidden=true;return;}
         marquee.hidden=false;
         const set=best.map(cardMarkup).join("");
