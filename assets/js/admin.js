@@ -4,6 +4,8 @@ let session = null;
 let productos = [];
 let pedidos = [];
 let cupones = [];
+let categorias = [];
+let selectedCategories = new Set();
 let selectedOrders = new Set();
 let productGalleryDraft = [];
 let refreshPromise = null;
@@ -785,6 +787,302 @@ function renderProducts(){
         productRows.appendChild(tr);
     });
     tbody.appendChild(productRows);
+}
+
+
+function normalizeCategoryName(value){
+    return String(value||"").trim().replace(/\s+/g," ").slice(0,80);
+}
+
+function findCategoryByName(name){
+    const key=normalizeCategoryName(name).toLocaleLowerCase("es");
+    return categorias.find(item=>normalizeCategoryName(item.nombre).toLocaleLowerCase("es")===key)||null;
+}
+
+function categoryUsageCount(name){
+    const key=normalizeCategoryName(name).toLocaleLowerCase("es");
+    return productos.filter(product=>normalizeCategoryName(product.categoria).toLocaleLowerCase("es")===key).length;
+}
+
+function hideCategorySuggestions(){
+    const box=document.getElementById("category-suggestions");
+    const input=document.getElementById("product-category");
+    if(box)box.hidden=true;
+    if(input)input.setAttribute("aria-expanded","false");
+}
+
+function useCategory(name,options={}){
+    const input=document.getElementById("product-category");
+    const closeManager=options.closeManager!==false;
+    if(!input)return;
+    input.value=normalizeCategoryName(name);
+    hideCategorySuggestions();
+    if(closeManager){
+        const manager=document.getElementById("category-manager");
+        const toggle=document.getElementById("category-manage-toggle");
+        if(manager)manager.hidden=true;
+        if(toggle)toggle.setAttribute("aria-expanded","false");
+    }
+    input.focus({preventScroll:true});
+}
+
+function renderCategorySuggestions(){
+    const input=document.getElementById("product-category");
+    const box=document.getElementById("category-suggestions");
+    if(!input||!box)return;
+
+    const query=normalizeCategoryName(input.value).toLocaleLowerCase("es");
+    const matches=categorias
+        .filter(item=>!query||String(item.nombre||"").toLocaleLowerCase("es").includes(query))
+        .slice(0,8);
+
+    box.replaceChildren();
+
+    if(!matches.length){
+        const empty=document.createElement("div");
+        empty.className="category-suggestion-empty";
+        empty.textContent=query?"No existe todavía. Podés crearla.":"Todavía no hay categorías creadas.";
+        box.appendChild(empty);
+    }else{
+        matches.forEach(item=>{
+            const button=document.createElement("button");
+            button.type="button";
+            button.className="category-suggestion";
+            button.setAttribute("role","option");
+
+            const label=document.createElement("span");
+            label.textContent=String(item.nombre||"");
+            const small=document.createElement("small");
+            const uses=categoryUsageCount(item.nombre);
+            small.textContent=String(uses)+" "+(uses===1?"producto":"productos");
+            button.append(label,small);
+
+            button.addEventListener("click",()=>useCategory(item.nombre));
+            box.appendChild(button);
+        });
+    }
+
+    box.hidden=false;
+    input.setAttribute("aria-expanded","true");
+}
+
+function syncCategoryDeleteButtons(){
+    const validIds=new Set(categorias.map(item=>String(item.id)));
+    selectedCategories=new Set([...selectedCategories].filter(id=>validIds.has(String(id))));
+    const selectedButton=document.getElementById("category-delete-selected");
+    const allButton=document.getElementById("category-delete-all");
+    if(selectedButton)selectedButton.disabled=selectedCategories.size===0;
+    if(allButton)allButton.disabled=categorias.length===0;
+}
+
+function renderCategoryManager(){
+    const list=document.getElementById("category-list");
+    const count=document.getElementById("category-count");
+    if(count)count.textContent=String(categorias.length)+" "+(categorias.length===1?"categoría":"categorías");
+    if(!list)return;
+
+    list.replaceChildren();
+    if(!categorias.length){
+        const empty=document.createElement("div");
+        empty.className="category-list-empty";
+        empty.textContent="Todavía no creaste categorías.";
+        list.appendChild(empty);
+        syncCategoryDeleteButtons();
+        return;
+    }
+
+    categorias.forEach(item=>{
+        const row=document.createElement("div");
+        row.className="category-manager-row";
+
+        const checkbox=document.createElement("input");
+        checkbox.type="checkbox";
+        checkbox.className="category-checkbox";
+        checkbox.setAttribute("aria-label","Seleccionar "+String(item.nombre||""));
+        checkbox.checked=selectedCategories.has(String(item.id));
+        checkbox.addEventListener("change",()=>{
+            if(checkbox.checked)selectedCategories.add(String(item.id));
+            else selectedCategories.delete(String(item.id));
+            row.classList.toggle("is-selected",checkbox.checked);
+            syncCategoryDeleteButtons();
+        });
+
+        const use=document.createElement("button");
+        use.type="button";
+        use.className="category-use";
+
+        const strong=document.createElement("strong");
+        strong.textContent=String(item.nombre||"");
+        const small=document.createElement("small");
+        const uses=categoryUsageCount(item.nombre);
+        small.textContent=String(uses)+" "+(uses===1?"producto":"productos");
+        use.append(strong,small);
+        use.addEventListener("click",()=>useCategory(item.nombre));
+
+        row.classList.toggle("is-selected",checkbox.checked);
+        row.append(checkbox,use);
+        list.appendChild(row);
+    });
+
+    syncCategoryDeleteButtons();
+}
+
+async function loadCategories(){
+    try{
+        const r=await sb("/rest/v1/categorias?select=id,nombre&order=nombre.asc");
+        const d=await r.json().catch(()=>[]);
+        if(!r.ok)throw new Error("No se pudieron cargar las categorías.");
+        categorias=Array.isArray(d)?d:[];
+        categorias.sort((a,b)=>String(a.nombre||"").localeCompare(String(b.nombre||""),"es",{sensitivity:"base"}));
+    }catch(error){
+        console.error("Categorías:",error);
+        categorias=[];
+    }
+    renderCategoryManager();
+}
+
+async function persistCategory(rawName,options={}){
+    const silent=options.silent===true;
+    const name=normalizeCategoryName(rawName);
+    if(!name)throw new Error("Escribí un nombre para la categoría.");
+
+    const existing=findCategoryByName(name);
+    if(existing){
+        if(!silent)showToast("La categoría “"+existing.nombre+"” ya existe.");
+        return existing;
+    }
+
+    const r=await sb("/rest/v1/categorias",{
+        method:"POST",
+        headers:{Prefer:"return=representation"},
+        body:JSON.stringify({nombre:name})
+    });
+    const d=await r.json().catch(()=>[]);
+
+    if(!r.ok){
+        if(r.status===409){
+            await loadCategories();
+            const duplicate=findCategoryByName(name);
+            if(duplicate)return duplicate;
+        }
+        throw new Error((d&&d.message)||"No se pudo crear la categoría.");
+    }
+
+    await loadCategories();
+    const created=findCategoryByName(name);
+    if(!silent)showToast("Categoría “"+((created&&created.nombre)||name)+"” creada.");
+    return created||{nombre:name};
+}
+
+async function createCategoryFromInput(){
+    const input=document.getElementById("product-category");
+    const button=document.getElementById("category-create");
+    if(!input||!button)return;
+    button.disabled=true;
+    try{
+        const created=await persistCategory(input.value);
+        input.value=created.nombre;
+        hideCategorySuggestions();
+    }catch(error){
+        showToast(error.message||"No se pudo crear la categoría.","error");
+    }finally{
+        button.disabled=false;
+    }
+}
+
+async function deleteCategories(items){
+    const rows=Array.isArray(items)?items.filter(Boolean):[];
+    if(!rows.length)return;
+
+    const productCount=productos.filter(product=>rows.some(item=>
+        normalizeCategoryName(item.nombre).toLocaleLowerCase("es")===
+        normalizeCategoryName(product.categoria).toLocaleLowerCase("es")
+    )).length;
+
+    const countText=rows.length===1?"esta categoría":String(rows.length)+" categorías";
+    const productText=productCount
+        ? String(productCount)+" "+(productCount===1?"producto quedará":"productos quedarán")+" sin categoría."
+        : "No hay productos asociados.";
+
+    const ok=await confirmAction({
+        title:rows.length===1?"Eliminar categoría":"Eliminar categorías",
+        text:"Se eliminará "+countText+". "+productText+" Los productos no se borran.",
+        confirmText:"ELIMINAR",
+        danger:true
+    });
+    if(!ok)return;
+
+    try{
+        for(const item of rows){
+            const patch=await sb("/rest/v1/productos?categoria=eq."+encodeURIComponent(item.nombre),{
+                method:"PATCH",
+                headers:{Prefer:"return=minimal"},
+                body:JSON.stringify({categoria:""})
+            });
+            if(!patch.ok)throw new Error("No se pudo liberar la categoría de sus productos.");
+        }
+
+        const ids=rows.map(item=>Number(item.id)).filter(Number.isFinite);
+        if(ids.length){
+            const del=await sb("/rest/v1/categorias?id=in.("+ids.join(",")+")",{
+                method:"DELETE",
+                headers:{Prefer:"return=minimal"}
+            });
+            if(!del.ok)throw new Error("No se pudieron eliminar las categorías.");
+        }
+
+        const input=document.getElementById("product-category");
+        if(input&&rows.some(item=>normalizeCategoryName(item.nombre).toLocaleLowerCase("es")===normalizeCategoryName(input.value).toLocaleLowerCase("es"))){
+            input.value="";
+        }
+
+        selectedCategories.clear();
+        await loadProducts();
+        await loadCategories();
+        showToast(rows.length===1?"Categoría eliminada.":"Categorías eliminadas.");
+    }catch(error){
+        showToast(error.message||"No se pudieron eliminar las categorías.","error");
+    }
+}
+
+async function deleteAllCategories(){
+    if(!categorias.length)return;
+    const associated=productos.filter(product=>normalizeCategoryName(product.categoria)).length;
+    const productText=associated
+        ? String(associated)+" "+(associated===1?"producto quedará":"productos quedarán")+" sin categoría."
+        : "No hay productos asociados.";
+
+    const ok=await confirmAction({
+        title:"Eliminar todas las categorías",
+        text:"Se eliminarán las "+String(categorias.length)+" categorías guardadas. "+productText+" Ningún producto será eliminado.",
+        confirmText:"ELIMINAR TODAS",
+        danger:true
+    });
+    if(!ok)return;
+
+    try{
+        const patch=await sb("/rest/v1/productos?id=gt.0",{
+            method:"PATCH",
+            headers:{Prefer:"return=minimal"},
+            body:JSON.stringify({categoria:""})
+        });
+        if(!patch.ok)throw new Error("No se pudieron liberar las categorías de los productos.");
+
+        const del=await sb("/rest/v1/categorias?id=gt.0",{
+            method:"DELETE",
+            headers:{Prefer:"return=minimal"}
+        });
+        if(!del.ok)throw new Error("No se pudieron eliminar todas las categorías.");
+
+        const input=document.getElementById("product-category");
+        if(input)input.value="";
+        selectedCategories.clear();
+        await loadProducts();
+        await loadCategories();
+        showToast("Todas las categorías fueron eliminadas.");
+    }catch(error){
+        showToast(error.message||"No se pudieron eliminar las categorías.","error");
+    }
 }
 
 function resetProductForm(){
