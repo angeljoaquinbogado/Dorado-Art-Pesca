@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="assets/css/admin-dorado.css"/>
 <link rel="stylesheet" href="assets/css/admin-mobile.css?v=20260926c"/>
 <link rel="stylesheet" href="assets/css/admin-performance.css?v=20260927-perf2"/>
-<link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927c"/>
+<link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-selects1"/>
 </head>
 <body>
 
@@ -189,10 +189,9 @@
                   <div class="field"><label for="product-price">PRECIO DE LISTA (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
                   <div class="field"><label for="product-discount">DESCUENTO (%)</label><input id="product-discount" type="number" min="0" max="90" step="1" value="0" placeholder="0"><div class="file-help">0 = sin descuento. Máximo 90%.</div></div>
                 </div>
-                <datalist id="fishing-categories"><option value="Cañas"><option value="Reels"><option value="Señuelos"><option value="Líneas y Tanzas"><option value="Anzuelos y Terminales"><option value="Boyas"><option value="Accesorios"><option value="Indumentaria"><option value="Carnadas"><option value="Combos"></datalist>
-                <div class="field-row">
+                                <div class="field-row">
                   <div class="field"><label for="product-stock">STOCK</label><input id="product-stock" type="number" min="0" step="1" required placeholder="10"></div>
-                  <div class="field"><label for="product-category">CATEGORÍA</label><input id="product-category" maxlength="80" placeholder="Ej: Reels" list="fishing-categories"></div>
+                  <div class="field"><label for="product-category">CATEGORÍA</label><input id="product-category" maxlength="80" placeholder="Ej: Reels, Cañas, Señuelos" autocomplete="off" spellcheck="false"><div class="file-help">Escribí la categoría manualmente. No se selecciona de una lista.</div></div>
                 </div>
                 <div class="field"><label for="product-active">VISIBILIDAD</label><select id="product-active"><option value="true">Activo / visible</option><option value="false">Oculto</option></select></div>
               </div>
@@ -337,6 +336,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20260927-perf2"></script>
+<script src="assets/js/admin.js?v=20260927-selects1"></script>
 </body>
 </html>
