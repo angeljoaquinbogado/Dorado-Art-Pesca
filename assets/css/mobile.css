@@ -904,3 +904,133 @@
   .reviews-empty{margin-top:14px!important}
 }
 /* FIN DORADO — FIX MOVIL 2026-09-26 C */
+
+/* DORADO — CONTRASTE FAQ/RESEÑAS MOBILE 2026-09-27 */
+@media (max-width:900px){
+  .trust-section,
+  .faq-section{
+    background:#071019!important;
+    color:#f6f2e8!important;
+    min-height:0!important;
+    height:auto!important;
+    overflow:visible!important;
+  }
+
+  .trust-shell,
+  .trust-head,
+  .trust-copy,
+  .reviews-actions,
+  .reviews-empty,
+  .reviews-filter-panel,
+  .faq-shell,
+  .faq-intro,
+  .faq-list,
+  .faq-list details{
+    position:relative!important;
+    z-index:2!important;
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+  }
+
+  .trust-copy h2,
+  .faq-intro h2,
+  .reviews-empty strong,
+  .review-author strong,
+  .faq-list summary{
+    display:block!important;
+    color:#f7f3e8!important;
+    -webkit-text-fill-color:#f7f3e8!important;
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+  }
+
+  .trust-copy h2 span,
+  .faq-intro h2 span,
+  .trust-section .section-index span,
+  .trust-section .section-index b,
+  .faq-section .section-index span,
+  .faq-section .section-index b,
+  .trust-section .kicker,
+  .faq-section .kicker,
+  .faq-list summary::after{
+    color:#d6a82f!important;
+    -webkit-text-fill-color:#d6a82f!important;
+  }
+
+  .trust-copy p,
+  .faq-intro p,
+  .reviews-empty p,
+  .review-card p,
+  .faq-list details p{
+    display:block!important;
+    color:#aab2ba!important;
+    -webkit-text-fill-color:#aab2ba!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+
+  .reviews-filter-button,
+  .reviews-google-link{
+    color:#f5f2e9!important;
+    -webkit-text-fill-color:#f5f2e9!important;
+    background:rgba(255,255,255,.045)!important;
+    border-color:rgba(255,255,255,.18)!important;
+  }
+
+  .reviews-empty{
+    display:grid!important;
+    border-color:rgba(214,168,47,.24)!important;
+    background:rgba(255,255,255,.035)!important;
+  }
+
+  .faq-list{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+
+  .faq-list details{
+    display:block!important;
+    background:rgba(255,255,255,.035)!important;
+    border-color:rgba(255,255,255,.12)!important;
+    box-shadow:none!important;
+  }
+
+  .faq-list details[open]{
+    background:rgba(214,168,47,.065)!important;
+    border-color:rgba(214,168,47,.32)!important;
+  }
+
+  html.motion-enhanced .trust-section .motion-item,
+  html.motion-enhanced .faq-section .motion-item,
+  .trust-section.reveal,
+  .faq-section.reveal,
+  .trust-section .motion-item,
+  .faq-section .motion-item{
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+    transition:none!important;
+  }
+}
+
+@media (max-width:640px){
+  .trust-section{padding:36px 0 38px!important}
+  .trust-section.is-empty{padding:30px 0 34px!important}
+  .faq-section{padding:38px 0 46px!important}
+  .trust-shell,
+  .faq-shell{width:calc(100% - 28px)!important}
+  .trust-copy h2,
+  .faq-intro h2{
+    margin-top:10px!important;
+    font-size:clamp(29px,8.8vw,39px)!important;
+    line-height:1!important;
+  }
+  .trust-copy p,
+  .faq-intro p{font-size:10.5px!important;line-height:1.6!important}
+  .reviews-empty{margin-top:14px!important;padding:14px!important}
+  .faq-shell{gap:18px!important}
+  .faq-list{gap:8px!important}
+}
+/* FIN DORADO — CONTRASTE FAQ/RESEÑAS MOBILE 2026-09-27 */
