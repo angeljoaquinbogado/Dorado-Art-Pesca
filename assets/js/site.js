@@ -349,6 +349,8 @@ async function cargarProductosDesdeSupabase() {
     try {
         catalogoProductos.clear();
 
+        const productsFragment=document.createDocumentFragment();
+
         productos.forEach(producto => {
             catalogoProductos.set(String(producto.id), producto);
         });
@@ -505,12 +507,14 @@ async function cargarProductosDesdeSupabase() {
                 });
             }
 
-            contenedor.appendChild(tarjeta);
+            productsFragment.appendChild(tarjeta);
         });
+
+        contenedor.appendChild(productsFragment);
 
         try { construirFiltrosCategorias(productos); } catch (error) { console.warn("Filtros de catálogo:", error); }
         try { actualizarFiltroCatalogo(); } catch (error) { console.warn("Filtro activo:", error); }
-        try { cargarMasElegidos(); } catch (error) { console.warn("Más elegidos:", error); }
+        ejecutarCuandoHayaTiempo(()=>{ try { cargarMasElegidos(); } catch (error) { console.warn("Más elegidos:", error); } },DORADO_DEVICE_PROFILE.low?1800:700);
 
     } catch (error) {
         // Si la respuesta llegó pero una mejora visual falla, no vaciamos el
@@ -3591,7 +3595,25 @@ comprobarRetornoPago();
         renderMarquee();
     };
 
-    ejecutarCuandoHayaTiempo(cargarResenas,DORADO_DEVICE_PROFILE.low?2200:1200);
+    const reviewSection=document.getElementById("opiniones");
+    let reviewsStarted=false;
+    const startReviews=()=>{
+        if(reviewsStarted)return;
+        reviewsStarted=true;
+        ejecutarCuandoHayaTiempo(cargarResenas,DORADO_DEVICE_PROFILE.low?900:300);
+    };
+
+    if(reviewSection&&"IntersectionObserver" in window){
+        const reviewsObserver=new IntersectionObserver(entries=>{
+            if(entries.some(entry=>entry.isIntersecting)){
+                reviewsObserver.disconnect();
+                startReviews();
+            }
+        },{rootMargin:"700px 0px 700px 0px",threshold:0});
+        reviewsObserver.observe(reviewSection);
+    }else{
+        startReviews();
+    }
 })();
 
 /* DORADO — selectores visuales de provincia y entrega */
@@ -3810,7 +3832,7 @@ comprobarRetornoPago();
         const observer=new IntersectionObserver(entries=>{
             entries.forEach(entry=>activate(entry.target,entry.isIntersecting));
         },{
-            rootMargin:"320px 0px 320px 0px",
+            rootMargin:"160px 0px 160px 0px",
             threshold:0
         });
         zones.forEach(zone=>observer.observe(zone));
