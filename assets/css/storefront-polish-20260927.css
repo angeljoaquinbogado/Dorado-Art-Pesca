@@ -2332,3 +2332,89 @@ body::-webkit-scrollbar-corner{
     white-space:normal!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE DOCK — NAVEGACIÓN COMPLETA DEL SITIO
+   Barra horizontal deslizable: secciones + acciones sin comprimir.
+   ========================================================= */
+@media (max-width:900px){
+  .mobile-dock{
+    display:grid!important;
+    grid-template-columns:none!important;
+    grid-auto-flow:column!important;
+    grid-auto-columns:82px!important;
+    justify-content:start!important;
+    align-items:stretch!important;
+    gap:2px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    overscroll-behavior-x:contain!important;
+    scroll-snap-type:x proximity!important;
+    scrollbar-width:none!important;
+    -ms-overflow-style:none!important;
+    padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+    touch-action:pan-x!important;
+  }
+
+  .mobile-dock::-webkit-scrollbar{
+    display:none!important;
+  }
+
+  .mobile-dock-item{
+    width:82px!important;
+    min-width:82px!important;
+    min-height:56px!important;
+    padding:5px 4px!important;
+    scroll-snap-align:center!important;
+    border-radius:14px!important;
+    flex:none!important;
+  }
+
+  .mobile-dock-item .ui-icon{
+    width:21px!important;
+    height:21px!important;
+  }
+
+  .mobile-dock-item > span:last-child{
+    max-width:74px!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    font-size:7px!important;
+    line-height:1.15!important;
+  }
+
+  .mobile-dock-item.active{
+    color:#edb13d!important;
+  }
+
+  .mobile-dock-whatsapp,
+  .mobile-dock-whatsapp > span:last-child{
+    color:#48dc7d!important;
+  }
+
+  .mobile-dock-orders,
+  .mobile-dock-cart{
+    color:#aab4ba!important;
+  }
+
+  .mobile-dock-cart .mobile-cart-count{
+    z-index:2!important;
+  }
+}
+
+@media (max-width:430px){
+  .mobile-dock{
+    grid-auto-columns:78px!important;
+  }
+
+  .mobile-dock-item{
+    width:78px!important;
+    min-width:78px!important;
+  }
+
+  .mobile-dock-item > span:last-child{
+    max-width:70px!important;
+  }
+}
