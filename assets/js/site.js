@@ -2263,9 +2263,11 @@ comprobarRetornoPago();
     }, { threshold:.16, rootMargin:'0px 0px -20% 0px' });
   }
 
-  const group = (selector, directions=['up'], step=80, start=0, heading=false) => {
+  const group = (selector, directions=['up'], step=50, start=0, heading=false) => {
+    const stagger = Math.min(Math.max(0, step), 60);
+    const initial = Math.min(Math.max(0, start), 120);
     document.querySelectorAll(selector).forEach((el, i) => {
-      watch(el, directions[i % directions.length], start + i * step, heading);
+      watch(el, directions[i % directions.length], initial + i * stagger, heading);
     });
   };
 
@@ -2309,7 +2311,7 @@ comprobarRetornoPago();
   const registerProducts = () => {
     if (!productGrid) return;
     productGrid.querySelectorAll('.product').forEach((card, i) => {
-      watch(card, 'up', Math.min((i % 4) * 100, 300));
+      watch(card, 'up', Math.min((i % 4) * 45, 135));
     });
   };
 
