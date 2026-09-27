@@ -108,7 +108,11 @@ export default async function handler(req, res) {
             return res.status(200).json({
                 ok: true,
                 status: "pendiente",
-                found: results.length
+                found: results.length,
+                observed_statuses: results.slice(0, 5).map(payment => ({
+                    status: String(payment?.status || ""),
+                    status_detail: String(payment?.status_detail || "")
+                }))
             });
         }
 
