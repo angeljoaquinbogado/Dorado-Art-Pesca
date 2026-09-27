@@ -198,7 +198,7 @@ function renderProductGallery(){
         card.innerHTML=`
             ${index===0?'<span class="gallery-admin-primary">PRINCIPAL</span>':""}
             <div class="gallery-admin-image">
-                <img src="${esc(item.preview||item.url||"")}" alt="Imagen ${index+1} del producto">
+                <img src="${esc(item.preview||item.url||"")}" alt="Imagen ${index+1} del producto" loading="lazy" decoding="async">
             </div>
             <div class="gallery-admin-actions">
                 <button type="button" data-gallery-action="primary" ${index===0?"disabled":""}>PRINCIPAL</button>
@@ -1683,3 +1683,7 @@ document.addEventListener("keydown",e=>{
         logout(false);
     }
 })();
+
+
+/* Libera previews temporales del editor al salir del panel. */
+window.addEventListener("beforeunload",releaseDraftPreviews,{once:true});

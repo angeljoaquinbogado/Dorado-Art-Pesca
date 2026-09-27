@@ -2082,16 +2082,35 @@ document.getElementById("product-search-clear")?.addEventListener("click",()=>{
     // Hero depth only on pointer devices; mobile remains static and lightweight.
     const stage = document.querySelector(".hero-product-stage");
     if (stage && window.matchMedia("(pointer:fine)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        stage.addEventListener("pointermove", event => {
+        let pointerRaf = 0;
+        let pointerEvent = null;
+
+        const paintPointerDepth = () => {
+            pointerRaf = 0;
+            const event = pointerEvent;
+            if (!event) return;
+
             const rect = stage.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width - .5;
             const y = (event.clientY - rect.top) / rect.height - .5;
             stage.style.setProperty("--mx", `${x * 8}px`);
             stage.style.setProperty("--my", `${y * 8}px`);
+
             const image = stage.querySelector(".hero-product-image");
-            if (image) image.style.transform = `translate(${x * 7}px, ${y * 5 - 3}px) scale(1.018)`;
-        });
+            if (image) image.style.transform = `translate3d(${x * 7}px, ${y * 5 - 3}px, 0) scale(1.018)`;
+        };
+
+        stage.addEventListener("pointermove", event => {
+            pointerEvent = event;
+            if (!pointerRaf) pointerRaf = requestAnimationFrame(paintPointerDepth);
+        }, { passive:true });
+
         stage.addEventListener("pointerleave", () => {
+            pointerEvent = null;
+            if (pointerRaf) {
+                cancelAnimationFrame(pointerRaf);
+                pointerRaf = 0;
+            }
             const image = stage.querySelector(".hero-product-image");
             if (image) image.style.transform = "";
         });
@@ -2282,7 +2301,14 @@ comprobarRetornoPago();
 
   if (productGrid) {
     registerProducts();
-    const productObserver = new MutationObserver(() => registerProducts());
+    let productRegisterRaf = 0;
+    const productObserver = new MutationObserver(() => {
+      if (productRegisterRaf) return;
+      productRegisterRaf = requestAnimationFrame(() => {
+        productRegisterRaf = 0;
+        registerProducts();
+      });
+    });
     productObserver.observe(productGrid, { childList:true });
   }
 })();
@@ -3187,7 +3213,14 @@ comprobarRetornoPago();
 
     const productsGrid=document.getElementById("products-grid");
     if(productsGrid && "MutationObserver" in window){
-        new MutationObserver(()=>prepareImages(productsGrid)).observe(productsGrid,{childList:true,subtree:true});
+        let imagePrepareRaf=0;
+        new MutationObserver(()=>{
+            if(imagePrepareRaf)return;
+            imagePrepareRaf=requestAnimationFrame(()=>{
+                imagePrepareRaf=0;
+                prepareImages(productsGrid);
+            });
+        }).observe(productsGrid,{childList:true,subtree:true});
     }
 
     /* Evita que un contador grande de carrito rompa el header. */
@@ -3628,3 +3661,53 @@ comprobarRetornoPago();
     });
 })();
 /* FIN DORADO — selectores visuales de provincia y entrega */
+
+
+/* =========================================================
+   DORADO — PERFORMANCE MANAGER
+   Pausa animaciones permanentes fuera de pantalla sin quitar
+   ningún efecto cuando el usuario está viendo esa sección.
+   ========================================================= */
+(function configurarPerformanceManager(){
+    const zones=[
+        document.querySelector(".hero-combined-scene"),
+        document.getElementById("nosotros"),
+        document.getElementById("productos"),
+        document.getElementById("mas-elegidos"),
+        document.getElementById("como-comprar"),
+        document.getElementById("opiniones"),
+        document.getElementById("preguntas-frecuentes"),
+        document.getElementById("contacto"),
+        document.querySelector(".site-footer")
+    ].filter(Boolean);
+
+    if(!zones.length)return;
+
+    zones.forEach(zone=>{
+        zone.dataset.perfZone="true";
+        zone.classList.add("perf-paused");
+    });
+
+    const activate=(zone,active)=>{
+        zone.classList.toggle("perf-active",active);
+        zone.classList.toggle("perf-paused",!active);
+    };
+
+    if("IntersectionObserver" in window){
+        const observer=new IntersectionObserver(entries=>{
+            entries.forEach(entry=>activate(entry.target,entry.isIntersecting));
+        },{
+            rootMargin:"320px 0px 320px 0px",
+            threshold:0
+        });
+        zones.forEach(zone=>observer.observe(zone));
+    }else{
+        zones.forEach(zone=>activate(zone,true));
+    }
+
+    const syncVisibility=()=>{
+        document.documentElement.classList.toggle("perf-page-hidden",document.hidden);
+    };
+    document.addEventListener("visibilitychange",syncVisibility,{passive:true});
+    syncVisibility();
+})();

@@ -1,0 +1,57 @@
+/* =========================================================
+   DORADO ADMIN — PERFORMANCE
+   Reduce composición y pintura sin cambiar funciones.
+   ========================================================= */
+
+.workspace-top{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:rgba(246,244,239,.985)!important;
+}
+
+.order-modal,
+.confirm-modal{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:rgba(7,8,10,.74)!important;
+}
+
+.stat,
+.catalog-card,
+.orders-card,
+#coupons-panel .catalog-card{
+  contain:layout style;
+}
+
+.thumb-shell,
+.gallery-admin-image{
+  contain:paint;
+}
+
+.product-thumb,
+.gallery-admin-image img{
+  image-rendering:auto;
+}
+
+.panel:not(.active){
+  display:none!important;
+}
+
+@media(max-width:980px){
+  .sidebar{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    background:rgba(13,14,16,.995)!important;
+  }
+}
+
+@supports (content-visibility:auto){
+  @media(max-width:700px){
+    #products-table tr,
+    #orders-table tr,
+    #coupons-table tr{
+      content-visibility:auto;
+      contain-intrinsic-size:auto 150px;
+    }
+  }
+}

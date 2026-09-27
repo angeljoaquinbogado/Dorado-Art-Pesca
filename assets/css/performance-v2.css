@@ -1,0 +1,126 @@
+/* =========================================================
+   DORADO — PERFORMANCE V2
+   Mantiene diseño y funciones; reduce repintados, capas GPU,
+   trabajo fuera de pantalla y filtros caros.
+   ========================================================= */
+
+:root{
+  --perf-nav-bg:rgba(4,11,17,.985);
+}
+
+/* Pausar únicamente animaciones CSS fuera de la zona visible.
+   Los elementos y estilos siguen existiendo: al acercarse al viewport
+   vuelven a moverse normalmente. */
+[data-perf-zone].perf-paused *,
+.perf-page-hidden *{
+  animation-play-state:paused!important;
+}
+
+/* No reservar capas GPU gigantes durante toda la sesión. */
+.hero-bg-media,
+.hero-glow,
+.about-luxury-bg,
+.about-ribbon,
+.about-light,
+.about-dust,
+.brand-intro-bg,
+.reviews-marquee-track{
+  will-change:auto!important;
+}
+[data-perf-zone].perf-active .hero-bg-media,
+[data-perf-zone].perf-active .reviews-marquee-track{
+  will-change:transform!important;
+}
+
+/* Las tarjetas de reseñas eran transparentes con blur de fondo.
+   En el tema actual ya son opacas, por lo que ese blur no aporta
+   visualmente y sí obliga a recomponer decenas de tarjetas por frame. */
+.review-card{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+/* Navbar oscura visualmente equivalente, sin blur permanente sobre toda
+   la página al hacer scroll. */
+.nav{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:var(--perf-nav-bg)!important;
+}
+.nav.scrolled{
+  background:rgba(4,11,17,.995)!important;
+}
+
+/* El dock móvil ya es prácticamente opaco. */
+.mobile-dock{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+/* Aislar layout de componentes repetidos sin recortar sombras. */
+.product,
+.review-card,
+.process-step,
+.about-highlight,
+.feature,
+.best-seller-card{
+  contain:layout style;
+}
+.product-img,
+.review-avatar,
+.related-product-card img,
+.best-seller-card img{
+  contain:paint;
+}
+
+/* Evita calcular y pintar secciones largas que están muy lejos del
+   viewport. El navegador mantiene una altura estimada para no saltar. */
+@supports (content-visibility:auto){
+  #nosotros,
+  #productos,
+  #mas-elegidos,
+  #como-comprar,
+  #opiniones,
+  #preguntas-frecuentes,
+  #contacto,
+  .site-footer{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 900px;
+  }
+
+  #productos{contain-intrinsic-size:auto 1200px}
+  #opiniones{contain-intrinsic-size:auto 720px}
+  #contacto{contain-intrinsic-size:auto 760px}
+}
+
+/* Review marquee: mantener el movimiento, pero sin una capa permanente
+   cuando la sección está lejos del viewport. */
+.reviews-marquee-track{
+  transform:translateZ(0);
+}
+#opiniones.perf-paused .reviews-marquee-track{
+  transform:none!important;
+}
+
+/* Los filtros de blur decorativos grandes son estáticos en teléfono:
+   se conserva el halo visual, evitando recomposición durante scroll. */
+@media (max-width:820px){
+  .hero-glow,
+  .about-light,
+  .about-dust{
+    animation:none!important;
+    will-change:auto!important;
+  }
+
+  .nav{
+    background:rgba(4,11,17,.995)!important;
+  }
+}
+
+/* Mantener accesibilidad y ahorrar aún más cuando el sistema solicita
+   menos movimiento. */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+  }
+}
