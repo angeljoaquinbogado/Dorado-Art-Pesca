@@ -767,3 +767,53 @@ td .admin-select .admin-select-trigger{
     width:100%!important;
   }
 }
+
+
+/* =========================================================
+   PEDIDOS — FILTROS EN UNA SOLA FILA DE ESCRITORIO
+   Mantiene todos los controles principales juntos hasta tablet.
+   ========================================================= */
+@media (min-width:981px){
+  .orders-filterbar{
+    grid-template-columns:
+      minmax(0,1.70fr)
+      minmax(0,.94fr)
+      minmax(0,.98fr)
+      minmax(0,.90fr)
+      minmax(0,.90fr)
+      minmax(112px,.76fr)!important;
+    gap:10px!important;
+  }
+
+  .orders-filterbar .orders-search,
+  .orders-filterbar > .admin-select,
+  .orders-filterbar .date-filter,
+  .orders-filterbar .export-orders{
+    grid-column:auto!important;
+    width:100%!important;
+    min-width:0!important;
+    justify-self:stretch!important;
+  }
+
+  .orders-filterbar .date-filter{
+    padding-left:10px!important;
+  }
+
+  .orders-filterbar .date-filter input{
+    padding-inline:6px!important;
+    font-size:10.5px!important;
+  }
+
+  .orders-filterbar .export-orders{
+    min-width:0!important;
+    padding-inline:11px!important;
+    font-size:9.5px!important;
+  }
+
+  .orders-filterbar .catalog-count{
+    grid-column:1/-1!important;
+    justify-self:end!important;
+    width:auto!important;
+    padding-top:2px!important;
+  }
+}
