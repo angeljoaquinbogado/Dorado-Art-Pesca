@@ -3502,18 +3502,14 @@ comprobarRetornoPago();
         return `<article class="review-card">
           <div class="review-card-top">
             <span class="review-avatar">${photo?`<img src="${textoSeguro(photo)}" alt="" loading="lazy" decoding="async">`:initial}</span>
-            <span class="review-author">
-              <strong>${textoSeguro(review.autor||"Cliente")}</strong>
-              <small>${textoSeguro(dateLabel(review))}</small>
-            </span>
-            <span class="review-google-mark" aria-label="Reseña publicada en Google" title="Google">G</span>
+            <span class="review-author"><strong>${textoSeguro(review.autor||"Cliente")}</strong><small>${textoSeguro(dateLabel(review))}</small></span>
           </div>
           <div class="review-stars" aria-label="${Number(review.calificacion)||0} de 5 estrellas">${stars(review.calificacion)}</div>
           <p>${textoSeguro(review.comentario||"Sin comentario escrito.")}</p>
         </article>`;
     };
     const renderMarquee=()=>{
-        const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,8);
+        const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,5);
         if(!best.length){marquee.hidden=true;return;}
         marquee.hidden=false;
         const set=best.map(cardMarkup).join("");

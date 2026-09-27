@@ -2166,3 +2166,72 @@ body::-webkit-scrollbar-corner{
     padding-inline:8px!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE LOGO / CART VISUAL BALANCE — 2026-09-27
+   Mobile only. Keep desktop untouched.
+   ========================================================= */
+@media (max-width:700px){
+  .nav .brand{
+    top:8px!important;
+    left:18px!important;
+    width:58px!important;
+    height:58px!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+
+  .nav .nav-logo,
+  .nav.scrolled .nav-logo{
+    width:68px!important;
+    height:68px!important;
+    max-width:none!important;
+    object-fit:contain!important;
+    transform:none!important;
+  }
+
+  .nav .nav-actions{
+    top:8px!important;
+    right:18px!important;
+    height:58px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  .nav .cart-trigger,
+  .nav.scrolled .cart-trigger{
+    width:50px!important;
+    min-width:50px!important;
+    height:50px!important;
+    min-height:50px!important;
+    border-radius:50%!important;
+  }
+}
+
+@media (max-width:380px){
+  .nav .brand{
+    left:14px!important;
+    width:54px!important;
+    height:54px!important;
+  }
+
+  .nav .nav-logo,
+  .nav.scrolled .nav-logo{
+    width:64px!important;
+    height:64px!important;
+  }
+
+  .nav .nav-actions{
+    right:14px!important;
+    height:54px!important;
+  }
+
+  .nav .cart-trigger,
+  .nav.scrolled .cart-trigger{
+    width:48px!important;
+    min-width:48px!important;
+    height:48px!important;
+    min-height:48px!important;
+  }
+}
