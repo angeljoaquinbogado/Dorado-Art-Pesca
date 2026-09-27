@@ -3529,7 +3529,8 @@ comprobarRetornoPago();
         if(!best.length){marquee.hidden=true;return;}
         marquee.hidden=false;
         const set=best.map(cardMarkup).join("");
-        track.innerHTML=`<div class="reviews-marquee-set">${set}</div><div class="reviews-marquee-set" aria-hidden="true">${set}</div>`;\n        wireAvatarFallbacks(track);
+        track.innerHTML=`<div class="reviews-marquee-set">${set}</div><div class="reviews-marquee-set" aria-hidden="true">${set}</div>`;
+        wireAvatarFallbacks(track);
     };
     const renderFilter=()=>{
         const value=ratingFilter.value;
@@ -3540,7 +3541,8 @@ comprobarRetornoPago();
             if(value==="low")return rating<=3;
             return true;
         });
-        grid.innerHTML=filtered.length?filtered.map(cardMarkup).join(""):'<div class="reviews-filter-empty">No hay reseñas para este filtro.</div>';\n        wireAvatarFallbacks(grid);
+        grid.innerHTML=filtered.length?filtered.map(cardMarkup).join(""):'<div class="reviews-filter-empty">No hay reseñas para este filtro.</div>';
+        wireAvatarFallbacks(grid);
     };
     filterButton.addEventListener("click",()=>{
         const opening=filterPanel.hidden;
