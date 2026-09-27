@@ -105,9 +105,66 @@ export default async function handler(req, res) {
         });
 
         if (!approved?.id) {
+            const current = results.find(payment => {
+                const sameReference = String(payment?.external_reference || "") === id;
+                const amount = Number(payment?.transaction_amount) || 0;
+                const currency = String(payment?.currency_id || "").toUpperCase();
+                return sameReference && currency === "ARS" && Math.abs(amount - expected) <= 0.01;
+            });
+
+            const currentStatus = String(current?.status || "").toLowerCase();
+            const currentPaymentId = String(current?.id || "");
+
+            if (currentPaymentId && ["refunded", "charged_back"].includes(currentStatus)) {
+                const mapped = currentStatus === "charged_back" ? "contracargo" : "reembolsado";
+                const patchResponse = await sb(
+                    `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}`,
+                    {
+                        method: "PATCH",
+                        headers: { Prefer: "return=minimal" },
+                        body: JSON.stringify({
+                            estado: mapped,
+                            mp_payment_id: currentPaymentId
+                        })
+                    }
+                );
+
+                if (!patchResponse.ok) {
+                    console.error("Payment reconcile terminal-state patch failed", {
+                        status: patchResponse.status,
+                        orderId: id,
+                        paymentStatus: currentStatus
+                    });
+                    return res.status(500).json({ error: "No se pudo actualizar el estado final del pago" });
+                }
+
+                return res.status(200).json({
+                    ok: true,
+                    status: mapped,
+                    reconciled: true
+                });
+            }
+
+            if (currentPaymentId && ["pending", "in_process", "rejected", "cancelled"].includes(currentStatus)) {
+                const mapped = ["pending", "in_process"].includes(currentStatus)
+                    ? "pago_pendiente"
+                    : currentStatus === "rejected"
+                        ? "pago_rechazado"
+                        : "pago_cancelado";
+
+                await sb("/rest/v1/rpc/registrar_estado_pago", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        p_pedido_id: id,
+                        p_payment_id: currentPaymentId,
+                        p_estado: mapped
+                    })
+                }).catch(() => null);
+            }
+
             return res.status(200).json({
                 ok: true,
-                status: "pendiente",
+                status: currentStatus || "pendiente",
                 found: results.length,
                 observed_statuses: results.slice(0, 5).map(payment => ({
                     status: String(payment?.status || ""),
