@@ -1303,3 +1303,84 @@ body::-webkit-scrollbar-corner{
     border-width:2px;
   }
 }
+
+
+/* =========================================================
+   HEADER SPACING FIX — 2026-09-27
+   Shift primary nav slightly left and guarantee a no-overlap
+   buffer between Contacto and WhatsApp / Mis pedidos / Carrito.
+   ========================================================= */
+
+@media (min-width:1181px){
+  /* Top-of-page: a subtle left shift from the exact viewport center. */
+  .nav:not(.scrolled) .navlinks{
+    left:47.25%!important;
+  }
+
+  /* Keep actions anchored to the right edge with their own fixed spacing. */
+  .nav:not(.scrolled) .nav-actions{
+    right:0!important;
+    gap:12px!important;
+  }
+
+  /* Scrolled header is narrower, so reserve more room for the action group. */
+  .nav.scrolled .navlinks{
+    left:43.5%!important;
+    gap:26px!important;
+  }
+
+  .nav.scrolled .nav-actions{
+    right:16px!important;
+    gap:12px!important;
+  }
+
+  .nav.scrolled .navlinks a{
+    font-size:10px!important;
+  }
+
+  .nav.scrolled .nav-cta,
+  .nav.scrolled .orders-trigger,
+  .nav.scrolled .cart-trigger{
+    flex:0 0 auto!important;
+    white-space:nowrap!important;
+  }
+}
+
+/* Typical notebooks: preserve separation before switching to compact mode. */
+@media (min-width:1051px) and (max-width:1180px){
+  .nav:not(.scrolled) .navlinks{
+    left:45.5%!important;
+  }
+
+  .nav.scrolled .navlinks{
+    left:41.5%!important;
+    gap:15px!important;
+  }
+
+  .nav.scrolled .nav-actions{
+    right:10px!important;
+    gap:7px!important;
+  }
+
+  .nav.scrolled .navlinks a{
+    font-size:9px!important;
+  }
+
+  .nav.scrolled .nav-cta,
+  .nav.scrolled .orders-trigger,
+  .nav.scrolled .cart-trigger{
+    padding-inline:9px!important;
+    font-size:8.5px!important;
+  }
+}
+
+/* Add a visible air gap at the boundary between main links and action buttons. */
+@media (min-width:1051px){
+  .nav .nav-actions::before{
+    content:""!important;
+    display:block!important;
+    width:10px!important;
+    height:1px!important;
+    flex:0 0 10px!important;
+  }
+}
