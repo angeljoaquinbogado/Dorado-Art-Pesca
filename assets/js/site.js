@@ -2152,41 +2152,61 @@ cargarProductosDesdeSupabase();
 comprobarRetornoPago();
 
 
-// Navegación móvil: resalta la sección visible sin trabajo por frame.
+// Navegación móvil: Inicio mientras el hero/portada sigue siendo la zona principal
+// y Productos una vez que el catálogo alcanza aproximadamente el centro visual.
+// Se usa scroll pasivo + requestAnimationFrame para evitar estados incorrectos en Safari/iOS.
 (function configurarDockMovil(){
     const items = Array.from(document.querySelectorAll('.mobile-dock-item[data-dock]'));
     const productos = document.getElementById('productos');
     if (!items.length || !productos) return;
 
-    const setActive = enProductos => {
+    const mobileQuery = window.matchMedia('(max-width: 900px)');
+    let scheduled = false;
+    let lastActive = '';
+
+    const setActive = id => {
+        if (lastActive === id) return;
+        lastActive = id;
+
         items.forEach(item => {
-            item.classList.toggle(
-                'active',
-                enProductos ? item.dataset.dock === 'productos' : item.dataset.dock === 'inicio'
-            );
+            const active = item.dataset.dock === id;
+            item.classList.toggle('active', active);
+            if (active) item.setAttribute('aria-current','page');
+            else item.removeAttribute('aria-current');
         });
     };
 
-    if(!("IntersectionObserver" in window)){
-        setActive(false);
-        return;
-    }
+    const syncDock = () => {
+        scheduled = false;
+        if (!mobileQuery.matches) return;
 
-    const sentinel=document.createElement("span");
-    sentinel.className="products-scroll-sentinel";
-    sentinel.setAttribute("aria-hidden","true");
-    productos.parentNode?.insertBefore(sentinel,productos);
+        const viewport = Math.max(window.innerHeight || 0, 1);
+        const productsTop = productos.getBoundingClientRect().top;
+        const switchLine = viewport * 0.48;
 
-    const dockObserver=new IntersectionObserver(([entry])=>{
-        const rootTop=entry.rootBounds?.top ?? 0;
-        const passed=entry.boundingClientRect.top < rootTop;
-        setActive(passed);
-    },{
-        threshold:0,
-        rootMargin:"-34% 0px -65% 0px"
+        setActive(productsTop <= switchLine ? 'productos' : 'inicio');
+    };
+
+    const requestSync = () => {
+        if (scheduled) return;
+        scheduled = true;
+        window.requestAnimationFrame(syncDock);
+    };
+
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            if (!mobileQuery.matches) return;
+            const id = item.dataset.dock;
+            if (id) setActive(id);
+        });
     });
 
-    dockObserver.observe(sentinel);
+    window.addEventListener('scroll', requestSync, { passive:true });
+    window.addEventListener('resize', requestSync, { passive:true });
+    window.addEventListener('pageshow', requestSync);
+    mobileQuery.addEventListener?.('change', requestSync);
+
+    requestSync();
 })();
 // ==============================
 

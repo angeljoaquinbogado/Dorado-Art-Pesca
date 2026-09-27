@@ -1970,3 +1970,199 @@ body::-webkit-scrollbar-corner{
     border-top-color:rgba(228,184,92,.12)!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE HEADER + DOCK POLISH — 2026-09-27
+   Mobile only. Desktop layout is intentionally untouched.
+   ========================================================= */
+@media (max-width:700px){
+  /* Remove the large shared capsule: logo and cart float independently. */
+  .nav,
+  .nav.scrolled{
+    width:100%!important;
+    height:72px!important;
+    min-height:72px!important;
+    top:8px!important;
+    left:0!important;
+    transform:none!important;
+    padding:0 18px!important;
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    pointer-events:none!important;
+  }
+
+  .nav .brand,
+  .nav .nav-actions,
+  .nav .cart-trigger{
+    pointer-events:auto!important;
+  }
+
+  .nav .brand{
+    position:absolute!important;
+    left:18px!important;
+    top:4px!important;
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    transform:none!important;
+  }
+
+  .nav .nav-logo,
+  .nav.scrolled .nav-logo{
+    width:76px!important;
+    height:62px!important;
+    object-fit:contain!important;
+    filter:drop-shadow(0 8px 16px rgba(0,0,0,.20))!important;
+  }
+
+  .nav .nav-actions{
+    position:absolute!important;
+    right:18px!important;
+    top:8px!important;
+    display:flex!important;
+    align-items:center!important;
+    margin:0!important;
+    transform:none!important;
+  }
+
+  .nav .cart-trigger,
+  .nav.scrolled .cart-trigger{
+    width:56px!important;
+    min-width:56px!important;
+    height:56px!important;
+    min-height:56px!important;
+    padding:0!important;
+    border-radius:50%!important;
+    border:1px solid rgba(255,218,142,.20)!important;
+    background:linear-gradient(145deg,#e7ad39,#cf8f1d)!important;
+    color:#10212d!important;
+    box-shadow:0 10px 24px rgba(5,13,19,.22)!important;
+  }
+
+  .nav .cart-trigger:hover,
+  .nav .cart-trigger:active{
+    background:linear-gradient(145deg,#efba4d,#d99b2d)!important;
+  }
+
+  .nav .cart-trigger-label{
+    display:none!important;
+  }
+
+  /* Compact hero eyebrow: less heavy, more refined over the photo. */
+  .hero-content .eyebrow{
+    width:max-content!important;
+    max-width:calc(100vw - 48px)!important;
+    min-height:24px!important;
+    margin:0 0 9px!important;
+    padding:0 9px!important;
+    gap:6px!important;
+    border:1px solid rgba(226,180,86,.20)!important;
+    border-radius:999px!important;
+    background:rgba(7,18,27,.26)!important;
+    color:rgba(246,239,227,.82)!important;
+    font-size:clamp(6.8px,2.05vw,8px)!important;
+    font-weight:700!important;
+    letter-spacing:.075em!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(4px)!important;
+    -webkit-backdrop-filter:blur(4px)!important;
+  }
+
+  .hero-content .eyebrow-dot{
+    width:5px!important;
+    height:5px!important;
+    flex:0 0 5px!important;
+    background:#d9a63d!important;
+    box-shadow:0 0 0 3px rgba(217,166,61,.08)!important;
+  }
+
+  /* Dock states: clear active section + subtle activation animation. */
+  .mobile-dock{
+    overflow:hidden!important;
+  }
+
+  .mobile-dock-item{
+    position:relative!important;
+    isolation:isolate!important;
+    transition:
+      color .24s ease,
+      background-color .28s ease,
+      box-shadow .28s ease,
+      transform .22s cubic-bezier(.22,.8,.2,1)!important;
+  }
+
+  .mobile-dock-item::before{
+    content:""!important;
+    position:absolute!important;
+    inset:4px!important;
+    z-index:-1!important;
+    border-radius:14px!important;
+    background:linear-gradient(180deg,rgba(222,164,55,.15),rgba(222,164,55,.075))!important;
+    border:1px solid rgba(229,178,74,.26)!important;
+    opacity:0!important;
+    transform:scale(.88)!important;
+    transition:
+      opacity .24s ease,
+      transform .34s cubic-bezier(.22,.8,.2,1)!important;
+  }
+
+  .mobile-dock-item.active{
+    color:#edb13d!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  .mobile-dock-item.active::before{
+    opacity:1!important;
+    transform:scale(1)!important;
+  }
+
+  .mobile-dock-item.active .ui-icon{
+    transform:translateY(-1px) scale(1.08)!important;
+    filter:drop-shadow(0 4px 8px rgba(215,161,58,.16))!important;
+  }
+
+  .mobile-dock-item .ui-icon{
+    transition:
+      transform .30s cubic-bezier(.22,.8,.2,1),
+      filter .30s ease!important;
+  }
+
+  .mobile-dock-item.active span:last-child{
+    color:#edb13d!important;
+  }
+
+  /* WhatsApp keeps its own green identity even while other states move. */
+  .mobile-dock-item[href*="wa.me"],
+  .mobile-dock-item[href*="wa.me"] span:last-child{
+    color:#48dc7d!important;
+  }
+}
+
+@media (max-width:380px){
+  .nav .brand{left:14px!important}
+  .nav .nav-actions{right:14px!important}
+  .nav .nav-logo,
+  .nav.scrolled .nav-logo{width:68px!important;height:58px!important}
+  .nav .cart-trigger,
+  .nav.scrolled .cart-trigger{
+    width:52px!important;
+    min-width:52px!important;
+    height:52px!important;
+    min-height:52px!important;
+  }
+
+  .hero-content .eyebrow{
+    max-width:calc(100vw - 38px)!important;
+    font-size:6.5px!important;
+    letter-spacing:.06em!important;
+    padding-inline:8px!important;
+  }
+}
