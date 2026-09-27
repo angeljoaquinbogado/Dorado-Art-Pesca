@@ -251,51 +251,82 @@ async function cargarProductosDesdeSupabase() {
     try {
         let productos = null;
         let ultimoError = null;
+        const CACHE_KEY = "dorado_catalog_cache_v2";
 
-        // Primero intenta el endpoint del servidor. Un segundo intento cubre
-        // despliegues fríos o fallas transitorias de red en celular.
-        for (let intento = 0; intento < 2 && !productos; intento += 1) {
+        const fetchJsonConTimeout = async (url, options = {}, timeoutMs = 9000) => {
+            const controller = new AbortController();
+            const timer = window.setTimeout(() => controller.abort(), timeoutMs);
             try {
-                const respuesta = await fetch("/api/products", {
-                    headers: { "Accept": "application/json" },
+                return await fetch(url, {
+                    ...options,
+                    signal: controller.signal,
                     cache: "no-store"
                 });
+            } finally {
+                window.clearTimeout(timer);
+            }
+        };
+
+        // Móvil/iPhone: evitamos cualquier respuesta de CDN o caché intermedia
+        // agregando un parámetro único y cabeceras no-cache.
+        for (let intento = 0; intento < 3 && !productos; intento += 1) {
+            try {
+                const respuesta = await fetchJsonConTimeout(
+                    `/api/products?fresh=${Date.now()}-${intento}`,
+                    {
+                        headers: {
+                            "Accept": "application/json",
+                            "Cache-Control": "no-cache",
+                            "Pragma": "no-cache"
+                        }
+                    },
+                    10000
+                );
                 const data = await respuesta.json().catch(() => null);
                 if (!respuesta.ok || !Array.isArray(data)) {
-                    throw new Error(data?.error || "No se pudieron cargar los productos");
+                    throw new Error(data?.error || `No se pudieron cargar los productos (${respuesta.status})`);
                 }
                 productos = data;
             } catch (error) {
                 ultimoError = error;
-                if (intento === 0) {
-                    await new Promise(resolve => window.setTimeout(resolve, 650));
+                if (intento < 2) {
+                    await new Promise(resolve => window.setTimeout(resolve, 500 + intento * 450));
                 }
             }
         }
 
-        // Respaldo: la publishable key de Supabase es pública por diseño.
-        // Si la función /api/products falla pero /api/public-config responde,
-        // el catálogo puede seguir cargando sin exponer secretos.
+        // Segundo camino: consulta pública directa a Supabase. No usa ninguna
+        // clave privada; solamente la publishable key ya destinada al navegador.
         if (!productos) {
             try {
-                const configResponse = await fetch("/api/public-config", {
-                    headers: { "Accept": "application/json" },
-                    cache: "no-store"
-                });
+                const configResponse = await fetchJsonConTimeout(
+                    `/api/public-config?fresh=${Date.now()}`,
+                    {
+                        headers: {
+                            "Accept": "application/json",
+                            "Cache-Control": "no-cache"
+                        }
+                    },
+                    7000
+                );
                 const config = await configResponse.json().catch(() => ({}));
                 if (!configResponse.ok || !config.supabaseUrl || !config.supabasePublishableKey) {
                     throw new Error("Configuración pública no disponible");
                 }
 
                 const query = "select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc";
-                const directResponse = await fetch(`${config.supabaseUrl}/rest/v1/productos?${query}`, {
-                    headers: {
-                        apikey: config.supabasePublishableKey,
-                        Authorization: `Bearer ${config.supabasePublishableKey}`,
-                        Accept: "application/json"
+                const directResponse = await fetchJsonConTimeout(
+                    `${config.supabaseUrl}/rest/v1/productos?${query}&fresh=${Date.now()}`,
+                    {
+                        headers: {
+                            apikey: config.supabasePublishableKey,
+                            Authorization: `Bearer ${config.supabasePublishableKey}`,
+                            Accept: "application/json",
+                            "Cache-Control": "no-cache"
+                        }
                     },
-                    cache: "no-store"
-                });
+                    10000
+                );
                 const directRows = await directResponse.json().catch(() => null);
                 if (!directResponse.ok || !Array.isArray(directRows)) {
                     throw new Error("No se pudo usar el respaldo del catálogo");
@@ -320,9 +351,27 @@ async function cargarProductosDesdeSupabase() {
             }
         }
 
+        // Último respaldo: si el dispositivo ya cargó el catálogo alguna vez,
+        // lo mostramos en vez de dejar la tienda vacía durante una falla de red.
+        if (!productos) {
+            try {
+                const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+                if (Array.isArray(cached?.products) && cached.products.length) {
+                    productos = cached.products;
+                }
+            } catch {}
+        }
+
         if (!Array.isArray(productos)) {
             throw ultimoError || new Error("Respuesta de productos inválida");
         }
+
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                savedAt: Date.now(),
+                products: productos
+            }));
+        } catch {}
 
         catalogoProductos.clear();
 
