@@ -1384,3 +1384,136 @@ body::-webkit-scrollbar-corner{
     flex:0 0 10px!important;
   }
 }
+
+
+/* =========================================================
+   DARK CONTACT + GOOGLE MAP — 2026-09-27
+   Visually integrate the embedded Google map and contact cards
+   with DORADO's navy palette without changing location behavior.
+   ========================================================= */
+
+#contacto.location{
+  background:var(--dorado-bg)!important;
+}
+
+#contacto .location-box{
+  background:var(--dorado-bg-2)!important;
+  border-color:rgba(241,236,227,.10)!important;
+  box-shadow:0 18px 44px rgba(5,13,19,.16)!important;
+}
+
+/* Contact information cards */
+#contacto .contact-line{
+  background:var(--dorado-panel)!important;
+  border-color:rgba(241,236,227,.10)!important;
+  color:var(--dorado-text)!important;
+  box-shadow:0 8px 20px rgba(5,13,19,.08)!important;
+}
+
+#contacto .contact-line:hover{
+  background:var(--dorado-panel-2)!important;
+  border-color:rgba(217,166,61,.34)!important;
+  box-shadow:0 11px 24px rgba(5,13,19,.12)!important;
+}
+
+#contacto .contact-line small{
+  color:#95a5ae!important;
+}
+
+#contacto .contact-line strong{
+  color:#f2ede5!important;
+}
+
+#contacto .contact-line .contact-detail{
+  color:#aebbc2!important;
+}
+
+#contacto .contact-icon{
+  background:rgba(217,166,61,.11)!important;
+  border-color:rgba(217,166,61,.18)!important;
+  color:#e4b04b!important;
+}
+
+#contacto .store-open-status.is-open{
+  color:#70df98!important;
+  background:rgba(37,211,102,.10)!important;
+}
+
+#contacto .store-open-status.is-closed{
+  color:#a9b4ba!important;
+  background:rgba(241,236,227,.055)!important;
+}
+
+/* Secondary social button should also remain dark. */
+#contacto .contact-actions>a[href*="instagram.com"]{
+  background:var(--dorado-panel)!important;
+  color:#f2ede5!important;
+  border-color:rgba(241,236,227,.13)!important;
+}
+
+#contacto .contact-actions>a[href*="instagram.com"]:hover{
+  background:var(--dorado-panel-2)!important;
+  color:#fff!important;
+  border-color:rgba(225,92,157,.34)!important;
+}
+
+/* Dark visual treatment for Google Maps embed.
+   The iframe remains fully interactive and opens Google Maps normally. */
+#contacto .dorado-map-live{
+  position:relative!important;
+  background:#0d1b25!important;
+  border-color:rgba(241,236,227,.11)!important;
+  box-shadow:0 18px 42px rgba(5,13,19,.18)!important;
+  isolation:isolate!important;
+}
+
+#contacto .dorado-map-live iframe{
+  filter:
+    invert(.88)
+    hue-rotate(180deg)
+    saturate(.72)
+    brightness(.82)
+    contrast(1.08)!important;
+  opacity:.96!important;
+}
+
+#contacto .dorado-map-live::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(180deg,rgba(16,33,45,.05),rgba(16,33,45,.15)),
+    radial-gradient(circle at 50% 48%,transparent 0 45%,rgba(8,18,26,.08) 100%)!important;
+}
+
+#contacto .map-open-button{
+  z-index:3!important;
+  background:rgba(16,33,45,.94)!important;
+  color:#f4efe7!important;
+  border:1px solid rgba(241,236,227,.14)!important;
+  box-shadow:0 12px 28px rgba(5,13,19,.24)!important;
+}
+
+#contacto .map-open-button:hover{
+  background:#d9a63d!important;
+  color:#10212d!important;
+  border-color:#d9a63d!important;
+}
+
+/* Keep map legible and performant on smaller devices. */
+@media (max-width:700px){
+  #contacto .dorado-map-live{
+    min-height:350px!important;
+  }
+
+  #contacto .dorado-map-live iframe{
+    filter:
+      invert(.86)
+      hue-rotate(180deg)
+      saturate(.70)
+      brightness(.84)
+      contrast(1.06)!important;
+  }
+}
