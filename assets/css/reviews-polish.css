@@ -318,3 +318,196 @@
     display:none!important;
   }
 }
+
+
+/* =========================================================
+   GOOGLE REVIEW CARD DETAILS — 2026-09-27
+   Uses the provided Google G + blue review badge assets.
+   Keeps the existing continuous marquee implementation intact.
+   ========================================================= */
+
+#opiniones .review-card{
+  width:360px!important;
+  min-height:206px!important;
+  padding:18px 18px 20px!important;
+  border:1px solid rgba(255,255,255,.075)!important;
+  border-left:1px solid rgba(255,255,255,.075)!important;
+  border-radius:18px!important;
+  background:#17191b!important;
+  box-shadow:0 12px 26px rgba(3,9,14,.12)!important;
+}
+
+#opiniones .review-card:hover{
+  background:#1a1d20!important;
+  border-color:rgba(215,161,58,.18)!important;
+  border-left-color:rgba(215,161,58,.18)!important;
+}
+
+#opiniones .review-card-top{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) 22px!important;
+  gap:11px!important;
+  align-items:start!important;
+}
+
+#opiniones .review-avatar{
+  position:relative!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  background:linear-gradient(145deg,#273640,#1d2a32)!important;
+  color:#f0b548!important;
+  box-shadow:none!important;
+}
+
+#opiniones .review-avatar-initial{
+  position:absolute!important;
+  inset:0!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#f2bd52!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+
+#opiniones .review-avatar img{
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  background:#1d2a32!important;
+}
+
+#opiniones .review-author{
+  min-width:0!important;
+  padding-top:1px!important;
+}
+
+#opiniones .review-author-line{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-width:0!important;
+}
+
+#opiniones .review-author strong{
+  min-width:0!important;
+  color:#f7f5ef!important;
+  font-size:11.5px!important;
+  font-weight:800!important;
+  line-height:1.2!important;
+}
+
+#opiniones .review-verified-badge{
+  width:16px!important;
+  height:16px!important;
+  flex:0 0 16px!important;
+  object-fit:contain!important;
+}
+
+#opiniones .review-author small{
+  margin-top:4px!important;
+  color:#8d979d!important;
+  font-size:8.5px!important;
+}
+
+#opiniones .review-google-logo{
+  width:21px!important;
+  height:21px!important;
+  margin-top:1px!important;
+  object-fit:contain!important;
+  justify-self:end!important;
+}
+
+#opiniones .review-stars{
+  margin-top:14px!important;
+  color:#ffbf00!important;
+  font-size:16px!important;
+  letter-spacing:.035em!important;
+}
+
+#opiniones .review-card p{
+  margin-top:12px!important;
+  color:#eef0ef!important;
+  font-size:10.8px!important;
+  line-height:1.55!important;
+}
+
+#opiniones .reviews-grid .review-card{
+  width:auto!important;
+  min-height:190px!important;
+}
+
+@media(max-width:820px){
+  #opiniones .review-card{
+    width:326px!important;
+    min-height:198px!important;
+    padding:17px!important;
+  }
+
+  #opiniones .review-card-top{
+    grid-template-columns:40px minmax(0,1fr) 21px!important;
+    gap:10px!important;
+  }
+
+  #opiniones .review-avatar{
+    width:40px!important;
+    height:40px!important;
+  }
+
+  #opiniones .review-google-logo{
+    width:20px!important;
+    height:20px!important;
+  }
+}
+
+@media(max-width:430px){
+  #opiniones .review-card{
+    width:min(306px,88vw)!important;
+    min-height:190px!important;
+    padding:16px!important;
+    border-radius:16px!important;
+  }
+
+  #opiniones .review-card-top{
+    grid-template-columns:38px minmax(0,1fr) 20px!important;
+    gap:9px!important;
+  }
+
+  #opiniones .review-avatar{
+    width:38px!important;
+    height:38px!important;
+  }
+
+  #opiniones .review-author strong{
+    font-size:10.8px!important;
+  }
+
+  #opiniones .review-verified-badge{
+    width:15px!important;
+    height:15px!important;
+    flex-basis:15px!important;
+  }
+
+  #opiniones .review-google-logo{
+    width:19px!important;
+    height:19px!important;
+  }
+
+  #opiniones .review-stars{
+    margin-top:12px!important;
+    font-size:15px!important;
+  }
+
+  #opiniones .review-card p{
+    margin-top:11px!important;
+    font-size:9.9px!important;
+  }
+}
