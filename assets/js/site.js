@@ -3368,19 +3368,21 @@ comprobarRetornoPago();
     const filterPanel=document.getElementById("reviews-filter-panel");
     const ratingFilter=document.getElementById("reviews-rating-filter");
     const grid=document.getElementById("reviews-grid");
+    const ratingSummary=document.getElementById("reviews-rating-summary");
+    const googleLink=document.querySelector(".reviews-google-link");
     if(!marquee||!track||!empty||!filterButton||!filterPanel||!ratingFilter||!grid)return;
 
     let reviews=[];
     const stars=rating=>"★".repeat(Math.max(1,Math.min(5,Number(rating)||1)))+"☆".repeat(Math.max(0,5-(Number(rating)||1)));
     const safePhoto=url=>{try{const parsed=new URL(String(url||""));return parsed.protocol==="https:"?parsed.toString():"";}catch{return "";}};
-    const dateLabel=value=>{const date=new Date(value||"");return Number.isFinite(date.getTime())?date.toLocaleDateString("es-AR",{year:"numeric",month:"short"}):"";};
+    const dateLabel=review=>{const literal=String(review?.fecha_texto||"").trim();if(literal)return literal;const date=new Date(review?.fecha_resena||"");return Number.isFinite(date.getTime())?date.toLocaleDateString("es-AR",{year:"numeric",month:"short"}):"";};
     const cardMarkup=review=>{
         const photo=safePhoto(review.avatar_url);
         const initial=textoSeguro(String(review.autor||"Cliente").trim().charAt(0).toUpperCase()||"C");
         return `<article class="review-card">
           <div class="review-card-top">
             <span class="review-avatar">${photo?`<img src="${textoSeguro(photo)}" alt="" loading="lazy" decoding="async">`:initial}</span>
-            <span class="review-author"><strong>${textoSeguro(review.autor||"Cliente")}</strong><small>${textoSeguro(dateLabel(review.fecha_resena))}</small></span>
+            <span class="review-author"><strong>${textoSeguro(review.autor||"Cliente")}</strong><small>${textoSeguro(dateLabel(review))}</small></span>
             <span class="review-source" aria-label="Google">G</span>
           </div>
           <div class="review-stars" aria-label="${Number(review.calificacion)||0} de 5 estrellas">${stars(review.calificacion)}</div>
@@ -3419,7 +3421,19 @@ comprobarRetornoPago();
             const response=await fetch("/api/reviews",{headers:{Accept:"application/json"},cache:"no-store"});
             const data=await response.json().catch(()=>({}));
             reviews=Array.isArray(data.reviews)?data.reviews:[];
-        }catch{reviews=[];}
+            if(googleLink&&data?.maps_url)googleLink.href=String(data.maps_url);
+            if(ratingSummary){
+                const total=Number(data?.summary?.total)||reviews.length;
+                const average=Number(data?.summary?.average);
+                ratingSummary.textContent=total&&Number.isFinite(average)
+                    ? `${average.toLocaleString("es-AR",{minimumFractionDigits:1,maximumFractionDigits:1})} · ${total} opiniones en Google`
+                    : "";
+                ratingSummary.hidden=!total;
+            }
+        }catch{
+            reviews=[];
+            if(ratingSummary)ratingSummary.hidden=true;
+        }
 
         const section=document.getElementById("opiniones");
         const hasReviews=reviews.length>0;

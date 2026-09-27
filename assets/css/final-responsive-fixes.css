@@ -817,3 +817,76 @@ select.payment-native-select{
   .payment-picker-menu,
   .checkout-address-suggestions{max-height:54dvh!important}
 }
+
+
+/* ---------- Reseñas Google: fila animada real ---------- */
+.reviews-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:9px!important;
+  flex-wrap:wrap!important;
+}
+.reviews-rating-summary{
+  min-height:42px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  padding:0 14px!important;
+  border:1px solid rgba(214,168,47,.24)!important;
+  border-radius:999px!important;
+  background:rgba(214,168,47,.08)!important;
+  color:#e7c05a!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.05em!important;
+  white-space:nowrap!important;
+}
+.reviews-marquee-shell{
+  position:relative!important;
+  overflow:hidden!important;
+  margin-top:28px!important;
+  padding:8px 0!important;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent)!important;
+  mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent)!important;
+}
+.reviews-marquee-track{
+  display:flex!important;
+  width:max-content!important;
+  will-change:transform!important;
+  animation:doradoReviewsMarquee 46s linear infinite!important;
+}
+.reviews-marquee-set{
+  display:flex!important;
+  gap:14px!important;
+  padding-right:14px!important;
+}
+.reviews-marquee-shell:hover .reviews-marquee-track{
+  animation-play-state:paused!important;
+}
+.review-card{
+  flex:0 0 auto!important;
+}
+@keyframes doradoReviewsMarquee{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-50%,0,0)}
+}
+@media(max-width:700px){
+  .reviews-actions{justify-content:flex-start!important}
+  .reviews-rating-summary{
+    min-height:38px!important;
+    padding:0 11px!important;
+    font-size:7.5px!important;
+  }
+  .reviews-marquee-track{animation-duration:38s!important}
+  .reviews-marquee-set{gap:10px!important;padding-right:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .reviews-marquee-shell{
+    overflow:auto!important;
+    -webkit-mask-image:none!important;
+    mask-image:none!important;
+  }
+  .reviews-marquee-track{animation:none!important}
+  .reviews-marquee-set[aria-hidden="true"]{display:none!important}
+}
+

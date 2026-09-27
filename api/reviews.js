@@ -1,6 +1,6 @@
 import { fetchWithTimeout } from "../lib/security.js";
 
-const MAPS_URL = "https://maps.app.goo.gl/TwX97iRfzjRwDdy38";
+const MAPS_URL = "https://maps.app.goo.gl/jWDsmRDAwD2SeWJS8";
 
 function safeHttpsUrl(value) {
   try {
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await sb("/rest/v1/resenas_google?activa=eq.true&select=id,external_id,autor,avatar_url,calificacion,comentario,fecha_resena,fuente_url&order=calificacion.desc,fecha_resena.desc&limit=100");
+    const response = await sb("/rest/v1/resenas_google?activa=eq.true&select=id,external_id,autor,avatar_url,calificacion,comentario,fecha_resena,fecha_texto,fuente_url&order=id.asc&limit=100");
     const rows = await response.json().catch(() => []);
     if (!response.ok || !Array.isArray(rows)) return res.status(200).json({ reviews: [], maps_url: MAPS_URL });
 
@@ -40,9 +40,20 @@ export default async function handler(req, res) {
       calificacion: Math.max(1, Math.min(5, Number(row.calificacion) || 1)),
       comentario: String(row.comentario || "").slice(0, 1600),
       fecha_resena: row.fecha_resena || null,
+      fecha_texto: String(row.fecha_texto || "").slice(0, 80),
       fuente_url: safeHttpsUrl(row.fuente_url) || MAPS_URL
     }));
-    return res.status(200).json({ reviews, maps_url: MAPS_URL });
+
+    const total = reviews.length;
+    const average = total
+      ? Math.round((reviews.reduce((sum, item) => sum + item.calificacion, 0) / total) * 10) / 10
+      : null;
+
+    return res.status(200).json({
+      reviews,
+      maps_url: MAPS_URL,
+      summary: { total, average }
+    });
   } catch (error) {
     console.error("Reviews endpoint error:", error?.message || error);
     return res.status(200).json({ reviews: [], maps_url: MAPS_URL });
