@@ -2124,42 +2124,42 @@ cargarProductosDesdeSupabase();
 comprobarRetornoPago();
 
 
-// Navegación móvil: resalta la sección visible sin interferir con el carrito.
+// Navegación móvil: resalta la sección visible sin trabajo por frame.
 (function configurarDockMovil(){
     const items = Array.from(document.querySelectorAll('.mobile-dock-item[data-dock]'));
-    if (!items.length) return;
-
     const productos = document.getElementById('productos');
-    let productosTop = productos?.offsetTop ?? Infinity;
-    let dockRaf = 0;
-    let dockState = null;
+    if (!items.length || !productos) return;
 
-    const actualizar = () => {
-        dockRaf = 0;
-        const y = window.scrollY + window.innerHeight * 0.34;
-        const enProductos = y >= productosTop;
-        if (enProductos === dockState) return;
-        dockState = enProductos;
+    const setActive = enProductos => {
         items.forEach(item => {
-            item.classList.toggle('active', enProductos ? item.dataset.dock === 'productos' : item.dataset.dock === 'inicio');
+            item.classList.toggle(
+                'active',
+                enProductos ? item.dataset.dock === 'productos' : item.dataset.dock === 'inicio'
+            );
         });
     };
 
-    const programarActualizacion = () => {
-        if (!dockRaf) dockRaf = requestAnimationFrame(actualizar);
-    };
+    if(!("IntersectionObserver" in window)){
+        setActive(false);
+        return;
+    }
 
-    const medir = () => {
-        productosTop = productos?.offsetTop ?? Infinity;
-        programarActualizacion();
-    };
+    const sentinel=document.createElement("span");
+    sentinel.className="products-scroll-sentinel";
+    sentinel.setAttribute("aria-hidden","true");
+    productos.parentNode?.insertBefore(sentinel,productos);
 
-    window.addEventListener('scroll', programarActualizacion, { passive:true });
-    window.addEventListener('resize', medir, { passive:true });
-    window.addEventListener('load', medir, { once:true });
-    medir();
+    const dockObserver=new IntersectionObserver(([entry])=>{
+        const rootTop=entry.rootBounds?.top ?? 0;
+        const passed=entry.boundingClientRect.top < rootTop;
+        setActive(passed);
+    },{
+        threshold:0,
+        rootMargin:"-34% 0px -65% 0px"
+    });
+
+    dockObserver.observe(sentinel);
 })();
-
 // ==============================
 
 (() => {
