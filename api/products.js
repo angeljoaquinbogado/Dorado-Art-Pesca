@@ -3,9 +3,9 @@ import { fetchWithTimeout } from "../lib/security.js";
 
 export default async function handler(req, res) {
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-    res.setHeader("Pragma", "no-cache");
-    res.setHeader("Expires", "0");
+    res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+    res.setHeader("CDN-Cache-Control", "public, s-maxage=10, stale-while-revalidate=60");
+    res.setHeader("Vercel-CDN-Cache-Control", "public, s-maxage=10, stale-while-revalidate=60");
 
     if (req.method !== "GET") {
         res.setHeader("Allow", "GET");

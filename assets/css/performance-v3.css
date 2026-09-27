@@ -1,0 +1,100 @@
+/* =========================================================
+   DORADO — PERFORMANCE V3 / HERO + SCALE
+   Misma composición visual, menos capas y cero blur en tiempo real
+   en la zona superior.
+   ========================================================= */
+
+/* El wrapper ya pinta la misma fotografía y degradado.
+   Desactivar la copia interna evita decodificar/componer el hero dos veces. */
+@media (min-width:821px){
+  .hero-combined-scene{
+    background:
+      linear-gradient(180deg,rgba(2,8,12,.05) 0%,rgba(2,8,12,.10) 52%,rgba(2,8,12,.62) 100%),
+      url('../images/backgrounds/hero-bg-dorado.webp') center 49%/cover no-repeat!important;
+    background-attachment:scroll!important;
+    contain:layout style;
+  }
+
+  .hero-combined-scene .hero-bg{
+    display:none!important;
+  }
+}
+
+/* En móvil el fondo ya vive directamente en .hero. La capa hero-bg tampoco
+   aporta imagen, por lo que se elimina del pipeline de pintura. */
+@media (max-width:820px){
+  .hero-combined-scene .hero-bg{
+    display:none!important;
+  }
+}
+
+/* La tarjeta conserva el aspecto oscuro/translúcido mediante color compuesto,
+   pero evita backdrop-filter, una de las operaciones más costosas al hacer scroll. */
+.hero-content{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:
+    linear-gradient(145deg,rgba(3,10,15,.955),rgba(3,10,15,.84))!important;
+  contain:layout style;
+}
+
+/* Misma idea para la banda de beneficios superpuesta. */
+.dorado-field-strip{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:rgba(5,14,21,.91)!important;
+  contain:layout style;
+}
+
+/* El botón sigue viéndose translúcido sin recalcular el fondo en cada frame. */
+.hero-secondary{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  background:rgba(10,15,20,.78)!important;
+}
+
+/* Evitar promociones a GPU innecesarias en elementos grandes del primer viewport. */
+.hero-combined-scene,
+.hero,
+.hero-shell,
+.hero-content,
+.dorado-field-strip{
+  will-change:auto!important;
+}
+
+/* Las animaciones de entrada son de una sola ejecución.
+   Luego de la entrada no dejamos filtros ni capas activas. */
+body.intro-finished .hero-content,
+body.intro-finished .dorado-field-strip{
+  filter:none!important;
+}
+
+/* En pantallas táctiles priorizamos scroll perfecto: ninguna animación decorativa
+   permanente en el primer viewport. Se preservan todos los elementos. */
+@media (pointer:coarse), (max-width:820px){
+  .hero-combined-scene *,
+  .hero *{
+    animation-duration:.001ms;
+    animation-iteration-count:1;
+  }
+
+  .brand-intro:not(.hide) *{
+    animation-duration:inherit;
+    animation-iteration-count:inherit;
+  }
+}
+
+/* El botón flotante no necesita una capa compleja permanente. */
+.float-wa{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  will-change:auto!important;
+}
+
+/* Reduce cálculos de pintura al recorrer el documento. */
+@supports (content-visibility:auto){
+  .dorado-field-strip{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 170px;
+  }
+}

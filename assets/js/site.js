@@ -5,6 +5,23 @@ const DORADO_WHATSAPP = "5491168070039";
 const catalogoProductos = new Map();
 let productoModalActual = null;
 let checkoutCoupon = null;
+let doradoPublicConfigPromise = null;
+
+function obtenerConfigPublica(){
+    if(!doradoPublicConfigPromise){
+        doradoPublicConfigPromise = fetch("/api/public-config", {
+            headers:{Accept:"application/json"}
+        }).then(async response=>{
+            const data=await response.json().catch(()=>({}));
+            if(!response.ok) throw new Error(data?.error||"No se pudo cargar la configuración pública.");
+            return data;
+        }).catch(error=>{
+            doradoPublicConfigPromise=null;
+            throw error;
+        });
+    }
+    return doradoPublicConfigPromise;
+}
 
 const formatoPesos = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -217,7 +234,7 @@ async function cargarMasElegidos(){
     const grid=document.getElementById("best-sellers-grid");
     if(!section||!grid)return;
     try{
-        const response=await fetch("/api/best-sellers",{headers:{Accept:"application/json"},cache:"no-store"});
+        const response=await fetch("/api/best-sellers",{headers:{Accept:"application/json"}});
         const data=await response.json().catch(()=>({}));
         if(!response.ok||!Array.isArray(data.ids))return;
         const products=data.ids.map(id=>catalogoProductos.get(String(id))).filter(Boolean).filter(product=>Math.max(0,Number(product.stock)||0)>0).slice(0,6);
@@ -260,14 +277,11 @@ async function cargarProductosDesdeSupabase() {
 
             let respuesta;
             try {
-                respuesta = await fetch(`/api/products?fresh=${Date.now()}-${intento}`, {
+                respuesta = await fetch("/api/products", {
                     method: "GET",
                     headers: {
-                        "Accept": "application/json",
-                        "Cache-Control": "no-cache",
-                        "Pragma": "no-cache"
+                        "Accept": "application/json"
                     },
-                    cache: "no-store",
                     signal: controller.signal
                 });
             } finally {
@@ -2998,8 +3012,7 @@ comprobarRetornoPago();
 
     (async()=>{
         try{
-            const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
-            const data=await response.json().catch(()=>({}));
+            const data=await obtenerConfigPublica();
             const bank=data?.bankTransfer||{};
             const fields={
                 "bank-transfer-alias":bank.alias,
@@ -3325,10 +3338,9 @@ comprobarRetornoPago();
     const modoOption=payment?.querySelector('option[value="modo"]');
     if(payment){
       try{
-        const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
-        const data=await response.json().catch(()=>({}));
-        const mpEnabled=Boolean(response.ok&&data?.mercadoPagoEnabled);
-        const modoEnabled=Boolean(response.ok&&data?.modoEnabled);
+        const data=await obtenerConfigPublica();
+        const mpEnabled=Boolean(data?.mercadoPagoEnabled);
+        const modoEnabled=Boolean(data?.modoEnabled);
         window.doradoPaymentAvailability={mercadoPago:mpEnabled,modo:modoEnabled};
         if(mpOption)mpOption.textContent=mpEnabled?"Mercado Pago":"Mercado Pago — a activar";
         if(cardOption)cardOption.textContent=mpEnabled?"Tarjeta de débito / crédito":"Tarjeta de débito / crédito — a activar";
@@ -3382,9 +3394,8 @@ comprobarRetornoPago();
     const states=Array.from(document.querySelectorAll('[data-payment-status="mp"],[data-payment-status="card"]'));
     if(!states.length)return;
     try{
-      const response=await fetch("/api/public-config",{headers:{Accept:"application/json"}});
-      const data=await response.json().catch(()=>({}));
-      const enabled=Boolean(response.ok&&data?.mercadoPagoEnabled);
+      const data=await obtenerConfigPublica();
+      const enabled=Boolean(data?.mercadoPagoEnabled);
       states.forEach(el=>{el.textContent=enabled?"Disponible":"A activar";el.classList.toggle("ready",enabled);});
     }catch{
       states.forEach(el=>{el.textContent="A activar";el.classList.remove("ready");});
@@ -3451,7 +3462,7 @@ comprobarRetornoPago();
 
     (async()=>{
         try{
-            const response=await fetch("/api/reviews",{headers:{Accept:"application/json"},cache:"no-store"});
+            const response=await fetch("/api/reviews",{headers:{Accept:"application/json"}});
             const data=await response.json().catch(()=>({}));
             reviews=Array.isArray(data.reviews)?data.reviews:[];
             if(googleLink&&data?.maps_url)googleLink.href=String(data.maps_url);
