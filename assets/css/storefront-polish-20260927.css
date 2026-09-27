@@ -2235,3 +2235,100 @@ body::-webkit-scrollbar-corner{
     min-height:48px!important;
   }
 }
+
+
+/* =========================================================
+   FOOTER INFORMATION ANCHOR + LEGAL VISIBILITY — 2026-09-27
+   Adds a clear final information destination and keeps the legal
+   line readable on every viewport.
+   ========================================================= */
+
+#informacion{
+  scroll-margin-top:92px!important;
+}
+
+.footer-bottom{
+  position:relative!important;
+  z-index:2!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:18px!important;
+  min-height:48px!important;
+  margin-top:0!important;
+  padding:18px 0 6px!important;
+  border-top:1px solid rgba(241,236,227,.14)!important;
+  color:#b9c3c8!important;
+  font-size:10px!important;
+  line-height:1.45!important;
+  font-weight:650!important;
+  letter-spacing:.01em!important;
+  text-transform:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+.footer-bottom .footer-rights{
+  color:#e1e7ea!important;
+  font-weight:750!important;
+}
+
+.footer-bottom .footer-address{
+  color:#9eabb2!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+}
+
+/* Six top-level links now fit without touching the action cluster. */
+@media (min-width:1181px){
+  .nav .navlinks{
+    gap:22px!important;
+  }
+
+  .nav:not(.scrolled) .navlinks{
+    left:45.75%!important;
+  }
+
+  .nav.scrolled .navlinks{
+    left:42.5%!important;
+    gap:18px!important;
+  }
+}
+
+@media (min-width:1051px) and (max-width:1180px){
+  .nav .navlinks{
+    gap:13px!important;
+  }
+
+  .nav .navlinks a{
+    font-size:9px!important;
+  }
+
+  .nav:not(.scrolled) .navlinks{
+    left:44%!important;
+  }
+
+  .nav.scrolled .navlinks{
+    left:40.5%!important;
+    gap:11px!important;
+  }
+}
+
+@media (max-width:700px){
+  #informacion{
+    scroll-margin-top:84px!important;
+  }
+
+  .footer-bottom{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:5px!important;
+    padding:16px 0 8px!important;
+    font-size:10.5px!important;
+    text-align:left!important;
+  }
+
+  .footer-bottom .footer-address{
+    text-align:left!important;
+    white-space:normal!important;
+  }
+}
