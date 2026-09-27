@@ -765,6 +765,8 @@ function renderProducts(){
         return;
     }
 
+    const productRows=document.createDocumentFragment();
+
     filtered.forEach(p=>{
         const tr=document.createElement("tr");
         const stock=Math.max(0,Number(p.stock)||0);
@@ -780,8 +782,9 @@ function renderProducts(){
         `;
         tr.querySelector(".edit").onclick=()=>editProduct(p.id);
         tr.querySelector(".remove").onclick=()=>deleteProduct(p.id,p.nombre);
-        tbody.appendChild(tr);
+        productRows.appendChild(tr);
     });
+    tbody.appendChild(productRows);
 }
 
 function resetProductForm(){
@@ -1116,6 +1119,8 @@ function renderOrders(){
         return;
     }
 
+    const orderRows=document.createDocumentFragment();
+
     visible.forEach(o=>{
         const tr=document.createElement("tr");
         const date=new Date(o.created_at);
@@ -1140,8 +1145,9 @@ function renderOrders(){
         `;
         tr.querySelector(".fulfillment-select")?.setAttribute("data-order-id",String(o.id));
         tr.querySelector(".order-view")?.setAttribute("data-order-id",String(o.id));
-        tbody.appendChild(tr);
+        orderRows.appendChild(tr);
     });
+    tbody.appendChild(orderRows);
 
     updateOrderSelectionUI();
 }
