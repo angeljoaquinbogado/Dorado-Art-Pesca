@@ -3499,21 +3499,37 @@ comprobarRetornoPago();
     const cardMarkup=review=>{
         const photo=safePhoto(review.avatar_url);
         const initial=textoSeguro(String(review.autor||"Cliente").trim().charAt(0).toUpperCase()||"C");
+        const author=textoSeguro(review.autor||"Cliente");
         return `<article class="review-card">
           <div class="review-card-top">
-            <span class="review-avatar">${photo?`<img src="${textoSeguro(photo)}" alt="" loading="lazy" decoding="async">`:initial}</span>
-            <span class="review-author"><strong>${textoSeguro(review.autor||"Cliente")}</strong><small>${textoSeguro(dateLabel(review))}</small></span>
+            <span class="review-avatar">
+              <span class="review-avatar-initial" aria-hidden="true">${initial}</span>
+              ${photo?`<img src="${textoSeguro(photo)}" alt="Foto de perfil de ${author}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`:""}
+            </span>
+            <span class="review-author">
+              <span class="review-author-line">
+                <strong>${author}</strong>
+                <img class="review-verified-badge" src="assets/icons/review-verified-blue.svg" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </span>
+              <small>${textoSeguro(dateLabel(review))}</small>
+            </span>
+            <img class="review-google-logo" src="assets/icons/google-g.svg" alt="Google" loading="lazy" decoding="async">
           </div>
           <div class="review-stars" aria-label="${Number(review.calificacion)||0} de 5 estrellas">${stars(review.calificacion)}</div>
           <p>${textoSeguro(review.comentario||"Sin comentario escrito.")}</p>
         </article>`;
+    };
+    const wireAvatarFallbacks=root=>{
+        root?.querySelectorAll(".review-avatar img").forEach(img=>{
+            img.addEventListener("error",()=>img.remove(),{once:true});
+        });
     };
     const renderMarquee=()=>{
         const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,5);
         if(!best.length){marquee.hidden=true;return;}
         marquee.hidden=false;
         const set=best.map(cardMarkup).join("");
-        track.innerHTML=`<div class="reviews-marquee-set">${set}</div><div class="reviews-marquee-set" aria-hidden="true">${set}</div>`;
+        track.innerHTML=`<div class="reviews-marquee-set">${set}</div><div class="reviews-marquee-set" aria-hidden="true">${set}</div>`;\n        wireAvatarFallbacks(track);
     };
     const renderFilter=()=>{
         const value=ratingFilter.value;
@@ -3524,7 +3540,7 @@ comprobarRetornoPago();
             if(value==="low")return rating<=3;
             return true;
         });
-        grid.innerHTML=filtered.length?filtered.map(cardMarkup).join(""):'<div class="reviews-filter-empty">No hay reseñas para este filtro.</div>';
+        grid.innerHTML=filtered.length?filtered.map(cardMarkup).join(""):'<div class="reviews-filter-empty">No hay reseñas para este filtro.</div>';\n        wireAvatarFallbacks(grid);
     };
     filterButton.addEventListener("click",()=>{
         const opening=filterPanel.hidden;
