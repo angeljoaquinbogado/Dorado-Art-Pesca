@@ -1,111 +1,163 @@
 /* =========================================================
-   DORADO — MOTION CRAFT SYSTEM
-   Basado en las guías de animación aportadas por el usuario:
-   - entrar/salir: strong ease-out
-   - movimiento en pantalla: strong ease-in-out
-   - drawers: curva iOS-like
-   - motion frecuente: mínimo
-   - solo transform + opacity para movimiento
+   DORADO — FLUID MOTION SYSTEM V3
+   Inspirado en principios de interfaces físicas y fluidas:
+   respuesta inmediata, continuidad espacial, gestos interruptibles,
+   movimiento compositor-friendly y accesibilidad por defecto.
+
+   Reglas del sistema:
+   - movimiento: transform + opacity;
+   - loops: velocidad lineal;
+   - drawers: recorrido simétrico + gesto 1:1 en touch;
+   - press: feedback inmediato y corto;
+   - no blur animado ni will-change permanente;
+   - reduced motion/transparency/contrast respetados.
    ========================================================= */
 
 :root{
-  --ease-out:cubic-bezier(0.23,1,0.32,1);
-  --ease-in-out:cubic-bezier(0.77,0,0.175,1);
-  --ease-drawer:cubic-bezier(0.32,0.72,0,1);
-  --motion-press:160ms;
-  --motion-popover:180ms;
-  --motion-ui:200ms;
-  --motion-modal:250ms;
-  --motion-marketing:560ms;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+  --ease-drawer:cubic-bezier(.32,.72,0,1);
+  --ease-arrive:cubic-bezier(.16,1,.3,1);
+
+  --motion-press:110ms;
+  --motion-fast:150ms;
+  --motion-ui:220ms;
+  --motion-panel:380ms;
+  --motion-drawer:420ms;
+  --motion-focal:560ms;
 }
 
-/* ---------- Scroll reveal: marketing, una sola vez ---------- */
+html{
+  font-optical-sizing:auto;
+}
+
+body{
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+
+:is(h1,h2,h3,.hero-content h1,.section-head h2,.checkout-title,.dynamic-product-name){
+  font-optical-sizing:auto;
+}
+
+/* Sentinels never participate visually. */
+.nav-scroll-sentinel,
+.products-scroll-sentinel{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+/* ---------- Arrival: authored once, then completely idle ---------- */
 html.motion-enhanced .motion-item{
   --motion-x:0px;
-  --motion-y:16px;
+  --motion-y:13px;
   --motion-scale:1;
+  --motion-delay:0ms;
   opacity:0!important;
   transform:translate3d(var(--motion-x),var(--motion-y),0) scale(var(--motion-scale))!important;
   transition:
-    opacity 420ms var(--ease-out) var(--motion-delay),
-    transform var(--motion-marketing) var(--ease-out) var(--motion-delay)!important;
-  backface-visibility:hidden;
+    opacity 300ms var(--ease-arrive) var(--motion-delay),
+    transform var(--motion-focal) var(--ease-arrive) var(--motion-delay)!important;
+  will-change:auto!important;
 }
 
-html.motion-enhanced .motion-left{--motion-x:-20px;--motion-y:0px}
-html.motion-enhanced .motion-right{--motion-x:20px;--motion-y:0px}
-html.motion-enhanced .motion-up{--motion-x:0px;--motion-y:16px}
-html.motion-enhanced .motion-down{--motion-x:0px;--motion-y:-14px}
-html.motion-enhanced .motion-scale{--motion-x:0px;--motion-y:10px;--motion-scale:.975}
+html.motion-enhanced .motion-left{--motion-x:-18px;--motion-y:0}
+html.motion-enhanced .motion-right{--motion-x:18px;--motion-y:0}
+html.motion-enhanced .motion-up{--motion-y:13px}
+html.motion-enhanced .motion-down{--motion-y:-11px}
+html.motion-enhanced .motion-scale{--motion-y:7px;--motion-scale:.984}
 
 html.motion-enhanced .motion-item.motion-visible{
   opacity:1!important;
   transform:translate3d(0,0,0) scale(1)!important;
-  will-change:auto!important;
 }
 
-/* ---------- Botones: respuesta física corta ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .hero-content .eyebrow,
+  .hero-content h1,
+  .hero-content .hero-lead,
+  .hero-content .hero-actions,
+  .hero-content .hero-proof{
+    animation-duration:var(--motion-focal)!important;
+    animation-timing-function:var(--ease-arrive)!important;
+    animation-fill-mode:both!important;
+  }
+
+  .hero-content .eyebrow{animation-delay:35ms!important}
+  .hero-content h1{animation-delay:80ms!important}
+  .hero-content .hero-lead{animation-delay:135ms!important}
+  .hero-content .hero-actions{animation-delay:190ms!important}
+  .hero-content .hero-proof{animation-delay:245ms!important}
+}
+
+/* ---------- Immediate tactile response ---------- */
 :is(
-  .gold-btn,
-  .outline-btn,
-  .hero-secondary,
-  .nav-cta,
-  .cart-trigger,
-  .orders-trigger,
-  .view-product,
-  .add-card-product,
-  .dynamic-add-cart,
-  .dynamic-add-cart-mobile,
-  .cart-checkout,
-  .checkout-pay,
-  .checkout-wholesale,
-  .reviews-filter-button,
-  .reviews-google-link,
-  .catalog-retry-btn,
-  .map-open-button
+  button,
+  a[href],
+  .category-chip,
+  [role="button"]
+){
+  -webkit-tap-highlight-color:transparent;
+}
+
+:is(
+  .gold-btn,.outline-btn,.hero-btn,.hero-secondary,.nav-cta,.cart-trigger,.orders-trigger,
+  .menu-toggle,.view-product,.add-card-product,.dynamic-add-cart,.dynamic-add-cart-mobile,
+  .cart-checkout,.checkout-pay,.checkout-wholesale,.reviews-filter-button,
+  .reviews-google-link,.catalog-retry-btn,.map-open-button,.category-chip,
+  .mobile-dock-item,.cart-close,.orders-close,.checkout-close,.product-detail-close
 ){
   transition:
-    transform var(--motion-press) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out),
     background-color var(--motion-ui) ease,
     border-color var(--motion-ui) ease,
-    color var(--motion-ui) ease!important;
+    color var(--motion-ui) ease,
+    opacity var(--motion-ui) ease!important;
+  touch-action:manipulation;
 }
 
 :is(
-  .gold-btn,
-  .outline-btn,
-  .hero-secondary,
-  .nav-cta,
-  .cart-trigger,
-  .orders-trigger,
-  .view-product,
-  .add-card-product,
-  .dynamic-add-cart,
-  .dynamic-add-cart-mobile,
-  .cart-checkout,
-  .checkout-pay,
-  .checkout-wholesale,
-  .reviews-filter-button,
-  .reviews-google-link,
-  .catalog-retry-btn,
-  .map-open-button
-):active:not(:disabled){
-  transform:scale(.97)!important;
+  .gold-btn,.outline-btn,.hero-btn,.hero-secondary,.nav-cta,.cart-trigger,.orders-trigger,
+  .menu-toggle,.view-product,.add-card-product,.dynamic-add-cart,.dynamic-add-cart-mobile,
+  .cart-checkout,.checkout-pay,.checkout-wholesale,.reviews-filter-button,
+  .reviews-google-link,.catalog-retry-btn,.map-open-button,.category-chip,
+  .mobile-dock-item,.cart-close,.orders-close,.checkout-close,.product-detail-close
+):is(:active,.is-pressing):not(:disabled){
+  transform:scale(.982)!important;
+  transition-duration:var(--motion-press)!important;
 }
 
-/* ---------- Hover frecuente: mínimo y solo con mouse real ---------- */
+/* Direction lives in the icon; the surface itself remains composed. */
+:is(.hero-btn,.process-link,.cart-checkout,.map-open-button,.reviews-google-link) .ui-icon{
+  transition:transform var(--motion-ui) var(--ease-arrive)!important;
+}
+
 @media (hover:hover) and (pointer:fine){
+  :is(.hero-btn,.process-link,.cart-checkout,.map-open-button,.reviews-google-link):hover .ui-icon{
+    transform:translate3d(4px,0,0)!important;
+  }
+
   .product,
   .feature,
   .process-step,
   .about-highlight,
   .contact-line,
   .best-seller-card,
-  .related-product-card{
+  .related-product-card,
+  .category-chip{
     transition:
-      transform 180ms var(--ease-out),
-      border-color 180ms ease,
-      background-color 180ms ease!important;
+      transform var(--motion-ui) var(--ease-arrive),
+      border-color var(--motion-ui) ease,
+      background-color var(--motion-ui) ease!important;
+  }
+
+  .product .product-real-image,
+  .best-seller-card img,
+  .related-product-card img{
+    transition:transform 360ms var(--ease-arrive)!important;
   }
 
   .product:hover,
@@ -113,16 +165,22 @@ html.motion-enhanced .motion-item.motion-visible{
   .about-highlight:hover,
   .contact-line:hover,
   .best-seller-card:hover,
-  .related-product-card:hover{
+  .related-product-card:hover,
+  .category-chip:hover{
     transform:translate3d(0,-2px,0)!important;
   }
 
   .process-step:hover{
-    transform:translate3d(4px,0,0)!important;
+    transform:translate3d(3px,0,0)!important;
+  }
+
+  .product:hover .product-real-image,
+  .best-seller-card:hover img,
+  .related-product-card:hover img{
+    transform:scale(1.018)!important;
   }
 }
 
-/* Touch nunca hereda "hover pegado". */
 @media (hover:none), (pointer:coarse){
   .product:hover,
   .feature:hover,
@@ -130,21 +188,36 @@ html.motion-enhanced .motion-item.motion-visible{
   .about-highlight:hover,
   .contact-line:hover,
   .best-seller-card:hover,
-  .related-product-card:hover{
+  .related-product-card:hover,
+  .category-chip:hover{
     transform:none!important;
   }
 }
 
-/* ---------- Drawer: curva iOS-like ---------- */
+/* ---------- Drawers: symmetric path + live gesture variable ---------- */
 .cart-drawer,
 .orders-drawer{
-  transition:transform 420ms var(--ease-drawer)!important;
-  will-change:transform;
+  transform:translate3d(103%,0,0)!important;
+  transition:transform var(--motion-drawer) var(--ease-drawer)!important;
+  will-change:auto!important;
 }
 
-.cart-drawer:not(.active),
-.orders-drawer:not(.active){
-  will-change:auto;
+.cart-drawer.active,
+.orders-drawer.active{
+  transform:translate3d(var(--drawer-drag-x,0px),0,0)!important;
+}
+
+.cart-drawer.is-dragging,
+.orders-drawer.is-dragging{
+  transition:none!important;
+  will-change:transform!important;
+  cursor:grabbing;
+  user-select:none;
+}
+
+.cart-head,
+.orders-head{
+  touch-action:pan-y;
 }
 
 .cart-overlay,
@@ -153,11 +226,11 @@ html.motion-enhanced .motion-item.motion-visible{
   backdrop-filter:none!important;
   background:rgba(7,10,13,.64)!important;
   transition:
-    opacity 220ms var(--ease-out),
-    visibility 220ms linear!important;
+    opacity var(--motion-ui) var(--ease-out),
+    visibility var(--motion-ui) linear!important;
 }
 
-/* ---------- Modales: origen centrado, 250ms ---------- */
+/* ---------- Modal surfaces: materialize without animated blur ---------- */
 .product-detail,
 .checkout-modal,
 .payment-result{
@@ -165,8 +238,8 @@ html.motion-enhanced .motion-item.motion-visible{
   backdrop-filter:none!important;
   background:rgba(5,9,13,.74)!important;
   transition:
-    opacity var(--motion-modal) var(--ease-out),
-    visibility var(--motion-modal) linear!important;
+    opacity 220ms var(--ease-out),
+    visibility 220ms linear!important;
 }
 
 .product-detail-inner,
@@ -174,25 +247,24 @@ html.motion-enhanced .motion-item.motion-visible{
 .payment-result-card{
   transform-origin:center;
   transition:
-    opacity var(--motion-modal) var(--ease-out),
-    transform var(--motion-modal) var(--ease-out)!important;
+    opacity 210ms var(--ease-arrive),
+    transform var(--motion-panel) var(--ease-drawer)!important;
 }
 
 .product-detail:not(.active) .product-detail-inner,
 .checkout-modal:not(.active) .checkout-card,
 .payment-result:not(.active) .payment-result-card{
-  opacity:0;
-  transform:translate3d(0,8px,0) scale(.96)!important;
+  opacity:0!important;
+  transform:translate3d(0,10px,0) scale(.986)!important;
 }
 
 .product-detail.active .product-detail-inner,
 .checkout-modal.active .checkout-card,
 .payment-result.active .payment-result-card{
-  opacity:1;
+  opacity:1!important;
   transform:translate3d(0,0,0) scale(1)!important;
 }
 
-/* Confirmación: entrada breve; no blur de fondo. */
 .payment-confirm-overlay{
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
@@ -200,15 +272,15 @@ html.motion-enhanced .motion-item.motion-visible{
 }
 
 .payment-confirm-overlay:not([hidden]) .payment-confirm-dialog{
-  animation:doradoConfirmIn var(--motion-modal) var(--ease-out) both;
+  animation:doradoConfirmIn var(--motion-panel) var(--ease-arrive) both;
 }
 
 @keyframes doradoConfirmIn{
-  from{opacity:0;transform:translate3d(0,8px,0) scale(.96)}
+  from{opacity:0;transform:translate3d(0,8px,0) scale(.986)}
   to{opacity:1;transform:translate3d(0,0,0) scale(1)}
 }
 
-/* ---------- Popovers / selects: nacen desde el trigger ---------- */
+/* ---------- Menus / suggestions: anchored to the trigger ---------- */
 .dorado-select-menu,
 .payment-picker-menu,
 .checkout-address-suggestions{
@@ -218,239 +290,71 @@ html.motion-enhanced .motion-item.motion-visible{
 .dorado-select-menu:not([hidden]),
 .payment-picker-menu:not([hidden]),
 .checkout-address-suggestions:not([hidden]){
-  animation:doradoPopoverIn var(--motion-popover) var(--ease-out) both!important;
+  animation:doradoPopoverIn 180ms var(--ease-arrive) both!important;
 }
 
 @keyframes doradoPopoverIn{
-  from{opacity:0;transform:translate3d(0,-4px,0) scale(.97)}
+  from{opacity:0;transform:translate3d(0,-4px,0) scale(.975)}
   to{opacity:1;transform:translate3d(0,0,0) scale(1)}
 }
 
-/* Chevrons se mueven en pantalla: ease-in-out. */
 .dorado-select-chevron,
 .payment-picker-chevron{
   transition:transform var(--motion-ui) var(--ease-in-out)!important;
 }
 
-/* ---------- Toast: transición interruptible ---------- */
+/* ---------- Toast + FAQ: state feedback, no layout animation ---------- */
 .cart-toast{
   transition:
     opacity var(--motion-ui) var(--ease-out),
     transform var(--motion-ui) var(--ease-out)!important;
 }
 
-/* ---------- Menú móvil ---------- */
-@media (max-width:980px){
-  .navlinks{
-    transition:
-      opacity var(--motion-ui) var(--ease-out),
-      transform var(--motion-ui) var(--ease-out),
-      visibility var(--motion-ui) linear!important;
-  }
-}
-
-/* ---------- Carrusel de reseñas: constante = linear ---------- */
-.reviews-marquee-track{
-  animation-timing-function:linear!important;
-}
-
-/* ---------- Reduced motion: conservar feedback, quitar desplazamiento ---------- */
-@media (prefers-reduced-motion:reduce){
-  html.motion-enhanced .motion-item{
-    opacity:1!important;
-    transform:none!important;
-    transition:opacity 160ms ease!important;
-  }
-
-  .cart-drawer,
-  .orders-drawer,
-  .product-detail-inner,
-  .checkout-card,
-  .payment-result-card,
-  .dorado-select-menu,
-  .payment-picker-menu,
-  .checkout-address-suggestions,
-  .payment-confirm-dialog{
-    animation:none!important;
-    transition:
-      opacity 160ms ease!important;
-    transform:none!important;
-  }
-
-  .reviews-marquee-track{
-    animation:none!important;
-  }
-}
-
-
-/* =========================================================
-   DORADO — MOTION CRAFT V2
-   Thesis: one authored entrance, quiet continuity, tactile feedback.
-   No layout-property animation, no permanent GPU layers.
-   ========================================================= */
-
-:root{
-  --motion-arrive:cubic-bezier(.16,1,.3,1);
-  --motion-move:cubic-bezier(.77,0,.175,1);
-  --motion-drawer:cubic-bezier(.32,.72,0,1);
-  --motion-fast:140ms;
-  --motion-ui:220ms;
-  --motion-layout:380ms;
-  --motion-focal:620ms;
-}
-
-/* Sentinels are layout-neutral and never visible. */
-.nav-scroll-sentinel,
-.products-scroll-sentinel{
-  position:absolute!important;
-  width:1px!important;
-  height:1px!important;
-  pointer-events:none!important;
-  opacity:0!important;
-}
-
-/* One-shot reveals: smaller travel, faster opacity, no sticky will-change. */
-html.motion-enhanced .motion-item{
-  --motion-x:0px;
-  --motion-y:14px;
-  --motion-scale:1;
-  opacity:0!important;
-  transform:translate3d(var(--motion-x),var(--motion-y),0) scale(var(--motion-scale))!important;
-  transition:
-    opacity 320ms var(--motion-arrive) var(--motion-delay),
-    transform var(--motion-focal) var(--motion-arrive) var(--motion-delay)!important;
-  will-change:auto!important;
-}
-
-html.motion-enhanced .motion-left{--motion-x:-18px;--motion-y:0}
-html.motion-enhanced .motion-right{--motion-x:18px;--motion-y:0}
-html.motion-enhanced .motion-up{--motion-y:14px}
-html.motion-enhanced .motion-down{--motion-y:-12px}
-html.motion-enhanced .motion-scale{--motion-y:8px;--motion-scale:.982}
-
-html.motion-enhanced .motion-item.motion-visible{
-  opacity:1!important;
-  transform:translate3d(0,0,0) scale(1)!important;
-}
-
-/* Authored hero: content arrives in a tight editorial sequence. */
-@media (prefers-reduced-motion:no-preference){
-  .hero-content .eyebrow,
-  .hero-content h1,
-  .hero-content .hero-lead,
-  .hero-content .hero-actions,
-  .hero-content .hero-proof{
-    animation-duration:var(--motion-focal)!important;
-    animation-timing-function:var(--motion-arrive)!important;
-  }
-
-  .hero-content .eyebrow{animation-delay:40ms!important}
-  .hero-content h1{animation-delay:90ms!important}
-  .hero-content .hero-lead{animation-delay:150ms!important}
-  .hero-content .hero-actions{animation-delay:210ms!important}
-  .hero-content .hero-proof{animation-delay:260ms!important}
-}
-
-/* CTA feedback: the icon carries direction, the button itself stays calm. */
-:is(.hero-btn,.process-link,.cart-checkout,.map-open-button) .ui-icon{
-  transition:transform var(--motion-ui) var(--motion-arrive)!important;
-}
-
-@media (hover:hover) and (pointer:fine){
-  :is(.hero-btn,.process-link,.cart-checkout,.map-open-button):hover .ui-icon{
-    transform:translate3d(4px,0,0)!important;
-  }
-
-  .product .product-real-image{
-    transition:transform 360ms var(--motion-arrive)!important;
-  }
-
-  .product:hover .product-real-image{
-    transform:scale(1.018)!important;
-  }
-
-  .category-chip,
-  .catalog-search,
-  .faq-list details,
-  .contact-line{
-    transition:
-      transform var(--motion-ui) var(--motion-arrive),
-      border-color var(--motion-ui) ease,
-      background-color var(--motion-ui) ease!important;
-  }
-
-  .category-chip:hover{
-    transform:translate3d(0,-1px,0)!important;
-  }
-}
-
-/* Press feedback: small, physical, immediate. */
-:is(
-  .gold-btn,.outline-btn,.hero-secondary,.nav-cta,.cart-trigger,.orders-trigger,
-  .view-product,.add-card-product,.dynamic-add-cart,.dynamic-add-cart-mobile,
-  .cart-checkout,.checkout-pay,.checkout-wholesale,.reviews-filter-button,
-  .reviews-google-link,.catalog-retry-btn,.map-open-button,.category-chip,
-  .mobile-dock-item
-):active:not(:disabled){
-  transform:scale(.985)!important;
-  transition-duration:var(--motion-fast)!important;
-}
-
-/* Drawers and overlays explain spatial continuity. */
-.cart-drawer,
-.orders-drawer{
-  transition:transform 420ms var(--motion-drawer)!important;
-}
-
-.product-detail-inner,
-.checkout-card,
-.payment-result-card{
-  transition:
-    opacity 220ms var(--motion-arrive),
-    transform var(--motion-layout) var(--motion-drawer)!important;
-}
-
-.product-detail:not(.active) .product-detail-inner,
-.checkout-modal:not(.active) .checkout-card,
-.payment-result:not(.active) .payment-result-card{
-  opacity:0!important;
-  transform:translate3d(0,12px,0) scale(.985)!important;
-}
-
-/* FAQ answer appears as state feedback; no height animation/layout thrash. */
 .faq-list details[open] > p{
-  animation:doradoFaqAnswerIn 260ms var(--motion-arrive) both;
+  animation:doradoFaqAnswerIn 240ms var(--ease-arrive) both;
 }
 
 @keyframes doradoFaqAnswerIn{
-  from{opacity:0;transform:translate3d(0,-5px,0)}
+  from{opacity:0;transform:translate3d(0,-4px,0)}
   to{opacity:1;transform:none}
 }
 
-/* Mobile navigation behaves like a panel, not a generic fade. */
+/* ---------- Mobile navigation: reads as one panel ---------- */
 @media(max-width:980px){
   .navlinks{
     transition:
-      opacity 220ms var(--motion-arrive),
-      transform 360ms var(--motion-drawer),
-      visibility 220ms linear!important;
+      opacity 210ms var(--ease-arrive),
+      transform 360ms var(--ease-drawer),
+      visibility 210ms linear!important;
+  }
+
+  .menu-toggle span{
+    transition:
+      transform var(--motion-ui) var(--ease-drawer),
+      top var(--motion-ui) var(--ease-drawer)!important;
   }
 
   .mobile-dock-item{
     transition:
-      transform var(--motion-fast) var(--motion-arrive),
+      transform var(--motion-fast) var(--ease-out),
       color var(--motion-ui) ease,
       background-color var(--motion-ui) ease!important;
   }
 }
 
-/* The single continuous marquee remains constant velocity. */
+/* ---------- Reviews: one continuous velocity, never easing a loop ---------- */
 .reviews-marquee-track{
   animation-timing-function:linear!important;
 }
 
-/* Accessibility: remove spatial movement but retain state feedback. */
-@media(prefers-reduced-motion:reduce){
+/* ---------- Focus: visible, precise, and consistent ---------- */
+:is(button,a,input,select,textarea,[tabindex]):focus-visible{
+  outline:2px solid rgba(224,184,78,.92)!important;
+  outline-offset:3px!important;
+}
+
+/* ---------- Accessibility preferences ---------- */
+@media (prefers-reduced-motion:reduce){
   html.motion-enhanced .motion-item{
     opacity:1!important;
     transform:none!important;
@@ -462,16 +366,58 @@ html.motion-enhanced .motion-item.motion-visible{
   .hero-content .hero-lead,
   .hero-content .hero-actions,
   .hero-content .hero-proof,
-  .faq-list details[open] > p{
+  .faq-list details[open] > p,
+  .payment-confirm-dialog,
+  .dorado-select-menu,
+  .payment-picker-menu,
+  .checkout-address-suggestions{
     animation:none!important;
+  }
+
+  .cart-drawer,
+  .orders-drawer,
+  .product-detail-inner,
+  .checkout-card,
+  .payment-result-card,
+  .cart-toast,
+  .navlinks,
+  .product .product-real-image,
+  :is(.hero-btn,.process-link,.cart-checkout,.map-open-button,.reviews-google-link) .ui-icon{
+    transition:opacity 140ms ease!important;
   }
 
   .reviews-marquee-track{
     animation:none!important;
+    transform:none!important;
+  }
+}
+
+@media (prefers-reduced-transparency:reduce){
+  .nav,
+  .mobile-dock,
+  .checkout-address-suggestions,
+  .dorado-select-menu,
+  .payment-picker-menu{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
   }
 
-  :is(.hero-btn,.process-link,.cart-checkout,.map-open-button) .ui-icon,
-  .product .product-real-image{
-    transition:none!important;
+  .nav{background:#090a0b!important}
+  .mobile-dock{background:#f8f7f2!important}
+}
+
+@media (prefers-contrast:more){
+  .nav,
+  .cart-drawer,
+  .orders-drawer,
+  .checkout-card,
+  .product-detail-inner,
+  .review-card,
+  .product{
+    border-color:currentColor!important;
+  }
+
+  :is(button,a,input,select,textarea):focus-visible{
+    outline-width:3px!important;
   }
 }

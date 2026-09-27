@@ -12,9 +12,9 @@ Branch:
 
 ## 1. Reemplazar el proyecto
 
-Descomprimí `DORADO-ART-PESCA-PRODUCTION-FINAL.zip`.
+Descomprimí `DORADO-ART-PESCA-APPLE-FLUID.zip`.
 
-Copiá **el contenido interno de la carpeta `DORADO-ART-PESCA-PRODUCTION-FINAL`** dentro de tu carpeta Git local, por ejemplo:
+Copiá **el contenido interno de la carpeta `DORADO-ART-PESCA-APPLE-FLUID`** dentro de tu carpeta Git local, por ejemplo:
 
 `C:\Users\joaqu\Downloads\Dorado-Art-Pesca-GIT`
 
@@ -72,7 +72,7 @@ Cuando el estado sea el esperado:
 ```powershell
 git add -A
 git status
-git commit -m "Production final audit, performance, security and design"
+git commit -m "Refine fluid motion, touch gestures and interaction polish"
 git push origin main
 ```
 
@@ -125,3 +125,17 @@ Abrí el sitio desplegado y completá `TEST-CHECKLIST.md`, especialmente:
 ## Importante sobre Supabase
 
 Esta entrega no agrega una migration nueva. No ejecutes SQL destructivo ni vuelvas a correr archivos de setup completos sobre producción sin revisar primero qué migrations ya están aplicadas.
+
+
+## 11. Comprobación específica de motion
+
+Después del deploy, probá especialmente en un teléfono real:
+
+- press feedback de botones;
+- apertura/cierre del menú;
+- carrito y Mis pedidos con swipe desde sus encabezados;
+- cancelación del swipe antes del umbral;
+- flick rápido para cerrar;
+- `prefers-reduced-motion` desde DevTools/OS.
+
+Si algo visual no te convence, este pass está concentrado principalmente en `assets/css/motion-craft.css` y el bloque `FLUID INPUT & DRAWER GESTURES V3` al final de `assets/js/site.js`, por lo que es fácil ajustar la sensación sin tocar checkout, pagos o backend.

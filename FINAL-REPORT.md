@@ -149,15 +149,37 @@ No se borraron productos, pedidos ni datos reales.
 - No se midieron FPS/Lighthouse en navegador real.
 - No se realizó load test.
 
-## Archivos modificados en esta entrega
+## Archivos modificados acumulados en esta entrega
 
+- `assets/css/motion-craft.css`
 - `assets/js/site.js`
+- `index.html`
 - `lib/security.js`
 - `api/checkout.js`
 - `vercel.json`
+- `CHANGELOG.md`
 - `FINAL-REPORT.md`
 - `TEST-CHECKLIST.md`
 - `DEPLOY.md`
+
+
+## Refinamiento de interacción fluida — 2026-09-27
+
+Después de la auditoría inicial se recibió una guía adicional `apple-design` aportada por el usuario. Se tomaron sus principios de respuesta inmediata, tracking 1:1, interruptibilidad, continuidad espacial, momentum, rubber-banding y preferencias de accesibilidad, adaptándolos al stack vanilla del proyecto sin agregar dependencias.
+
+Cambios concretos:
+
+- `motion-craft.css` pasó de dos capas históricas superpuestas a un solo sistema V3.
+- Feedback visual comienza en `pointerdown`, no recién al completar el click.
+- Carrito y “Mis pedidos” permiten swipe horizontal para cerrar en touch: umbral de intención de 10 px, seguimiento 1:1, resistencia al arrastrar en sentido contrario, historial corto de velocidad y proyección de momentum al soltar.
+- Durante el drag se desactiva la transición para que el panel siga el dedo; al soltar vuelve a la curva del drawer.
+- Los overlays reducen su opacidad de forma proporcional al progreso del gesto.
+- Los focos iniciales de producto, carrito y checkout pasan de un timer fijo de 50 ms a `requestAnimationFrame`.
+- Se agregaron tratamientos de `prefers-reduced-transparency` y `prefers-contrast: more`, además de reforzar `prefers-reduced-motion`.
+- No se agregaron librerías de springs. El objetivo fue mejorar sensación física sin aumentar bundle ni introducir otra dependencia crítica.
+- Se conservaron los loops de reseñas con velocidad `linear`.
+
+Limitación de verificación: el entorno disponible no incluye un browser automatizable instalado para reproducir gestos reales de touch. Se validó sintaxis, referencias y consistencia estática; el gesto debe comprobarse físicamente o en DevTools después del deploy.
 
 ## Resultado
 

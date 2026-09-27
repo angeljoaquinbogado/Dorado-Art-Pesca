@@ -767,9 +767,9 @@ if (stockElemento) {
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
 
-    setTimeout(() => {
-        modal.querySelector(".product-detail-close")?.focus();
-    }, 50);
+    requestAnimationFrame(() => {
+        modal.querySelector(".product-detail-close")?.focus({ preventScroll: true });
+    });
 }
 
 function cerrarProductoDinamico() {
@@ -1125,6 +1125,9 @@ function abrirCarrito() {
 
     renderCarrito();
 
+    drawer.classList.remove("is-dragging");
+    drawer.style.removeProperty("--drawer-drag-x");
+    overlay.style.removeProperty("opacity");
     overlay.classList.add("active");
     drawer.classList.add("active");
 
@@ -1134,9 +1137,9 @@ function abrirCarrito() {
 
     document.body.classList.add("cart-open");
 
-    setTimeout(() => {
-        drawer.querySelector(".cart-close")?.focus();
-    }, 50);
+    requestAnimationFrame(() => {
+        drawer.querySelector(".cart-close")?.focus({ preventScroll: true });
+    });
 }
 
 function cerrarCarrito() {
@@ -1330,9 +1333,9 @@ function abrirCheckout() {
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("checkout-open");
 
-    setTimeout(() => {
-        document.getElementById("checkout-name")?.focus();
-    }, 50);
+    requestAnimationFrame(() => {
+        document.getElementById("checkout-name")?.focus({ preventScroll: true });
+    });
 }
 
 function cerrarCheckout() {
@@ -1723,6 +1726,9 @@ function abrirMisPedidos() {
     const overlay = document.getElementById("orders-overlay");
     if (!drawer || !overlay) return;
 
+    drawer.classList.remove("is-dragging");
+    drawer.style.removeProperty("--drawer-drag-x");
+    overlay.style.removeProperty("opacity");
     drawer.classList.add("active");
     overlay.classList.add("active");
     drawer.setAttribute("aria-hidden", "false");
@@ -3713,4 +3719,191 @@ comprobarRetornoPago();
     };
     document.addEventListener("visibilitychange",syncVisibility,{passive:true});
     syncVisibility();
+})();
+
+
+/* =========================================================
+   DORADO — FLUID INPUT & DRAWER GESTURES V3
+   Vanilla JS, sin dependencias. Mantiene el comportamiento existente y
+   suma feedback inmediato + swipe-to-dismiss físico en touch.
+   ========================================================= */
+(function configurarEntradaFluidaDorado(){
+    const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobileViewport=window.matchMedia("(max-width: 980px)");
+
+    /* Feedback desde pointer-down: la respuesta visual no espera al click. */
+    const pressSelector=[
+        ".gold-btn", ".outline-btn", ".hero-btn", ".hero-secondary", ".nav-cta",
+        ".cart-trigger", ".orders-trigger", ".menu-toggle", ".view-product",
+        ".add-card-product", ".dynamic-add-cart", ".dynamic-add-cart-mobile",
+        ".cart-checkout", ".checkout-pay", ".checkout-wholesale",
+        ".reviews-filter-button", ".reviews-google-link", ".catalog-retry-btn",
+        ".map-open-button", ".category-chip", ".mobile-dock-item",
+        ".cart-close", ".orders-close", ".checkout-close", ".product-detail-close"
+    ].join(",");
+
+    let pressed=null;
+    const releasePress=()=>{
+        pressed?.classList.remove("is-pressing");
+        pressed=null;
+    };
+
+    document.addEventListener("pointerdown",event=>{
+        const target=event.target.closest?.(pressSelector);
+        if(!target||target.matches(":disabled")||target.getAttribute("aria-disabled")==="true")return;
+        releasePress();
+        pressed=target;
+        target.classList.add("is-pressing");
+    },{passive:true});
+
+    document.addEventListener("pointerup",releasePress,{passive:true});
+    document.addEventListener("pointercancel",releasePress,{passive:true});
+    window.addEventListener("blur",releasePress,{passive:true});
+
+    const project=(velocity,decelerationRate=.998)=>
+        (velocity/1000)*decelerationRate/(1-decelerationRate);
+
+    const rubberband=(overshoot,dimension,constant=.22)=>
+        (overshoot*dimension*constant)/(dimension+constant*Math.abs(overshoot));
+
+    function enableSwipeDismiss({drawerId,handleSelector,overlayId,close}){
+        const drawer=document.getElementById(drawerId);
+        const handle=drawer?.querySelector(handleSelector);
+        const overlay=document.getElementById(overlayId);
+        if(!drawer||!handle||!overlay||typeof close!=="function"||!("PointerEvent" in window))return;
+
+        let pointerId=null;
+        let startX=0;
+        let startY=0;
+        let width=1;
+        let currentX=0;
+        let tracking=false;
+        let dragging=false;
+        let samples=[];
+        let resetTimer=0;
+
+        const clearInlineState=()=>{
+            window.clearTimeout(resetTimer);
+            drawer.style.removeProperty("--drawer-drag-x");
+            overlay.style.removeProperty("opacity");
+        };
+
+        const sample=(x,time)=>{
+            samples.push({x,time});
+            const cutoff=time-90;
+            while(samples.length>2&&samples[0].time<cutoff)samples.shift();
+        };
+
+        const velocity=()=>{
+            if(samples.length<2)return 0;
+            const a=samples[0];
+            const b=samples[samples.length-1];
+            const dt=Math.max(1,b.time-a.time);
+            return ((b.x-a.x)/dt)*1000;
+        };
+
+        const finish=event=>{
+            if(!tracking||event.pointerId!==pointerId)return;
+            tracking=false;
+
+            try{if(handle.hasPointerCapture(pointerId))handle.releasePointerCapture(pointerId);}catch{}
+
+            if(!dragging){
+                pointerId=null;
+                samples=[];
+                return;
+            }
+
+            const v=velocity();
+            const projected=currentX+project(v);
+            const shouldClose=currentX>width*.30||projected>width*.46||v>720;
+
+            drawer.classList.remove("is-dragging");
+            overlay.style.removeProperty("opacity");
+
+            if(shouldClose){
+                close();
+                resetTimer=window.setTimeout(clearInlineState,460);
+            }else{
+                drawer.style.setProperty("--drawer-drag-x","0px");
+                resetTimer=window.setTimeout(clearInlineState,460);
+            }
+
+            pointerId=null;
+            samples=[];
+            currentX=0;
+            dragging=false;
+        };
+
+        handle.addEventListener("pointerdown",event=>{
+            const isTouchLike=event.pointerType==="touch"||event.pointerType==="pen"||mobileViewport.matches;
+            if(!isTouchLike||reduceMotion.matches||event.button!==0||!drawer.classList.contains("active"))return;
+            if(event.target.closest("button,a,input,select,textarea,[role='button']"))return;
+
+            clearInlineState();
+            pointerId=event.pointerId;
+            startX=event.clientX;
+            startY=event.clientY;
+            width=Math.max(1,drawer.getBoundingClientRect().width);
+            currentX=0;
+            tracking=true;
+            dragging=false;
+            samples=[];
+            sample(0,event.timeStamp||performance.now());
+
+            try{handle.setPointerCapture(pointerId);}catch{}
+        },{passive:true});
+
+        handle.addEventListener("pointermove",event=>{
+            if(!tracking||event.pointerId!==pointerId)return;
+
+            const dx=event.clientX-startX;
+            const dy=event.clientY-startY;
+
+            if(!dragging){
+                if(Math.hypot(dx,dy)<10)return;
+                if(Math.abs(dy)>=Math.abs(dx)){
+                    tracking=false;
+                    try{if(handle.hasPointerCapture(pointerId))handle.releasePointerCapture(pointerId);}catch{}
+                    pointerId=null;
+                    samples=[];
+                    return;
+                }
+                dragging=true;
+                drawer.classList.add("is-dragging");
+            }
+
+            event.preventDefault();
+            currentX=dx>=0?dx:-rubberband(-dx,width);
+            drawer.style.setProperty("--drawer-drag-x",`${currentX.toFixed(2)}px`);
+
+            const progress=Math.min(1,Math.max(0,currentX/width));
+            overlay.style.opacity=String(Math.max(.08,1-progress*.92));
+            sample(currentX,event.timeStamp||performance.now());
+        },{passive:false});
+
+        handle.addEventListener("pointerup",finish,{passive:true});
+        handle.addEventListener("pointercancel",finish,{passive:true});
+
+        /* Si el drawer se cierra por otro camino, no dejamos estado gestual. */
+        drawer.addEventListener("transitionend",event=>{
+            if(event.propertyName!=="transform"||drawer.classList.contains("active"))return;
+            clearInlineState();
+            drawer.classList.remove("is-dragging");
+        });
+    }
+
+    enableSwipeDismiss({
+        drawerId:"cart-drawer",
+        handleSelector:".cart-head",
+        overlayId:"cart-overlay",
+        close:cerrarCarrito
+    });
+
+    enableSwipeDismiss({
+        drawerId:"orders-drawer",
+        handleSelector:".orders-head",
+        overlayId:"orders-overlay",
+        close:cerrarMisPedidos
+    });
 })();

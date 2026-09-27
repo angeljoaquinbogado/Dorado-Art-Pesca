@@ -23,6 +23,11 @@
 - [x] Rate-limit Supabase tiene timeout.
 - [x] Checkout valida método de pago online permitido.
 - [x] CSP permite ambos bloques JSON-LD actuales.
+- [x] `motion-craft.css` consolidado en un único sistema V3, sin la capa V1/V2 duplicada.
+- [x] Swipe de drawers usa Pointer Events, captura de puntero, histéresis y cálculo de velocidad.
+- [x] Drag de drawers sólo actualiza `transform` + opacidad del overlay.
+- [x] `prefers-reduced-motion` desactiva el gesto físico y los desplazamientos no esenciales.
+- [x] Query strings de CSS/JS actualizadas para invalidar caché estática.
 
 ## Revisado en código
 
@@ -70,6 +75,12 @@
 - [ ] Revisar consola del navegador sin errores.
 - [ ] Ejecutar Lighthouse móvil y desktop.
 - [ ] Medir Performance panel durante scroll y animaciones.
+- [ ] En iPhone/Android: abrir carrito, arrastrar el encabezado a la derecha y confirmar tracking 1:1.
+- [ ] Soltar el drawer antes del umbral y confirmar que vuelve suavemente a su lugar.
+- [ ] Hacer un flick rápido a la derecha y confirmar cierre por velocidad/momentum.
+- [ ] Arrastrar levemente hacia la izquierda y confirmar resistencia suave, sin desplazamiento libre.
+- [ ] Repetir los cuatro casos anteriores en “Mis pedidos”.
+- [ ] Activar `prefers-reduced-motion` y confirmar que el swipe físico queda desactivado sin perder funcionalidad de cierre.
 - [ ] Revisar memoria tras 5–10 minutos de navegación/admin.
 
 ## Criterio de salida

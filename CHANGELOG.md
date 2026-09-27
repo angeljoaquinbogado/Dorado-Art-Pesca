@@ -2,6 +2,20 @@
 
 Los cambios relevantes del proyecto se documentan aquí. El historial completo sigue disponible en Git.
 
+## 2026-09-27
+
+### Fluid motion / Apple-inspired interaction pass
+
+- Consolidado `assets/css/motion-craft.css`: se eliminaron dos sistemas de motion superpuestos y quedó una sola capa coherente.
+- Feedback táctil inmediato desde `pointerdown` para CTAs y controles principales.
+- Carrito y “Mis pedidos” ganan swipe-to-dismiss en touch con tracking 1:1, histéresis, rubber-banding, proyección de momentum y salida por velocidad/distancia.
+- Drawers conservan trayectoria simétrica y transiciones reversibles desde el estado visual actual.
+- Se quitaron delays artificiales de 50 ms antes de enfocar producto, carrito y checkout; ahora el foco se sincroniza con el siguiente frame.
+- Se reforzó `prefers-reduced-motion`, `prefers-reduced-transparency` y `prefers-contrast`.
+- Tipografía con optical sizing cuando el navegador/fuente lo soporta, sin sustituir la identidad tipográfica de DORADO.
+- Motion restringido a `transform` y `opacity` en trayectorias; sin nuevas librerías ni blur animado.
+- Versionado de `motion-craft.css` y `site.js` actualizado para evitar servir assets viejos desde caché.
+
 ## 2026-09-26
 
 ### Pagos, reseñas y continuidad visual
