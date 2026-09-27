@@ -245,101 +245,85 @@ async function cargarMasElegidos(){
 
 async function cargarProductosDesdeSupabase() {
     const contenedor = document.getElementById("products-grid");
+
     if (!contenedor) return;
-
-    const SUPABASE_URL = "https://gwsyvkagdomdjdqllfpy.supabase.co";
-    const SUPABASE_PUBLIC_KEY = "sb_publishable_pMRev5i9A1Z0cOozw_18nQ_G0Ff02cH";
-    const CACHE_KEY = "dorado_catalog_cache_v3";
-
-    const fetchJsonConTimeout = async (url, options = {}, timeoutMs = 10000) => {
-        const controller = new AbortController();
-        const timer = window.setTimeout(() => controller.abort(), timeoutMs);
-        try {
-            const response = await fetch(url, {
-                ...options,
-                signal: controller.signal,
-                cache: "no-store"
-            });
-            const data = await response.json().catch(() => null);
-            return { response, data };
-        } finally {
-            window.clearTimeout(timer);
-        }
-    };
-
-    const normalizarProductos = rows => rows.map(producto => {
-        const base = Math.max(0, Number(producto.precio) || 0);
-        const percent = Math.min(90, Math.max(0, Number(producto.descuento_porcentaje) || 0));
-        const final = Math.round(base * (1 - percent / 100) * 100) / 100;
-
-        return {
-            ...producto,
-            precio: final,
-            precio_original: Math.round(base * 100) / 100,
-            descuento_porcentaje: percent,
-            stock: Math.max(0, Number(producto.stock) || 0),
-            activo: Boolean(producto.activo),
-            imagenes: Array.isArray(producto.imagenes) ? producto.imagenes : []
-        };
-    });
 
     try {
         let productos = null;
         let ultimoError = null;
 
-        // Camino principal del catálogo: lectura pública directa desde Supabase.
-        // La clave publishable es pública por diseño y RLS permite únicamente
-        // leer productos activos. Así evitamos depender de una función Vercel
-        // para mostrar el catálogo en iPhone/celulares.
+        // Camino principal para la vidriera: lectura pública directa desde
+        // Supabase. La anon key es pública por diseño y RLS solo permite
+        // SELECT de productos activos; no habilita escrituras administrativas.
         try {
-            const query = new URLSearchParams({
-                select: "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo",
-                activo: "eq.true",
-                order: "id.asc"
-            });
+            const SUPABASE_URL = "https://gwsyvkagdomdjdqllfpy.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3c3l2a2FnZG9tZGpkcWxsZnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxMDIzNDEsImV4cCI6MjEwNTY3ODM0MX0.K88W3zqDjfoLmF5O_MTeHrS7aVQCibytn9B5r69Hz2s";
+            const query = "select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc";
 
-            const { response, data } = await fetchJsonConTimeout(
-                `${SUPABASE_URL}/rest/v1/productos?${query.toString()}`,
-                {
+            const controller = new AbortController();
+            const timer = window.setTimeout(() => controller.abort(), 10000);
+
+            let directResponse;
+            try {
+                directResponse = await fetch(`${SUPABASE_URL}/rest/v1/productos?${query}`, {
                     method: "GET",
                     mode: "cors",
                     credentials: "omit",
                     headers: {
-                        apikey: SUPABASE_PUBLIC_KEY,
-                        Authorization: `Bearer ${SUPABASE_PUBLIC_KEY}`,
+                        apikey: SUPABASE_ANON_KEY,
+                        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
                         Accept: "application/json"
-                    }
-                },
-                10000
-            );
-
-            if (!response.ok || !Array.isArray(data)) {
-                throw new Error(`Supabase catálogo respondió ${response.status}`);
+                    },
+                    cache: "no-store",
+                    signal: controller.signal
+                });
+            } finally {
+                window.clearTimeout(timer);
             }
 
-            productos = normalizarProductos(data);
+            const directRows = await directResponse.json().catch(() => null);
+
+            if (!directResponse.ok || !Array.isArray(directRows)) {
+                throw new Error(`Supabase catálogo respondió ${directResponse.status}`);
+            }
+
+            productos = directRows.map(producto => {
+                const base = Math.max(0, Number(producto.precio) || 0);
+                const percent = Math.min(90, Math.max(0, Number(producto.descuento_porcentaje) || 0));
+                const final = Math.round(base * (1 - percent / 100) * 100) / 100;
+
+                return {
+                    ...producto,
+                    precio: final,
+                    precio_original: Math.round(base * 100) / 100,
+                    descuento_porcentaje: percent,
+                    stock: Math.max(0, Number(producto.stock) || 0),
+                    activo: Boolean(producto.activo),
+                    imagenes: Array.isArray(producto.imagenes) ? producto.imagenes : []
+                };
+            });
         } catch (error) {
             ultimoError = error;
         }
 
-        // Respaldo: endpoint propio del servidor.
+        // Respaldo same-origin por si el navegador bloquea temporalmente
+        // la conexión directa a Supabase.
         if (!productos) {
             for (let intento = 0; intento < 2 && !productos; intento += 1) {
                 try {
-                    const { response, data } = await fetchJsonConTimeout(
-                        `/api/products?fresh=${Date.now()}-${intento}`,
-                        {
-                            headers: {
-                                Accept: "application/json",
-                                "Cache-Control": "no-cache",
-                                Pragma: "no-cache"
-                            }
+                    const respuesta = await fetch(`/api/products?fresh=${Date.now()}-${intento}`, {
+                        headers: {
+                            Accept: "application/json",
+                            "Cache-Control": "no-cache",
+                            Pragma: "no-cache"
                         },
-                        10000
-                    );
+                        cache: "no-store"
+                    });
 
-                    if (!response.ok || !Array.isArray(data)) {
-                        throw new Error(data?.error || `API catálogo respondió ${response.status}`);
+                    const data = await respuesta.json().catch(() => null);
+
+                    if (!respuesta.ok || !Array.isArray(data)) {
+                        throw new Error(data?.error || `No se pudieron cargar los productos (${respuesta.status})`);
                     }
 
                     productos = data;
@@ -352,33 +336,18 @@ async function cargarProductosDesdeSupabase() {
             }
         }
 
-        // Último respaldo: catálogo válido guardado en el dispositivo.
-        if (!productos) {
-            try {
-                const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-                if (Array.isArray(cached?.products) && cached.products.length) {
-                    productos = cached.products;
-                }
-            } catch {}
-        }
-
         if (!Array.isArray(productos)) {
             throw ultimoError || new Error("Respuesta de productos inválida");
         }
 
-        try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-                savedAt: Date.now(),
-                products: productos
-            }));
-        } catch {}
-
         catalogoProductos.clear();
+
         productos.forEach(producto => {
             catalogoProductos.set(String(producto.id), producto);
         });
 
         sincronizarCarritoConCatalogo();
+
         contenedor.innerHTML = "";
 
         if (productos.length === 0) {
@@ -407,65 +376,134 @@ async function cargarProductosDesdeSupabase() {
 
             tarjeta.innerHTML = `
                 <div class="product-img">
-                    <div class="badge">${textoSeguro(producto.categoria || "PRODUCTO")}</div>
-                    <img src="${textoSeguro(imagen)}" alt="${textoSeguro(producto.nombre || "Producto")}" loading="lazy" decoding="async">
+                    <div class="badge">
+                        ${textoSeguro(producto.categoria || "PRODUCTO")}
+                    </div>
+
+                    <img
+                        src="${textoSeguro(imagen)}"
+                        alt="${textoSeguro(producto.nombre || "Producto")}"
+                        class="product-real-image"
+                        loading="lazy"
+                        decoding="async"
+                    >
                 </div>
 
                 <div class="product-info">
                     <h3>${textoSeguro(producto.nombre || "Producto")}</h3>
-                    <p class="product-card-description">${textoSeguro(producto.descripcion || "")}</p>
-                    <div class="product-price">${textoSeguro(formatearPrecio(producto.precio))}</div>
-                    <div class="product-stock ${sinStock ? "out" : ""}">
-                        ${sinStock ? "Sin stock" : `Stock: ${stock}`}
+
+                    <p class="product-card-description">${textoSeguro(descripcionResumen(producto.descripcion || ""))}</p>
+
+                    <div class="product-price ${Number(producto.descuento_porcentaje)>0?"has-discount":""}">
+                        ${Number(producto.descuento_porcentaje)>0
+                            ? `<span class="product-price-old">${textoSeguro(formatearPrecio(producto.precio_original))}</span><span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span><span class="product-discount-badge">-${Math.round(Number(producto.descuento_porcentaje)||0)}%</span>`
+                            : `<span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span>`}
                     </div>
 
-                    <button class="view-product" type="button">
-                        VER PRODUCTO
-                    </button>
+                    <div class="product-stock">
+   
+                    ${sinStock
+       
+                        ? "SIN STOCK"
+        
+                        : stock === 1
+           
+                        ? "🔥 ¡Última unidad!"
+           
+                        : stock <= 3
+               
+                        ? `🔥 ¡Últimas ${stock} unidades!`
+                
+                        : `${stock} disponibles`
+  
+                    }
 
-                    <div class="card-quantity-row">
-                        <span>CANTIDAD</span>
-                        <div class="card-quantity-selector">
-                            <button class="qty-btn qty-minus" type="button" aria-label="Restar">−</button>
-                            <input class="qty-input" value="1" inputmode="numeric" aria-label="Cantidad">
-                            <button class="qty-btn qty-plus" type="button" aria-label="Sumar">+</button>
+                    </div>
+
+                    <div class="product-actions">
+                        <button
+                            type="button"
+                            class="view-product"
+                        >
+                            Ver producto <svg class="ui-icon" aria-hidden="true"><use href="#i-chevron"></use></svg>
+                        </button>
+
+                        <div class="card-quantity-row">
+                            <span>CANTIDAD</span>
+
+                            <div class="quantity-selector card-quantity-selector">
+                                <button
+                                    type="button"
+                                    class="qty-btn"
+                                    data-qty-action="minus"
+                                    aria-label="Restar una unidad"
+                                    ${sinStock ? "disabled" : ""}
+                                ><svg class="ui-icon" aria-hidden="true"><use href="#i-minus"></use></svg></button>
+
+                                <input
+                                    class="qty-input"
+                                    type="number"
+                                    min="1"
+                                    max="${Math.max(1, stock)}"
+                                    value="1"
+                                    inputmode="numeric"
+                                    aria-label="Cantidad de unidades"
+                                    ${sinStock ? "disabled" : ""}
+                                >
+
+                                <button
+                                    type="button"
+                                    class="qty-btn"
+                                    data-qty-action="plus"
+                                    aria-label="Sumar una unidad"
+                                    ${sinStock ? "disabled" : ""}
+                                ><svg class="ui-icon" aria-hidden="true"><use href="#i-plus"></use></svg></button>
+                            </div>
                         </div>
-                    </div>
 
-                    <button class="add-card-product" type="button" ${sinStock ? "disabled" : ""}>
-                        ${sinStock ? "SIN STOCK" : "AGREGAR AL CARRITO"}
-                    </button>
+                        <button
+                            type="button"
+                            class="gold-btn add-card-product"
+                            ${sinStock ? "disabled" : ""}
+                        >
+                            ${sinStock ? "SIN STOCK" : '<svg class="ui-icon" aria-hidden="true"><use href="#i-cart"></use></svg><span>Agregar al carrito</span>'}
+                        </button>
+                    </div>
                 </div>
             `;
 
-            tarjeta.querySelector(".view-product")?.addEventListener("click", () => verProducto(producto));
+            const productImage = tarjeta.querySelector(".product-real-image");
+            productImage?.addEventListener("error",()=>{
+                if(productImage.dataset.fallbackApplied === "1") return;
+                productImage.dataset.fallbackApplied = "1";
+                productImage.src = "assets/images/brand/logo-dorado-640.webp";
+                productImage.classList.add("is-fallback-logo");
+            },{once:true});
 
-            const input = tarjeta.querySelector(".qty-input");
-            const minus = tarjeta.querySelector(".qty-minus");
-            const plus = tarjeta.querySelector(".qty-plus");
-            const add = tarjeta.querySelector(".add-card-product");
+            const botonVer = tarjeta.querySelector(".view-product");
+            const botonAgregar = tarjeta.querySelector(".add-card-product");
+            const selector = tarjeta.querySelector(".card-quantity-selector");
+            const input = selector?.querySelector(".qty-input");
 
-            const syncCantidad = value => {
-                const cantidad = Math.max(1, Math.min(stock || 1, Number(value) || 1));
-                if (input) input.value = String(cantidad);
-                return cantidad;
-            };
+            botonVer?.addEventListener("click", () => verProducto(producto));
 
-            minus?.addEventListener("click", () => syncCantidad((Number(input?.value) || 1) - 1));
-            plus?.addEventListener("click", () => syncCantidad((Number(input?.value) || 1) + 1));
-            input?.addEventListener("change", () => syncCantidad(input.value));
+            if (!sinStock && selector && input) {
+                configurarSelectorCantidad(selector, stock);
 
-            add?.addEventListener("click", () => {
-                if (sinStock) return;
-                const cantidad = syncCantidad(input?.value);
-                agregarProductoAlCarrito(producto, cantidad);
-            });
+                botonAgregar?.addEventListener("click", () => {
+                    const cantidad = obtenerCantidad(input, stock);
+                    agregarAlCarrito(producto, cantidad);
+                    input.value = "1";
+                    actualizarBotonesCantidad(selector, stock);
+                });
+            }
 
             contenedor.appendChild(tarjeta);
         });
 
-        configurarCatalogoDinamico(productos);
-        renderBestSellers();
+        construirFiltrosCategorias(productos);
+        actualizarFiltroCatalogo();
+        cargarMasElegidos();
 
     } catch (error) {
         console.error("Error cargando productos:", error);
@@ -482,7 +520,6 @@ async function cargarProductosDesdeSupabase() {
                 </div>
             </div>
         `;
-
         contenedor.querySelector(".catalog-retry-btn")?.addEventListener("click", () => {
             contenedor.innerHTML = '<div class="products-loading"><span class="catalog-loader-dot" aria-hidden="true"></span><span>Cargando catálogo…</span></div>';
             if (count) count.textContent = "Cargando catálogo…";
