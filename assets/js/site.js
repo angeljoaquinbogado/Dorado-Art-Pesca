@@ -248,31 +248,24 @@ async function cargarProductosDesdeSupabase() {
 
     if (!contenedor) return;
 
-    try {
-        let productos = null;
-        let ultimoError = null;
+    let productos = null;
+    let ultimoError = null;
 
-        // Camino principal para la vidriera: lectura pública directa desde
-        // Supabase. La anon key es pública por diseño y RLS solo permite
-        // SELECT de productos activos; no habilita escrituras administrativas.
+    // El catálogo público se entrega desde nuestro propio backend.
+    // Reintentamos para cubrir funciones frías o cortes breves de red.
+    for (let intento = 0; intento < 3 && !productos; intento += 1) {
         try {
-            const SUPABASE_URL = "https://gwsyvkagdomdjdqllfpy.supabase.co";
-            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3c3l2a2FnZG9tZGpkcWxsZnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxMDIzNDEsImV4cCI6MjEwNTY3ODM0MX0.K88W3zqDjfoLmF5O_MTeHrS7aVQCibytn9B5r69Hz2s";
-            const query = "select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc";
-
             const controller = new AbortController();
             const timer = window.setTimeout(() => controller.abort(), 10000);
 
-            let directResponse;
+            let respuesta;
             try {
-                directResponse = await fetch(`${SUPABASE_URL}/rest/v1/productos?${query}`, {
+                respuesta = await fetch(`/api/products?fresh=${Date.now()}-${intento}`, {
                     method: "GET",
-                    mode: "cors",
-                    credentials: "omit",
                     headers: {
-                        apikey: SUPABASE_ANON_KEY,
-                        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-                        Accept: "application/json"
+                        "Accept": "application/json",
+                        "Cache-Control": "no-cache",
+                        "Pragma": "no-cache"
                     },
                     cache: "no-store",
                     signal: controller.signal
@@ -281,65 +274,43 @@ async function cargarProductosDesdeSupabase() {
                 window.clearTimeout(timer);
             }
 
-            const directRows = await directResponse.json().catch(() => null);
+            const data = await respuesta.json().catch(() => null);
 
-            if (!directResponse.ok || !Array.isArray(directRows)) {
-                throw new Error(`Supabase catálogo respondió ${directResponse.status}`);
+            if (!respuesta.ok || !Array.isArray(data)) {
+                throw new Error(data?.error || `No se pudo cargar el catálogo (${respuesta.status})`);
             }
 
-            productos = directRows.map(producto => {
-                const base = Math.max(0, Number(producto.precio) || 0);
-                const percent = Math.min(90, Math.max(0, Number(producto.descuento_porcentaje) || 0));
-                const final = Math.round(base * (1 - percent / 100) * 100) / 100;
-
-                return {
-                    ...producto,
-                    precio: final,
-                    precio_original: Math.round(base * 100) / 100,
-                    descuento_porcentaje: percent,
-                    stock: Math.max(0, Number(producto.stock) || 0),
-                    activo: Boolean(producto.activo),
-                    imagenes: Array.isArray(producto.imagenes) ? producto.imagenes : []
-                };
-            });
+            productos = data;
         } catch (error) {
             ultimoError = error;
-        }
-
-        // Respaldo same-origin por si el navegador bloquea temporalmente
-        // la conexión directa a Supabase.
-        if (!productos) {
-            for (let intento = 0; intento < 2 && !productos; intento += 1) {
-                try {
-                    const respuesta = await fetch(`/api/products?fresh=${Date.now()}-${intento}`, {
-                        headers: {
-                            Accept: "application/json",
-                            "Cache-Control": "no-cache",
-                            Pragma: "no-cache"
-                        },
-                        cache: "no-store"
-                    });
-
-                    const data = await respuesta.json().catch(() => null);
-
-                    if (!respuesta.ok || !Array.isArray(data)) {
-                        throw new Error(data?.error || `No se pudieron cargar los productos (${respuesta.status})`);
-                    }
-
-                    productos = data;
-                } catch (error) {
-                    ultimoError = error;
-                    if (intento === 0) {
-                        await new Promise(resolve => window.setTimeout(resolve, 700));
-                    }
-                }
+            if (intento < 2) {
+                await new Promise(resolve => window.setTimeout(resolve, 650 + intento * 450));
             }
         }
+    }
 
-        if (!Array.isArray(productos)) {
-            throw ultimoError || new Error("Respuesta de productos inválida");
-        }
+    if (!Array.isArray(productos)) {
+        console.error("Error cargando productos:", ultimoError);
+        const count = document.getElementById("product-result-count");
+        if (count) count.textContent = "Catálogo temporalmente no disponible";
+        contenedor.innerHTML = `
+            <div class="products-loading">
+                <div class="catalog-error-state">
+                    <strong>No pudimos cargar el catálogo.</strong>
+                    <span>Probá nuevamente. Si el problema continúa, la tienda sigue disponible por WhatsApp.</span>
+                    <button class="catalog-retry-btn" type="button">REINTENTAR</button>
+                </div>
+            </div>
+        `;
+        contenedor.querySelector(".catalog-retry-btn")?.addEventListener("click", () => {
+            contenedor.innerHTML = '<div class="products-loading"><span class="catalog-loader-dot" aria-hidden="true"></span><span>Cargando catálogo…</span></div>';
+            if (count) count.textContent = "Cargando catálogo…";
+            cargarProductosDesdeSupabase();
+        });
+        return;
+    }
 
+    try {
         catalogoProductos.clear();
 
         productos.forEach(producto => {
@@ -501,30 +472,27 @@ async function cargarProductosDesdeSupabase() {
             contenedor.appendChild(tarjeta);
         });
 
-        construirFiltrosCategorias(productos);
-        actualizarFiltroCatalogo();
-        cargarMasElegidos();
+        try { construirFiltrosCategorias(productos); } catch (error) { console.warn("Filtros de catálogo:", error); }
+        try { actualizarFiltroCatalogo(); } catch (error) { console.warn("Filtro activo:", error); }
+        try { cargarMasElegidos(); } catch (error) { console.warn("Más elegidos:", error); }
 
     } catch (error) {
-        console.error("Error cargando productos:", error);
-
-        const count = document.getElementById("product-result-count");
-        if (count) count.textContent = "Catálogo temporalmente no disponible";
-
-        contenedor.innerHTML = `
-            <div class="products-loading">
-                <div class="catalog-error-state">
-                    <strong>No pudimos cargar el catálogo.</strong>
-                    <span>Puede ser una falla momentánea de conexión. Probá nuevamente sin recargar toda la página.</span>
-                    <button class="catalog-retry-btn" type="button">REINTENTAR</button>
+        // Si la respuesta llegó pero una mejora visual falla, no vaciamos el
+        // catálogo que ya se alcanzó a renderizar.
+        console.error("Error renderizando productos:", error);
+        if (!contenedor.querySelector(".product")) {
+            const count = document.getElementById("product-result-count");
+            if (count) count.textContent = "Catálogo temporalmente no disponible";
+            contenedor.innerHTML = `
+                <div class="products-loading">
+                    <div class="catalog-error-state">
+                        <strong>No pudimos mostrar el catálogo.</strong>
+                        <button class="catalog-retry-btn" type="button">REINTENTAR</button>
+                    </div>
                 </div>
-            </div>
-        `;
-        contenedor.querySelector(".catalog-retry-btn")?.addEventListener("click", () => {
-            contenedor.innerHTML = '<div class="products-loading"><span class="catalog-loader-dot" aria-hidden="true"></span><span>Cargando catálogo…</span></div>';
-            if (count) count.textContent = "Cargando catálogo…";
-            cargarProductosDesdeSupabase();
-        });
+            `;
+            contenedor.querySelector(".catalog-retry-btn")?.addEventListener("click", cargarProductosDesdeSupabase);
+        }
     }
 }
 
