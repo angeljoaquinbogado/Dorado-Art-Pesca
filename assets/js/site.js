@@ -2518,7 +2518,7 @@ comprobarRetornoPago();
 
         list.hidden = false;
         input.setAttribute("aria-expanded", "true");
-        helper.textContent = "Elegí la dirección correcta de la lista.";
+        helper.textContent = "Elegí la dirección correcta de la lista. Las sugerencias quedan visibles hasta que selecciones una.";
     }
 
     async function searchAddress() {
@@ -2637,18 +2637,20 @@ comprobarRetornoPago();
 
         const current = String(input.value || "").trim();
 
-        /* Una dirección escrita a mano no se considera una sugerencia
-           seleccionada. Así, al volver al campo seguimos ofreciendo
-           coincidencias y podemos completar localidad/provincia. */
-        if (current.length >= 4 && /\d/.test(current) && !selectedAddressValue) {
-            helper.textContent = "Dirección escrita. Tocá el campo para ver sugerencias y completar localidad/provincia.";
+        /* No cerramos automáticamente la lista: en móvil debe permanecer
+           visible después de dejar de escribir hasta que el usuario elija
+           una sugerencia o toque fuera del bloque de domicilio. */
+        if (current.length >= 4 && /\d/.test(current) && !selectedAddressValue && !suggestions.length) {
+            helper.textContent = "Dirección escrita. Podés elegir una sugerencia para completar localidad y provincia.";
             helper.classList.remove("selected");
         }
-
-        window.setTimeout(() => {
-            if (!selectingSuggestion) closeSuggestions();
-        }, 320);
     });
+
+    document.addEventListener("pointerdown", event => {
+        if (!field.contains(event.target)) {
+            closeSuggestions();
+        }
+    }, true);
 
     provinceSelect.addEventListener("change", () => {
         lastQuery = "";
