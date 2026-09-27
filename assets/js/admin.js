@@ -2063,12 +2063,21 @@ document.addEventListener("keydown",e=>{
     const wrappers=[];
     let uid=0;
 
+    const restoreMenu=wrapper=>{
+        const menu=wrapper?._adminSelectMenu||wrapper?.querySelector?.(".admin-select-menu");
+        if(!menu)return null;
+        if(menu.parentElement!==wrapper)wrapper.appendChild(menu);
+        menu.classList.remove("is-portaled");
+        menu.removeAttribute("style");
+        return menu;
+    };
+
     const closeAll=(except=null)=>{
         wrappers.forEach(wrapper=>{
             if(wrapper===except)return;
             wrapper.classList.remove("is-open");
             const trigger=wrapper.querySelector(".admin-select-trigger");
-            const menu=wrapper.querySelector(".admin-select-menu");
+            const menu=restoreMenu(wrapper);
             trigger?.setAttribute("aria-expanded","false");
             if(menu)menu.hidden=true;
         });
@@ -2162,19 +2171,54 @@ document.addEventListener("keydown",e=>{
             });
         };
 
+        const positionPortaledMenu=()=>{
+            if(!select.closest(".table-wrap"))return;
+            const rect=trigger.getBoundingClientRect();
+            const viewportGap=12;
+            const preferredWidth=Math.max(rect.width,220);
+            const width=Math.min(preferredWidth,window.innerWidth-viewportGap*2);
+            const left=Math.min(
+                Math.max(viewportGap,rect.left),
+                Math.max(viewportGap,window.innerWidth-width-viewportGap)
+            );
+
+            document.body.appendChild(menu);
+            menu.classList.add("is-portaled");
+
+            const estimatedHeight=Math.min(menu.scrollHeight||280,360,window.innerHeight*.52);
+            const roomBelow=window.innerHeight-rect.bottom-viewportGap;
+            const roomAbove=rect.top-viewportGap;
+            const openUp=roomBelow<Math.min(estimatedHeight,220)&&roomAbove>roomBelow;
+            const top=openUp
+                ? Math.max(viewportGap,rect.top-estimatedHeight-7)
+                : Math.min(window.innerHeight-estimatedHeight-viewportGap,rect.bottom+7);
+
+            Object.assign(menu.style,{
+                position:"fixed",
+                left:`${left}px`,
+                top:`${Math.max(viewportGap,top)}px`,
+                width:`${width}px`,
+                maxWidth:`${window.innerWidth-viewportGap*2}px`,
+                maxHeight:`${Math.min(360,window.innerHeight*.52)}px`,
+                zIndex:"10000"
+            });
+        };
+
         const open=()=>{
             render();
             closeAll(wrapper);
             wrapper.classList.add("is-open");
             menu.hidden=false;
             trigger.setAttribute("aria-expanded","true");
+            positionPortaledMenu();
             const selectedIndex=Math.max(0,[...select.options].findIndex(option=>option.value===select.value));
             requestAnimationFrame(()=>focusOption(menu,selectedIndex));
         };
 
         const close=()=>{
             wrapper.classList.remove("is-open");
-            menu.hidden=true;
+            const restored=restoreMenu(wrapper);
+            if(restored)restored.hidden=true;
             trigger.setAttribute("aria-expanded","false");
         };
 
@@ -2217,6 +2261,7 @@ document.addEventListener("keydown",e=>{
 
         select.insertAdjacentElement("afterend",wrapper);
         wrapper.append(trigger,menu);
+        wrapper._adminSelectMenu=menu;
         wrappers.push(wrapper);
 
         select._adminSelectRender=render;
@@ -2246,7 +2291,8 @@ document.addEventListener("keydown",e=>{
     observer.observe(document.body,{childList:true,subtree:true});
 
     document.addEventListener("pointerdown",event=>{
-        if(!event.target.closest?.(".admin-select"))closeAll();
+        if(event.target.closest?.(".admin-select")||event.target.closest?.(".admin-select-menu"))return;
+        closeAll();
     },{passive:true});
 
     window.addEventListener("resize",()=>closeAll(),{passive:true});
