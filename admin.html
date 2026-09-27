@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="assets/css/admin-dorado.css"/>
 <link rel="stylesheet" href="assets/css/admin-mobile.css?v=20260926c"/>
 <link rel="stylesheet" href="assets/css/admin-performance.css?v=20260927-perf2"/>
-<link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-ordersrow1"/>
+<link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-categories1"/>
 </head>
 <body>
 
@@ -191,7 +191,31 @@
                 </div>
                                 <div class="field-row">
                   <div class="field"><label for="product-stock">STOCK</label><input id="product-stock" type="number" min="0" step="1" required placeholder="10"></div>
-                  <div class="field"><label for="product-category">CATEGORÍA</label><input id="product-category" maxlength="80" placeholder="Ej: Reels, Cañas, Señuelos" autocomplete="off" spellcheck="false"><div class="file-help">Escribí la categoría manualmente. No se selecciona de una lista.</div></div>
+                  <div class="field category-admin-field">
+                    <label for="product-category">CATEGORÍA</label>
+                    <div class="category-entry">
+                      <div class="category-input-wrap">
+                        <input id="product-category" maxlength="80" placeholder="Ej: Reels, Cañas, Señuelos" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-expanded="false" aria-controls="category-suggestions">
+                        <div id="category-suggestions" class="category-suggestions" role="listbox" hidden></div>
+                      </div>
+                      <button id="category-create" class="secondary category-create" type="button">CREAR</button>
+                    </div>
+                    <div class="category-tools">
+                      <span class="file-help">Escribí una nueva o elegí una ya creada.</span>
+                      <button id="category-manage-toggle" class="category-manage-toggle" type="button" aria-expanded="false">ADMINISTRAR CATEGORÍAS</button>
+                    </div>
+                    <div id="category-manager" class="category-manager" hidden>
+                      <div class="category-manager-head">
+                        <div><strong>Categorías guardadas</strong><span id="category-count">0 categorías</span></div>
+                        <button id="category-manager-close" class="category-manager-close" type="button" aria-label="Cerrar administrador">×</button>
+                      </div>
+                      <div id="category-list" class="category-list" aria-live="polite"></div>
+                      <div class="category-manager-actions">
+                        <button id="category-delete-selected" class="danger" type="button" disabled>ELIMINAR SELECCIONADAS</button>
+                        <button id="category-delete-all" class="secondary category-delete-all" type="button" disabled>ELIMINAR TODAS</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="field"><label for="product-active">VISIBILIDAD</label><select id="product-active"><option value="true">Activo / visible</option><option value="false">Oculto</option></select></div>
               </div>
@@ -336,6 +360,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20260927-selects1"></script>
+<script src="assets/js/admin.js?v=20260927-categories1"></script>
 </body>
 </html>
