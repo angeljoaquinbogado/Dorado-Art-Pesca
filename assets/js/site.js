@@ -2156,62 +2156,83 @@ cargarProductosDesdeSupabase();
 comprobarRetornoPago();
 
 
-// Navegación móvil: Inicio mientras el hero/portada sigue siendo la zona principal
-// y Productos una vez que el catálogo alcanza aproximadamente el centro visual.
-// Se usa scroll pasivo + requestAnimationFrame para evitar estados incorrectos en Safari/iOS.
+// Navegación móvil: refleja todas las secciones principales del sitio.
+// El dock es horizontal y mantiene visible la sección activa sin trabajo pesado por frame.
 (function configurarDockMovil(){
-    const items = Array.from(document.querySelectorAll('.mobile-dock-item[data-dock]'));
-    const productos = document.getElementById('productos');
-    if (!items.length || !productos) return;
+    const dock=document.querySelector(".mobile-dock");
+    const items=Array.from(document.querySelectorAll(".mobile-dock-item[data-dock]"));
+    if(!dock||!items.length)return;
 
-    const mobileQuery = window.matchMedia('(max-width: 900px)');
-    let scheduled = false;
-    let lastActive = '';
+    const mobileQuery=window.matchMedia("(max-width:900px)");
+    const sections=items
+        .map(item=>({item,id:item.dataset.dock,target:document.getElementById(item.dataset.dock)}))
+        .filter(entry=>entry.target);
 
-    const setActive = id => {
-        if (lastActive === id) return;
-        lastActive = id;
+    let scheduled=false;
+    let lastActive="";
 
-        items.forEach(item => {
-            const active = item.dataset.dock === id;
-            item.classList.toggle('active', active);
-            if (active) item.setAttribute('aria-current','page');
-            else item.removeAttribute('aria-current');
+    const centerActiveItem=item=>{
+        if(!mobileQuery.matches||!item)return;
+        const left=item.offsetLeft-(dock.clientWidth-item.offsetWidth)/2;
+        dock.scrollTo({left:Math.max(0,left),behavior:"smooth"});
+    };
+
+    const setActive=id=>{
+        if(!id||lastActive===id)return;
+        lastActive=id;
+
+        let activeItem=null;
+        sections.forEach(({item,id:itemId})=>{
+            const active=itemId===id;
+            item.classList.toggle("active",active);
+            if(active){
+                item.setAttribute("aria-current","page");
+                activeItem=item;
+            }else{
+                item.removeAttribute("aria-current");
+            }
         });
+
+        if(activeItem)centerActiveItem(activeItem);
     };
 
-    const syncDock = () => {
-        scheduled = false;
-        if (!mobileQuery.matches) return;
+    const syncDock=()=>{
+        scheduled=false;
+        if(!mobileQuery.matches||!sections.length)return;
 
-        const viewport = Math.max(window.innerHeight || 0, 1);
-        const productsTop = productos.getBoundingClientRect().top;
-        const switchLine = viewport * 0.48;
+        const line=Math.max(window.innerHeight||0,1)*0.42;
+        let active=sections[0];
 
-        setActive(productsTop <= switchLine ? 'productos' : 'inicio');
+        for(const entry of sections){
+            const top=entry.target.getBoundingClientRect().top;
+            if(top<=line)active=entry;
+            else break;
+        }
+
+        setActive(active.id);
     };
 
-    const requestSync = () => {
-        if (scheduled) return;
-        scheduled = true;
+    const requestSync=()=>{
+        if(scheduled)return;
+        scheduled=true;
         window.requestAnimationFrame(syncDock);
     };
 
-    items.forEach(item => {
-        item.addEventListener('click', () => {
-            if (!mobileQuery.matches) return;
-            const id = item.dataset.dock;
-            if (id) setActive(id);
+    items.forEach(item=>{
+        item.addEventListener("click",()=>{
+            if(!mobileQuery.matches)return;
+            setActive(item.dataset.dock);
         });
     });
 
-    window.addEventListener('scroll', requestSync, { passive:true });
-    window.addEventListener('resize', requestSync, { passive:true });
-    window.addEventListener('pageshow', requestSync);
-    mobileQuery.addEventListener?.('change', requestSync);
+    window.addEventListener("scroll",requestSync,{passive:true});
+    window.addEventListener("resize",requestSync,{passive:true});
+    window.addEventListener("pageshow",requestSync);
+    mobileQuery.addEventListener?.("change",requestSync);
 
     requestSync();
 })();
+
 // ==============================
 
 (() => {
