@@ -1130,3 +1130,176 @@ main{overflow:clip!important;}
     display:none!important;
   }
 }
+
+
+/* =========================================================
+   DARK REVIEWS / FAQ + SITE SCROLLBAR — 2026-09-27
+   Keep these areas visually continuous with the storefront
+   regardless of the operating-system light/dark preference.
+   ========================================================= */
+
+/* Page scrollbar: explicit site colors, independent from Windows theme. */
+html{
+  scrollbar-width:thin;
+  scrollbar-color:#536b79 #0d1b25;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar{
+  width:12px;
+  height:12px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track{
+  background:#0d1b25;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb{
+  background:#536b79;
+  border:3px solid #0d1b25;
+  border-radius:999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover{
+  background:#708895;
+}
+
+html::-webkit-scrollbar-corner,
+body::-webkit-scrollbar-corner{
+  background:#0d1b25;
+}
+
+/* Reviews and FAQ stay on the same dark navy family as the store. */
+#opiniones.trust-section,
+#preguntas-frecuentes.faq-section{
+  background:var(--dorado-bg)!important;
+  color:var(--dorado-text)!important;
+}
+
+#opiniones .trust-copy h2,
+#preguntas-frecuentes .faq-intro h2{
+  color:#f3eee5!important;
+}
+
+#opiniones .trust-copy h2 span,
+#preguntas-frecuentes .faq-intro h2 span{
+  color:#d9a63d!important;
+}
+
+#opiniones .trust-copy p,
+#preguntas-frecuentes .faq-intro p,
+#opiniones .reviews-filter-empty,
+#preguntas-frecuentes .faq-list details p{
+  color:#aebbc2!important;
+}
+
+#opiniones .section-index b,
+#opiniones .kicker,
+#preguntas-frecuentes .section-index b,
+#preguntas-frecuentes .kicker{
+  color:#d9a63d!important;
+}
+
+#opiniones .section-index i,
+#preguntas-frecuentes .section-index i{
+  background:rgba(217,166,61,.42)!important;
+}
+
+/* Review controls */
+#opiniones .reviews-rating-summary,
+#opiniones .reviews-filter-button,
+#opiniones .reviews-google-link{
+  color:#f3eee5!important;
+}
+
+#opiniones .reviews-filter-button,
+#opiniones .reviews-google-link{
+  background:rgba(241,236,227,.055)!important;
+  border-color:rgba(241,236,227,.16)!important;
+}
+
+#opiniones .reviews-filter-button:hover,
+#opiniones .reviews-google-link:hover{
+  background:rgba(217,166,61,.12)!important;
+  border-color:rgba(217,166,61,.44)!important;
+  color:#fff!important;
+}
+
+/* Review cards */
+#opiniones .review-card{
+  background:var(--dorado-panel)!important;
+  border-color:rgba(241,236,227,.10)!important;
+  box-shadow:0 16px 34px rgba(5,13,19,.16)!important;
+}
+
+#opiniones .review-author strong{
+  color:#f4efe7!important;
+}
+
+#opiniones .review-author small,
+#opiniones .review-card p{
+  color:#aeb9bf!important;
+}
+
+#opiniones .review-stars{
+  color:#e6b849!important;
+}
+
+#opiniones .reviews-filter-panel,
+#opiniones .reviews-empty{
+  background:var(--dorado-bg-2)!important;
+  border-color:rgba(241,236,227,.11)!important;
+}
+
+#opiniones .reviews-filter-head strong,
+#opiniones .reviews-empty strong{
+  color:#f4efe7!important;
+}
+
+#opiniones .reviews-filter-head select{
+  background:var(--dorado-panel)!important;
+  color:#f4efe7!important;
+  border-color:rgba(241,236,227,.14)!important;
+}
+
+/* FAQ cards */
+#preguntas-frecuentes .faq-item,
+#preguntas-frecuentes .faq-list details{
+  background:rgba(25,49,63,.66)!important;
+  border-color:rgba(241,236,227,.09)!important;
+  color:var(--dorado-text)!important;
+  box-shadow:none!important;
+}
+
+#preguntas-frecuentes .faq-item:hover,
+#preguntas-frecuentes .faq-list details:hover,
+#preguntas-frecuentes .faq-list details[open]{
+  background:rgba(30,55,70,.92)!important;
+  border-color:rgba(217,166,61,.28)!important;
+}
+
+#preguntas-frecuentes .faq-question,
+#preguntas-frecuentes summary{
+  color:#f3eee5!important;
+}
+
+/* No light flash between these adjacent sections. */
+#opiniones + #preguntas-frecuentes{
+  border-top:1px solid rgba(241,236,227,.06)!important;
+}
+
+@media (max-width:700px){
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar{
+    width:8px;
+    height:8px;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb{
+    border-width:2px;
+  }
+}
