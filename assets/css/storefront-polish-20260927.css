@@ -2604,3 +2604,204 @@ body::-webkit-scrollbar-corner{
     font-size:12px!important;
   }
 }
+
+
+/* =========================================================
+   CHECKOUT — PALETA DORADO CONSISTENTE
+   Corrige bloques demasiado oscuros / contrastes lavados.
+   ========================================================= */
+#checkout-modal .checkout-card{
+  background:#f7f2e8!important;
+  color:#172833!important;
+  border:1px solid rgba(241,236,227,.16)!important;
+  box-shadow:0 34px 90px rgba(5,13,19,.30)!important;
+}
+
+#checkout-modal .checkout-main{
+  background:#fbf7ef!important;
+  color:#172833!important;
+}
+
+#checkout-modal .checkout-side{
+  background:#10212d!important;
+  color:#f2ede5!important;
+  border-left:1px solid rgba(241,236,227,.10)!important;
+}
+
+#checkout-modal .checkout-title,
+#checkout-modal .checkout-main h2,
+#checkout-modal .checkout-main h3{
+  color:#172833!important;
+}
+
+#checkout-modal .checkout-intro{
+  color:#66737b!important;
+}
+
+#checkout-modal .checkout-field label{
+  color:#59666e!important;
+}
+
+#checkout-modal .checkout-field input,
+#checkout-modal .checkout-field select,
+#checkout-modal .checkout-field textarea{
+  background:#f3eee5!important;
+  color:#172833!important;
+  border-color:#d8d0c4!important;
+  box-shadow:none!important;
+}
+
+#checkout-modal .checkout-field input::placeholder,
+#checkout-modal .checkout-field textarea::placeholder{
+  color:#8b9498!important;
+  opacity:1!important;
+}
+
+#checkout-modal .checkout-field input:focus,
+#checkout-modal .checkout-field select:focus,
+#checkout-modal .checkout-field textarea:focus{
+  background:#fffaf2!important;
+  border-color:#d7a13a!important;
+  box-shadow:0 0 0 3px rgba(215,161,58,.13)!important;
+}
+
+#checkout-modal .checkout-delivery-note{
+  background:#efe2c6!important;
+  color:#665329!important;
+  border:1px solid rgba(185,118,29,.16)!important;
+}
+
+#checkout-modal .checkout-consent{
+  color:#657179!important;
+}
+
+#checkout-modal .checkout-secure{
+  color:#7a858b!important;
+}
+
+#checkout-modal .checkout-side h3{
+  color:#f4efe7!important;
+}
+
+#checkout-modal .checkout-summary-item{
+  padding:10px!important;
+  border-radius:14px!important;
+  background:#152b38!important;
+  border:1px solid rgba(241,236,227,.08)!important;
+}
+
+#checkout-modal .checkout-summary-item img{
+  background:#efe9de!important;
+}
+
+#checkout-modal .checkout-summary-item strong,
+#checkout-modal .checkout-summary-price{
+  color:#f3eee6!important;
+}
+
+#checkout-modal .checkout-summary-item small{
+  color:#9eabb2!important;
+}
+
+#checkout-modal .checkout-summary-total{
+  border-top-color:rgba(241,236,227,.13)!important;
+}
+
+#checkout-modal .checkout-summary-row{
+  color:#aeb9be!important;
+}
+
+#checkout-modal .checkout-summary-row strong{
+  color:#f3eee6!important;
+}
+
+#checkout-modal .checkout-summary-row.total{
+  color:#f4efe7!important;
+}
+
+#checkout-modal .checkout-summary-row.total strong{
+  color:#e7ad3d!important;
+}
+
+#checkout-modal .checkout-shipping{
+  background:#152b38!important;
+  color:#aeb9be!important;
+  border:1px solid rgba(241,236,227,.08)!important;
+}
+
+#checkout-modal .checkout-whatsapp{
+  background:rgba(37,211,102,.10)!important;
+  color:#66df91!important;
+  border-color:rgba(37,211,102,.24)!important;
+}
+
+#checkout-modal .checkout-whatsapp:hover{
+  background:rgba(37,211,102,.16)!important;
+  color:#7bea9f!important;
+}
+
+#checkout-modal .checkout-pay{
+  background:linear-gradient(135deg,#f5aa32,#e88d10)!important;
+  color:#10212d!important;
+  border:0!important;
+  box-shadow:0 12px 28px rgba(173,101,10,.18)!important;
+}
+
+#checkout-modal .checkout-pay:hover:not(:disabled){
+  background:linear-gradient(135deg,#ffba4a,#ed971a)!important;
+  color:#10212d!important;
+}
+
+#checkout-modal .checkout-close{
+  background:#f7f2e8!important;
+  color:#263740!important;
+  border-color:#d8d0c4!important;
+}
+
+#checkout-modal .checkout-close:hover{
+  background:#ece4d7!important;
+  color:#10212d!important;
+}
+
+/* Payment detail panels stay light and readable inside the light form. */
+#checkout-modal .payment-detail-panel{
+  background:#f3eee5!important;
+  border-color:#d8d0c4!important;
+  color:#172833!important;
+}
+
+#checkout-modal .payment-detail-head strong{
+  color:#24343d!important;
+}
+
+#checkout-modal .payment-detail-head small,
+#checkout-modal .payment-detail-note{
+  color:#69767d!important;
+}
+
+#checkout-modal .secure-card-fields input{
+  background:#fbf7ef!important;
+  color:#172833!important;
+  border-color:#d8d0c4!important;
+}
+
+#checkout-modal .secure-card-fields input::placeholder{
+  color:#879197!important;
+}
+
+#checkout-modal .card-brand{
+  background:#fffaf3!important;
+  border-color:#ddd3c6!important;
+}
+
+@media(max-width:700px){
+  #checkout-modal .checkout-card{
+    background:#fbf7ef!important;
+  }
+
+  #checkout-modal .checkout-side{
+    background:#10212d!important;
+    border-left:0!important;
+    border-top:1px solid rgba(241,236,227,.10)!important;
+  }
+}
