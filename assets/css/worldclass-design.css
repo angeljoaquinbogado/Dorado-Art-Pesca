@@ -1,0 +1,1250 @@
+/* =========================================================
+   DORADO — EDITORIAL OUTDOOR DESIGN SYSTEM
+   Dirección: premium outdoor / editorial commerce.
+   Inspirado en los principios aportados por el usuario:
+   - jerarquía fuerte, menos "card soup"
+   - una sola idea visual por sección
+   - movimiento corto, transform/opacity
+   - sin blur decorativo ni sombras pesadas
+   - responsive real y performance-safe
+   ========================================================= */
+
+:root{
+  --d2-bg:#061019;
+  --d2-bg-deep:#040a0f;
+  --d2-surface:#0a1620;
+  --d2-surface-2:#0d1b26;
+  --d2-ink:#f4f1e8;
+  --d2-muted:#96a1aa;
+  --d2-muted-2:#707d87;
+  --d2-gold:#e7a72a;
+  --d2-gold-soft:#c69026;
+  --d2-line:rgba(255,255,255,.095);
+  --d2-line-gold:rgba(231,167,42,.26);
+  --d2-max:1240px;
+  --d2-radius:16px;
+}
+
+/* ---------- Browser surfaces ---------- */
+::selection{
+  background:rgba(231,167,42,.92)!important;
+  color:#061019!important;
+}
+
+html{
+  scrollbar-color:#9a7725 #071019;
+}
+
+/* ---------- Global rhythm ---------- */
+main{
+  background:var(--d2-bg);
+}
+
+main :where(.section,.process,.location){
+  scroll-margin-top:86px;
+}
+
+/* Los números de capítulo hacían que la página pareciera plantilla.
+   Conservamos los textos de contexto, pero limpiamos la numeración. */
+main :where(.about,.catalog-section,.process,.trust-section,.faq-section,.location) .section-index{
+  display:none!important;
+}
+
+main :where(.about,.catalog-section,.process,.trust-section,.faq-section,.location) .kicker{
+  margin:0 0 14px!important;
+  color:var(--d2-gold)!important;
+  font-size:8px!important;
+  font-weight:850!important;
+  letter-spacing:.14em!important;
+  text-transform:uppercase!important;
+}
+
+main :where(.section-title,.about-copy h2,.process-intro h2,.trust-copy h2,.faq-intro h2,.location-copy h2){
+  color:var(--d2-ink)!important;
+  letter-spacing:-.038em!important;
+  text-wrap:balance;
+}
+
+main :where(.section-title,.about-copy h2,.process-intro h2,.trust-copy h2,.faq-intro h2,.location-copy h2) span{
+  color:var(--d2-gold)!important;
+}
+
+main :where(.section-desc,.about-copy>p,.process-intro>p,.trust-copy>p,.faq-intro>p,.location-copy>p){
+  color:var(--d2-muted)!important;
+  max-width:68ch;
+  line-height:1.72!important;
+}
+
+/* =========================================================
+   NAV — quiet luxury, no glass
+   ========================================================= */
+.topbar{
+  background:#03080c!important;
+  border-bottom:1px solid rgba(255,255,255,.055)!important;
+}
+
+.nav{
+  background:rgba(5,12,18,.985)!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+.navlinks{
+  gap:24px!important;
+}
+
+.navlinks a{
+  color:#8e9aa4!important;
+  letter-spacing:.09em!important;
+}
+
+.navlinks a:hover,
+.navlinks a.active{
+  color:#f5f1e8!important;
+}
+
+.navlinks a::after{
+  height:2px!important;
+  bottom:18px!important;
+  background:var(--d2-gold)!important;
+}
+
+.nav-cta,
+.orders-trigger{
+  border-radius:8px!important;
+}
+
+.cart-trigger{
+  border-radius:8px!important;
+  background:var(--d2-gold)!important;
+}
+
+/* =========================================================
+   HERO — one focal moment
+   ========================================================= */
+.hero-combined-scene{
+  position:relative!important;
+  background-color:var(--d2-bg-deep)!important;
+}
+
+@media(min-width:821px){
+  .hero-combined-scene{
+    background:
+      linear-gradient(90deg,rgba(3,8,12,.38) 0%,rgba(3,8,12,.12) 43%,rgba(3,8,12,.44) 100%),
+      url('../images/backgrounds/hero-bg-dorado.webp') center 49%/cover no-repeat!important;
+  }
+}
+
+.hero-shell{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+  padding-top:72px!important;
+  padding-bottom:112px!important;
+}
+
+.hero-content{
+  width:min(620px,49vw)!important;
+  max-width:620px!important;
+  padding:clamp(28px,3vw,42px)!important;
+  border:1px solid rgba(255,255,255,.105)!important;
+  border-radius:20px!important;
+  background:#071119!important;
+  box-shadow:0 30px 72px rgba(0,0,0,.25)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+.hero .eyebrow{
+  margin-bottom:20px!important;
+  color:#87939c!important;
+  font-size:8px!important;
+  letter-spacing:.13em!important;
+}
+
+.hero .eyebrow-dot{
+  width:5px!important;
+  height:5px!important;
+  background:var(--d2-gold)!important;
+  box-shadow:none!important;
+}
+
+.hero h1{
+  max-width:590px!important;
+  font-size:clamp(48px,5.15vw,76px)!important;
+  line-height:.92!important;
+  letter-spacing:-.052em!important;
+  text-shadow:none!important;
+}
+
+.hero h1 span{
+  color:var(--d2-gold)!important;
+}
+
+.hero-lead{
+  margin-top:24px!important;
+  max-width:54ch!important;
+  color:#c2c9ce!important;
+  font-size:14px!important;
+  line-height:1.66!important;
+}
+
+.hero-actions{
+  margin-top:28px!important;
+}
+
+.hero-btn,
+.hero-secondary{
+  min-height:50px!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+
+.hero-btn{
+  background:var(--d2-gold)!important;
+  color:#071019!important;
+}
+
+.hero-btn:hover{
+  background:#f0b53f!important;
+}
+
+.hero-secondary{
+  background:#0d1922!important;
+  border-color:rgba(255,255,255,.16)!important;
+  color:#f3efe6!important;
+  backdrop-filter:none!important;
+}
+
+.hero-proof{
+  margin-top:28px!important;
+  gap:18px!important;
+  color:#7e8991!important;
+}
+
+/* =========================================================
+   SERVICE RAIL — not four floating cards
+   ========================================================= */
+.dorado-field-strip{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+  margin:-68px auto 0!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:0!important;
+  border:1px solid var(--d2-line)!important;
+  border-left:0!important;
+  border-right:0!important;
+  border-radius:0!important;
+  background:#07121a!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+
+.dorado-field-strip .feature{
+  min-height:150px!important;
+  margin:0!important;
+  padding:27px 26px!important;
+  border:0!important;
+  border-right:1px solid var(--d2-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.dorado-field-strip .feature:last-child{
+  border-right:0!important;
+}
+
+.dorado-field-strip .field-no{
+  display:block!important;
+  margin-bottom:22px!important;
+  color:#53606a!important;
+  font-size:8px!important;
+  font-weight:850!important;
+  letter-spacing:.12em!important;
+}
+
+.dorado-field-strip .feature strong{
+  color:#f4f1e8!important;
+  font-size:12px!important;
+  line-height:1.35!important;
+}
+
+.dorado-field-strip .feature span:not(.field-no){
+  margin-top:8px!important;
+  color:#89969f!important;
+  font-size:10px!important;
+  line-height:1.55!important;
+}
+
+/* =========================================================
+   STORY — artifact + editorial copy
+   ========================================================= */
+.about{
+  padding:0!important;
+  background:#07131d!important;
+}
+
+.dorado-story-grid{
+  width:min(1120px,calc(100% - 56px))!important;
+  padding:112px 0 116px!important;
+  grid-template-columns:minmax(270px,.78fr) minmax(0,1.22fr)!important;
+  gap:clamp(56px,7vw,92px)!important;
+  align-items:center!important;
+}
+
+.dorado-story-visual{
+  min-height:430px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-right:1px solid var(--d2-line)!important;
+}
+
+.dorado-seal-wrap{
+  width:min(300px,82%)!important;
+}
+
+.dorado-seal-ring-b{
+  display:none!important;
+}
+
+.dorado-seal-ring-a{
+  border-color:rgba(231,167,42,.18)!important;
+  box-shadow:none!important;
+}
+
+.dorado-story-logo{
+  filter:drop-shadow(0 22px 28px rgba(0,0,0,.24))!important;
+}
+
+.dorado-story-caption{
+  width:min(300px,82%)!important;
+  margin-top:22px!important;
+  padding-top:14px!important;
+  border-top:1px solid var(--d2-line)!important;
+}
+
+.dorado-story-caption span{
+  color:#74818a!important;
+}
+
+.dorado-story-caption strong{
+  color:var(--d2-gold)!important;
+}
+
+.dorado-story-copy{
+  max-width:680px!important;
+}
+
+.dorado-story-copy h2{
+  margin-bottom:24px!important;
+  font-size:clamp(42px,4.5vw,64px)!important;
+  line-height:.98!important;
+}
+
+.dorado-story-copy>p{
+  color:#b2bbc1!important;
+  font-size:14px!important;
+}
+
+.about-copy-note{
+  margin:24px 0 8px!important;
+  padding:18px 0!important;
+  border-top:1px solid var(--d2-line)!important;
+  border-bottom:1px solid var(--d2-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#8f9ba4!important;
+  box-shadow:none!important;
+}
+
+.dorado-story-points{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:0!important;
+  margin-top:18px!important;
+}
+
+.dorado-story-points .about-highlight{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  grid-template-areas:
+    "icon title"
+    "icon body"!important;
+  gap:3px 14px!important;
+  padding:18px 0!important;
+  border:0!important;
+  border-bottom:1px solid var(--d2-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.dorado-story-points .about-highlight-icon{
+  grid-area:icon!important;
+  width:38px!important;
+  height:38px!important;
+  border-radius:10px!important;
+  border:1px solid var(--d2-line-gold)!important;
+  background:#0b1923!important;
+  color:var(--d2-gold)!important;
+}
+
+.dorado-story-points .about-highlight strong{
+  grid-area:title!important;
+  color:#f0ede4!important;
+  font-size:11px!important;
+}
+
+.dorado-story-points .about-highlight>span{
+  grid-area:body!important;
+  color:#82909a!important;
+  font-size:9.5px!important;
+  line-height:1.5!important;
+}
+
+/* =========================================================
+   CATALOG — gallery, not card wall
+   ========================================================= */
+.dorado-catalog{
+  padding:116px 0 124px!important;
+  background:#050d13!important;
+}
+
+.catalog-shell-dark{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+  margin:auto!important;
+}
+
+.catalog-heading-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.12fr) minmax(320px,.58fr)!important;
+  gap:72px!important;
+  align-items:end!important;
+  margin-bottom:40px!important;
+  padding-bottom:34px!important;
+  border-bottom:1px solid var(--d2-line)!important;
+}
+
+.catalog-copy{
+  max-width:720px!important;
+}
+
+.catalog-copy .section-title{
+  font-size:clamp(46px,5.1vw,72px)!important;
+  line-height:.94!important;
+}
+
+.catalog-copy .section-desc{
+  margin-top:18px!important;
+  color:#93a0a8!important;
+  font-size:12px!important;
+}
+
+.catalog-promises{
+  margin-top:22px!important;
+  gap:16px!important;
+}
+
+.catalog-promises span{
+  color:#7f8c95!important;
+  font-size:8px!important;
+}
+
+.catalog-tools{
+  align-self:end!important;
+}
+
+.catalog-search{
+  min-height:50px!important;
+  border:1px solid var(--d2-line)!important;
+  border-radius:10px!important;
+  background:#0a151e!important;
+  box-shadow:none!important;
+}
+
+.catalog-search input{
+  color:#f2eee6!important;
+}
+
+.catalog-search input::placeholder{
+  color:#687680!important;
+}
+
+.catalog-count{
+  margin-top:10px!important;
+  color:#65727b!important;
+}
+
+.category-chips{
+  display:flex!important;
+  gap:8px!important;
+  margin:0 0 28px!important;
+  padding-bottom:2px!important;
+  overflow-x:auto!important;
+  scrollbar-width:none;
+}
+
+.category-chips::-webkit-scrollbar{
+  display:none;
+}
+
+.category-chip{
+  flex:0 0 auto!important;
+  min-height:38px!important;
+  padding:0 13px!important;
+  border:1px solid var(--d2-line)!important;
+  border-radius:8px!important;
+  background:#08131c!important;
+  color:#a3adb4!important;
+  box-shadow:none!important;
+}
+
+.category-chip.active,
+.category-chip:hover{
+  border-color:var(--d2-line-gold)!important;
+  background:#101b23!important;
+  color:#f0b23a!important;
+}
+
+.products{
+  gap:18px!important;
+}
+
+.dorado-catalog .product{
+  border:1px solid var(--d2-line)!important;
+  border-radius:16px!important;
+  background:#09151e!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+
+.dorado-catalog .product:hover{
+  border-color:rgba(231,167,42,.30)!important;
+  box-shadow:none!important;
+}
+
+.dorado-catalog .product-img{
+  min-height:330px!important;
+  background:#0c1821!important;
+  border-bottom:1px solid var(--d2-line)!important;
+}
+
+.dorado-catalog .product-img::before,
+.dorado-catalog .product-img::after{
+  display:none!important;
+}
+
+.dorado-catalog .product-real-image{
+  max-width:86%!important;
+  max-height:86%!important;
+  filter:none!important;
+}
+
+.dorado-catalog .badge{
+  top:15px!important;
+  left:15px!important;
+  border:1px solid rgba(231,167,42,.24)!important;
+  border-radius:7px!important;
+  background:#07121a!important;
+  color:var(--d2-gold)!important;
+}
+
+.dorado-catalog .product-info{
+  padding:22px!important;
+  background:#09151e!important;
+}
+
+.dorado-catalog .product-info h3{
+  font-size:17px!important;
+  line-height:1.2!important;
+  letter-spacing:-.02em!important;
+}
+
+.dorado-catalog .product-card-description{
+  margin-top:8px!important;
+  color:#7d8a94!important;
+  line-height:1.55!important;
+}
+
+.dorado-catalog .product-price{
+  margin-top:18px!important;
+  font-size:27px!important;
+  letter-spacing:-.03em!important;
+}
+
+.dorado-catalog .product-stock{
+  margin-top:5px!important;
+  color:#c89a32!important;
+}
+
+.dorado-catalog .view-product{
+  margin-top:18px!important;
+  padding:14px 0!important;
+  border-top:1px solid var(--d2-line)!important;
+  border-bottom:1px solid var(--d2-line)!important;
+  color:#e8e4db!important;
+}
+
+.dorado-catalog .card-quantity-row{
+  margin:14px 0!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:#07121a!important;
+}
+
+.dorado-catalog .add-card-product{
+  min-height:48px!important;
+  border-radius:9px!important;
+  background:var(--d2-gold)!important;
+  color:#071019!important;
+  box-shadow:none!important;
+}
+
+/* =========================================================
+   PURCHASE FLOW — editorial steps, not cards
+   ========================================================= */
+.dorado-buy-flow{
+  padding:116px 0!important;
+  background:#07131d!important;
+}
+
+.dorado-buy-flow .process-shell{
+  width:min(1120px,calc(100% - 56px))!important;
+  grid-template-columns:minmax(300px,.78fr) minmax(0,1.22fr)!important;
+  gap:clamp(60px,8vw,110px)!important;
+  align-items:start!important;
+}
+
+.process-intro{
+  position:sticky!important;
+  top:110px!important;
+}
+
+.process-intro h2{
+  margin-top:0!important;
+  font-size:clamp(42px,4.7vw,66px)!important;
+  line-height:.96!important;
+}
+
+.process-intro>p{
+  margin-top:20px!important;
+  color:#9ba6ae!important;
+  font-size:12px!important;
+}
+
+.process-link{
+  margin-top:28px!important;
+  color:var(--d2-gold)!important;
+}
+
+.process-steps{
+  display:grid!important;
+  gap:0!important;
+}
+
+.dorado-buy-flow .process-step{
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:74px minmax(0,1fr)!important;
+  gap:18px!important;
+  padding:26px 0!important;
+  border:0!important;
+  border-top:1px solid var(--d2-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.dorado-buy-flow .process-step:last-child{
+  border-bottom:1px solid var(--d2-line)!important;
+}
+
+.process-step-head{
+  display:block!important;
+}
+
+.process-step-number{
+  color:#52616b!important;
+  font-size:10px!important;
+  letter-spacing:.12em!important;
+}
+
+.process-step-icon{
+  width:40px!important;
+  height:40px!important;
+  margin-top:10px!important;
+  border:1px solid var(--d2-line-gold)!important;
+  border-radius:10px!important;
+  background:#0a1822!important;
+  color:var(--d2-gold)!important;
+}
+
+.process-step-copy strong{
+  color:#f3efe6!important;
+  font-size:15px!important;
+  letter-spacing:-.015em!important;
+}
+
+.process-step-copy p{
+  max-width:52ch!important;
+  margin-top:7px!important;
+  color:#83909a!important;
+  font-size:10.5px!important;
+  line-height:1.62!important;
+}
+
+/* =========================================================
+   REVIEWS — integrate with the visual world
+   ========================================================= */
+.trust-section{
+  padding:108px 0 94px!important;
+  background:#050d13!important;
+}
+
+.trust-shell{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+}
+
+.trust-head{
+  padding-bottom:28px!important;
+  border-bottom:1px solid var(--d2-line)!important;
+}
+
+.trust-copy h2{
+  font-size:clamp(42px,4.5vw,64px)!important;
+  line-height:.98!important;
+}
+
+.trust-copy>p{
+  color:#8e9aa3!important;
+}
+
+.reviews-rating-summary,
+.reviews-filter-button,
+.reviews-google-link{
+  border-radius:8px!important;
+}
+
+#opiniones .review-card{
+  border-radius:14px!important;
+  border-left-width:1px!important;
+  border-color:var(--d2-line)!important;
+  background:#0a1620!important;
+}
+
+#opiniones .review-card:hover{
+  border-color:rgba(231,167,42,.28)!important;
+}
+
+#opiniones .review-avatar{
+  border-radius:10px!important;
+}
+
+#opiniones .review-source{
+  border-radius:8px!important;
+}
+
+/* =========================================================
+   FAQ — typography and rules, no accordion cards
+   ========================================================= */
+.faq-section{
+  padding:94px 0 112px!important;
+  background:#071019!important;
+}
+
+.faq-shell{
+  width:min(1120px,calc(100% - 56px))!important;
+  grid-template-columns:minmax(280px,.7fr) minmax(0,1.3fr)!important;
+  gap:clamp(60px,8vw,110px)!important;
+}
+
+.faq-intro h2{
+  font-size:clamp(40px,4.2vw,58px)!important;
+}
+
+.faq-list{
+  gap:0!important;
+  border-top:1px solid var(--d2-line)!important;
+}
+
+.faq-list details{
+  border:0!important;
+  border-bottom:1px solid var(--d2-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.faq-list details[open]{
+  background:transparent!important;
+}
+
+.faq-list summary{
+  padding:21px 42px 21px 0!important;
+  color:#e9e5dc!important;
+  font-size:11px!important;
+  line-height:1.45!important;
+}
+
+.faq-list summary::after{
+  right:2px!important;
+  color:var(--d2-gold)!important;
+}
+
+.faq-list details p{
+  max-width:68ch!important;
+  padding:0 44px 22px 0!important;
+  color:#87949d!important;
+  font-size:10px!important;
+}
+
+/* =========================================================
+   CONTACT — destination moment
+   ========================================================= */
+.location{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:112px 0!important;
+  background:#050b10!important;
+}
+
+.location-box{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+  margin:auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,.88fr) minmax(420px,1.12fr)!important;
+  gap:64px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.location-copy h2{
+  font-size:clamp(46px,5vw,68px)!important;
+}
+
+.location-copy>p{
+  color:#929ea7!important;
+  font-size:12px!important;
+}
+
+.contact-list{
+  margin-top:28px!important;
+  border-top:1px solid var(--d2-line)!important;
+}
+
+.contact-line{
+  padding:16px 0!important;
+  border:0!important;
+  border-bottom:1px solid var(--d2-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.contact-icon{
+  border-radius:9px!important;
+  border:1px solid var(--d2-line-gold)!important;
+  background:#0a1720!important;
+  color:var(--d2-gold)!important;
+}
+
+.contact-line small{
+  color:#64727c!important;
+}
+
+.contact-line strong{
+  color:#ece8df!important;
+}
+
+.contact-detail{
+  color:#7c8992!important;
+}
+
+.contact-actions{
+  margin-top:26px!important;
+}
+
+.contact-actions .gold-btn,
+.contact-actions .outline-btn{
+  border-radius:8px!important;
+}
+
+.dorado-map{
+  min-height:560px!important;
+  border:1px solid var(--d2-line)!important;
+  border-radius:16px!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+}
+
+.map-open-button{
+  border-radius:8px!important;
+}
+
+/* =========================================================
+   FOOTER — oversized brand close
+   ========================================================= */
+.site-footer{
+  background:#03080c!important;
+  border-top:1px solid var(--d2-line)!important;
+}
+
+.footer-main{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+  padding-top:70px!important;
+}
+
+.footer-brand-box p{
+  color:#7d8992!important;
+}
+
+.footer-column h4{
+  color:#f0ece3!important;
+}
+
+.footer-column a{
+  color:#7f8b94!important;
+}
+
+.footer-column a:hover{
+  color:var(--d2-gold)!important;
+}
+
+.footer-wordmark{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+  margin:54px auto 0!important;
+  padding:34px 0 28px!important;
+  border-top:1px solid var(--d2-line)!important;
+  border-bottom:1px solid var(--d2-line)!important;
+}
+
+.footer-wordmark-name{
+  color:#ebe7de!important;
+  font-size:clamp(72px,11vw,170px)!important;
+  line-height:.78!important;
+  letter-spacing:-.065em!important;
+  opacity:.95!important;
+}
+
+.footer-wordmark-desc{
+  color:var(--d2-gold)!important;
+}
+
+.footer-bottom{
+  width:min(var(--d2-max),calc(100% - 56px))!important;
+}
+
+/* =========================================================
+   Motion: quieter, still authored
+   ========================================================= */
+html.motion-enhanced .motion-item{
+  --motion-y:10px!important;
+  transition:
+    opacity 280ms cubic-bezier(.16,1,.3,1) var(--motion-delay),
+    transform 520ms cubic-bezier(.16,1,.3,1) var(--motion-delay)!important;
+}
+
+@media(hover:hover) and (pointer:fine){
+  .dorado-catalog .product:hover{
+    transform:translate3d(0,-3px,0)!important;
+  }
+
+  .dorado-story-points .about-highlight:hover,
+  .contact-line:hover{
+    transform:translate3d(3px,0,0)!important;
+  }
+
+  .dorado-buy-flow .process-step:hover{
+    transform:translate3d(4px,0,0)!important;
+  }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+@media(max-width:980px){
+  .hero-shell,
+  .dorado-field-strip,
+  .dorado-story-grid,
+  .catalog-shell-dark,
+  .dorado-buy-flow .process-shell,
+  .trust-shell,
+  .faq-shell,
+  .location-box,
+  .footer-main,
+  .footer-wordmark,
+  .footer-bottom{
+    width:min(100% - 36px,900px)!important;
+  }
+
+  .hero-content{
+    width:min(620px,66vw)!important;
+  }
+
+  .dorado-field-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .dorado-field-strip .feature:nth-child(2){
+    border-right:0!important;
+  }
+
+  .dorado-field-strip .feature:nth-child(-n+2){
+    border-bottom:1px solid var(--d2-line)!important;
+  }
+
+  .dorado-story-grid,
+  .dorado-buy-flow .process-shell,
+  .faq-shell,
+  .location-box{
+    grid-template-columns:1fr!important;
+  }
+
+  .dorado-story-visual{
+    min-height:330px!important;
+    border-right:0!important;
+    border-bottom:1px solid var(--d2-line)!important;
+    padding-bottom:48px!important;
+  }
+
+  .catalog-heading-row{
+    grid-template-columns:1fr!important;
+    gap:28px!important;
+  }
+
+  .process-intro{
+    position:static!important;
+  }
+
+  .location-box{
+    gap:44px!important;
+  }
+
+  .dorado-map{
+    min-height:480px!important;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+@media(max-width:700px){
+  .hero-shell,
+  .dorado-field-strip,
+  .dorado-story-grid,
+  .catalog-shell-dark,
+  .dorado-buy-flow .process-shell,
+  .trust-shell,
+  .faq-shell,
+  .location-box,
+  .footer-main,
+  .footer-wordmark,
+  .footer-bottom{
+    width:calc(100% - 28px)!important;
+  }
+
+  .hero-combined-scene>.hero{
+    background-position:center!important;
+  }
+
+  .hero-shell{
+    padding:82px 0 100px!important;
+    align-items:flex-end!important;
+  }
+
+  .hero-content{
+    width:100%!important;
+    max-width:none!important;
+    padding:24px!important;
+    border-radius:16px!important;
+    background:rgba(6,16,24,.94)!important;
+  }
+
+  .hero h1{
+    font-size:clamp(42px,12vw,58px)!important;
+  }
+
+  .hero-lead{
+    font-size:12.5px!important;
+  }
+
+  .hero-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+
+  .hero-btn,
+  .hero-secondary{
+    width:100%!important;
+  }
+
+  .hero-proof{
+    gap:10px 14px!important;
+  }
+
+  .dorado-field-strip{
+    margin:-54px auto 0!important;
+    grid-template-columns:1fr!important;
+  }
+
+  .dorado-field-strip .feature{
+    min-height:0!important;
+    padding:20px 4px!important;
+    border-right:0!important;
+    border-bottom:1px solid var(--d2-line)!important;
+  }
+
+  .dorado-field-strip .feature:last-child{
+    border-bottom:0!important;
+  }
+
+  .dorado-field-strip .feature:nth-child(-n+2){
+    border-bottom:1px solid var(--d2-line)!important;
+  }
+
+  .dorado-field-strip .field-no{
+    margin-bottom:8px!important;
+  }
+
+  .dorado-story-grid{
+    padding:84px 0 92px!important;
+    gap:44px!important;
+  }
+
+  .dorado-story-visual{
+    min-height:280px!important;
+    padding-bottom:36px!important;
+  }
+
+  .dorado-story-copy h2{
+    font-size:clamp(38px,11vw,52px)!important;
+  }
+
+  .dorado-catalog{
+    padding:88px 0 96px!important;
+  }
+
+  .catalog-heading-row{
+    margin-bottom:26px!important;
+    padding-bottom:26px!important;
+  }
+
+  .catalog-copy .section-title{
+    font-size:clamp(38px,11vw,52px)!important;
+  }
+
+  .products{
+    gap:14px!important;
+  }
+
+  .dorado-catalog .product-img{
+    min-height:290px!important;
+  }
+
+  .dorado-catalog .product-info{
+    padding:18px!important;
+  }
+
+  .dorado-buy-flow{
+    padding:92px 0!important;
+  }
+
+  .process-intro h2{
+    font-size:clamp(38px,11vw,52px)!important;
+  }
+
+  .dorado-buy-flow .process-step{
+    grid-template-columns:56px minmax(0,1fr)!important;
+    gap:14px!important;
+    padding:22px 0!important;
+  }
+
+  .trust-section{
+    padding:88px 0 78px!important;
+  }
+
+  .trust-head{
+    gap:22px!important;
+  }
+
+  .trust-copy h2{
+    font-size:clamp(38px,10vw,50px)!important;
+  }
+
+  .faq-section{
+    padding:78px 0 92px!important;
+  }
+
+  .faq-shell{
+    gap:42px!important;
+  }
+
+  .faq-intro h2{
+    font-size:clamp(36px,10vw,48px)!important;
+  }
+
+  .location{
+    padding:92px 0!important;
+  }
+
+  .location-copy h2{
+    font-size:clamp(40px,11vw,54px)!important;
+  }
+
+  .dorado-map{
+    min-height:430px!important;
+  }
+
+  .footer-main{
+    padding-top:56px!important;
+  }
+
+  .footer-wordmark{
+    margin-top:42px!important;
+  }
+
+  .footer-wordmark-name{
+    font-size:clamp(66px,22vw,110px)!important;
+  }
+}
+
+/* Very small phones */
+@media(max-width:380px){
+  .hero-shell,
+  .dorado-field-strip,
+  .dorado-story-grid,
+  .catalog-shell-dark,
+  .dorado-buy-flow .process-shell,
+  .trust-shell,
+  .faq-shell,
+  .location-box,
+  .footer-main,
+  .footer-wordmark,
+  .footer-bottom{
+    width:calc(100% - 22px)!important;
+  }
+
+  .hero-content{
+    padding:20px!important;
+  }
+
+  .dorado-catalog .product-img{
+    min-height:260px!important;
+  }
+}
+
+/* Reduced motion remains fully usable */
+@media(prefers-reduced-motion:reduce){
+  html.motion-enhanced .motion-item{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+}
