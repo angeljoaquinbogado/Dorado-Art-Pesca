@@ -1120,3 +1120,61 @@ td .admin-select .admin-select-trigger{
     grid-template-columns:1fr;
   }
 }
+
+
+/* =========================================================
+   CATEGORÍAS — MÁS ANCHO EN EDITOR DE PRODUCTO
+   Stock usa una columna compacta y Categoría aprovecha el resto.
+   ========================================================= */
+#product-form .stock-category-row{
+  grid-template-columns:minmax(92px,.58fr) minmax(0,1.42fr)!important;
+  align-items:start!important;
+}
+
+#product-form .stock-category-row .stock-field{
+  min-width:0!important;
+}
+
+#product-form .stock-category-row .category-admin-field{
+  min-width:0!important;
+}
+
+#product-form .category-entry{
+  grid-template-columns:minmax(0,1fr) 82px!important;
+  gap:8px!important;
+}
+
+#product-form .category-create{
+  width:82px!important;
+  min-width:82px!important;
+}
+
+#product-form .category-tools{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:4px!important;
+  align-items:start!important;
+}
+
+#product-form .category-manage-toggle{
+  justify-self:start!important;
+}
+
+#product-form .category-manager{
+  width:100%!important;
+}
+
+@media(max-width:700px){
+  #product-form .stock-category-row{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  #product-form .category-entry{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  #product-form .category-create{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
