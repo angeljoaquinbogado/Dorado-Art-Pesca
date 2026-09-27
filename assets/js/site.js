@@ -3407,14 +3407,13 @@ comprobarRetornoPago();
 (function configurarResenasReales(){
     const marquee=document.getElementById("reviews-marquee-shell");
     const track=document.getElementById("reviews-marquee-track");
-    const empty=document.getElementById("reviews-empty");
     const filterButton=document.getElementById("reviews-filter-toggle");
     const filterPanel=document.getElementById("reviews-filter-panel");
     const ratingFilter=document.getElementById("reviews-rating-filter");
     const grid=document.getElementById("reviews-grid");
     const ratingSummary=document.getElementById("reviews-rating-summary");
     const googleLink=document.querySelector(".reviews-google-link");
-    if(!marquee||!track||!empty||!filterButton||!filterPanel||!ratingFilter||!grid)return;
+    if(!marquee||!track||!filterButton||!filterPanel||!ratingFilter||!grid)return;
 
     let reviews=[];
     const stars=rating=>"★".repeat(Math.max(1,Math.min(5,Number(rating)||1)))+"☆".repeat(Math.max(0,5-(Number(rating)||1)));
@@ -3435,8 +3434,8 @@ comprobarRetornoPago();
     };
     const renderMarquee=()=>{
         const best=reviews.filter(review=>Number(review.calificacion)>=4&&String(review.comentario||"").trim()).slice(0,24);
-        if(!best.length){marquee.hidden=true;empty.hidden=false;return;}
-        empty.hidden=true;marquee.hidden=false;
+        if(!best.length){marquee.hidden=true;return;}
+        marquee.hidden=false;
         const set=best.map(cardMarkup).join("");
         track.innerHTML=`<div class="reviews-marquee-set">${set}</div><div class="reviews-marquee-set" aria-hidden="true">${set}</div>`;
     };
@@ -3481,11 +3480,18 @@ comprobarRetornoPago();
 
         const section=document.getElementById("opiniones");
         const hasReviews=reviews.length>0;
-        section?.classList.toggle("is-empty",!hasReviews);
+
+        if(section){
+            section.hidden=!hasReviews;
+            section.classList.toggle("is-empty",!hasReviews);
+        }
+
         filterButton.hidden=!hasReviews;
         if(!hasReviews){
+            marquee.hidden=true;
             filterPanel.hidden=true;
             filterButton.setAttribute("aria-expanded","false");
+            return;
         }
 
         renderMarquee();
