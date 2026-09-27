@@ -83,3 +83,62 @@ body.intro-finished .dorado-field-strip{
     contain-intrinsic-size:auto 170px;
   }
 }
+
+
+/* =========================================================
+   DORADO — PERFORMANCE V4 / OFFSCREEN + LOW-POWER
+   Same visual system, less layout/paint work away from viewport.
+   ========================================================= */
+
+/* Repeated catalog cards are expensive only when painted.
+   Let Chromium/WebKit skip far-away cards while preserving geometry. */
+@supports (content-visibility:auto){
+  #products-grid .product{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 520px;
+  }
+
+  .faq-list details{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 92px;
+  }
+}
+
+/* The moving reviews rail gets a GPU layer only while its section is active. */
+#opiniones.perf-paused .reviews-marquee-track,
+.perf-page-hidden #opiniones .reviews-marquee-track{
+  will-change:auto!important;
+  animation-play-state:paused!important;
+}
+
+#opiniones.perf-active .reviews-marquee-track{
+  will-change:transform!important;
+}
+
+/* Lower-capability devices keep all content and controls, but skip
+   non-essential entrance polish that competes with scrolling. */
+html.low-power-device .motion-item,
+html.low-power-device .process-step,
+html.low-power-device .product,
+html.low-power-device .review-card{
+  transition-duration:180ms!important;
+}
+
+html.very-low-power-device .motion-item{
+  transition:none!important;
+}
+
+html.very-low-power-device .hero-glow,
+html.very-low-power-device .about-light,
+html.very-low-power-device .about-dust{
+  animation:none!important;
+  will-change:auto!important;
+}
+
+/* Avoid accidental expensive smooth scrolling while a modal/drawer is open. */
+body.cart-open,
+body.checkout-open,
+body.modal-open,
+body.orders-open{
+  scroll-behavior:auto!important;
+}
