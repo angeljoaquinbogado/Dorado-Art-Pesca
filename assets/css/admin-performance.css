@@ -55,3 +55,42 @@
     }
   }
 }
+
+
+/* =========================================================
+   DORADO ADMIN — PERFORMANCE V2
+   Smooth large tables and reduce non-essential animation cost.
+   ========================================================= */
+
+#products-table,
+#orders-table,
+#coupons-table{
+  contain:layout style;
+}
+
+@supports (content-visibility:auto){
+  #products-table tr,
+  #orders-table tr,
+  #coupons-table tr{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 72px;
+  }
+}
+
+html.admin-low-power .admin-motion-item{
+  transition-duration:180ms!important;
+}
+
+html.admin-low-power .workspace-top,
+html.admin-low-power .sidebar,
+html.admin-low-power .order-modal,
+html.admin-low-power .confirm-modal{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+html.admin-low-power .catalog-card,
+html.admin-low-power .orders-card,
+html.admin-low-power .stat{
+  box-shadow:none!important;
+}
