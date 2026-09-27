@@ -150,3 +150,58 @@
 .checkout-address-helper{color:#5b6068!important}
 .checkout-address-helper.selected{color:#6d5419!important}
 /* FIN DORADO — contraste de sugerencias de dirección */
+
+/* DORADO — DIRECCION MOBILE FINAL */
+@media(max-width:700px){
+  .checkout-address-field{
+    position:relative!important;
+    z-index:180!important;
+  }
+  .checkout-address-helper{
+    margin-top:4px!important;
+    min-height:15px!important;
+    color:#666c73!important;
+    font-size:9px!important;
+    line-height:1.45!important;
+  }
+  .checkout-address-helper.selected{color:#7a6227!important}
+  .checkout-address-suggestions{
+    position:absolute!important;
+    left:0!important;
+    right:0!important;
+    top:calc(100% - 1px)!important;
+    bottom:auto!important;
+    width:100%!important;
+    max-height:250px!important;
+    overflow:auto!important;
+    padding:6px!important;
+    border:1px solid #d9cfbc!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    box-shadow:0 18px 42px rgba(17,20,24,.20)!important;
+    z-index:20000!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+  .checkout-address-option{
+    min-height:52px!important;
+    padding:9px 10px!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#17191d!important;
+  }
+  .checkout-address-option:hover,
+  .checkout-address-option.active{
+    background:#f6efdf!important;
+  }
+  .checkout-address-option strong{
+    color:#17191d!important;
+    font-size:11px!important;
+    line-height:1.35!important;
+  }
+  .checkout-address-option span{
+    color:#5f656d!important;
+    font-size:8.5px!important;
+  }
+}
+/* FIN DORADO — DIRECCION MOBILE FINAL */

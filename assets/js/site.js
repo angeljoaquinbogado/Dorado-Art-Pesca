@@ -2592,7 +2592,7 @@ comprobarRetornoPago();
 
         selectedAddressValue = "";
         helper.classList.remove("selected");
-        timer = window.setTimeout(searchAddress, 420);
+        timer = window.setTimeout(searchAddress, 240);
     });
 
     input.addEventListener("keydown", event => {
@@ -2622,6 +2622,13 @@ comprobarRetornoPago();
         if (suggestions.length) {
             list.hidden = false;
             input.setAttribute("aria-expanded", "true");
+            return;
+        }
+
+        const current = String(input.value || "").trim();
+        if (current.length >= 4) {
+            clearTimeout(timer);
+            timer = window.setTimeout(searchAddress, 80);
         }
     });
 
@@ -2630,19 +2637,17 @@ comprobarRetornoPago();
 
         const current = String(input.value || "").trim();
 
-        /* Si el cliente escribió una dirección completa manualmente
-           (calle + número) y pasa al siguiente campo, la damos por cargada.
-           No volvemos a abrir sugerencias salvo que modifique el domicilio. */
-        if (current.length >= 4 && /\d/.test(current)) {
-            selectedAddressValue = normalizar(current);
-            lastQuery = current;
-            helper.textContent = "Dirección cargada.";
-            helper.classList.add("selected");
+        /* Una dirección escrita a mano no se considera una sugerencia
+           seleccionada. Así, al volver al campo seguimos ofreciendo
+           coincidencias y podemos completar localidad/provincia. */
+        if (current.length >= 4 && /\d/.test(current) && !selectedAddressValue) {
+            helper.textContent = "Dirección escrita. Tocá el campo para ver sugerencias y completar localidad/provincia.";
+            helper.classList.remove("selected");
         }
 
         window.setTimeout(() => {
             if (!selectingSuggestion) closeSuggestions();
-        }, 180);
+        }, 320);
     });
 
     provinceSelect.addEventListener("change", () => {
