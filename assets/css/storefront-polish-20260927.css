@@ -1,0 +1,342 @@
+/* DORADO storefront visual polish — 2026-09-27
+   Goals:
+   - transparent/clean hero header at page start
+   - one consistent navy background instead of pure black blocks
+   - warm ivory surfaces instead of harsh white cards
+   - WhatsApp hover always readable
+   Loaded last on purpose as a reversible visual override. */
+
+:root{
+  --dorado-bg:#10212d;
+  --dorado-bg-deep:#0d1b25;
+  --dorado-panel:#172b38;
+  --dorado-panel-2:#1b3140;
+  --dorado-line:rgba(230,221,205,.14);
+  --dorado-ivory:#ece6da;
+  --dorado-ivory-2:#e4dccf;
+  --dorado-ink:#17232d;
+  --dorado-text:#f0ece4;
+  --dorado-muted:#b8c2c7;
+  --dorado-gold:#d8a53a;
+  --dorado-green:#25d366;
+}
+
+html,
+body{
+  background:var(--dorado-bg)!important;
+}
+
+/* ---------- Header: transparent on hero, navy once scrolled ---------- */
+.topbar{
+  background:transparent!important;
+  border-bottom-color:transparent!important;
+}
+
+@media (min-width:901px){
+  .topbar{
+    position:absolute!important;
+    top:8px!important;
+    left:50%!important;
+    z-index:94!important;
+    width:auto!important;
+    transform:translateX(-50%)!important;
+    color:rgba(240,236,228,.80)!important;
+  }
+
+  .topbar-inner{
+    width:auto!important;
+    min-height:34px!important;
+    justify-content:center!important;
+    gap:16px!important;
+  }
+
+  .topbar-inner span{
+    color:rgba(240,236,228,.80)!important;
+    font-size:10px!important;
+    letter-spacing:.08em!important;
+    text-transform:uppercase!important;
+    text-shadow:0 2px 14px rgba(0,0,0,.38);
+  }
+
+  .topbar-sep{
+    background:rgba(236,230,218,.40)!important;
+  }
+
+  .nav{
+    position:absolute!important;
+    top:40px!important;
+    left:50%!important;
+    width:min(1180px,calc(100vw - 38px))!important;
+    height:76px!important;
+    padding:0 6px!important;
+    transform:translateX(-50%)!important;
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr)!important;
+  }
+
+  .nav .brand{
+    grid-column:1!important;
+    justify-self:start!important;
+  }
+
+  .nav .nav-logo{
+    width:80px!important;
+    height:58px!important;
+    filter:drop-shadow(0 4px 16px rgba(0,0,0,.22));
+  }
+
+  .nav .navlinks{
+    grid-column:2!important;
+    justify-content:center!important;
+    gap:27px!important;
+  }
+
+  .nav .navlinks a{
+    color:rgba(240,236,228,.76)!important;
+    font-size:11px!important;
+    font-weight:700!important;
+    letter-spacing:.025em!important;
+    text-shadow:0 2px 14px rgba(0,0,0,.34);
+  }
+
+  .nav .navlinks a:hover,
+  .nav .navlinks a.active{
+    color:var(--dorado-text)!important;
+  }
+
+  .nav .navlinks a::after{
+    background:var(--dorado-gold)!important;
+  }
+
+  .nav .nav-actions{
+    grid-column:3!important;
+    justify-self:end!important;
+  }
+
+  .nav.scrolled{
+    position:fixed!important;
+    top:10px!important;
+    width:min(1160px,calc(100vw - 28px))!important;
+    height:66px!important;
+    padding:0 18px!important;
+    border:1px solid var(--dorado-line)!important;
+    border-radius:999px!important;
+    background:rgba(16,33,45,.94)!important;
+    box-shadow:0 16px 40px rgba(5,13,19,.22)!important;
+    backdrop-filter:blur(14px) saturate(125%)!important;
+    -webkit-backdrop-filter:blur(14px) saturate(125%)!important;
+  }
+
+  .nav.scrolled .nav-logo{
+    width:68px!important;
+    height:50px!important;
+  }
+}
+
+@media (max-width:900px){
+  .topbar{display:none!important;}
+
+  .nav,
+  .nav.scrolled{
+    background:rgba(16,33,45,.94)!important;
+    border-color:var(--dorado-line)!important;
+    box-shadow:0 12px 30px rgba(5,13,19,.18)!important;
+  }
+}
+
+/* ---------- Navigation actions ---------- */
+.nav-cta,
+.nav-cta:visited{
+  color:var(--dorado-text)!important;
+  background:rgba(236,230,218,.06)!important;
+  border-color:rgba(236,230,218,.18)!important;
+}
+
+.nav-cta .ui-icon{
+  color:var(--dorado-green)!important;
+}
+
+.nav-cta:hover,
+.nav-cta:focus-visible,
+.nav-cta:active{
+  color:#f7f4ed!important;
+  background:rgba(37,211,102,.15)!important;
+  border-color:rgba(37,211,102,.50)!important;
+  box-shadow:0 10px 26px rgba(37,211,102,.10)!important;
+}
+
+.nav-cta:hover .ui-icon,
+.nav-cta:focus-visible .ui-icon{
+  color:#57df8a!important;
+}
+
+.orders-trigger{
+  color:var(--dorado-text)!important;
+  background:rgba(236,230,218,.055)!important;
+  border-color:rgba(236,230,218,.16)!important;
+}
+
+.orders-trigger:hover{
+  color:#f7f4ed!important;
+  background:rgba(236,230,218,.10)!important;
+}
+
+/* ---------- Replace near-black bands with one coherent navy ---------- */
+.dorado-catalog,
+.process,
+.location,
+.site-footer{
+  background:var(--dorado-bg)!important;
+}
+
+.location{
+  border-top:1px solid rgba(236,230,218,.06)!important;
+}
+
+.site-footer{
+  border-top:1px solid rgba(236,230,218,.08)!important;
+}
+
+/* ---------- Contact: softer surfaces, no stark white ---------- */
+.location-box{
+  background:var(--dorado-panel)!important;
+  border-color:var(--dorado-line)!important;
+  box-shadow:0 22px 54px rgba(5,13,19,.16)!important;
+}
+
+.location-copy>p,
+.location-copy .contact-detail,
+.contact-line small{
+  color:#8d989f!important;
+}
+
+.contact-line{
+  background:var(--dorado-ivory)!important;
+  border-color:rgba(216,165,58,.10)!important;
+  box-shadow:0 8px 20px rgba(5,13,19,.06)!important;
+}
+
+.contact-line:hover{
+  background:var(--dorado-ivory-2)!important;
+  border-color:rgba(216,165,58,.38)!important;
+  box-shadow:0 12px 24px rgba(5,13,19,.08)!important;
+}
+
+.contact-line strong{
+  color:var(--dorado-ink)!important;
+}
+
+.contact-icon{
+  color:#bd761d!important;
+  background:#f0dfbe!important;
+  border-color:rgba(189,118,29,.12)!important;
+}
+
+.contact-actions>a[href*="instagram.com"]{
+  background:var(--dorado-ivory)!important;
+  color:var(--dorado-ink)!important;
+  border-color:rgba(216,165,58,.12)!important;
+}
+
+.contact-actions>a[href*="instagram.com"]:hover{
+  background:var(--dorado-ivory-2)!important;
+  color:var(--dorado-ink)!important;
+}
+
+.contact-actions>a[href*="wa.me"],
+.contact-actions>a[href*="wa.me"]:visited{
+  color:#fff!important;
+}
+
+.contact-actions>a[href*="wa.me"]:hover,
+.contact-actions>a[href*="wa.me"]:focus-visible{
+  background:#20bd5a!important;
+  color:#fff!important;
+  border-color:#20bd5a!important;
+}
+
+/* ---------- Catalog/process panels: lift the black without changing layout ---------- */
+.dorado-catalog .product,
+.dorado-catalog .product-info{
+  background:var(--dorado-panel)!important;
+  color:var(--dorado-text)!important;
+  border-color:rgba(236,230,218,.10)!important;
+}
+
+.dorado-catalog .product-img{
+  background:
+    radial-gradient(circle at 50% 42%,rgba(216,165,58,.07),transparent 44%),
+    linear-gradient(145deg,var(--dorado-panel-2),#142734)!important;
+  border-bottom-color:rgba(236,230,218,.07)!important;
+}
+
+.dorado-catalog .quantity-selector{
+  background:#132632!important;
+  border-color:rgba(236,230,218,.13)!important;
+}
+
+.dorado-catalog .product-info h3,
+.dorado-catalog .product-price,
+.dorado-catalog .product-price-current{
+  color:var(--dorado-text)!important;
+}
+
+.dorado-catalog .product-card-description,
+.dorado-catalog .card-quantity-row>span{
+  color:#aeb8bd!important;
+}
+
+.process-step{
+  background:rgba(23,43,56,.52)!important;
+  border-color:rgba(236,230,218,.09)!important;
+}
+
+.process h2,
+.process-step-copy strong,
+.site-footer,
+.site-footer a{
+  color:var(--dorado-text)!important;
+}
+
+.process-step-copy p,
+.site-footer p,
+.footer-bottom{
+  color:#aeb8bd!important;
+}
+
+/* Category/filter whites become warm ivory rather than pure white. */
+.category-chip{
+  background:var(--dorado-ivory)!important;
+  color:#46545d!important;
+  border-color:rgba(216,165,58,.10)!important;
+}
+
+.category-chip:hover,
+.category-chip.active{
+  background:#c99a35!important;
+  color:#10212d!important;
+  border-color:#c99a35!important;
+}
+
+/* ---------- Focus states stay visible ---------- */
+.nav-cta:focus-visible,
+.orders-trigger:focus-visible,
+.cart-trigger:focus-visible,
+.contact-actions>a:focus-visible{
+  outline:2px solid rgba(216,165,58,.82)!important;
+  outline-offset:3px!important;
+}
+
+/* ---------- Low-motion / low-power friendly ---------- */
+@media (prefers-reduced-motion:reduce){
+  .nav-cta,
+  .orders-trigger,
+  .contact-line,
+  .category-chip{
+    transition:none!important;
+  }
+}
