@@ -130,3 +130,36 @@
     min-height:48px!important;
   }
 }
+
+
+/* Compact product taxonomy controls + reliable scroll for long menus. */
+#product-form .brand-admin-field .admin-select-trigger,
+#product-form .category-admin-field .admin-select-trigger{
+  min-height:42px!important;
+  height:42px!important;
+  border-radius:12px!important;
+  padding-inline:12px!important;
+  font-size:11px!important;
+}
+
+.admin-select-menu.is-portaled{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  scrollbar-width:thin!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+.admin-select-menu.is-portaled .admin-select-option{
+  flex:0 0 auto!important;
+}
+
+@media(max-width:700px){
+  #product-form .brand-admin-field .admin-select-trigger,
+  #product-form .category-admin-field .admin-select-trigger{
+    min-height:46px!important;
+    height:46px!important;
+    font-size:15px!important;
+  }
+}
