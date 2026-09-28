@@ -1952,6 +1952,87 @@ async function refreshAll(){
     }
 }
 
+async function connectGoogleBusiness(){
+    const button=document.getElementById("google-business-connect-button");
+    if(!button)return;
+
+    const original=button.textContent;
+    button.disabled=true;
+    button.textContent="CONECTANDO…";
+
+    try{
+        await refreshSessionIfNeeded();
+        const response=await fetch("/api/google-business-oauth/start",{
+            method:"POST",
+            headers:{
+                Authorization:`Bearer ${session.access_token}`,
+                Accept:"application/json"
+            }
+        });
+        const data=await response.json().catch(()=>({}));
+
+        if(!response.ok||!data?.url){
+            throw new Error(data?.error||"No se pudo iniciar la conexión con Google.");
+        }
+
+        location.assign(String(data.url));
+    }catch(error){
+        button.disabled=false;
+        button.textContent=original;
+        showToast(error?.message||"No se pudo conectar Google.","error");
+    }
+}
+
+function handleGoogleBusinessCallbackResult(){
+    const params=new URLSearchParams(location.search);
+    const state=String(params.get("google_business")||"");
+    if(!state)return;
+
+    const sync=String(params.get("sync")||"");
+    const reviews=Math.max(0,Number(params.get("reviews"))||0);
+    const reason=String(params.get("reason")||"");
+
+    if(state==="connected"){
+        const button=document.getElementById("google-business-connect-button");
+        if(button)button.textContent="GOOGLE CONECTADO";
+
+        if(sync==="ok"){
+            showToast(
+                reviews===1
+                    ?"Google conectado. Se sincronizó 1 reseña real."
+                    :`Google conectado. Se sincronizaron ${reviews} reseñas reales.`
+            );
+        }else if(sync==="necesita_acceso_api"){
+            showToast(
+                "Google quedó conectado, pero falta habilitar el acceso a la API de reseñas.",
+                "error"
+            );
+        }else{
+            showToast(
+                "Google quedó conectado, pero la primera sincronización necesita revisión.",
+                "error"
+            );
+        }
+    }else{
+        const messages={
+            permiso_cancelado:"La autorización de Google fue cancelada.",
+            estado_invalido:"La autorización venció o no pudo validarse. Intentá conectar otra vez.",
+            sin_cuentas:"La cuenta de Google no tiene un Perfil de Empresa accesible.",
+            sin_ubicaciones:"No encontramos una ubicación administrada para Dorado.",
+            oauth_google:"Google no pudo completar la autorización.",
+            conexion:"No se pudo completar la conexión con Google."
+        };
+        showToast(messages[reason]||"No se pudo conectar Google Business Profile.","error");
+    }
+
+    params.delete("google_business");
+    params.delete("sync");
+    params.delete("reviews");
+    params.delete("reason");
+    const query=params.toString();
+    history.replaceState({},document.title,`${location.pathname}${query?`?${query}`:""}${location.hash||""}`);
+}
+
 document.getElementById("login-form").addEventListener("submit",async e=>{
     e.preventDefault();
     const button=document.getElementById("login-button");
@@ -1963,6 +2044,7 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
             document.getElementById("login-password").value
         );
         showApp();
+        handleGoogleBusinessCallbackResult();
         await loadProducts();
         await loadCategories();
     }catch(err){
@@ -2048,6 +2130,7 @@ document.getElementById("coupon-code")?.addEventListener("input",e=>{e.target.va
 document.getElementById("product-cancel").addEventListener("click",resetProductForm);
 document.getElementById("logout-button").addEventListener("click",()=>logout());
 document.getElementById("refresh-button").addEventListener("click",refreshAll);
+document.getElementById("google-business-connect-button")?.addEventListener("click",connectGoogleBusiness);
 
 document.querySelectorAll(".tab").forEach(button=>{
     button.addEventListener("click",async()=>{
@@ -2461,6 +2544,7 @@ document.addEventListener("keydown",e=>{
             return;
         }
         showApp();
+        handleGoogleBusinessCallbackResult();
         await loadProducts();
     }catch(e){
         console.error(e);
