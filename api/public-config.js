@@ -1,8 +1,8 @@
 export default function handler(req, res) {
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
-    res.setHeader("CDN-Cache-Control", "public, s-maxage=300, stale-while-revalidate=1800");
-    res.setHeader("Vercel-CDN-Cache-Control", "public, s-maxage=300, stale-while-revalidate=1800");
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("CDN-Cache-Control", "no-store");
+    res.setHeader("Vercel-CDN-Cache-Control", "no-store");
 
     if (req.method !== "GET") {
         res.setHeader("Allow", "GET");
