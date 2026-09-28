@@ -33,7 +33,7 @@ function orderCode(id){
 function orderPaymentGroup(status){
     const value=String(status||"").toLowerCase();
     if(value==="pagado")return "pagado";
-    if(["pagado_revisar_stock","pago_revisar_monto"].includes(value))return "revision";
+    if(["pagado_revisar_stock","pago_revisar_monto","pagado_cancelado_revisar"].includes(value))return "revision";
     if(["pendiente","pago_pendiente","error_pago"].includes(value))return "pendiente";
     if(["pago_rechazado","pago_cancelado","reembolsado","contracargo"].includes(value))return "fallido";
     return value||"pendiente";
@@ -45,6 +45,7 @@ function orderStatusLabel(status){
         pagado:"PAGADO",
         pagado_revisar_stock:"PAGADO · REVISAR STOCK",
         pago_revisar_monto:"PAGO · REVISAR MONTO",
+        pagado_cancelado_revisar:"PAGO APROBADO · PEDIDO CANCELADO",
         pendiente:"PENDIENTE",
         pago_pendiente:"PAGO PENDIENTE",
         error_pago:"ERROR AL INICIAR PAGO",
@@ -1505,17 +1506,40 @@ async function loadOrders(){
 async function updateFulfillment(id,value){
     const allowed=["nuevo","preparando","enviado","entregado","cancelado"];
     if(!allowed.includes(value))return;
+
     try{
-        const r=await sb(`/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}`,{
-            method:"PATCH",
-            headers:{Prefer:"return=minimal"},
-            body:JSON.stringify({preparacion_estado:value})
+        const r=await sb("/rest/v1/rpc/admin_actualizar_preparacion_pedido",{
+            method:"POST",
+            body:JSON.stringify({
+                p_pedido_id:id,
+                p_preparacion_estado:value
+            })
         });
-        if(!r.ok)throw new Error("No se pudo actualizar el estado de preparación.");
+        const data=await r.json().catch(()=>null);
+
+        if(!r.ok){
+            throw new Error(data?.message||data?.error||"No se pudo actualizar el estado de preparación.");
+        }
+
+        if(data?.ok===false){
+            const reason=String(data?.reason||"");
+            if(reason==="stock_insuficiente_reactivar"){
+                throw new Error("No hay stock suficiente para reactivar este pedido.");
+            }
+            throw new Error("No se pudo actualizar el estado de preparación.");
+        }
+
         const local=pedidos.find(o=>String(o.id)===String(id));
         if(local)local.preparacion_estado=value;
         renderOrders();
-        showToast("Estado del pedido actualizado.");
+
+        if(value==="cancelado"&&data?.stock_restaurado){
+            showToast("Pedido cancelado. El stock volvió automáticamente.");
+        }else if(data?.stock_descontado){
+            showToast("Pedido reactivado. El stock quedó reservado nuevamente.");
+        }else{
+            showToast("Estado del pedido actualizado.");
+        }
     }catch(e){
         showToast(e.message||"No se pudo actualizar el pedido.","error");
         await loadOrders();
