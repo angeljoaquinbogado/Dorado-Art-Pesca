@@ -2263,10 +2263,9 @@ function construirFiltrosCategorias(productos = []) {
     }
 
     const total=source.length;
-    const showAllButton=marcaActiva==="todas";
-    const allButton=showAllButton
-        ? `<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`
-        : "";
+    // "Todos" siempre existe, pero cuando hay una marca activa
+    // source ya está limitado exclusivamente a esa marca.
+    const allButton=`<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`;
     const categoryButtons=categorias.map(cat=>`
         <button class="category-chip${cat.key===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat.key)}" aria-pressed="${cat.key===categoriaActiva?"true":"false"}">
             ${textoSeguro(cat.label)} <span class="category-chip-count">${cat.count}</span>
