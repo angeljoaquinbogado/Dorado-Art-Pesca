@@ -807,7 +807,7 @@ function collectProductBrandNames(){
     return [...map.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
 }
 
-function setTaxonomySelectOptions(select,names,currentValue,placeholder,createLabel){
+function setTaxonomySelectOptions(select,names,currentValue,placeholder,createLabel,includeCreateOption=true){
     if(!select)return;
 
     const current=String(currentValue||"").trim();
@@ -818,12 +818,14 @@ function setTaxonomySelectOptions(select,names,currentValue,placeholder,createLa
     select.innerHTML=[
         `<option value="">${esc(placeholder)}</option>`,
         ...names.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`),
-        `<option value="${NEW_TAXONOMY_OPTION}">＋ ${esc(createLabel)}</option>`
+        ...(includeCreateOption
+            ? [`<option value="${NEW_TAXONOMY_OPTION}">＋ ${esc(createLabel)}</option>`]
+            : [])
     ].join("");
 
     if(match){
         select.value=match;
-    }else if(current||previous===NEW_TAXONOMY_OPTION){
+    }else if(includeCreateOption&&(current||previous===NEW_TAXONOMY_OPTION)){
         select.value=NEW_TAXONOMY_OPTION;
     }else{
         select.value="";
@@ -851,7 +853,8 @@ function renderProductFormTaxonomyPickers(){
         categoryNames,
         currentCategory,
         "Seleccioná una categoría",
-        "Crear nueva categoría"
+        "Crear nueva categoría",
+        false
     );
 
     setTaxonomySelectOptions(
@@ -862,17 +865,13 @@ function renderProductFormTaxonomyPickers(){
         "Crear nueva marca"
     );
 
-    const categoryCreating=categorySelect?.value===NEW_TAXONOMY_OPTION;
+    const categoryCreating=categoryPanel?!categoryPanel.hidden:false;
     const brandCreating=brandSelect?.value===NEW_TAXONOMY_OPTION;
 
-    if(categoryPanel)categoryPanel.hidden=!categoryCreating;
     if(brandPanel)brandPanel.hidden=!brandCreating;
 
-    if(categoryCreating){
-        if(categoryNew&&!categoryNew.value&&currentCategory)categoryNew.value=currentCategory;
-    }else{
+    if(!categoryCreating){
         if(categoryValue)categoryValue.value=categorySelect?.value||"";
-        if(categoryNew)categoryNew.value="";
     }
 
     if(brandCreating){
@@ -1048,6 +1047,11 @@ function useCategory(name,options={}){
         window.__doradoRefreshAdminSelects?.();
     }
 
+    const createPanel=document.getElementById("category-create-panel");
+    const createToggle=document.getElementById("category-create-toggle");
+    if(createPanel)createPanel.hidden=true;
+    createToggle?.setAttribute("aria-expanded","false");
+
     if(closeManager){
         const manager=document.getElementById("category-manager");
         const toggle=document.getElementById("category-manage-toggle");
@@ -1214,8 +1218,12 @@ async function createCategoryFromInput(){
     button.disabled=true;
     try{
         const created=await persistCategory(newInput.value);
+        const panel=document.getElementById("category-create-panel");
+        const toggle=document.getElementById("category-create-toggle");
         valueInput.value=created.nombre;
         newInput.value="";
+        if(panel)panel.hidden=true;
+        toggle?.setAttribute("aria-expanded","false");
         renderProductFormTaxonomyPickers();
         showToast("Categoría seleccionada: "+created.nombre);
     }catch(error){
@@ -1322,6 +1330,12 @@ async function deleteAllCategories(){
 
 function resetProductForm(){
     document.getElementById("product-form").reset();
+    const categoryCreatePanel=document.getElementById("category-create-panel");
+    const categoryCreateToggle=document.getElementById("category-create-toggle");
+    if(categoryCreatePanel)categoryCreatePanel.hidden=true;
+    categoryCreateToggle?.setAttribute("aria-expanded","false");
+    const categoryNew=document.getElementById("product-category-new");
+    if(categoryNew)categoryNew.value="";
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
     document.getElementById("product-discount").value="0";
@@ -2415,23 +2429,25 @@ const categorySelectEditor=document.getElementById("product-category-select");
 const categoryValueEditor=document.getElementById("product-category");
 const categoryNewEditor=document.getElementById("product-category-new");
 const categoryCreatePanel=document.getElementById("category-create-panel");
+const categoryCreateToggle=document.getElementById("category-create-toggle");
 
 categorySelectEditor?.addEventListener("change",()=>{
-    const creating=categorySelectEditor.value===NEW_TAXONOMY_OPTION;
-    if(categoryCreatePanel)categoryCreatePanel.hidden=!creating;
+    if(categoryValueEditor)categoryValueEditor.value=categorySelectEditor.value||"";
+});
 
-    if(creating){
-        if(categoryValueEditor)categoryValueEditor.value="";
+categoryCreateToggle?.addEventListener("click",()=>{
+    if(!categoryCreatePanel)return;
+    const willOpen=categoryCreatePanel.hidden;
+    categoryCreatePanel.hidden=!willOpen;
+    categoryCreateToggle.setAttribute("aria-expanded",String(willOpen));
+    if(willOpen){
         if(categoryNewEditor)categoryNewEditor.value="";
         requestAnimationFrame(()=>categoryNewEditor?.focus({preventScroll:true}));
-    }else{
-        if(categoryValueEditor)categoryValueEditor.value=categorySelectEditor.value||"";
-        if(categoryNewEditor)categoryNewEditor.value="";
     }
 });
 
 categoryNewEditor?.addEventListener("input",()=>{
-    if(categoryValueEditor)categoryValueEditor.value=categoryNewEditor.value;
+    // No cambia la categoría elegida hasta tocar AGREGAR.
 });
 
 categoryNewEditor?.addEventListener("keydown",event=>{
