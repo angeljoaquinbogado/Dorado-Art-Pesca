@@ -633,3 +633,112 @@ button.brand-showcase-link{
     cursor:pointer!important;
     font:inherit;
 }
+
+
+/* =========================================================
+   CATALOG TYPOGRAPHY + PREMIUM GOLD
+   Tipografía más cuidada y color dorado menos anaranjado/pálido.
+   ========================================================= */
+:root{
+  --dorado-catalog-gold:#f0c44f;
+  --dorado-catalog-gold-strong:#e1b137;
+  --dorado-catalog-gold-soft:rgba(240,196,79,.14);
+  --dorado-catalog-ink:#07131d;
+}
+
+.brand-showcase-link{
+  color:var(--dorado-catalog-gold)!important;
+  font-family:"Montserrat","Manrope",sans-serif!important;
+  font-size:12.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  letter-spacing:.045em!important;
+}
+
+.brand-showcase-link:hover,
+.brand-showcase-link:focus-visible{
+  color:#ffe07f!important;
+}
+
+.catalog-step-label,
+.catalog-step-label strong{
+  font-family:"Montserrat","Manrope",sans-serif!important;
+  font-size:15px!important;
+  font-weight:700!important;
+  line-height:1.1!important;
+  letter-spacing:.035em!important;
+  color:#f3f5f5!important;
+}
+
+.brand-marquee-hint{
+  font-family:"Montserrat","Manrope",sans-serif!important;
+  font-size:9px!important;
+  font-weight:600!important;
+  letter-spacing:.075em!important;
+  color:#8f9ca3!important;
+}
+
+.brand-marquee-hint span{
+  background:var(--dorado-catalog-gold)!important;
+}
+
+.dorado-catalog .category-chip{
+  min-height:42px!important;
+  padding:0 17px!important;
+  font-family:"Montserrat","Manrope",sans-serif!important;
+  font-size:11.5px!important;
+  font-weight:650!important;
+  line-height:1!important;
+  letter-spacing:.01em!important;
+  color:#d8dfe3!important;
+  border-color:rgba(255,255,255,.15)!important;
+  background:rgba(255,255,255,.035)!important;
+}
+
+.dorado-catalog .category-chip:hover{
+  color:#fff!important;
+  border-color:rgba(240,196,79,.56)!important;
+  background:rgba(240,196,79,.08)!important;
+}
+
+.dorado-catalog .category-chip.active{
+  background:var(--dorado-catalog-gold)!important;
+  border-color:var(--dorado-catalog-gold)!important;
+  color:var(--dorado-catalog-ink)!important;
+}
+
+.dorado-catalog .category-chip-count{
+  min-width:20px!important;
+  height:20px!important;
+  padding:0 6px!important;
+  font-family:"Montserrat","Manrope",sans-serif!important;
+  font-size:8.5px!important;
+  font-weight:700!important;
+}
+
+.dorado-catalog .category-chip:not(.active) .category-chip-count{
+  background:var(--dorado-catalog-gold-soft)!important;
+  color:var(--dorado-catalog-gold)!important;
+}
+
+.dorado-catalog .category-chip.active .category-chip-count{
+  background:rgba(7,19,29,.13)!important;
+  color:#07131d!important;
+}
+
+@media(max-width:560px){
+  .brand-showcase-link{
+    font-size:12px!important;
+  }
+
+  .catalog-step-label,
+  .catalog-step-label strong{
+    font-size:14px!important;
+  }
+
+  .dorado-catalog .category-chip{
+    min-height:44px!important;
+    padding-inline:15px!important;
+    font-size:11px!important;
+  }
+}
