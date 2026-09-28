@@ -31,6 +31,27 @@ let marcaActiva = "todas";
 let catalogoExpandido = false;
 const CATALOG_INITIAL_LIMIT = 12;
 
+const DORADO_BRANDS = [
+    { name:"Shimano", key:"shimano", sprite:0 },
+    { name:"Albatros", key:"albatros", sprite:1 },
+    { name:"TCL", key:"tcl", sprite:2 },
+    { name:"Caster", key:"caster", sprite:3 },
+    { name:"Bando ARG", key:"bando-arg", sprite:4 },
+    { name:"Fox Airguns", key:"fox-airguns", sprite:5 },
+    { name:"P", key:"p", sprite:6 },
+    { name:"MorGui Outdoor", key:"morgui-outdoor", sprite:7 },
+    { name:"Surfish", key:"surfish", sprite:8 }
+];
+
+function marcaDefPorClave(key){
+    return DORADO_BRANDS.find(item=>item.key===String(key||""))||null;
+}
+
+function spritePosition(index){
+    const safe=Math.max(0,Math.min(DORADO_BRANDS.length-1,Number(index)||0));
+    return `${(safe/(DORADO_BRANDS.length-1))*100}%`;
+}
+
 function obtenerConfigPublica(){
     if(!doradoPublicConfigPromise){
         doradoPublicConfigPromise = fetch("/api/public-config", {
@@ -501,7 +522,25 @@ async function cargarProductosDesdeSupabase() {
             const selector = tarjeta.querySelector(".card-quantity-selector");
             const input = selector?.querySelector(".qty-input");
 
-            botonVer?.addEventListener("click", () => verProducto(producto));
+            botonVer?.addEventListener("click", event => {
+                event.stopPropagation();
+                verProducto(producto);
+            });
+
+            tarjeta.tabIndex=0;
+            tarjeta.setAttribute("role","button");
+            tarjeta.setAttribute("aria-label",`Ver detalles de ${producto.nombre||"producto"}`);
+            tarjeta.addEventListener("click",event=>{
+                if(event.target.closest("button,input,a,.quantity-selector"))return;
+                verProducto(producto);
+            });
+            tarjeta.addEventListener("keydown",event=>{
+                if(event.target!==tarjeta)return;
+                if(event.key==="Enter"||event.key===" "){
+                    event.preventDefault();
+                    verProducto(producto);
+                }
+            });
 
             if (!sinStock && selector && input) {
                 configurarSelectorCantidad(selector, stock);
@@ -2071,79 +2110,133 @@ function normalizarClaveMarca(value){
 
 function construirMarcas(productos=[]){
     const section=document.getElementById("marcas");
-    const grid=document.getElementById("brand-grid");
-    if(!section||!grid)return;
+    const track=document.getElementById("brand-marquee-track");
+    if(!section||!track)return;
 
-    const groups=new Map();
+    section.hidden=false;
+
+    const counts=new Map();
     productos.forEach(producto=>{
-        const raw=String(producto?.marca||"").trim();
-        if(!raw)return;
-        const key=normalizarClaveMarca(raw);
-        if(!groups.has(key)){
-            groups.set(key,{
-                key,
-                label:raw,
-                count:0,
-                image:imagenSegura(producto?.imagen||"")
-            });
-        }
-        const group=groups.get(key);
-        group.count+=1;
-        if(!group.image&&producto?.imagen)group.image=imagenSegura(producto.imagen);
+        const key=normalizarClaveMarca(producto?.marca);
+        counts.set(key,(counts.get(key)||0)+1);
     });
 
-    const brands=[...groups.values()].sort((a,b)=>a.label.localeCompare(b.label,"es",{sensitivity:"base"}));
-    section.hidden=brands.length===0;
+    const renderSet=(copyIndex)=>DORADO_BRANDS.map(brand=>{
+        const count=counts.get(brand.key)||0;
+        const active=marcaActiva===brand.key;
+        const countLabel=count===1?"1 producto":`${count} productos`;
+        return `
+            <button
+                class="brand-marquee-card${active?" active":""}"
+                type="button"
+                data-brand="${textoSeguro(brand.key)}"
+                data-brand-copy="${copyIndex}"
+                aria-pressed="${active?"true":"false"}"
+                aria-label="Ver productos de ${textoSeguro(brand.name)}"
+            >
+                <span class="brand-sprite-logo" style="--brand-pos:${spritePosition(brand.sprite)}" aria-hidden="true"></span>
+                <span class="brand-marquee-meta">
+                    <strong>${textoSeguro(brand.name)}</strong>
+                    <small>${textoSeguro(countLabel)}</small>
+                </span>
+            </button>
+        `;
+    }).join("");
 
-    if(!brands.length){
-        grid.innerHTML='<div class="brand-grid-loading">Las marcas van a aparecer cuando tengan productos cargados.</div>';
-        marcaActiva="todas";
+    track.innerHTML=`
+        <div class="brand-marquee-set">${renderSet(0)}</div>
+        <div class="brand-marquee-set" aria-hidden="true">${renderSet(1)}</div>
+    `;
+
+    track.querySelectorAll(".brand-marquee-card").forEach(card=>{
+        card.addEventListener("click",()=>{
+            const key=card.dataset.brand||"";
+            seleccionarMarca(key,{scroll:true});
+        });
+    });
+
+    actualizarContextoMarca(counts);
+}
+
+function actualizarContextoMarca(counts=null){
+    const context=document.getElementById("catalog-brand-context");
+    const logo=document.getElementById("catalog-brand-logo");
+    const name=document.getElementById("catalog-brand-name");
+    const count=document.getElementById("catalog-brand-count");
+    if(!context||!logo||!name||!count)return;
+
+    if(marcaActiva==="todas"){
+        context.hidden=true;
         return;
     }
 
-    if(marcaActiva!=="todas"&&!groups.has(marcaActiva))marcaActiva="todas";
+    const brand=marcaDefPorClave(marcaActiva);
+    if(!brand){
+        context.hidden=true;
+        return;
+    }
 
-    grid.innerHTML=brands.map(brand=>`
-        <button class="brand-card${marcaActiva===brand.key?" active":""}" type="button" data-brand="${textoSeguro(brand.key)}" aria-pressed="${marcaActiva===brand.key?"true":"false"}">
-            <span class="brand-card-media">
-                <img src="${textoSeguro(brand.image||"assets/images/brand/logo-dorado-640.webp")}" alt="" loading="lazy" decoding="async">
-            </span>
-            <span class="brand-card-shade"></span>
-            <span class="brand-card-copy">
-                <small>MARCA</small>
-                <strong>${textoSeguro(brand.label)}</strong>
-                <span>${brand.count} ${brand.count===1?"producto":"productos"}</span>
-            </span>
-            <span class="brand-card-arrow"><svg class="ui-icon"><use href="#i-arrow"></use></svg></span>
-        </button>
-    `).join("");
+    const total=counts instanceof Map
+        ? (counts.get(brand.key)||0)
+        : [...catalogoProductos.values()].filter(item=>normalizarClaveMarca(item?.marca)===brand.key).length;
 
-    grid.querySelectorAll(".brand-card").forEach(card=>card.addEventListener("click",()=>{
-        marcaActiva=card.dataset.brand||"todas";
-        catalogoExpandido=true;
-        categoriaActiva="todos";
+    context.hidden=false;
+    logo.style.setProperty("--brand-pos",spritePosition(brand.sprite));
+    name.textContent=brand.name;
+    count.textContent=total===1?"1 producto disponible":`${total} productos disponibles`;
+}
 
-        const search=document.getElementById("product-search");
-        if(search)search.value="";
+function seleccionarMarca(key,{scroll=false}={}){
+    const brand=marcaDefPorClave(key);
+    if(!brand)return;
 
-        construirFiltrosCategorias([...catalogoProductos.values()]);
-        grid.querySelectorAll(".brand-card").forEach(item=>{
-            const active=item===card;
-            item.classList.toggle("active",active);
-            item.setAttribute("aria-pressed",String(active));
+    marcaActiva=brand.key;
+    categoriaActiva="todos";
+    catalogoExpandido=true;
+
+    const search=document.getElementById("product-search");
+    if(search)search.value="";
+
+    construirFiltrosCategorias([...catalogoProductos.values()]);
+    actualizarFiltroCatalogo();
+    construirMarcas([...catalogoProductos.values()]);
+
+    if(scroll){
+        requestAnimationFrame(()=>{
+            document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
         });
+    }
+}
 
-        actualizarFiltroCatalogo();
-        document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
-    }));
+function limpiarMarcaSeleccionada({scroll=false}={}){
+    marcaActiva="todas";
+    categoriaActiva="todos";
+    catalogoExpandido=false;
+
+    const search=document.getElementById("product-search");
+    if(search)search.value="";
+
+    construirFiltrosCategorias([...catalogoProductos.values()]);
+    actualizarFiltroCatalogo();
+    construirMarcas([...catalogoProductos.values()]);
+
+    if(scroll){
+        requestAnimationFrame(()=>{
+            document.getElementById("marcas")?.scrollIntoView({behavior:"smooth",block:"start"});
+        });
+    }
 }
 
 function construirFiltrosCategorias(productos = []) {
     const wrap = document.getElementById("categorias");
     if (!wrap) return;
 
+    const source=marcaActiva==="todas"
+        ? productos
+        : productos.filter(producto=>normalizarClaveMarca(producto?.marca)===marcaActiva);
+
     const byKey=new Map();
-    productos.forEach(producto=>{
+    source.forEach(producto=>{
         const raw=String(producto?.categoria||"").trim();
         const key=normalizarClaveCategoria(raw);
         if(!byKey.has(key)){
@@ -2166,7 +2259,7 @@ function construirFiltrosCategorias(productos = []) {
         categoriaActiva="todos";
     }
 
-    const total=productos.length;
+    const total=source.length;
     const allButton=`<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`;
     const categoryButtons=categorias.map(cat=>`
         <button class="category-chip${cat.key===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat.key)}" aria-pressed="${cat.key===categoriaActiva?"true":"false"}">
@@ -2279,6 +2372,13 @@ document.getElementById("catalog-more-button")?.addEventListener("click",()=>{
     if(!catalogoExpandido){
         document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
     }
+});
+
+document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>limpiarMarcaSeleccionada({scroll:true}));
+document.getElementById("brand-show-all")?.addEventListener("click",event=>{
+    event.preventDefault();
+    limpiarMarcaSeleccionada();
+    document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
 });
 
 (function configurarUIVisual(){
