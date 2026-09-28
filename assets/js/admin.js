@@ -2794,7 +2794,11 @@ document.addEventListener("keydown",e=>{
     },{passive:true});
 
     window.addEventListener("resize",()=>closeAll(),{passive:true});
-    window.addEventListener("scroll",()=>closeAll(),{passive:true,capture:true});
+    window.addEventListener("scroll",event=>{
+        const target=event.target;
+        if(target instanceof Element&&target.closest(".admin-select-menu"))return;
+        closeAll();
+    },{passive:true,capture:true});
 })();
 
 /* Adaptación de coste visual sin quitar datos, controles ni entradas por scroll. */
