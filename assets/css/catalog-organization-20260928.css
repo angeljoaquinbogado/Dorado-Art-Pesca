@@ -1,13 +1,29 @@
 /* Dorado — catálogo compacto + navegación por marcas · 2026-09-28 */
 
 .brand-showcase{
-    background:#f4f1eb;
-    color:#0b1720;
-    padding-top:clamp(54px,6vw,86px);
-    padding-bottom:clamp(48px,5vw,76px);
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at 12% 20%,rgba(216,165,51,.12),transparent 28%),
+        linear-gradient(180deg,#0d1d28 0%,#0a1822 100%);
+    color:#f7f3e9;
+    padding-top:clamp(50px,5.5vw,78px);
+    padding-bottom:clamp(42px,4.5vw,66px);
+    border-top:1px solid rgba(255,255,255,.055);
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+.brand-showcase::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(90deg,rgba(7,16,24,.9),transparent 11%,transparent 89%,rgba(7,16,24,.9));
+    z-index:2;
 }
 .brand-showcase[hidden]{display:none!important}
 .brand-showcase-shell{
+    position:relative;
+    z-index:3;
     width:min(1500px,calc(100% - 48px));
     margin:0 auto;
 }
@@ -16,112 +32,196 @@
     align-items:end;
     justify-content:space-between;
     gap:32px;
-    margin-bottom:28px;
+    margin-bottom:26px;
 }
-.brand-showcase .section-title{color:#10171d;margin:.35rem 0 .6rem}
-.brand-showcase .section-title span{color:#996b12}
-.brand-showcase .section-desc{max-width:760px;color:#5e6267}
+.brand-showcase .kicker{color:#dca73b!important}
+.brand-showcase .section-title{
+    color:#f6f1e8!important;
+    margin:.35rem 0 .6rem;
+}
+.brand-showcase .section-title span{color:#e2aa38!important}
+.brand-showcase .section-desc{
+    max-width:760px;
+    color:#aeb8bd!important;
+}
 .brand-showcase-link{
     display:inline-flex;
     align-items:center;
     gap:10px;
-    color:#0b1720;
-    font:800 12px/1 Manrope,sans-serif;
-    letter-spacing:.08em;
+    color:#e8b441;
+    font:800 11px/1 Manrope,sans-serif;
+    letter-spacing:.09em;
     text-decoration:none;
     white-space:nowrap;
     padding:12px 0;
 }
+.brand-showcase-link:hover{color:#ffd36d}
 .brand-showcase-link .ui-icon{width:16px;height:16px}
-.brand-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:14px;
-}
-.brand-grid-loading{
-    grid-column:1/-1;
-    padding:24px;
-    border:1px dashed rgba(11,23,32,.2);
-    border-radius:16px;
-    color:#72767a;
-    text-align:center;
-}
-.brand-card{
+
+.brand-marquee-shell{
     position:relative;
-    min-width:0;
-    height:174px;
     overflow:hidden;
-    border:0;
-    border-radius:16px;
-    padding:0;
-    background:#101820;
-    color:white;
-    cursor:pointer;
-    text-align:left;
-    isolation:isolate;
-    box-shadow:0 10px 28px rgba(9,17,23,.12);
-    transition:transform .2s ease,box-shadow .2s ease;
-}
-.brand-card:hover,.brand-card:focus-visible{
-    transform:translateY(-3px);
-    box-shadow:0 14px 34px rgba(9,17,23,.18);
-    outline:none;
-}
-.brand-card.active{box-shadow:0 0 0 2px #d9a32c,0 14px 34px rgba(9,17,23,.18)}
-.brand-card-media,.brand-card-shade{
-    position:absolute;
-    inset:0;
-}
-.brand-card-media img{
     width:100%;
-    height:100%;
-    object-fit:cover;
+    border:1px solid rgba(219,170,61,.18);
+    border-radius:19px;
+    background:linear-gradient(180deg,rgba(19,39,52,.94),rgba(10,27,38,.96));
+    box-shadow:0 18px 45px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.03);
+}
+.brand-marquee-track{
+    display:flex;
+    width:max-content;
+    will-change:transform;
+    animation:doradoBrandMarquee 30s linear infinite;
+}
+.brand-marquee-shell:hover .brand-marquee-track,
+.brand-marquee-shell:focus-within .brand-marquee-track{
+    animation-play-state:paused;
+}
+.brand-marquee-set{
+    display:flex;
+    flex:0 0 auto;
+    align-items:stretch;
+    gap:10px;
+    padding:10px 10px 10px 0;
+}
+.brand-marquee-card{
+    flex:0 0 188px;
+    width:188px;
+    min-height:92px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    background:rgba(255,255,255,.025);
+    color:#f5f0e8;
+    cursor:pointer;
+    padding:10px 12px 9px;
+    display:grid;
+    grid-template-rows:54px auto;
+    align-items:center;
+    justify-items:center;
+    gap:4px;
+    transition:border-color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+.brand-marquee-card:hover,
+.brand-marquee-card:focus-visible{
+    outline:none;
+    transform:translateY(-2px);
+    border-color:rgba(226,170,55,.48);
+    background:rgba(226,170,55,.06);
+    box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+.brand-marquee-card.active{
+    border-color:#dda83b;
+    background:rgba(221,168,59,.09);
+    box-shadow:inset 0 -2px 0 #dda83b;
+}
+.brand-sprite-logo,
+.catalog-brand-logo{
     display:block;
-    transform:scale(1.01);
-    transition:transform .35s ease;
+    background-image:url("../images/brands/brands-sprite.webp");
+    background-repeat:no-repeat;
+    background-size:900% 100%;
+    background-position:var(--brand-pos,0%) center;
 }
-.brand-card:hover .brand-card-media img{transform:scale(1.055)}
-.brand-card-shade{
-    z-index:1;
-    background:linear-gradient(180deg,rgba(3,8,12,.10) 15%,rgba(3,8,12,.84) 100%);
+.brand-sprite-logo{
+    width:158px;
+    height:54px;
 }
-.brand-card-copy{
-    position:absolute;
-    z-index:2;
-    left:18px;
-    right:46px;
-    bottom:16px;
+.brand-marquee-meta{
+    width:100%;
+    min-width:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:7px;
+    color:#b7c0c5;
+}
+.brand-marquee-meta strong{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#dfe6e8;
+    font:800 9px/1.2 Manrope,sans-serif;
+    letter-spacing:.025em;
+}
+.brand-marquee-meta small{
+    flex:0 0 auto;
+    color:#778790;
+    font:700 8px/1 Manrope,sans-serif;
+}
+.brand-marquee-hint{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-top:13px;
+    color:#778790;
+    font:800 8px/1 Manrope,sans-serif;
+    letter-spacing:.12em;
+}
+.brand-marquee-hint span{
+    width:28px;
+    height:1px;
+    background:#dba73b;
+}
+@keyframes doradoBrandMarquee{
+    from{transform:translate3d(0,0,0)}
+    to{transform:translate3d(-50%,0,0)}
+}
+@media (prefers-reduced-motion:reduce){
+    .brand-marquee-track{animation:none!important}
+    .brand-marquee-shell{overflow-x:auto}
+}
+
+.catalog-brand-context{
+    display:grid;
+    grid-template-columns:190px minmax(0,1fr) auto;
+    align-items:center;
+    gap:18px;
+    margin:0 0 18px;
+    padding:14px 16px;
+    border:1px solid rgba(221,168,59,.22);
+    border-radius:17px;
+    background:linear-gradient(135deg,rgba(221,168,59,.075),rgba(255,255,255,.025));
+}
+.catalog-brand-context[hidden]{display:none!important}
+.catalog-brand-logo{
+    width:190px;
+    height:68px;
+}
+.catalog-brand-copy{
+    min-width:0;
     display:flex;
     flex-direction:column;
     gap:3px;
 }
-.brand-card-copy small{
-    font:800 9px/1 Manrope,sans-serif;
-    letter-spacing:.18em;
-    opacity:.72;
+.catalog-brand-copy small{
+    color:#dba73b;
+    font:900 8px/1 Manrope,sans-serif;
+    letter-spacing:.13em;
 }
-.brand-card-copy strong{
-    font:800 clamp(16px,1.4vw,22px)/1.05 Manrope,sans-serif;
+.catalog-brand-copy strong{
+    color:#f5f0e8;
+    font:800 20px/1.12 Manrope,sans-serif;
     letter-spacing:-.025em;
 }
-.brand-card-copy span{
-    font:600 10px/1.2 Manrope,sans-serif;
-    opacity:.78;
+.catalog-brand-copy span{
+    color:#81919a;
+    font:650 9px/1.3 Manrope,sans-serif;
 }
-.brand-card-arrow{
-    position:absolute;
-    z-index:2;
-    right:16px;
-    bottom:17px;
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    background:rgba(255,255,255,.15);
-    backdrop-filter:blur(8px);
+.catalog-brand-clear{
+    min-height:38px;
+    padding:0 14px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:999px;
+    background:rgba(255,255,255,.035);
+    color:#bec8cc;
+    font:800 8px/1 Manrope,sans-serif;
+    letter-spacing:.08em;
+    cursor:pointer;
 }
-.brand-card-arrow .ui-icon{width:14px;height:14px}
+.catalog-brand-clear:hover{
+    border-color:rgba(221,168,59,.38);
+    color:#edbd55;
+}
 
 /* El catálogo inicial queda acotado y las tarjetas usan menos altura/ancho. */
 .dorado-catalog .products{
@@ -290,4 +390,53 @@
     .dorado-catalog .add-card-product{min-height:34px!important;padding:7px 6px!important;font-size:8.5px!important}
     .catalog-more-wrap{padding-top:18px}
     .catalog-more-button{min-height:42px;font-size:9.5px}
+}
+
+.dorado-catalog .product[role="button"]{cursor:pointer}
+.dorado-catalog .product[role="button"]:focus-visible{
+    outline:2px solid #dfa936!important;
+    outline-offset:3px;
+}
+
+/* Mobile product buybar: the price must stay readable over the light bar. */
+#producto-dinamico .product-mobile-buybar{
+    background:rgba(248,244,236,.985)!important;
+    border-top-color:#d7cec1!important;
+}
+#producto-dinamico .product-mobile-price small{
+    color:#6d777c!important;
+    opacity:1!important;
+}
+#producto-dinamico .dynamic-product-price-mobile,
+#producto-dinamico .dynamic-product-price-mobile .product-price-current{
+    color:#172833!important;
+    opacity:1!important;
+    text-shadow:none!important;
+}
+#producto-dinamico .dynamic-product-price-mobile .product-price-old{
+    color:#7f898e!important;
+}
+
+@media (max-width:860px){
+    .brand-showcase-shell{width:min(100% - 28px,760px)}
+    .brand-showcase-head{align-items:flex-start;flex-direction:column;gap:10px}
+    .brand-marquee-card{flex-basis:164px;width:164px;min-height:84px;grid-template-rows:49px auto}
+    .brand-sprite-logo{width:140px;height:49px}
+    .catalog-brand-context{grid-template-columns:150px minmax(0,1fr);gap:12px}
+    .catalog-brand-logo{width:150px;height:58px}
+    .catalog-brand-clear{grid-column:1/-1;width:100%}
+}
+@media (max-width:560px){
+    .brand-showcase{padding-top:40px;padding-bottom:38px}
+    .brand-showcase-shell{width:calc(100% - 22px)}
+    .brand-showcase .section-desc{font-size:12px;line-height:1.5}
+    .brand-marquee-set{gap:7px;padding-block:8px}
+    .brand-marquee-card{flex-basis:142px;width:142px;min-height:76px;padding:8px;grid-template-rows:44px auto}
+    .brand-sprite-logo{width:122px;height:44px}
+    .brand-marquee-meta strong{font-size:8px}
+    .brand-marquee-meta small{display:none}
+    .brand-marquee-hint{font-size:7px;line-height:1.35}
+    .catalog-brand-context{grid-template-columns:112px minmax(0,1fr);padding:11px 12px}
+    .catalog-brand-logo{width:112px;height:48px}
+    .catalog-brand-copy strong{font-size:16px}
 }
