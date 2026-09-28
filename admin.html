@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
 <meta name="theme-color" content="#0d0e10">
 <meta name="description" content="Panel privado de DORADO ARTÍCULOS DE PESCA para gestionar productos, stock y pedidos. Acceso exclusivo para administradores autorizados.">
-<link rel="canonical" href="https://dorado-art-pesca.vercel.app/admin.html">
+<link rel="canonical" href="https://www.doradoarticulosdepesca.com.ar/admin.html">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
 <title>Dorado Artículos de Pesca | Panel privado de administración</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="assets/css/admin-mobile.css?v=20260926c"/>
 <link rel="stylesheet" href="assets/css/admin-performance.css?v=20260927-perf2"/>
 <link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-loginmobile1"/>
+<link rel="stylesheet" href="assets/css/admin-organization-20260928.css?v=20260928a"/>
 </head>
 <body>
 
@@ -220,6 +221,12 @@
                     </div>
                   </div>
                 </div>
+                <div class="field brand-admin-field">
+                  <label for="product-brand">MARCA</label>
+                  <input id="product-brand" maxlength="80" placeholder="Ej: Caster, Shimano, Marine Sports" autocomplete="off" spellcheck="false" list="product-brand-list">
+                  <datalist id="product-brand-list"></datalist>
+                  <div class="file-help">Escribí una marca nueva o elegí una de las que ya usaste. Después vas a poder filtrar el catálogo por marca.</div>
+                </div>
                 <div class="field"><label for="product-active">VISIBILIDAD</label><select id="product-active"><option value="true">Activo / visible</option><option value="false">Oculto</option></select></div>
               </div>
 
@@ -257,11 +264,14 @@
               <div class="catalog-toolbar">
                 <div class="catalog-title-row"><div><h2>Catálogo</h2><p>Visualizá y administrá todos los productos.</p></div><div class="catalog-status-row"><span id="product-stock-alert" class="stock-alert-chip" hidden></span><span id="product-list-count" class="catalog-count">0 productos</span></div></div>
                 <div class="catalog-filters">
-                  <label class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="product-search" type="search" placeholder="Buscar por nombre o categoría"></label>
-                  <select id="product-filter" aria-label="Filtrar productos"><option value="all">Todos</option><option value="active">Activos</option><option value="hidden">Ocultos</option><option value="low">Stock bajo</option><option value="out">Sin stock</option></select>
+                  <label class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="product-search" type="search" placeholder="Buscar por producto, marca o categoría"></label>
+                  <select id="product-category-filter" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option></select>
+                  <select id="product-brand-filter" aria-label="Filtrar por marca"><option value="all">Todas las marcas</option></select>
+                  <select id="product-filter" aria-label="Filtrar por estado"><option value="all">Todos los estados</option><option value="active">Activos</option><option value="hidden">Ocultos</option><option value="low">Stock bajo</option><option value="out">Sin stock</option></select>
                 </div>
+                <div class="admin-brand-tabs" id="admin-brand-tabs" aria-label="Secciones por marca"></div>
               </div>
-              <div class="table-wrap"><table><thead><tr><th>IMAGEN</th><th>PRODUCTO</th><th>PRECIO</th><th>STOCK</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="products-table"><tr><td colspan="6" class="loading">Cargando productos...</td></tr></tbody></table></div>
+              <div class="table-wrap product-table-wrap"><table><thead><tr><th>PRODUCTO</th><th>PRECIO</th><th>STOCK</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="products-table"><tr><td colspan="5" class="loading">Cargando productos...</td></tr></tbody></table></div>
             </div>
           </div>
         </section>
@@ -315,7 +325,7 @@
               </div>
             </div>
 
-            <div class="table-wrap"><table><thead><tr><th class="order-check-head"><input id="orders-select-all-head" type="checkbox" aria-label="Seleccionar todos los pedidos"></th><th>FECHA</th><th>CLIENTE</th><th>CONTACTO</th><th>TOTAL</th><th>PAGO</th><th>PREPARACIÓN</th><th>ACCIONES</th></tr></thead><tbody id="orders-table"><tr><td colspan="8" class="loading">Cargando pedidos...</td></tr></tbody></table></div>
+            <div class="table-wrap orders-table-wrap"><table><thead><tr><th class="order-check-head"><input id="orders-select-all-head" type="checkbox" aria-label="Seleccionar todos los pedidos"></th><th>PEDIDO / FECHA</th><th>CLIENTE / CONTACTO</th><th>TOTAL</th><th>PAGO</th><th>PREPARACIÓN</th><th>ACCIONES</th></tr></thead><tbody id="orders-table"><tr><td colspan="7" class="loading">Cargando pedidos...</td></tr></tbody></table></div>
           </div>
         </section>
 
@@ -363,6 +373,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20260928-google1"></script>
+<script src="assets/js/admin.js?v=20260928-catalogorg1"></script>
 </body>
 </html>
