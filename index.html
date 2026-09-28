@@ -123,7 +123,7 @@
 <link rel="stylesheet" href="assets/css/reviews-polish.css?v=20260927-googlecards2"/>
 <link rel="stylesheet" href="assets/css/motion-craft.css?v=20260927-adaptive3"/>
 <link rel="stylesheet" href="assets/css/storefront-polish-20260927.css?v=20260928-cardpay3"/>
-<link rel="stylesheet" href="assets/css/catalog-organization-20260928.css?v=20260928a"/>
+<link rel="stylesheet" href="assets/css/catalog-organization-20260928.css?v=20260928c"/>
 
 
 </head>
@@ -288,15 +288,16 @@
   <div class="brand-showcase-shell">
     <div class="brand-showcase-head">
       <div>
-        <div class="kicker">COMPRÁ POR MARCA</div>
-        <h2 class="section-title">Encontrá rápido <span>la marca que buscás.</span></h2>
-        <p class="section-desc">Las marcas aparecen automáticamente según los productos que cargás en el panel. Elegí una para ver solamente su catálogo.</p>
+        <div class="kicker">MARCAS DORADO</div>
+        <h2 class="section-title">Nuestras <span>marcas.</span></h2>
+        <p class="section-desc">Elegí una marca y te mostramos solamente sus productos. La cinta se mueve de derecha a izquierda como las reseñas y podés tocar cualquier logo.</p>
       </div>
-      <a class="brand-showcase-link" href="#productos">VER TODO EL CATÁLOGO <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
+      <a class="brand-showcase-link" href="#productos" id="brand-show-all">VER TODO EL CATÁLOGO <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
     </div>
-    <div class="brand-grid" id="brand-grid" aria-label="Marcas disponibles">
-      <div class="brand-grid-loading">Las marcas van a aparecer cuando tengan productos cargados.</div>
+    <div class="brand-marquee-shell" aria-label="Marcas disponibles">
+      <div class="brand-marquee-track" id="brand-marquee-track"></div>
     </div>
+    <div class="brand-marquee-hint"><span></span> TOCÁ UNA MARCA PARA VER TODOS SUS PRODUCTOS</div>
   </div>
 </section>
 <section class="section catalog-section reveal dorado-catalog" id="productos">
@@ -325,6 +326,15 @@
 </div>
 <div aria-live="polite" class="catalog-count" id="product-result-count">Cargando catálogo…</div>
 </div>
+</div>
+<div class="catalog-brand-context" id="catalog-brand-context" hidden>
+  <div class="catalog-brand-logo" id="catalog-brand-logo" aria-hidden="true"></div>
+  <div class="catalog-brand-copy">
+    <small>MARCA SELECCIONADA</small>
+    <strong id="catalog-brand-name">Marca</strong>
+    <span id="catalog-brand-count"></span>
+  </div>
+  <button class="catalog-brand-clear" id="catalog-brand-clear" type="button">VER TODAS LAS MARCAS</button>
 </div>
 <div class="category-chips" id="categorias" aria-label="Filtrar por categoría"></div>
 <div class="products" id="products-grid">
@@ -1055,7 +1065,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20260928-catalogorg1"></script>
+<script src="assets/js/site.js?v=20260928-catalogorg3"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
