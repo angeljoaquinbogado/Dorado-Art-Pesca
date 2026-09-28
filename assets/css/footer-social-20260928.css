@@ -125,3 +125,34 @@
     opacity:1!important;
     visibility:visible!important;
 }
+
+
+/* Alineación óptica uniforme de íconos sociales */
+.footer-social-links{
+  align-items:center!important;
+}
+.footer-social-links a{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:0!important;
+}
+.footer-social-links .ui-icon{
+  display:block!important;
+  width:28px!important;
+  height:28px!important;
+  margin:0!important;
+  transform:none!important;
+  vertical-align:middle!important;
+}
+.footer-social-links a[href*="instagram.com"] .ui-icon,
+.footer-social-links a[href*="facebook.com"] .ui-icon,
+.footer-social-links a[href*="tiktok.com"] .ui-icon{
+  align-self:center!important;
+}
+@media(max-width:700px){
+  .footer-social-links .ui-icon{
+    width:25px!important;
+    height:25px!important;
+  }
+}
