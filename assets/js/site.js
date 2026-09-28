@@ -3835,9 +3835,9 @@ comprobarRetornoPago();
     window.__doradoInitCardPayment=init;
 })();
 
-/* DORADO — selects visuales de Mercado Pago (issuer / installments) */
+/* DORADO — selects visuales de Mercado Pago (documento / issuer / installments) */
 (function configurarSelectoresMercadoPago(){
-    const ids=["mp-issuer","mp-installments"];
+    const ids=["mp-identification-type","mp-issuer","mp-installments"];
     const wrappers=new Map();
 
     const createFor=select=>{
@@ -3881,9 +3881,12 @@ comprobarRetornoPago();
         const rebuild=()=>{
             const options=Array.from(select.options);
             const current=select.options[select.selectedIndex];
-            value.textContent=current?.textContent?.trim()||(
-                select.id==="mp-installments"?"Cuotas":"Banco emisor"
-            );
+            const fallback={
+                "mp-identification-type":"Tipo de documento",
+                "mp-issuer":"Banco emisor",
+                "mp-installments":"Cuotas"
+            };
+            value.textContent=current?.textContent?.trim()||fallback[select.id]||"Elegí una opción";
 
             menu.innerHTML="";
             options.forEach(option=>{
