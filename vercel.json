@@ -102,5 +102,15 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/google-business-oauth/start",
+      "destination": "/api/reviews?action=google_oauth_start"
+    },
+    {
+      "source": "/api/google-business-oauth/callback",
+      "destination": "/api/reviews?action=google_oauth_callback"
+    }
   ]
 }
