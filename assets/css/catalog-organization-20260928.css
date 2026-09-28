@@ -58,14 +58,50 @@
 .brand-showcase-link:hover{color:#ffd36d}
 .brand-showcase-link .ui-icon{width:16px;height:16px}
 
+.catalog-step{
+    scroll-margin-top:112px;
+}
+.catalog-step-brands{
+    margin:4px 0 18px;
+    padding-top:2px;
+}
+.catalog-step-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin:18px 0 10px;
+}
+.catalog-step-label{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    color:#dbe3e6;
+    font:900 9px/1 Manrope,sans-serif;
+    letter-spacing:.11em;
+}
+.catalog-step-label span{
+    width:25px;
+    height:25px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#10212d;
+    background:#dfa52c;
+    font-size:8px;
+    letter-spacing:0;
+}
+.catalog-category-head{margin-top:18px}
+.catalog-products-head{margin-top:22px}
+
 .brand-marquee-shell{
     position:relative;
     overflow:hidden;
     width:100%;
     border:1px solid rgba(219,170,61,.18);
-    border-radius:19px;
-    background:linear-gradient(180deg,rgba(19,39,52,.94),rgba(10,27,38,.96));
-    box-shadow:0 18px 45px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.03);
+    border-radius:16px;
+    background:linear-gradient(180deg,rgba(18,37,49,.88),rgba(10,27,38,.92));
+    box-shadow:0 12px 30px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.03);
 }
 .brand-marquee-track{
     display:flex;
@@ -85,9 +121,9 @@
     padding:10px 10px 10px 0;
 }
 .brand-marquee-card{
-    flex:0 0 188px;
-    width:188px;
-    min-height:92px;
+    flex:0 0 176px;
+    width:176px;
+    min-height:86px;
     border:1px solid rgba(255,255,255,.08);
     border-radius:14px;
     background:rgba(255,255,255,.025);
@@ -95,7 +131,7 @@
     cursor:pointer;
     padding:10px 12px 9px;
     display:grid;
-    grid-template-rows:54px auto;
+    grid-template-rows:50px auto;
     align-items:center;
     justify-items:center;
     gap:4px;
@@ -123,8 +159,8 @@
     background-position:var(--brand-pos,0%) center;
 }
 .brand-sprite-logo{
-    width:158px;
-    height:54px;
+    width:148px;
+    height:50px;
 }
 .brand-marquee-meta{
     width:100%;
@@ -238,6 +274,21 @@
 .dorado-catalog .product-img{
     height:158px!important;
     min-height:158px!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#fff!important;
+}
+.dorado-catalog .product-img .product-real-image{
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    margin:0!important;
+    padding:4px!important;
+    background:#fff!important;
+    border-radius:0!important;
 }
 .dorado-catalog .product-img .badge{
     top:10px!important;
@@ -439,4 +490,29 @@
     .catalog-brand-context{grid-template-columns:112px minmax(0,1fr);padding:11px 12px}
     .catalog-brand-logo{width:112px;height:48px}
     .catalog-brand-copy strong{font-size:16px}
+}
+
+/* Catalog flow: 01 marcas → 02 categorías → 03 productos */
+.dorado-catalog .catalog-shell-dark{
+    display:block!important;
+}
+.dorado-catalog #marcas{
+    margin-top:8px;
+}
+.dorado-catalog .category-chips{
+    margin-top:0!important;
+    margin-bottom:18px!important;
+}
+.dorado-catalog .products{
+    margin-top:0!important;
+}
+@media (max-width:860px){
+    .catalog-step-head{margin-top:15px}
+    .catalog-step-brands{margin-bottom:14px}
+}
+@media (max-width:560px){
+    .catalog-step-head{margin:14px 0 8px}
+    .catalog-step-label{font-size:8px}
+    .catalog-step-label span{width:22px;height:22px;font-size:7px}
+    .dorado-catalog .product-img .product-real-image{padding:2px!important}
 }
