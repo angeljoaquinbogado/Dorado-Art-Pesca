@@ -854,7 +854,7 @@ function renderProductFormTaxonomyPickers(){
         currentCategory,
         "Seleccioná una categoría",
         "Crear nueva categoría",
-        false
+        true
     );
 
     setTaxonomySelectOptions(
@@ -865,13 +865,17 @@ function renderProductFormTaxonomyPickers(){
         "Crear nueva marca"
     );
 
-    const categoryCreating=categoryPanel?!categoryPanel.hidden:false;
+    const categoryCreating=categorySelect?.value===NEW_TAXONOMY_OPTION;
     const brandCreating=brandSelect?.value===NEW_TAXONOMY_OPTION;
 
+    if(categoryPanel)categoryPanel.hidden=!categoryCreating;
     if(brandPanel)brandPanel.hidden=!brandCreating;
 
-    if(!categoryCreating){
+    if(categoryCreating){
+        if(categoryNew&&!categoryNew.value&&currentCategory)categoryNew.value=currentCategory;
+    }else{
         if(categoryValue)categoryValue.value=categorySelect?.value||"";
+        if(categoryNew)categoryNew.value="";
     }
 
     if(brandCreating){
@@ -1048,9 +1052,7 @@ function useCategory(name,options={}){
     }
 
     const createPanel=document.getElementById("category-create-panel");
-    const createToggle=document.getElementById("category-create-toggle");
     if(createPanel)createPanel.hidden=true;
-    createToggle?.setAttribute("aria-expanded","false");
 
     if(closeManager){
         const manager=document.getElementById("category-manager");
@@ -1219,11 +1221,9 @@ async function createCategoryFromInput(){
     try{
         const created=await persistCategory(newInput.value);
         const panel=document.getElementById("category-create-panel");
-        const toggle=document.getElementById("category-create-toggle");
         valueInput.value=created.nombre;
         newInput.value="";
         if(panel)panel.hidden=true;
-        toggle?.setAttribute("aria-expanded","false");
         renderProductFormTaxonomyPickers();
         showToast("Categoría seleccionada: "+created.nombre);
     }catch(error){
@@ -1331,9 +1331,7 @@ async function deleteAllCategories(){
 function resetProductForm(){
     document.getElementById("product-form").reset();
     const categoryCreatePanel=document.getElementById("category-create-panel");
-    const categoryCreateToggle=document.getElementById("category-create-toggle");
     if(categoryCreatePanel)categoryCreatePanel.hidden=true;
-    categoryCreateToggle?.setAttribute("aria-expanded","false");
     const categoryNew=document.getElementById("product-category-new");
     if(categoryNew)categoryNew.value="";
     document.getElementById("product-id").value="";
@@ -2429,25 +2427,19 @@ const categorySelectEditor=document.getElementById("product-category-select");
 const categoryValueEditor=document.getElementById("product-category");
 const categoryNewEditor=document.getElementById("product-category-new");
 const categoryCreatePanel=document.getElementById("category-create-panel");
-const categoryCreateToggle=document.getElementById("category-create-toggle");
 
 categorySelectEditor?.addEventListener("change",()=>{
-    if(categoryValueEditor)categoryValueEditor.value=categorySelectEditor.value||"";
-});
+    const creating=categorySelectEditor.value===NEW_TAXONOMY_OPTION;
+    if(categoryCreatePanel)categoryCreatePanel.hidden=!creating;
 
-categoryCreateToggle?.addEventListener("click",()=>{
-    if(!categoryCreatePanel)return;
-    const willOpen=categoryCreatePanel.hidden;
-    categoryCreatePanel.hidden=!willOpen;
-    categoryCreateToggle.setAttribute("aria-expanded",String(willOpen));
-    if(willOpen){
+    if(creating){
+        if(categoryValueEditor)categoryValueEditor.value="";
         if(categoryNewEditor)categoryNewEditor.value="";
         requestAnimationFrame(()=>categoryNewEditor?.focus({preventScroll:true}));
+    }else{
+        if(categoryValueEditor)categoryValueEditor.value=categorySelectEditor.value||"";
+        if(categoryNewEditor)categoryNewEditor.value="";
     }
-});
-
-categoryNewEditor?.addEventListener("input",()=>{
-    // No cambia la categoría elegida hasta tocar AGREGAR.
 });
 
 categoryNewEditor?.addEventListener("keydown",event=>{
@@ -2675,7 +2667,6 @@ document.addEventListener("keydown",e=>{
         };
 
         const positionPortaledMenu=()=>{
-            if(!select.closest(".table-wrap"))return;
             const rect=trigger.getBoundingClientRect();
             const viewportGap=12;
             const preferredWidth=Math.max(rect.width,220);
@@ -2688,13 +2679,14 @@ document.addEventListener("keydown",e=>{
             document.body.appendChild(menu);
             menu.classList.add("is-portaled");
 
-            const estimatedHeight=Math.min(menu.scrollHeight||280,360,window.innerHeight*.52);
-            const roomBelow=window.innerHeight-rect.bottom-viewportGap;
-            const roomAbove=rect.top-viewportGap;
-            const openUp=roomBelow<Math.min(estimatedHeight,220)&&roomAbove>roomBelow;
+            const roomBelow=Math.max(0,window.innerHeight-rect.bottom-viewportGap);
+            const roomAbove=Math.max(0,rect.top-viewportGap);
+            const desiredHeight=Math.min(menu.scrollHeight||320,360);
+            const openUp=roomBelow<Math.min(desiredHeight,220)&&roomAbove>roomBelow;
+            const available=Math.max(150,Math.min(360,(openUp?roomAbove:roomBelow)-7));
             const top=openUp
-                ? Math.max(viewportGap,rect.top-estimatedHeight-7)
-                : Math.min(window.innerHeight-estimatedHeight-viewportGap,rect.bottom+7);
+                ? Math.max(viewportGap,rect.top-Math.min(desiredHeight,available)-7)
+                : Math.min(window.innerHeight-available-viewportGap,rect.bottom+7);
 
             Object.assign(menu.style,{
                 position:"fixed",
@@ -2702,7 +2694,10 @@ document.addEventListener("keydown",e=>{
                 top:`${Math.max(viewportGap,top)}px`,
                 width:`${width}px`,
                 maxWidth:`${window.innerWidth-viewportGap*2}px`,
-                maxHeight:`${Math.min(360,window.innerHeight*.52)}px`,
+                maxHeight:`${available}px`,
+                overflowY:"auto",
+                overscrollBehavior:"contain",
+                WebkitOverflowScrolling:"touch",
                 zIndex:"10000"
             });
         };
