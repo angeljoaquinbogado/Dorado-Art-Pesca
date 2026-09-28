@@ -1,0 +1,127 @@
+/* Dorado Admin — catálogo acotado + editor opcional · 2026-09-28 */
+
+#products-panel .grid{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:14px!important;
+}
+
+#products-panel #product-form{
+  width:100%!important;
+  max-width:none!important;
+  position:relative!important;
+  top:auto!important;
+  order:1!important;
+  scroll-margin-top:96px!important;
+}
+
+#products-panel #product-form[hidden]{
+  display:none!important;
+}
+
+#products-panel .catalog-card{
+  order:2!important;
+  width:100%!important;
+  min-width:0!important;
+}
+
+#products-panel .catalog-title-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+#products-panel .catalog-new-product{
+  min-height:40px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  padding:0 13px!important;
+  border-radius:12px!important;
+  white-space:nowrap;
+  font-size:8.5px!important;
+  letter-spacing:.045em!important;
+}
+
+#products-panel .catalog-new-product svg{
+  width:15px;
+  height:15px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+}
+
+#products-panel .admin-products-more{
+  padding:14px 18px 18px;
+  border-top:1px solid #eeeae3;
+  background:#fff;
+}
+
+#products-panel .admin-products-more[hidden]{
+  display:none!important;
+}
+
+#products-panel .admin-products-more-button{
+  width:100%!important;
+  min-height:44px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  border-radius:13px!important;
+  font-size:8.5px!important;
+  letter-spacing:.055em!important;
+}
+
+#products-panel .admin-products-more-button svg{
+  width:15px;
+  height:15px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  transition:transform .2s ease;
+}
+
+#products-panel .admin-products-more-button.expanded svg{
+  transform:rotate(-90deg);
+}
+
+@media(max-width:700px){
+  #products-panel .catalog-title-row{
+    gap:12px!important;
+  }
+
+  #products-panel .catalog-title-actions{
+    width:100%;
+    align-items:stretch;
+    justify-content:space-between;
+  }
+
+  #products-panel .catalog-status-row{
+    min-width:0;
+    flex:1 1 auto;
+  }
+
+  #products-panel .catalog-new-product{
+    flex:0 0 auto;
+    min-height:40px!important;
+    padding:0 11px!important;
+    font-size:8px!important;
+  }
+
+  #products-panel .admin-products-more{
+    padding:12px 14px 15px;
+  }
+
+  #products-panel .admin-products-more-button{
+    min-height:46px!important;
+    font-size:8px!important;
+  }
+
+  #products-panel #product-form{
+    scroll-margin-top:122px!important;
+  }
+}
