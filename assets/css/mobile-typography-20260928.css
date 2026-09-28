@@ -1,0 +1,62 @@
+/* Dorado — tipografía móvil consistente · 2026-09-28 */
+
+@media(max-width:700px){
+  html,
+  body{
+    font-family:"Manrope",Arial,sans-serif!important;
+  }
+
+  body button,
+  body input,
+  body textarea,
+  body select,
+  body option,
+  body label,
+  body a,
+  body p,
+  body span,
+  body small,
+  body strong,
+  body li,
+  body summary{
+    font-family:"Manrope",Arial,sans-serif!important;
+  }
+
+  body h1,
+  body h2,
+  body h3,
+  body h4,
+  body h5,
+  body h6,
+  .section-title,
+  .dynamic-product-name,
+  .footer-wordmark{
+    font-family:"Montserrat","Manrope",Arial,sans-serif!important;
+  }
+
+  .product-info,
+  .product-info h3,
+  .product-card-description,
+  .product-price,
+  .product-stock,
+  .view-product,
+  .add-card-product,
+  .card-quantity-row,
+  .category-chip,
+  .catalog-search,
+  .catalog-count,
+  .mobile-menu-drawer,
+  .mobile-menu-drawer button,
+  .mobile-menu-drawer input,
+  .cart-drawer,
+  .orders-drawer,
+  .product-detail,
+  .checkout-modal{
+    font-family:"Manrope",Arial,sans-serif!important;
+  }
+
+  input::placeholder,
+  textarea::placeholder{
+    font-family:"Manrope",Arial,sans-serif!important;
+  }
+}
