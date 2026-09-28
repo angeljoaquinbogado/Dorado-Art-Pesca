@@ -38,7 +38,7 @@ const DORADO_BRANDS = [
     { name:"Caster", key:"caster", sprite:3 },
     { name:"Bando ARG", key:"bando-arg", sprite:4 },
     { name:"Fox Airguns", key:"fox-airguns", sprite:5 },
-    { name:"P", key:"p", sprite:6 },
+    { name:"Payo", key:"payo", sprite:6 },
     { name:"MorGui Outdoor", key:"morgui-outdoor", sprite:7 },
     { name:"Surfish", key:"surfish", sprite:8 }
 ];
@@ -2203,7 +2203,9 @@ function seleccionarMarca(key,{scroll=false}={}){
 
     if(scroll){
         requestAnimationFrame(()=>{
-            document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
+            const target=document.getElementById("catalog-brand-context");
+            (target && !target.hidden ? target : document.getElementById("categorias"))
+                ?.scrollIntoView({behavior:"smooth",block:"start"});
         });
     }
 }
