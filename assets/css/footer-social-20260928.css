@@ -3,13 +3,13 @@
 .footer-social-strip{
     margin-top:28px;
     padding:24px 0 22px;
-    border-top:1px solid rgba(255,255,255,.08);
+    border-top:1px solid rgba(255,255,255,.10);
     border-bottom:1px solid rgba(255,255,255,.08);
-    background:#050607;
+    background:transparent;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:34px;
+    gap:72px;
     min-height:96px;
 }
 .footer-social-strip>strong{
@@ -17,7 +17,7 @@
     flex-direction:column;
     align-items:flex-end;
     color:#fff;
-    font:900 18px/1.05 Manrope,sans-serif;
+    font:900 22px/1.06 Manrope,sans-serif;
     letter-spacing:-.02em;
     text-align:right;
 }
@@ -27,11 +27,11 @@
 .footer-social-links{
     display:flex;
     align-items:center;
-    gap:18px;
+    gap:24px;
 }
 .footer-social-links a{
-    width:46px;
-    height:46px;
+    width:50px;
+    height:50px;
     border-radius:50%;
     display:grid;
     place-items:center;
@@ -47,8 +47,8 @@
     color:#e3aa31;
 }
 .footer-social-links .ui-icon{
-    width:28px;
-    height:28px;
+    width:30px;
+    height:30px;
     stroke:currentColor;
     fill:none;
 }
@@ -59,7 +59,7 @@
 }
 
 /* Keep legal information visible below the social strip. */
-.site-footer .footer-bottom{
+.site-footer .footer-legal-bar{
     display:grid!important;
     grid-template-columns:minmax(0,1fr) auto!important;
     align-items:center!important;
@@ -97,9 +97,31 @@
         width:24px;
         height:24px;
     }
-    .site-footer .footer-bottom{
+    .site-footer .footer-legal-bar{
         grid-template-columns:1fr!important;
         gap:4px!important;
         padding-top:14px!important;
     }
+}
+
+.site-footer .footer-legal-bar{
+    width:100%;
+    border-top:1px solid rgba(255,255,255,.08)!important;
+    min-height:58px!important;
+    padding:18px 0 20px!important;
+    margin-top:0!important;
+    color:#dfe5e8!important;
+    font:700 10.5px/1.4 Manrope,sans-serif!important;
+}
+.site-footer .footer-legal-bar .footer-rights{
+    display:block!important;
+    color:#f0f3f4!important;
+    opacity:1!important;
+    visibility:visible!important;
+}
+.site-footer .footer-legal-bar .footer-address{
+    display:block!important;
+    color:#93a2aa!important;
+    opacity:1!important;
+    visibility:visible!important;
 }
