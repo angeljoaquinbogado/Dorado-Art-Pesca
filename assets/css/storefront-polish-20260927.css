@@ -2994,3 +2994,130 @@ body::-webkit-scrollbar-corner{
     max-height:27px!important;
   }
 }
+
+
+/* =========================================================
+   MERCADO PAGO CARD FORM — SECURE EMBEDDED FIELDS
+   ========================================================= */
+#checkout-modal .mp-card-status{
+  margin:14px 0 2px!important;
+  padding:10px 12px!important;
+  border:1px solid #d9cfbf!important;
+  border-radius:11px!important;
+  background:#fffaf3!important;
+  color:#66737b!important;
+  font-size:9px!important;
+  line-height:1.45!important;
+}
+
+#checkout-modal .mp-card-status.loading{
+  color:#8a671c!important;
+  background:#fff5df!important;
+  border-color:#e7d29e!important;
+}
+
+#checkout-modal .mp-card-status.ok{
+  color:#267447!important;
+  background:#edf8f1!important;
+  border-color:#cde8d6!important;
+}
+
+#checkout-modal .mp-card-status.warning{
+  color:#8a6513!important;
+  background:#fff5df!important;
+  border-color:#ead49c!important;
+}
+
+#checkout-modal .mp-card-status.error{
+  color:#9d3e36!important;
+  background:#fff0ee!important;
+  border-color:#edc7c2!important;
+}
+
+#checkout-modal .mp-card-form{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:13px!important;
+  margin-top:14px!important;
+}
+
+#checkout-modal .mp-card-form label{
+  min-width:0!important;
+  display:grid!important;
+  gap:7px!important;
+  color:#59666e!important;
+}
+
+#checkout-modal .mp-card-form label>span{
+  color:#59666e!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.095em!important;
+}
+
+#checkout-modal .mp-card-field-full{
+  grid-column:1/-1!important;
+}
+
+#checkout-modal .mp-secure-field,
+#checkout-modal .mp-card-form input,
+#checkout-modal .mp-card-form select{
+  width:100%!important;
+  min-width:0!important;
+  min-height:50px!important;
+  border:1px solid #d8d0c4!important;
+  border-radius:13px!important;
+  background:#fbf7ef!important;
+  color:#172833!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72)!important;
+}
+
+#checkout-modal .mp-secure-field{
+  display:flex!important;
+  align-items:center!important;
+  padding:0 13px!important;
+  overflow:hidden!important;
+}
+
+#checkout-modal .mp-secure-field iframe{
+  width:100%!important;
+  height:48px!important;
+  border:0!important;
+  background:transparent!important;
+}
+
+#checkout-modal .mp-card-form input,
+#checkout-modal .mp-card-form select{
+  padding:0 13px!important;
+  outline:0!important;
+  font-size:13px!important;
+}
+
+#checkout-modal .mp-card-form input:focus,
+#checkout-modal .mp-card-form select:focus,
+#checkout-modal .mp-secure-field:focus-within{
+  border-color:#d7a13a!important;
+  box-shadow:0 0 0 3px rgba(215,161,58,.12)!important;
+  background:#fffaf2!important;
+}
+
+#checkout-modal .mp-card-form select{
+  appearance:auto!important;
+}
+
+@media(max-width:640px){
+  #checkout-modal .mp-card-form{
+    grid-template-columns:1fr!important;
+    gap:11px!important;
+  }
+
+  #checkout-modal .mp-card-field-full{
+    grid-column:auto!important;
+  }
+
+  #checkout-modal .mp-secure-field,
+  #checkout-modal .mp-card-form input,
+  #checkout-modal .mp-card-form select{
+    min-height:52px!important;
+  }
+}

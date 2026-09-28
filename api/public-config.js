@@ -16,11 +16,17 @@ export default function handler(req, res) {
         return res.status(500).json({ error: "Configuración incompleta" });
     }
 
-    // La publishable key es pública por diseño. Nunca exponer SERVICE_ROLE ni MP_ACCESS_TOKEN.
+    const mercadoPagoEnabled = String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true";
+    const mercadoPagoPublicKey = String(process.env.MERCADOPAGO_PUBLIC_KEY || "").trim();
+
+    // La publishable key de Supabase y la Public Key de Mercado Pago son públicas por diseño.
+    // Nunca exponer SERVICE_ROLE, MP_ACCESS_TOKEN, CLIENT_SECRET ni WEBHOOK_SECRET.
     return res.status(200).json({
         supabaseUrl: url,
         supabasePublishableKey: key,
-        mercadoPagoEnabled: String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true",
+        mercadoPagoEnabled,
+        mercadoPagoPublicKey,
+        cardPaymentsEnabled: mercadoPagoEnabled && Boolean(mercadoPagoPublicKey),
         modoEnabled: String(process.env.MODO_ENABLED || "").toLowerCase() === "true",
         bankTransfer: {
             // Datos públicos confirmados del comercio. Las variables de entorno pueden reemplazarlos sin tocar el código.

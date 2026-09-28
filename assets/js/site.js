@@ -1493,8 +1493,13 @@ async function iniciarPagoMercadoPago(evento) {
     }
 
     if(metodoPago==="tarjeta"){
-        const confirmed=await confirmarRedireccionPago("mercadopago");
-        if(!confirmed)return;
+        if(!window.__doradoCardFormReady){
+            mostrarErrorCheckout("Estamos preparando los campos seguros de Mercado Pago. Esperá un instante y volvé a intentar.");
+            window.__doradoInitCardPayment?.();
+        }
+        // Mercado Pago CardForm escucha este mismo submit y procesa la tarjeta.
+        // No enviamos PAN/CVV al backend de Dorado.
+        return;
     }
 
     if(["mercadopago","modo"].includes(metodoPago)){
@@ -1507,8 +1512,12 @@ async function iniciarPagoMercadoPago(evento) {
     }
 
     const availability=window.doradoPaymentAvailability||{};
-    if(["mercadopago","tarjeta"].includes(metodoPago) && availability.mercadoPago===false){
-        mostrarErrorCheckout("Mercado Pago y tarjetas todavía no están habilitados para cobrar. Podés elegir transferencia, efectivo o WhatsApp.");
+    if(metodoPago==="mercadopago" && availability.mercadoPago===false){
+        mostrarErrorCheckout("Mercado Pago todavía no está habilitado para cobrar. Podés elegir transferencia, efectivo o WhatsApp.");
+        return;
+    }
+    if(metodoPago==="tarjeta" && availability.card===false){
+        mostrarErrorCheckout("El cobro directo con tarjeta todavía no está habilitado. Falta configurar la Public Key de Mercado Pago.");
         return;
     }
     if(metodoPago==="modo" && availability.modo===false){
@@ -3107,8 +3116,9 @@ comprobarRetornoPago();
             if(span)span.textContent="Continuar con MODO";
             if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
         }else if(method==="tarjeta"){
-            if(span)span.textContent="Continuar con tarjeta";
-            if(help)help.textContent="🔒 Los datos sensibles se ingresan mediante el procesador seguro, no en los servidores de Dorado.";
+            if(span)span.textContent="Pagar con tarjeta";
+            if(help)help.textContent="🔒 Número, vencimiento y CVV se tokenizan con Mercado Pago y no se guardan en Dorado.";
+            window.__doradoInitCardPayment?.();
         }else if(method==="transferencia"){
             if(span)span.textContent="Confirmar transferencia por WhatsApp";
             if(help)help.textContent="Revisá alias, CBU y titular antes de continuar.";
@@ -3204,8 +3214,12 @@ comprobarRetornoPago();
         if(value==="efectivo") return delivery?.value==="retiro" ? {enabled:true,label:"Disponible"} : {enabled:false,label:"Solo retiro"};
         if(value==="whatsapp"||value==="transferencia") return {enabled:true,label:"Disponible"};
         const availability=window.doradoPaymentAvailability;
-        if(value==="tarjeta"||value==="mercadopago"){
+        if(value==="mercadopago"){
             const enabled=Boolean(availability?.mercadoPago);
+            return {enabled,label:enabled?"Disponible":"A activar"};
+        }
+        if(value==="tarjeta"){
+            const enabled=Boolean(availability?.card);
             return {enabled,label:enabled?"Disponible":"A activar"};
         }
         if(value==="modo"){
@@ -3471,14 +3485,15 @@ comprobarRetornoPago();
       try{
         const data=await obtenerConfigPublica();
         const mpEnabled=Boolean(data?.mercadoPagoEnabled);
+        const cardEnabled=Boolean(data?.cardPaymentsEnabled);
         const modoEnabled=Boolean(data?.modoEnabled);
-        window.doradoPaymentAvailability={mercadoPago:mpEnabled,modo:modoEnabled};
+        window.doradoPaymentAvailability={mercadoPago:mpEnabled,card:cardEnabled,modo:modoEnabled};
         if(mpOption)mpOption.textContent=mpEnabled?"Mercado Pago":"Mercado Pago — a activar";
-        if(cardOption)cardOption.textContent=mpEnabled?"Tarjeta de débito / crédito":"Tarjeta de débito / crédito — a activar";
+        if(cardOption)cardOption.textContent=cardEnabled?"Tarjeta de débito / crédito":"Tarjeta de débito / crédito — falta Public Key";
         if(modoOption)modoOption.textContent=modoEnabled?"MODO":"MODO — a activar";
         payment.dispatchEvent(new Event("change",{bubbles:true}));
       }catch{
-        window.doradoPaymentAvailability={mercadoPago:false,modo:false};
+        window.doradoPaymentAvailability={mercadoPago:false,card:false,modo:false};
         if(mpOption)mpOption.textContent="Mercado Pago — a activar";
         if(cardOption)cardOption.textContent="Tarjeta de débito / crédito — a activar";
         if(modoOption)modoOption.textContent="MODO — a activar";
@@ -3520,16 +3535,284 @@ comprobarRetornoPago();
 })();
 
 
+/* =========================================================
+   DORADO — TARJETA DIRECTA CON MERCADO PAGO
+   CardForm tokeniza PAN/CVV en el navegador. Dorado recibe sólo un token.
+   ========================================================= */
+(function configurarPagoTarjetaMercadoPago(){
+    let sdkPromise=null;
+    let cardForm=null;
+    let initializing=false;
+
+    const statusEl=()=>document.getElementById("mp-card-status");
+    const setStatus=(text,type="")=>{
+        const el=statusEl();
+        if(!el)return;
+        el.textContent=text;
+        el.className=`mp-card-status ${type}`.trim();
+    };
+
+    const totalActual=()=>{
+        const carrito=leerCarrito();
+        const subtotal=Math.round(carrito.reduce((sum,item)=>{
+            const qty=Math.max(1,Number(item.cantidad)||1);
+            return sum+(Number(item.precio)||0)*qty;
+        },0)*100)/100;
+        if(checkoutCoupon&&Math.abs(Number(checkoutCoupon.subtotal||0)-subtotal)<0.01){
+            return Math.max(0,Number(checkoutCoupon.total)||subtotal);
+        }
+        return subtotal;
+    };
+
+    const loadSdk=()=>{
+        if(window.MercadoPago)return Promise.resolve(window.MercadoPago);
+        if(sdkPromise)return sdkPromise;
+        sdkPromise=new Promise((resolve,reject)=>{
+            const existing=document.querySelector('script[data-mercadopago-sdk="true"]');
+            if(existing){
+                existing.addEventListener("load",()=>resolve(window.MercadoPago),{once:true});
+                existing.addEventListener("error",()=>reject(new Error("No se pudo cargar Mercado Pago.")),{once:true});
+                return;
+            }
+            const script=document.createElement("script");
+            script.src="https://sdk.mercadopago.com/js/v2";
+            script.async=true;
+            script.dataset.mercadopagoSdk="true";
+            script.onload=()=>window.MercadoPago?resolve(window.MercadoPago):reject(new Error("Mercado Pago no inició correctamente."));
+            script.onerror=()=>reject(new Error("No se pudo cargar Mercado Pago."));
+            document.head.appendChild(script);
+        }).catch(error=>{
+            sdkPromise=null;
+            throw error;
+        });
+        return sdkPromise;
+    };
+
+    const rejectedMessage=detail=>{
+        const messages={
+            cc_rejected_insufficient_amount:"La tarjeta no tiene saldo o límite disponible suficiente.",
+            cc_rejected_bad_filled_card_number:"Revisá el número de la tarjeta.",
+            cc_rejected_bad_filled_date:"Revisá la fecha de vencimiento.",
+            cc_rejected_bad_filled_security_code:"Revisá el código de seguridad.",
+            cc_rejected_call_for_authorize:"El banco necesita que autorices el pago. Comunicate con la entidad emisora.",
+            cc_rejected_card_disabled:"La tarjeta está deshabilitada. Comunicate con la entidad emisora.",
+            cc_rejected_duplicated_payment:"Ese pago ya fue intentado. Esperá unos minutos antes de volver a probar.",
+            cc_rejected_high_risk:"Mercado Pago rechazó la operación por seguridad. Probá otro medio de pago.",
+            cc_rejected_other_reason:"La tarjeta fue rechazada. Probá otra tarjeta o medio de pago."
+        };
+        return messages[String(detail||"").toLowerCase()]||"La tarjeta fue rechazada. Revisá los datos o probá otra tarjeta.";
+    };
+
+    const uuid=()=>{
+        if(globalThis.crypto?.randomUUID)return globalThis.crypto.randomUUID();
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,char=>{
+            const r=Math.random()*16|0;
+            const v=char==="x"?r:(r&0x3|0x8);
+            return v.toString(16);
+        });
+    };
+
+    const procesar=async formData=>{
+        const form=document.getElementById("checkout-form");
+        const button=document.getElementById("checkout-pay");
+        if(!form||!button)return;
+
+        mostrarErrorCheckout("");
+        if(!form.reportValidity()){
+            throw new Error("Completá tus datos de contacto y entrega antes de pagar.");
+        }
+
+        const carrito=leerCarrito();
+        if(!carrito.length)throw new Error("Tu carrito está vacío.");
+
+        const datos=new FormData(form);
+        if(String(datos.get("metodo_pago")||"")!=="tarjeta")return;
+
+        const token=String(formData?.token||"").trim();
+        const paymentMethodId=String(formData?.paymentMethodId||"").trim();
+        const identificationType=String(formData?.identificationType||"").trim();
+        const identificationNumber=String(formData?.identificationNumber||"").trim();
+
+        if(!token||!paymentMethodId||!identificationType||!identificationNumber){
+            throw new Error("Revisá los datos de la tarjeta y del titular.");
+        }
+
+        const entrega=String(datos.get("entrega")||"retiro").trim();
+        const cliente={
+            nombre:String(datos.get("nombre")||"").trim(),
+            email:String(datos.get("email")||"").trim(),
+            telefono:String(datos.get("telefono")||"").trim(),
+            domicilio:String(datos.get("domicilio")||"").trim(),
+            ciudad:String(datos.get("ciudad")||"").trim(),
+            provincia:String(datos.get("provincia")||"").trim(),
+            codigo_postal:String(datos.get("codigo_postal")||"").trim(),
+            entrega,
+            notas:String(datos.get("notas")||"").trim()
+        };
+        const items=carrito.map(item=>({
+            id:item.id,
+            cantidad:Math.max(1,Math.floor(Number(item.cantidad)||1))
+        }));
+
+        const original=button.innerHTML;
+        button.disabled=true;
+        button.innerHTML="<span>Procesando tarjeta…</span>";
+        setStatus("Procesando el pago de forma segura…","loading");
+
+        try{
+            const response=await fetch("/api/checkout",{
+                method:"POST",
+                headers:{"Content-Type":"application/json","Accept":"application/json"},
+                body:JSON.stringify({
+                    cliente,
+                    items,
+                    payment_method:"tarjeta",
+                    payment_attempt_id:uuid(),
+                    cupon:String(document.getElementById("checkout-coupon-code")?.value||"").trim().toUpperCase(),
+                    card_payment:{
+                        token,
+                        payment_method_id:paymentMethodId,
+                        issuer_id:String(formData?.issuerId||""),
+                        installments:Math.max(1,Number(formData?.installments)||1),
+                        identification_type:identificationType,
+                        identification_number:identificationNumber
+                    }
+                })
+            });
+
+            const result=await response.json().catch(()=>({}));
+            if(!response.ok)throw new Error(result?.error||"No pudimos procesar la tarjeta.");
+
+            const orderId=String(result?.order_id||"");
+            const tracking=String(result?.tracking_token||"");
+            const paymentStatus=String(result?.payment_status||"").toLowerCase();
+            const detail=String(result?.payment_status_detail||"").toLowerCase();
+
+            if(orderId&&tracking)guardarReferenciaPedido(orderId,tracking);
+            if(orderId)sessionStorage.setItem("doradoUltimoPedido",orderId);
+
+            if(paymentStatus==="approved"){
+                setStatus("Pago aprobado. Confirmando tu pedido…","ok");
+                window.location.assign(`/?checkout=success&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(tracking)}`);
+                return;
+            }
+
+            if(paymentStatus==="review"){
+                setStatus("Pago recibido. El pedido quedó en revisión.","warning");
+                window.location.assign(`/?checkout=pending&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(tracking)}`);
+                return;
+            }
+
+            if(["pending","in_process"].includes(paymentStatus)){
+                setStatus("Mercado Pago está procesando la operación.","warning");
+                window.location.assign(`/?checkout=pending&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(tracking)}`);
+                return;
+            }
+
+            if(["rejected","cancelled"].includes(paymentStatus)){
+                const message=paymentStatus==="rejected"
+                    ? rejectedMessage(detail)
+                    : "El pago fue cancelado. Podés volver a intentarlo.";
+                setStatus(message,"error");
+                mostrarErrorCheckout(message);
+                return;
+            }
+
+            setStatus("Mercado Pago está verificando la operación.","warning");
+            window.location.assign(`/?checkout=pending&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(tracking)}`);
+        }finally{
+            button.disabled=false;
+            button.innerHTML=original;
+        }
+    };
+
+    const init=async()=>{
+        if(cardForm||initializing)return;
+        initializing=true;
+        window.__doradoCardFormReady=false;
+        setStatus("Preparando campos seguros de Mercado Pago…","loading");
+
+        try{
+            const config=await obtenerConfigPublica();
+            const publicKey=String(config?.mercadoPagoPublicKey||"").trim();
+            if(!config?.cardPaymentsEnabled||!publicKey){
+                setStatus("Falta configurar la Public Key de Mercado Pago.","error");
+                return;
+            }
+
+            const MercadoPagoCtor=await loadSdk();
+            const mp=new MercadoPagoCtor(publicKey,{locale:"es-AR"});
+            const amount=totalActual();
+            if(!(amount>0))throw new Error("El total del pedido no es válido.");
+
+            cardForm=mp.cardForm({
+                amount:String(amount),
+                iframe:true,
+                form:{
+                    id:"checkout-form",
+                    cardNumber:{id:"mp-card-number",placeholder:"Número de tarjeta"},
+                    expirationDate:{id:"mp-expiration-date",placeholder:"MM/AA"},
+                    securityCode:{id:"mp-security-code",placeholder:"CVV"},
+                    cardholderName:{id:"mp-cardholder-name",placeholder:"Nombre como figura en la tarjeta"},
+                    issuer:{id:"mp-issuer",placeholder:"Banco emisor"},
+                    installments:{id:"mp-installments",placeholder:"Cuotas"},
+                    identificationType:{id:"mp-identification-type",placeholder:"Tipo de documento"},
+                    identificationNumber:{id:"mp-identification-number",placeholder:"Número de documento"},
+                    cardholderEmail:{id:"checkout-email",placeholder:"Email"}
+                },
+                callbacks:{
+                    onFormMounted:error=>{
+                        if(error){
+                            console.error("Mercado Pago CardForm mount error");
+                            setStatus("No pudimos iniciar los campos seguros. Recargá la página e intentá nuevamente.","error");
+                            return;
+                        }
+                        window.__doradoCardFormReady=true;
+                        setStatus("Campos seguros listos para pagar.","ok");
+                    },
+                    onSubmit:async event=>{
+                        event.preventDefault();
+                        const payment=document.getElementById("checkout-payment-method");
+                        if(String(payment?.value||"")!=="tarjeta")return;
+                        try{
+                            await procesar(cardForm.getCardFormData());
+                        }catch(error){
+                            console.error("Card payment error:",error);
+                            const message=error?.message||"No pudimos procesar la tarjeta.";
+                            setStatus(message,"error");
+                            mostrarErrorCheckout(message);
+                        }
+                    },
+                    onFetching:()=>{
+                        setStatus("Consultando Mercado Pago…","loading");
+                        return ()=>{ if(window.__doradoCardFormReady)setStatus("Campos seguros listos para pagar.","ok"); };
+                    }
+                }
+            });
+        }catch(error){
+            console.error("Mercado Pago card initialization error:",error);
+            setStatus(error?.message||"No pudimos iniciar el pago con tarjeta.","error");
+        }finally{
+            initializing=false;
+        }
+    };
+
+    window.__doradoInitCardPayment=init;
+})();
+
 (function configurarEstadoNuevosPagos(){
   const run=async()=>{
-    const states=Array.from(document.querySelectorAll('[data-payment-status="mp"],[data-payment-status="card"]'));
-    if(!states.length)return;
+    const mpStates=Array.from(document.querySelectorAll('[data-payment-status="mp"]'));
+    const cardStates=Array.from(document.querySelectorAll('[data-payment-status="card"]'));
+    if(!mpStates.length&&!cardStates.length)return;
     try{
       const data=await obtenerConfigPublica();
-      const enabled=Boolean(data?.mercadoPagoEnabled);
-      states.forEach(el=>{el.textContent=enabled?"Disponible":"A activar";el.classList.toggle("ready",enabled);});
+      const mpEnabled=Boolean(data?.mercadoPagoEnabled);
+      const cardEnabled=Boolean(data?.cardPaymentsEnabled);
+      mpStates.forEach(el=>{el.textContent=mpEnabled?"Disponible":"A activar";el.classList.toggle("ready",mpEnabled);});
+      cardStates.forEach(el=>{el.textContent=cardEnabled?"Disponible":"A activar";el.classList.toggle("ready",cardEnabled);});
     }catch{
-      states.forEach(el=>{el.textContent="A activar";el.classList.remove("ready");});
+      [...mpStates,...cardStates].forEach(el=>{el.textContent="A activar";el.classList.remove("ready");});
     }
   };
   run();

@@ -122,7 +122,7 @@
 <link rel="stylesheet" href="assets/css/performance-v3.css?v=20260927v4"/>
 <link rel="stylesheet" href="assets/css/reviews-polish.css?v=20260927-googlecards2"/>
 <link rel="stylesheet" href="assets/css/motion-craft.css?v=20260927-adaptive3"/>
-<link rel="stylesheet" href="assets/css/storefront-polish-20260927.css?v=20260928-checkoutfinal1"/>
+<link rel="stylesheet" href="assets/css/storefront-polish-20260927.css?v=20260928-cardpay1"/>
 
 
 </head>
@@ -799,13 +799,42 @@
       <span class="card-brand card-brand-maestro"><img src="assets/images/payment/maestro.svg" alt="Maestro" loading="lazy" decoding="async"></span>
       <span class="card-brand card-brand-cabal"><img src="assets/images/payment/cabal.svg" alt="Cabal" loading="lazy" decoding="async"></span>
     </div>
-    <div class="secure-card-fields" aria-label="Campos de tarjeta preparados para integración segura">
-      <label><span>NÚMERO DE TARJETA</span><input autocomplete="cc-number" inputmode="numeric" placeholder="Se habilita con el procesador seguro" disabled></label>
-      <label><span>TITULAR</span><input autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" disabled></label>
-      <label><span>VENCIMIENTO</span><input autocomplete="cc-exp" inputmode="numeric" placeholder="MM/AA" disabled></label>
-      <label><span>CÓDIGO DE SEGURIDAD</span><input autocomplete="cc-csc" inputmode="numeric" placeholder="CVV" disabled></label>
+    <div class="mp-card-status" id="mp-card-status" aria-live="polite">Preparando campos seguros de Mercado Pago…</div>
+    <div class="secure-card-fields mp-card-form" id="mp-card-form" aria-label="Pago seguro con tarjeta">
+      <label class="mp-card-field-full">
+        <span>NÚMERO DE TARJETA</span>
+        <div class="mp-secure-field" id="mp-card-number" aria-label="Número de tarjeta"></div>
+      </label>
+      <label>
+        <span>TITULAR</span>
+        <input id="mp-cardholder-name" autocomplete="cc-name" maxlength="80" placeholder="Nombre como figura en la tarjeta" type="text">
+      </label>
+      <label>
+        <span>VENCIMIENTO</span>
+        <div class="mp-secure-field" id="mp-expiration-date" aria-label="Vencimiento"></div>
+      </label>
+      <label>
+        <span>CÓDIGO DE SEGURIDAD</span>
+        <div class="mp-secure-field" id="mp-security-code" aria-label="Código de seguridad"></div>
+      </label>
+      <label>
+        <span>TIPO DE DOCUMENTO</span>
+        <select id="mp-identification-type" aria-label="Tipo de documento"></select>
+      </label>
+      <label>
+        <span>NÚMERO DE DOCUMENTO</span>
+        <input id="mp-identification-number" inputmode="numeric" maxlength="20" placeholder="DNI" type="text">
+      </label>
+      <label>
+        <span>BANCO EMISOR</span>
+        <select id="mp-issuer" aria-label="Banco emisor"></select>
+      </label>
+      <label>
+        <span>CUOTAS</span>
+        <select id="mp-installments" aria-label="Cuotas"></select>
+      </label>
     </div>
-    <p class="payment-detail-note"><svg class="ui-icon"><use href="#i-lock"></use></svg> Estos campos se habilitan con la integración segura de Mercado Pago; Dorado no debe guardar número, vencimiento ni CVV.</p>
+    <p class="payment-detail-note"><svg class="ui-icon"><use href="#i-lock"></use></svg> Número, vencimiento y CVV se tokenizan mediante Mercado Pago y nunca se guardan en Dorado.</p>
   </section>
 </div>
 
@@ -1003,7 +1032,7 @@
     </div>
 </div>
 
-<script src="assets/js/site.js?v=20260927-categories3"></script>
+<script src="assets/js/site.js?v=20260928-cardpay1"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->

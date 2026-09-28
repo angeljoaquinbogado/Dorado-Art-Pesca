@@ -14,6 +14,7 @@ const MAX_ITEMS = 40;
 const MAX_QTY = 99;
 const DELIVERY_METHODS = new Set(["retiro", "local", "nacional", "coordinar"]);
 const ONLINE_PAYMENT_METHODS = new Set(["mercadopago", "tarjeta"]);
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function clean(value, max = 200) {
     return String(value ?? "").trim().slice(0, max);
@@ -315,6 +316,171 @@ export default async function handler(req, res) {
         const origin = publicSiteOrigin(req);
         const paymentStartsAt = new Date();
         const paymentExpiresAt = new Date(paymentStartsAt.getTime() + 24 * 60 * 60 * 1000);
+
+        /*
+         * Tarjeta directa:
+         * el navegador tokeniza PAN/CVV con Mercado Pago. Este endpoint nunca recibe
+         * número de tarjeta, vencimiento ni CVV; sólo recibe el token resultante.
+         */
+        if (paymentMethod === "tarjeta") {
+            const card = body.card_payment && typeof body.card_payment === "object"
+                ? body.card_payment
+                : {};
+
+            const cardToken = clean(card.token, 320);
+            const paymentMethodId = clean(card.payment_method_id, 50).toLowerCase();
+            const issuerIdRaw = clean(card.issuer_id, 30);
+            const installments = Math.max(1, Math.min(24, Math.floor(Number(card.installments) || 1)));
+            const identificationType = clean(card.identification_type, 20).toUpperCase();
+            const identificationNumber = clean(card.identification_number, 40).replace(/[^0-9A-Za-z]/g, "");
+            const paymentAttemptId = clean(body.payment_attempt_id, 80);
+
+            if (
+                cardToken.length < 10 ||
+                !/^[a-z0-9_-]{2,50}$/i.test(paymentMethodId) ||
+                !identificationType ||
+                identificationNumber.length < 5 ||
+                !UUID_RE.test(paymentAttemptId)
+            ) {
+                await supabaseFetch(`/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({ estado: "error_pago" })
+                }).catch(() => null);
+
+                return res.status(400).json({
+                    error: "Revisá los datos de la tarjeta antes de continuar."
+                });
+            }
+
+            const paymentPayload = {
+                transaction_amount: total,
+                token: cardToken,
+                description: `Pedido DORADO · ${String(orderId).replaceAll("-", "").slice(0, 10).toUpperCase()}`,
+                installments,
+                payment_method_id: paymentMethodId,
+                payer: {
+                    email: cliente.email,
+                    identification: {
+                        type: identificationType,
+                        number: identificationNumber
+                    }
+                },
+                external_reference: String(orderId),
+                notification_url: `${origin}/api/mercadopago-webhook`,
+                statement_descriptor: "DORADO PESCA",
+                metadata: {
+                    pedido_id: String(orderId)
+                }
+            };
+
+            if (/^\d{1,20}$/.test(issuerIdRaw)) {
+                paymentPayload.issuer_id = issuerIdRaw;
+            }
+
+            const directPaymentResponse = await fetchWithTimeout(
+                "https://api.mercadopago.com/v1/payments",
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${mpToken}`,
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                        "X-Idempotency-Key": paymentAttemptId
+                    },
+                    body: JSON.stringify(paymentPayload)
+                },
+                12000
+            );
+
+            const directPayment = await directPaymentResponse.json().catch(() => ({}));
+
+            if (!directPaymentResponse.ok || !directPayment?.id) {
+                console.error("Mercado Pago direct card payment error", {
+                    status: directPaymentResponse.status,
+                    error: String(directPayment?.error || "").slice(0, 120),
+                    message: String(directPayment?.message || "").slice(0, 180)
+                });
+
+                await supabaseFetch(`/rest/v1/pedidos?id=eq.${encodeURIComponent(orderId)}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({ estado: "error_pago" })
+                }).catch(() => null);
+
+                return res.status(502).json({
+                    error: "Mercado Pago no pudo procesar la tarjeta. Revisá los datos o probá otra tarjeta."
+                });
+            }
+
+            const paymentStatus = clean(directPayment.status, 40).toLowerCase();
+            const paymentStatusDetail = clean(directPayment.status_detail, 100).toLowerCase();
+            const paymentId = String(directPayment.id);
+
+            if (paymentStatus === "approved") {
+                const confirmResponse = await supabaseFetch("/rest/v1/rpc/confirmar_pago_pedido", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        p_pedido_id: orderId,
+                        p_payment_id: paymentId
+                    })
+                });
+                const confirmResult = await confirmResponse.json().catch(() => null);
+
+                if (!confirmResponse.ok) {
+                    console.error("Direct card payment approved but order confirmation failed", {
+                        orderId,
+                        status: confirmResponse.status
+                    });
+                    return res.status(500).json({
+                        error: "El pago fue aprobado pero el pedido necesita revisión. No vuelvas a pagar y contactá a Dorado."
+                    });
+                }
+
+                const finalStatus = confirmResult?.ok ? "approved" : "review";
+
+                return res.status(200).json({
+                    order_id: orderId,
+                    order_code: `DP-${String(orderId).replaceAll("-", "").slice(0, 10).toUpperCase()}`,
+                    tracking_token: trackingToken,
+                    tracking_url: `${origin}/pedido.html?id=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
+                    payment_status: finalStatus,
+                    payment_status_detail: finalStatus === "review" ? "stock_review" : paymentStatusDetail
+                });
+            }
+
+            const mappedState = ["pending", "in_process"].includes(paymentStatus)
+                ? "pago_pendiente"
+                : paymentStatus === "rejected"
+                    ? "pago_rechazado"
+                    : paymentStatus === "cancelled"
+                        ? "pago_cancelado"
+                        : "pago_pendiente";
+
+            const stateResponse = await supabaseFetch("/rest/v1/rpc/registrar_estado_pago", {
+                method: "POST",
+                body: JSON.stringify({
+                    p_pedido_id: orderId,
+                    p_payment_id: paymentId,
+                    p_estado: mappedState
+                })
+            });
+
+            if (!stateResponse.ok) {
+                console.error("Direct card payment state update failed", {
+                    orderId,
+                    paymentStatus,
+                    status: stateResponse.status
+                });
+            }
+
+            return res.status(200).json({
+                order_id: orderId,
+                order_code: `DP-${String(orderId).replaceAll("-", "").slice(0, 10).toUpperCase()}`,
+                tracking_token: trackingToken,
+                tracking_url: `${origin}/pedido.html?id=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
+                payment_status: paymentStatus || "pending",
+                payment_status_detail: paymentStatusDetail
+            });
+        }
 
         const preference = {
             items: coupon
