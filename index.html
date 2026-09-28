@@ -125,6 +125,7 @@
 <link rel="stylesheet" href="assets/css/storefront-polish-20260927.css?v=20260928-cardpay3"/>
 <link rel="stylesheet" href="assets/css/catalog-organization-20260928.css?v=20260928j"/>
 <link rel="stylesheet" href="assets/css/footer-social-20260928.css?v=20260928b"/>
+<link rel="stylesheet" href="assets/css/mobile-menu-20260928.css?v=20260928a"/>
 
 
 </head>
@@ -197,7 +198,7 @@
 <img alt="Dorado Artículos de Pesca" class="nav-logo" decoding="async" fetchpriority="high" src="assets/images/brand/logo-dorado-640.webp"/>
 </a>
 <div class="nav-actions">
-<button aria-controls="primary-navigation" aria-expanded="false" aria-label="Abrir menú" class="menu-toggle" id="menu-toggle" type="button"><span></span><span></span></button>
+<button aria-controls="mobile-menu-drawer" aria-expanded="false" aria-label="Abrir menú" class="menu-toggle" id="menu-toggle" type="button"><span></span><span></span><span></span></button>
 <a class="nav-cta" href="https://wa.me/5491168070039" rel="noopener" target="_blank">
 <svg class="ui-icon"><use href="#i-whatsapp"></use></svg>
 <span>WhatsApp</span>
@@ -213,6 +214,59 @@
 </button>
 </div>
 </header>
+
+<div class="mobile-menu-overlay" id="mobile-menu-overlay" aria-hidden="true"></div>
+<aside class="mobile-menu-drawer" id="mobile-menu-drawer" aria-hidden="true" aria-label="Menú de navegación">
+  <div class="mobile-menu-head">
+    <a class="mobile-menu-brand" href="#inicio" aria-label="Dorado Artículos de Pesca — Inicio">
+      <img src="assets/images/brand/logo-dorado-640.webp" alt="Dorado Artículos de Pesca" decoding="async">
+    </a>
+    <button class="mobile-menu-close" id="mobile-menu-close" type="button" aria-label="Cerrar menú">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-close"></use></svg>
+    </button>
+  </div>
+
+  <form class="mobile-menu-search" id="mobile-menu-search-form" role="search">
+    <input id="mobile-menu-search-input" type="search" autocomplete="off" placeholder="Buscar en productos" aria-label="Buscar en productos">
+    <button type="submit" aria-label="Buscar">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-search"></use></svg>
+    </button>
+  </form>
+
+  <div class="mobile-menu-section">
+    <span class="mobile-menu-kicker">CATEGORÍAS</span>
+    <div class="mobile-menu-categories" id="mobile-menu-categories">
+      <span class="mobile-menu-loading">Cargando categorías…</span>
+    </div>
+  </div>
+
+  <div class="mobile-menu-section mobile-menu-navigation">
+    <span class="mobile-menu-kicker">NAVEGACIÓN</span>
+    <a href="#inicio">Inicio</a>
+    <a href="#nosotros">La tienda</a>
+    <a href="#marcas">Marcas</a>
+    <a href="#productos">Catálogo</a>
+    <a href="#contacto">Contacto</a>
+    <a href="#informacion">Información</a>
+  </div>
+
+  <div class="mobile-menu-actions">
+    <button type="button" id="mobile-menu-orders">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-package"></use></svg>
+      <span>Mis pedidos</span>
+    </button>
+    <button type="button" id="mobile-menu-cart">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-cart"></use></svg>
+      <span>Carrito</span>
+      <b id="mobile-menu-cart-count">0</b>
+    </button>
+    <a href="https://wa.me/5491168070039" target="_blank" rel="noopener">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-whatsapp"></use></svg>
+      <span>WhatsApp</span>
+    </a>
+  </div>
+</aside>
+
 <!-- =========================
      HERO
 ========================= -->
@@ -1086,7 +1140,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20260928-catalogorg8"></script>
+<script src="assets/js/site.js?v=20260928-mobilemenu1"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
