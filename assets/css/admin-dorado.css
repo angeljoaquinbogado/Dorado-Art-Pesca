@@ -46,3 +46,258 @@
   .stat{min-height:104px !important;}
   .field input,.field textarea,.field select{font-size:16px !important;}
 }
+
+
+/* =========================================================
+   DORADO — LIQUIDACIÓN REAL DE MERCADO PAGO
+   ========================================================= */
+.order-mp-settlement{
+    margin:18px 0;
+    padding:18px;
+    border:1px solid rgba(0,158,227,.20);
+    border-radius:18px;
+    background:
+        radial-gradient(circle at 100% 0%,rgba(0,158,227,.10),transparent 34%),
+        linear-gradient(145deg,rgba(18,33,43,.98),rgba(13,26,35,.98));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.order-mp-settlement-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:16px;
+}
+
+.order-mp-settlement-brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.order-mp-logo{
+    width:76px;
+    height:48px;
+    flex:0 0 76px;
+    display:grid;
+    place-items:center;
+    padding:7px 9px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:13px;
+    background:#fff;
+    box-shadow:0 8px 22px rgba(0,0,0,.16);
+}
+
+.order-mp-logo img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.order-mp-settlement-brand>div{
+    min-width:0;
+}
+
+.order-mp-settlement-brand span{
+    display:block;
+    margin-bottom:3px;
+    color:#56c7f0;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.12em;
+}
+
+.order-mp-settlement-brand h3{
+    margin:0;
+    color:#f4f7f8;
+    font-size:16px;
+    line-height:1.25;
+}
+
+.order-mp-state{
+    flex:0 0 auto;
+    padding:7px 10px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:999px;
+    background:rgba(255,255,255,.05);
+    color:#b9c6cc;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.08em;
+}
+
+.order-mp-state.is-approved{
+    color:#7ee2a5;
+    border-color:rgba(70,194,119,.28);
+    background:rgba(70,194,119,.10);
+}
+
+.order-mp-state.is-pending,
+.order-mp-state.is-in_process{
+    color:#f3c76b;
+    border-color:rgba(229,174,64,.28);
+    background:rgba(229,174,64,.10);
+}
+
+.order-mp-state.is-rejected,
+.order-mp-state.is-cancelled,
+.order-mp-state.is-error,
+.order-mp-state.is-charged_back{
+    color:#ff9a92;
+    border-color:rgba(237,101,91,.28);
+    background:rgba(237,101,91,.10);
+}
+
+.order-mp-summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+}
+
+.order-mp-summary-grid>div{
+    min-width:0;
+    padding:13px 14px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    background:rgba(255,255,255,.035);
+}
+
+.order-mp-summary-grid span{
+    display:block;
+    margin-bottom:6px;
+    color:#8fa0a8;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.08em;
+}
+
+.order-mp-summary-grid strong{
+    display:block;
+    color:#eef3f5;
+    font-size:15px;
+    line-height:1.25;
+    overflow-wrap:anywhere;
+}
+
+.order-mp-summary-grid .order-mp-deduction{
+    color:#ffb58f;
+}
+
+.order-mp-summary-grid .order-mp-net{
+    border-color:rgba(70,194,119,.18);
+    background:rgba(70,194,119,.06);
+}
+
+.order-mp-summary-grid .order-mp-net strong{
+    color:#82e1a6;
+}
+
+.order-mp-breakdown{
+    margin-top:12px;
+    padding:13px 14px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:14px;
+    background:rgba(4,12,17,.20);
+}
+
+.order-mp-breakdown-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding-bottom:9px;
+    margin-bottom:4px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+.order-mp-breakdown-title span,
+.order-mp-breakdown-title small{
+    color:#8fa0a8;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.07em;
+}
+
+.order-mp-breakdown-title small{
+    color:#6f818a;
+    font-weight:700;
+    letter-spacing:0;
+}
+
+.order-mp-breakdown-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    min-height:36px;
+    border-bottom:1px solid rgba(255,255,255,.045);
+}
+
+.order-mp-breakdown-row:last-child{
+    border-bottom:0;
+}
+
+.order-mp-breakdown-row span{
+    color:#bcc8cd;
+    font-size:12px;
+}
+
+.order-mp-breakdown-row strong{
+    color:#f2c2aa;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+.order-mp-breakdown-empty,
+.order-mp-loading,
+.order-mp-error{
+    padding:12px 0 4px;
+    color:#91a1a9;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.order-mp-error{
+    color:#ff9a92;
+}
+
+.order-mp-note{
+    margin:11px 2px 0;
+    color:#788991;
+    font-size:10px;
+    line-height:1.55;
+}
+
+@media(max-width:700px){
+    .order-mp-settlement{
+        padding:15px;
+        border-radius:16px;
+    }
+
+    .order-mp-settlement-head{
+        align-items:flex-start;
+    }
+
+    .order-mp-logo{
+        width:68px;
+        height:44px;
+        flex-basis:68px;
+    }
+
+    .order-mp-settlement-brand h3{
+        font-size:14px;
+    }
+
+    .order-mp-summary-grid{
+        grid-template-columns:1fr;
+    }
+
+    .order-mp-breakdown-title{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:3px;
+    }
+}
