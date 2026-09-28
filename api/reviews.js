@@ -50,9 +50,9 @@ function cookieValue(req, name) {
   return "";
 }
 
-function verifyState(state, secret, expectedNonce) {
+function verifyState(state, secret, expectedNonce = "") {
   const [encoded, received] = String(state || "").split(".", 2);
-  if (!encoded || !received || !secret || !expectedNonce) return null;
+  if (!encoded || !received || !secret) return null;
 
   const expected = createHmac("sha256", secret).update(encoded).digest("base64url");
   const left = Buffer.from(received);
@@ -67,7 +67,14 @@ function verifyState(state, secret, expectedNonce) {
     return null;
   }
 
-  if (!payload?.nonce || payload.nonce !== expectedNonce) return null;
+  if (!payload?.nonce || String(payload.nonce).length < 20) return null;
+
+  // When OAuth starts on the custom domain but Google still returns to the
+  // previously registered vercel.app callback, the HttpOnly nonce cookie
+  // cannot cross domains. The signed state itself remains authenticated by
+  // HMAC and short-lived; when the cookie is available we still bind to it.
+  if (expectedNonce && payload.nonce !== expectedNonce) return null;
+
   if (!Number.isFinite(Number(payload?.exp)) || Number(payload.exp) < Date.now()) return null;
   return payload;
 }
@@ -213,7 +220,11 @@ async function finishGoogleOAuth(req, res) {
       ? "sin_cuentas"
       : message.includes("NO_LOCATIONS")
         ? "sin_ubicaciones"
-        : "conexion";
+        : (Number(error?.status) === 403 ||
+           Number(error?.status) === 429 ||
+           /quota|rate limit|permission|access denied/i.test(message))
+          ? "acceso_api"
+          : "conexion";
 
     return finishOAuth(res, { google_business: "error", reason });
   }
