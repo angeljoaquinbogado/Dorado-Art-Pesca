@@ -159,8 +159,8 @@
     background-position:var(--brand-pos,0%) center;
 }
 .brand-sprite-logo{
-    width:148px;
-    height:50px;
+    width:134px;
+    height:55px;
 }
 .brand-marquee-meta{
     width:100%;
@@ -220,7 +220,7 @@
 }
 .catalog-brand-context[hidden]{display:none!important}
 .catalog-brand-logo{
-    width:190px;
+    width:166px;
     height:68px;
 }
 .catalog-brand-copy{
@@ -472,9 +472,9 @@
     .brand-showcase-shell{width:min(100% - 28px,760px)}
     .brand-showcase-head{align-items:flex-start;flex-direction:column;gap:10px}
     .brand-marquee-card{flex-basis:164px;width:164px;min-height:84px;grid-template-rows:49px auto}
-    .brand-sprite-logo{width:140px;height:49px}
+    .brand-sprite-logo{width:120px;height:49px}
     .catalog-brand-context{grid-template-columns:150px minmax(0,1fr);gap:12px}
-    .catalog-brand-logo{width:150px;height:58px}
+    .catalog-brand-logo{width:142px;height:58px}
     .catalog-brand-clear{grid-column:1/-1;width:100%}
 }
 @media (max-width:560px){
@@ -483,12 +483,12 @@
     .brand-showcase .section-desc{font-size:12px;line-height:1.5}
     .brand-marquee-set{gap:7px;padding-block:8px}
     .brand-marquee-card{flex-basis:142px;width:142px;min-height:76px;padding:8px;grid-template-rows:44px auto}
-    .brand-sprite-logo{width:122px;height:44px}
+    .brand-sprite-logo{width:108px;height:44px}
     .brand-marquee-meta strong{font-size:8px}
     .brand-marquee-meta small{display:none}
     .brand-marquee-hint{font-size:7px;line-height:1.35}
     .catalog-brand-context{grid-template-columns:112px minmax(0,1fr);padding:11px 12px}
-    .catalog-brand-logo{width:112px;height:48px}
+    .catalog-brand-logo{width:117px;height:48px}
     .catalog-brand-copy strong{font-size:16px}
 }
 
