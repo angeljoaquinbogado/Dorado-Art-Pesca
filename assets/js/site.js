@@ -2182,6 +2182,7 @@ function actualizarContextoMarca(counts=null){
 
     context.hidden=false;
     logo.style.setProperty("--brand-pos",spritePosition(brand.sprite));
+    logo.dataset.brand=brand.key;
     name.textContent=brand.name;
     count.textContent=total===1?"1 producto disponible":`${total} productos disponibles`;
 }
