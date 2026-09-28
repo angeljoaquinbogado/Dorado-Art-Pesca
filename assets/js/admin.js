@@ -1011,7 +1011,7 @@ function renderProducts(){
 
     const productRows=document.createDocumentFragment();
 
-    visibleProducts.forEach(p=>
+    visibleProducts.forEach(p=>{
         const tr=document.createElement("tr");
         const stock=Math.max(0,Number(p.stock)||0);
         const stockClass=stock===0?"stock-out":stock<=3?"stock-low":"stock-ok";
