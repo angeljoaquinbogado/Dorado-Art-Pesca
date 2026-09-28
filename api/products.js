@@ -30,8 +30,8 @@ export default async function handler(req, res) {
             const from = page * pageSize;
             const to = from + pageSize - 1;
             const select = includeDiscount
-                ? "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo"
-                : "id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo";
+                ? "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,activo"
+                : "id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo";
 
             let response = await fetchWithTimeout(
                 `${url}/rest/v1/productos?select=${select}&activo=eq.true&order=id.asc`,
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
             if (!response.ok && includeDiscount && page === 0) {
                 includeDiscount = false;
                 response = await fetchWithTimeout(
-                    `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&activo=eq.true&order=id.asc`,
+                    `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo&activo=eq.true&order=id.asc`,
                     {
                         headers: {
                             apikey: key,
@@ -90,6 +90,7 @@ export default async function handler(req, res) {
                 ? p.imagenes.map(x => String(x || "").trim()).filter(Boolean)
                 : [],
             categoria: String(p.categoria || ""),
+            marca: String(p.marca || ""),
             stock: Math.max(0, Number(p.stock) || 0),
             activo: Boolean(p.activo)
         }));
