@@ -298,3 +298,149 @@ html.admin-dark .file-help,
 body.admin-dark .file-help{
   color:#8f9aa1!important;
 }
+
+
+/* =========================================================
+   ADMIN BALANCE PASS — pesos, empty states y mobile
+   ========================================================= */
+body{
+  font-weight:500!important;
+}
+
+p,
+span,
+small,
+td,
+input,
+textarea,
+select{
+  font-weight:500;
+}
+
+.hero-head h1,
+.hero-head .admin-page-title,
+.card-head h2,
+.catalog-title-row h2,
+.orders-toolbar h2,
+.login-card h2{
+  font-weight:650!important;
+}
+
+.field label,
+.form-section-title,
+.stat-label,
+th,
+.section-tag,
+.head-kicker,
+.side-label{
+  font-weight:700!important;
+}
+
+.primary,
+.secondary,
+.danger,
+.icon-btn,
+.tab,
+.store-link,
+.admin-select-trigger,
+.admin-select-option{
+  font-weight:650!important;
+}
+
+.product-name-cell,
+.price-cell,
+.user-meta strong{
+  font-weight:650!important;
+}
+
+.badge,
+.stock-pill{
+  font-weight:700!important;
+}
+
+/* Evita sensación de texto "pesado" por exceso de tracking. */
+.primary,
+.secondary,
+.danger,
+.tab,
+.icon-btn,
+.field label,
+.form-section-title,
+th,
+.stat-label{
+  letter-spacing:.02em!important;
+}
+
+/* Empty state de pedidos/productos: nunca comprimido en la primera columna. */
+.product-table-wrap td[colspan],
+.orders-table-wrap td[colspan],
+.product-table-wrap td.loading,
+.orders-table-wrap td.loading,
+.product-table-wrap td.empty-state,
+.orders-table-wrap td.empty-state{
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  display:block!important;
+  padding:28px 18px!important;
+  text-align:center!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  line-height:1.5!important;
+}
+
+.product-table-wrap tr:has(td[colspan]),
+.orders-table-wrap tr:has(td[colspan]){
+  display:block!important;
+  width:100%!important;
+  grid-template-columns:none!important;
+}
+
+/* Catálogo mobile: evita que alerta y contador se peguen. */
+@media(max-width:700px){
+  #products-panel .catalog-title-actions{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:start!important;
+    gap:10px!important;
+  }
+
+  #products-panel .catalog-status-row{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:4px!important;
+    min-width:0!important;
+  }
+
+  #products-panel .stock-alert-chip{
+    max-width:100%!important;
+    white-space:normal!important;
+    font-size:9px!important;
+    line-height:1.35!important;
+    font-weight:650!important;
+  }
+
+  #products-panel .catalog-count{
+    display:block!important;
+    font-size:9px!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+  }
+
+  #products-panel .catalog-new-product{
+    align-self:start!important;
+  }
+
+  .orders-table-wrap td[colspan],
+  .product-table-wrap td[colspan]{
+    min-height:92px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+}
