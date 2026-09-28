@@ -123,7 +123,7 @@
 <link rel="stylesheet" href="assets/css/reviews-polish.css?v=20260927-googlecards2"/>
 <link rel="stylesheet" href="assets/css/motion-craft.css?v=20260927-adaptive3"/>
 <link rel="stylesheet" href="assets/css/storefront-polish-20260927.css?v=20260928-cardpay3"/>
-<link rel="stylesheet" href="assets/css/catalog-organization-20260928.css?v=20260928c"/>
+<link rel="stylesheet" href="assets/css/catalog-organization-20260928.css?v=20260928d"/>
 
 
 </head>
@@ -187,8 +187,8 @@
 <nav aria-label="Navegación principal" class="navlinks" id="primary-navigation">
 <a class="active" href="#inicio">Inicio</a>
 <a href="#nosotros">La tienda</a>
-<a href="#productos">Equipamiento</a>
 <a href="#marcas">Marcas</a>
+<a href="#productos">Equipamiento</a>
 <a href="#contacto">Contacto</a>
 <a href="#informacion">Información</a>
 </nav>
@@ -284,35 +284,14 @@
     </div>
   </div>
 </section>
-<section class="section brand-showcase reveal" id="marcas">
-  <div class="brand-showcase-shell">
-    <div class="brand-showcase-head">
-      <div>
-        <div class="kicker">MARCAS DORADO</div>
-        <h2 class="section-title">Nuestras <span>marcas.</span></h2>
-        <p class="section-desc">Elegí una marca y te mostramos solamente sus productos. La cinta se mueve de derecha a izquierda como las reseñas y podés tocar cualquier logo.</p>
-      </div>
-      <a class="brand-showcase-link" href="#productos" id="brand-show-all">VER TODO EL CATÁLOGO <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
-    </div>
-    <div class="brand-marquee-shell" aria-label="Marcas disponibles">
-      <div class="brand-marquee-track" id="brand-marquee-track"></div>
-    </div>
-    <div class="brand-marquee-hint"><span></span> TOCÁ UNA MARCA PARA VER TODOS SUS PRODUCTOS</div>
-  </div>
-</section>
 <section class="section catalog-section reveal dorado-catalog" id="productos">
 <div class="catalog-shell-dark">
 <div class="catalog-heading-row">
 <div class="section-head-copy catalog-copy">
-<div class="section-index"><span>03</span><i></i><b>EQUIPAMIENTO</b></div>
-<div class="kicker">CATÁLOGO DORADO</div>
-<h2 class="section-title">Todo tu equipo, <span>en un solo lugar.</span></h2>
-<p class="section-desc">Explorá cañas, reels, líneas, señuelos y accesorios. Filtrá por categoría, revisá el stock y elegí con calma lo que realmente necesitás.</p>
-<div class="catalog-promises" aria-label="Ventajas del catálogo">
-<span><svg class="ui-icon"><use href="#i-check"></use></svg> Stock visible</span>
-<span><svg class="ui-icon"><use href="#i-grid"></use></svg> Categorías claras</span>
-<span><svg class="ui-icon"><use href="#i-headset"></use></svg> Asesoramiento real</span>
-</div>
+<div class="section-index"><span>03</span><i></i><b>CATÁLOGO</b></div>
+<div class="kicker">MARCA · CATEGORÍA · PRODUCTO</div>
+<h2 class="section-title">Encontrá lo que necesitás <span>sin dar vueltas.</span></h2>
+<p class="section-desc">Elegí una marca, filtrá por categoría y después revisá los productos disponibles.</p>
 </div>
 <div class="catalog-tools">
 <div class="catalog-search-wrap">
@@ -327,6 +306,18 @@
 <div aria-live="polite" class="catalog-count" id="product-result-count">Cargando catálogo…</div>
 </div>
 </div>
+
+<div class="catalog-step catalog-step-brands" id="marcas">
+  <div class="catalog-step-head">
+    <div class="catalog-step-label"><span>01</span><strong>MARCAS</strong></div>
+    <a class="brand-showcase-link" href="#productos" id="brand-show-all">VER TODAS <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
+  </div>
+  <div class="brand-marquee-shell" aria-label="Marcas disponibles">
+    <div class="brand-marquee-track" id="brand-marquee-track"></div>
+  </div>
+  <div class="brand-marquee-hint"><span></span> ELEGÍ UNA MARCA PARA FILTRAR EL CATÁLOGO</div>
+</div>
+
 <div class="catalog-brand-context" id="catalog-brand-context" hidden>
   <div class="catalog-brand-logo" id="catalog-brand-logo" aria-hidden="true"></div>
   <div class="catalog-brand-copy">
@@ -336,7 +327,15 @@
   </div>
   <button class="catalog-brand-clear" id="catalog-brand-clear" type="button">VER TODAS LAS MARCAS</button>
 </div>
+
+<div class="catalog-step-head catalog-category-head">
+  <div class="catalog-step-label"><span>02</span><strong>CATEGORÍAS</strong></div>
+</div>
 <div class="category-chips" id="categorias" aria-label="Filtrar por categoría"></div>
+
+<div class="catalog-step-head catalog-products-head">
+  <div class="catalog-step-label"><span>03</span><strong>PRODUCTOS</strong></div>
+</div>
 <div class="products" id="products-grid">
 <div class="products-loading">
 <span class="catalog-loader-dot" aria-hidden="true"></span>
@@ -1065,7 +1064,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20260928-catalogorg3"></script>
+<script src="assets/js/site.js?v=20260928-catalogorg4"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
