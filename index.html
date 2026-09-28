@@ -123,6 +123,7 @@
 <link rel="stylesheet" href="assets/css/reviews-polish.css?v=20260927-googlecards2"/>
 <link rel="stylesheet" href="assets/css/motion-craft.css?v=20260927-adaptive3"/>
 <link rel="stylesheet" href="assets/css/storefront-polish-20260927.css?v=20260928-cardpay3"/>
+<link rel="stylesheet" href="assets/css/catalog-organization-20260928.css?v=20260928a"/>
 
 
 </head>
@@ -187,7 +188,7 @@
 <a class="active" href="#inicio">Inicio</a>
 <a href="#nosotros">La tienda</a>
 <a href="#productos">Equipamiento</a>
-<a href="#categorias">Categorías</a>
+<a href="#marcas">Marcas</a>
 <a href="#contacto">Contacto</a>
 <a href="#informacion">Información</a>
 </nav>
@@ -283,6 +284,21 @@
     </div>
   </div>
 </section>
+<section class="section brand-showcase reveal" id="marcas">
+  <div class="brand-showcase-shell">
+    <div class="brand-showcase-head">
+      <div>
+        <div class="kicker">COMPRÁ POR MARCA</div>
+        <h2 class="section-title">Encontrá rápido <span>la marca que buscás.</span></h2>
+        <p class="section-desc">Las marcas aparecen automáticamente según los productos que cargás en el panel. Elegí una para ver solamente su catálogo.</p>
+      </div>
+      <a class="brand-showcase-link" href="#productos">VER TODO EL CATÁLOGO <svg class="ui-icon"><use href="#i-arrow"></use></svg></a>
+    </div>
+    <div class="brand-grid" id="brand-grid" aria-label="Marcas disponibles">
+      <div class="brand-grid-loading">Las marcas van a aparecer cuando tengan productos cargados.</div>
+    </div>
+  </div>
+</section>
 <section class="section catalog-section reveal dorado-catalog" id="productos">
 <div class="catalog-shell-dark">
 <div class="catalog-heading-row">
@@ -316,6 +332,12 @@
 <span class="catalog-loader-dot" aria-hidden="true"></span>
 <span>Cargando productos…</span>
 </div>
+</div>
+<div class="catalog-more-wrap" id="catalog-more-wrap" hidden>
+  <button class="catalog-more-button" id="catalog-more-button" type="button" aria-expanded="false">
+    <span>VER TODOS LOS PRODUCTOS</span>
+    <svg class="ui-icon"><use href="#i-chevron"></use></svg>
+  </button>
 </div>
 </div>
 </section>
@@ -525,7 +547,7 @@
 <a href="#inicio">Inicio</a>
 <a href="#nosotros">La tienda</a>
 <a href="#productos">Equipamiento</a>
-<a href="#categorias">Categorías</a>
+<a href="#marcas">Marcas</a>
 <a href="#contacto">Contacto</a>
 <a href="#informacion">Información</a>
 </div>
@@ -1033,7 +1055,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20260928-cardpay3"></script>
+<script src="assets/js/site.js?v=20260928-catalogorg1"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
