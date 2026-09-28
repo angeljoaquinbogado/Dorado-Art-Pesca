@@ -769,32 +769,129 @@ const DORADO_KNOWN_BRANDS=[
     "Surfish"
 ];
 
-function renderProductOrganizationFilters(){
-    const categorySelect=document.getElementById("product-category-filter");
-    const brandSelect=document.getElementById("product-brand-filter");
-    const brandList=document.getElementById("product-brand-list");
-    const brandTabs=document.getElementById("admin-brand-tabs");
+const NEW_TAXONOMY_OPTION="__new__";
 
-    const categoriesMap=new Map();
-    const brandsMap=new Map();
+function collectProductCategoryNames(){
+    const map=new Map();
 
-    DORADO_KNOWN_BRANDS.forEach(brand=>{
-        const normalized=normalizeBrandName(brand);
-        brandsMap.set(normalized.toLocaleLowerCase("es"),normalized);
+    categorias.forEach(item=>{
+        const name=normalizeCategoryName(item?.nombre);
+        const key=name.toLocaleLowerCase("es");
+        if(name&&!map.has(key))map.set(key,name);
     });
 
     productos.forEach(product=>{
-        const category=normalizeCategoryName(product.categoria);
-        const categoryKey=category.toLocaleLowerCase("es");
-        if(category&&!categoriesMap.has(categoryKey))categoriesMap.set(categoryKey,category);
-
-        const brand=normalizeBrandName(product.marca);
-        const brandKey=brand.toLocaleLowerCase("es");
-        if(brand&&!brandsMap.has(brandKey))brandsMap.set(brandKey,brand);
+        const name=normalizeCategoryName(product?.categoria);
+        const key=name.toLocaleLowerCase("es");
+        if(name&&!map.has(key))map.set(key,name);
     });
 
-    const categoryNames=[...categoriesMap.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
-    const brandNames=[...brandsMap.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
+    return [...map.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
+}
+
+function collectProductBrandNames(){
+    const map=new Map();
+
+    DORADO_KNOWN_BRANDS.forEach(item=>{
+        const name=normalizeBrandName(item);
+        const key=name.toLocaleLowerCase("es");
+        if(name&&!map.has(key))map.set(key,name);
+    });
+
+    productos.forEach(product=>{
+        const name=normalizeBrandName(product?.marca);
+        const key=name.toLocaleLowerCase("es");
+        if(name&&!map.has(key))map.set(key,name);
+    });
+
+    return [...map.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
+}
+
+function setTaxonomySelectOptions(select,names,currentValue,placeholder,createLabel){
+    if(!select)return;
+
+    const current=String(currentValue||"").trim();
+    const currentKey=current.toLocaleLowerCase("es");
+    const previous=String(select.value||"");
+    const match=names.find(name=>name.toLocaleLowerCase("es")===currentKey);
+
+    select.innerHTML=[
+        `<option value="">${esc(placeholder)}</option>`,
+        ...names.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`),
+        `<option value="${NEW_TAXONOMY_OPTION}">＋ ${esc(createLabel)}</option>`
+    ].join("");
+
+    if(match){
+        select.value=match;
+    }else if(current||previous===NEW_TAXONOMY_OPTION){
+        select.value=NEW_TAXONOMY_OPTION;
+    }else{
+        select.value="";
+    }
+}
+
+function renderProductFormTaxonomyPickers(){
+    const categorySelect=document.getElementById("product-category-select");
+    const brandSelect=document.getElementById("product-brand-select");
+    const categoryValue=document.getElementById("product-category");
+    const brandValue=document.getElementById("product-brand");
+    const categoryNew=document.getElementById("product-category-new");
+    const brandNew=document.getElementById("product-brand-new");
+    const categoryPanel=document.getElementById("category-create-panel");
+    const brandPanel=document.getElementById("brand-create-panel");
+
+    const categoryNames=collectProductCategoryNames();
+    const brandNames=collectProductBrandNames();
+
+    const currentCategory=normalizeCategoryName(categoryValue?.value);
+    const currentBrand=normalizeBrandName(brandValue?.value);
+
+    setTaxonomySelectOptions(
+        categorySelect,
+        categoryNames,
+        currentCategory,
+        "Seleccioná una categoría",
+        "Crear nueva categoría"
+    );
+
+    setTaxonomySelectOptions(
+        brandSelect,
+        brandNames,
+        currentBrand,
+        "Seleccioná una marca",
+        "Crear nueva marca"
+    );
+
+    const categoryCreating=categorySelect?.value===NEW_TAXONOMY_OPTION;
+    const brandCreating=brandSelect?.value===NEW_TAXONOMY_OPTION;
+
+    if(categoryPanel)categoryPanel.hidden=!categoryCreating;
+    if(brandPanel)brandPanel.hidden=!brandCreating;
+
+    if(categoryCreating){
+        if(categoryNew&&!categoryNew.value&&currentCategory)categoryNew.value=currentCategory;
+    }else{
+        if(categoryValue)categoryValue.value=categorySelect?.value||"";
+        if(categoryNew)categoryNew.value="";
+    }
+
+    if(brandCreating){
+        if(brandNew&&!brandNew.value&&currentBrand)brandNew.value=currentBrand;
+    }else{
+        if(brandValue)brandValue.value=brandSelect?.value||"";
+        if(brandNew)brandNew.value="";
+    }
+
+    window.__doradoRefreshAdminSelects?.();
+}
+
+function renderProductOrganizationFilters(){
+    const categorySelect=document.getElementById("product-category-filter");
+    const brandSelect=document.getElementById("product-brand-filter");
+    const brandTabs=document.getElementById("admin-brand-tabs");
+
+    const categoryNames=collectProductCategoryNames();
+    const brandNames=collectProductBrandNames();
 
     if(categorySelect){
         const previous=categorySelect.value||"all";
@@ -808,10 +905,6 @@ function renderProductOrganizationFilters(){
         brandSelect.innerHTML='<option value="all">Todas las marcas</option>'+
             brandNames.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
         brandSelect.value=brandNames.some(name=>name===previous)?previous:"all";
-    }
-
-    if(brandList){
-        brandList.innerHTML=brandNames.map(name=>`<option value="${esc(name)}"></option>`).join("");
     }
 
     if(brandTabs){
@@ -840,6 +933,7 @@ function renderProductOrganizationFilters(){
         });
     }
 
+    renderProductFormTaxonomyPickers();
     window.__doradoRefreshAdminSelects?.();
 }
 
@@ -938,17 +1032,28 @@ function hideCategorySuggestions(){
 
 function useCategory(name,options={}){
     const input=document.getElementById("product-category");
+    const select=document.getElementById("product-category-select");
     const closeManager=options.closeManager!==false;
     if(!input)return;
+
     input.value=normalizeCategoryName(name);
-    hideCategorySuggestions();
+    renderProductFormTaxonomyPickers();
+
+    if(select){
+        const normalized=normalizeCategoryName(name).toLocaleLowerCase("es");
+        const match=[...select.options].find(option=>
+            normalizeCategoryName(option.value).toLocaleLowerCase("es")===normalized
+        );
+        if(match)select.value=match.value;
+        window.__doradoRefreshAdminSelects?.();
+    }
+
     if(closeManager){
         const manager=document.getElementById("category-manager");
         const toggle=document.getElementById("category-manage-toggle");
         if(manager)manager.hidden=true;
         if(toggle)toggle.setAttribute("aria-expanded","false");
     }
-    input.focus({preventScroll:true});
 }
 
 function renderCategorySuggestions(){
@@ -1064,6 +1169,7 @@ async function loadCategories(){
         categorias=[];
     }
     renderCategoryManager();
+    renderProductFormTaxonomyPickers();
 }
 
 async function persistCategory(rawName,options={}){
@@ -1100,14 +1206,18 @@ async function persistCategory(rawName,options={}){
 }
 
 async function createCategoryFromInput(){
-    const input=document.getElementById("product-category");
+    const valueInput=document.getElementById("product-category");
+    const newInput=document.getElementById("product-category-new");
     const button=document.getElementById("category-create");
-    if(!input||!button)return;
+    if(!valueInput||!newInput||!button)return;
+
     button.disabled=true;
     try{
-        const created=await persistCategory(input.value);
-        input.value=created.nombre;
-        hideCategorySuggestions();
+        const created=await persistCategory(newInput.value);
+        valueInput.value=created.nombre;
+        newInput.value="";
+        renderProductFormTaxonomyPickers();
+        showToast("Categoría seleccionada: "+created.nombre);
     }catch(error){
         showToast(error.message||"No se pudo crear la categoría.","error");
     }finally{
@@ -1220,6 +1330,7 @@ function resetProductForm(){
     document.getElementById("product-cancel").classList.add("hidden");
     resetProductGallery();
     msg("product-message","");
+    renderProductFormTaxonomyPickers();
     requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
 }
 
@@ -1241,6 +1352,7 @@ function editProduct(id){
     document.getElementById("product-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("product-cancel").classList.remove("hidden");
     resetProductGallery(p);
+    renderProductFormTaxonomyPickers();
     requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
     document.getElementById("product-form").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -2168,7 +2280,6 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
         handleGoogleBusinessCallbackResult();
         await loadProducts();
         await loadCategories();
-        await loadCategories();
     }catch(err){
         msg("login-message",err.message||"No se pudo iniciar sesión.");
     }finally{
@@ -2300,24 +2411,57 @@ ordersTable?.addEventListener("click",event=>{
     if(order)openOrder(order);
 });
 
-const categoryInput=document.getElementById("product-category");
-categoryInput?.addEventListener("input",()=>{
-    if(normalizeCategoryName(categoryInput.value))renderCategorySuggestions();
-    else hideCategorySuggestions();
+const categorySelectEditor=document.getElementById("product-category-select");
+const categoryValueEditor=document.getElementById("product-category");
+const categoryNewEditor=document.getElementById("product-category-new");
+const categoryCreatePanel=document.getElementById("category-create-panel");
+
+categorySelectEditor?.addEventListener("change",()=>{
+    const creating=categorySelectEditor.value===NEW_TAXONOMY_OPTION;
+    if(categoryCreatePanel)categoryCreatePanel.hidden=!creating;
+
+    if(creating){
+        if(categoryValueEditor)categoryValueEditor.value="";
+        if(categoryNewEditor)categoryNewEditor.value="";
+        requestAnimationFrame(()=>categoryNewEditor?.focus({preventScroll:true}));
+    }else{
+        if(categoryValueEditor)categoryValueEditor.value=categorySelectEditor.value||"";
+        if(categoryNewEditor)categoryNewEditor.value="";
+    }
 });
-categoryInput?.addEventListener("keydown",event=>{
-    if(event.key==="Escape"){
-        hideCategorySuggestions();
-        return;
+
+categoryNewEditor?.addEventListener("input",()=>{
+    if(categoryValueEditor)categoryValueEditor.value=categoryNewEditor.value;
+});
+
+categoryNewEditor?.addEventListener("keydown",event=>{
+    if(event.key==="Enter"){
+        event.preventDefault();
+        createCategoryFromInput();
     }
-    if(event.key==="Enter"&&!event.shiftKey){
-        const box=document.getElementById("category-suggestions");
-        const first=box?.querySelector(".category-suggestion");
-        if(first&&!box.hidden){
-            event.preventDefault();
-            first.click();
-        }
+});
+
+const brandSelectEditor=document.getElementById("product-brand-select");
+const brandValueEditor=document.getElementById("product-brand");
+const brandNewEditor=document.getElementById("product-brand-new");
+const brandCreatePanel=document.getElementById("brand-create-panel");
+
+brandSelectEditor?.addEventListener("change",()=>{
+    const creating=brandSelectEditor.value===NEW_TAXONOMY_OPTION;
+    if(brandCreatePanel)brandCreatePanel.hidden=!creating;
+
+    if(creating){
+        if(brandValueEditor)brandValueEditor.value="";
+        if(brandNewEditor)brandNewEditor.value="";
+        requestAnimationFrame(()=>brandNewEditor?.focus({preventScroll:true}));
+    }else{
+        if(brandValueEditor)brandValueEditor.value=brandSelectEditor.value||"";
+        if(brandNewEditor)brandNewEditor.value="";
     }
+});
+
+brandNewEditor?.addEventListener("input",()=>{
+    if(brandValueEditor)brandValueEditor.value=brandNewEditor.value;
 });
 
 document.getElementById("category-create")?.addEventListener("click",createCategoryFromInput);
@@ -2342,10 +2486,6 @@ document.getElementById("category-delete-selected")?.addEventListener("click",()
 });
 
 document.getElementById("category-delete-all")?.addEventListener("click",deleteAllCategories);
-
-document.addEventListener("pointerdown",event=>{
-    if(!event.target.closest?.(".category-admin-field"))hideCategorySuggestions();
-},{passive:true});
 
 document.getElementById("product-search")?.addEventListener("input",renderProducts);
 document.getElementById("product-filter")?.addEventListener("change",renderProducts);
@@ -2670,6 +2810,7 @@ document.addEventListener("keydown",e=>{
         showApp();
         handleGoogleBusinessCallbackResult();
         await loadProducts();
+        await loadCategories();
     }catch(e){
         console.error(e);
         logout(false);
