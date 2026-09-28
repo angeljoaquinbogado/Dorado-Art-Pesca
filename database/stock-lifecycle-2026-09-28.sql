@@ -382,7 +382,7 @@ grant execute on function public.registrar_estado_pago(uuid,text,text) to servic
 CREATE OR REPLACE FUNCTION public.admin_actualizar_preparacion_pedido(p_pedido_id uuid, p_preparacion_estado text)
  RETURNS jsonb
  LANGUAGE plpgsql
- SECURITY DEFINER
+ SECURITY INVOKER
  SET search_path TO 'public'
 AS $function$
 declare
