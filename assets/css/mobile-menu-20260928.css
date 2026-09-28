@@ -1,0 +1,344 @@
+/* Dorado — menú móvil + vista completa de marcas · 2026-09-28 */
+
+/* "VER TODAS" abre una vista real de todas las marcas, no solo limpia filtros. */
+#marcas.brands-expanded .brand-marquee-shell{
+  overflow:visible!important;
+  border-color:rgba(219,170,61,.24)!important;
+}
+#marcas.brands-expanded .brand-marquee-track{
+  width:100%!important;
+  display:block!important;
+  animation:none!important;
+  transform:none!important;
+  will-change:auto!important;
+}
+#marcas.brands-expanded .brand-marquee-set{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  padding:10px!important;
+}
+#marcas.brands-expanded .brand-marquee-set[aria-hidden="true"]{
+  display:none!important;
+}
+#marcas.brands-expanded .brand-marquee-card{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  flex:none!important;
+}
+#marcas.brands-expanded .brand-showcase-link .ui-icon{
+  transform:rotate(180deg);
+}
+
+/* Base: el drawer móvil no existe visualmente en desktop. */
+.mobile-menu-overlay,
+.mobile-menu-drawer{
+  display:none;
+}
+
+@media (max-width:900px){
+  #marcas.brands-expanded .brand-marquee-set{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+
+@media (max-width:700px){
+  body.menu-open{
+    overflow:hidden!important;
+    touch-action:none;
+  }
+
+  /* En celular el control superior derecho es el menú, no el carrito. */
+  .nav .nav-actions{
+    pointer-events:auto!important;
+  }
+  .nav .nav-actions>.nav-cta,
+  .nav .nav-actions>.orders-trigger,
+  .nav .nav-actions>.cart-trigger{
+    display:none!important;
+  }
+  .nav .menu-toggle,
+  .nav.scrolled .menu-toggle{
+    position:relative!important;
+    display:grid!important;
+    place-content:center!important;
+    gap:4px!important;
+    width:48px!important;
+    min-width:48px!important;
+    height:48px!important;
+    min-height:48px!important;
+    margin:0!important;
+    padding:0!important;
+    border:1px solid rgba(234,183,77,.30)!important;
+    border-radius:14px!important;
+    background:rgba(16,33,45,.94)!important;
+    color:#e4ad3d!important;
+    box-shadow:0 10px 26px rgba(2,8,13,.22)!important;
+    pointer-events:auto!important;
+    z-index:1003!important;
+  }
+  .nav .menu-toggle span{
+    display:block!important;
+    width:21px!important;
+    height:2px!important;
+    margin:0!important;
+    border-radius:99px!important;
+    background:#f0b84a!important;
+    transform:none!important;
+    opacity:1!important;
+    transition:transform .22s ease,opacity .18s ease!important;
+  }
+  .nav .menu-toggle[aria-expanded="true"] span:nth-child(1){
+    transform:translateY(6px) rotate(45deg)!important;
+  }
+  .nav .menu-toggle[aria-expanded="true"] span:nth-child(2){
+    opacity:0!important;
+  }
+  .nav .menu-toggle[aria-expanded="true"] span:nth-child(3){
+    transform:translateY(-6px) rotate(-45deg)!important;
+  }
+
+  /* El nav desktop no se reutiliza como dropdown: el drawer tiene su propia estructura. */
+  #primary-navigation{
+    display:none!important;
+  }
+
+  .mobile-menu-overlay{
+    display:block;
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:rgba(3,9,14,.62);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .22s ease,visibility .22s ease;
+  }
+  body.menu-open .mobile-menu-overlay{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  .mobile-menu-drawer{
+    display:flex;
+    position:fixed;
+    inset:0 auto 0 0;
+    z-index:1002;
+    width:min(86vw,360px);
+    max-width:360px;
+    min-height:100dvh;
+    flex-direction:column;
+    gap:0;
+    padding:calc(14px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom));
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    background:
+      radial-gradient(circle at -10% -5%,rgba(216,161,58,.12),transparent 27%),
+      linear-gradient(180deg,#10212d 0%,#0b1923 100%);
+    color:#f4efe7;
+    border-right:1px solid rgba(234,183,77,.16);
+    box-shadow:28px 0 70px rgba(1,6,10,.34);
+    transform:translate3d(-104%,0,0);
+    visibility:hidden;
+    transition:transform .27s cubic-bezier(.22,.72,.22,1),visibility .27s ease;
+  }
+  body.menu-open .mobile-menu-drawer{
+    transform:translate3d(0,0,0);
+    visibility:visible;
+  }
+
+  .mobile-menu-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    min-height:62px;
+    margin-bottom:14px;
+    padding-bottom:12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .mobile-menu-brand{
+    display:flex;
+    align-items:center;
+    min-width:0;
+  }
+  .mobile-menu-brand img{
+    display:block;
+    width:96px;
+    height:58px;
+    object-fit:contain;
+  }
+  .mobile-menu-close{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    flex:0 0 auto;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:12px;
+    background:rgba(255,255,255,.04);
+    color:#f2ede4;
+  }
+  .mobile-menu-close .ui-icon{
+    width:20px;
+    height:20px;
+  }
+
+  .mobile-menu-search{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 48px;
+    min-height:48px;
+    margin-bottom:20px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    overflow:hidden;
+    background:#f7f4ee;
+  }
+  .mobile-menu-search input{
+    min-width:0;
+    width:100%;
+    border:0;
+    outline:0;
+    padding:0 13px;
+    background:transparent;
+    color:#17232c;
+    font:650 13px/1.2 Manrope,sans-serif;
+  }
+  .mobile-menu-search input::placeholder{
+    color:#8c949a;
+  }
+  .mobile-menu-search button{
+    border:0;
+    border-left:1px solid #ddd6ca;
+    background:#d7a13a;
+    color:#10212d;
+    display:grid;
+    place-items:center;
+  }
+  .mobile-menu-search button .ui-icon{
+    width:20px;
+    height:20px;
+  }
+
+  .mobile-menu-section{
+    padding:0 0 17px;
+    margin-bottom:15px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .mobile-menu-kicker{
+    display:block;
+    margin-bottom:8px;
+    color:#dda83e;
+    font:850 8px/1 Manrope,sans-serif;
+    letter-spacing:.13em;
+  }
+
+  .mobile-menu-categories,
+  .mobile-menu-navigation{
+    display:grid;
+    gap:2px;
+  }
+  .mobile-menu-categories button,
+  .mobile-menu-navigation a{
+    width:100%;
+    min-height:43px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:0 6px;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:#f2ede5;
+    text-decoration:none;
+    text-align:left;
+    font:750 13px/1.2 Manrope,sans-serif;
+  }
+  .mobile-menu-categories button::after,
+  .mobile-menu-navigation a::after{
+    content:"›";
+    color:#8d9aa2;
+    font-size:18px;
+    line-height:1;
+  }
+  .mobile-menu-categories button:hover,
+  .mobile-menu-categories button:focus-visible,
+  .mobile-menu-navigation a:hover,
+  .mobile-menu-navigation a:focus-visible{
+    outline:none;
+    background:rgba(215,161,58,.09);
+    color:#f4c35f;
+  }
+  .mobile-menu-categories button small{
+    color:#7e8d96;
+    font-size:9px;
+    font-weight:700;
+  }
+  .mobile-menu-loading{
+    display:block;
+    padding:10px 6px;
+    color:#83929a;
+    font-size:10px;
+  }
+
+  .mobile-menu-actions{
+    display:grid;
+    gap:8px;
+    margin-top:auto;
+    padding-top:4px;
+  }
+  .mobile-menu-actions>button,
+  .mobile-menu-actions>a{
+    min-height:46px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    padding:0 13px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:13px;
+    background:rgba(255,255,255,.035);
+    color:#eef1f2;
+    text-decoration:none;
+    font:800 11px/1 Manrope,sans-serif;
+  }
+  .mobile-menu-actions .ui-icon{
+    width:18px;
+    height:18px;
+  }
+  .mobile-menu-actions b{
+    min-width:22px;
+    height:22px;
+    margin-left:auto;
+    display:grid;
+    place-items:center;
+    border-radius:99px;
+    background:#d7a13a;
+    color:#10212d;
+    font-size:9px;
+  }
+  .mobile-menu-actions a[href*="wa.me"] .ui-icon{
+    color:#25d366;
+  }
+
+  #marcas.brands-expanded .brand-marquee-set{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  #marcas.brands-expanded .brand-marquee-card{
+    min-height:96px!important;
+  }
+}
+
+@media (max-width:420px){
+  .mobile-menu-drawer{
+    width:min(90vw,340px);
+  }
+  #marcas.brands-expanded .brand-marquee-set{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
