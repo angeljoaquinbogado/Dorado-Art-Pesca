@@ -29,6 +29,7 @@ let checkoutCoupon = null;
 let doradoPublicConfigPromise = null;
 let marcaActiva = "todas";
 let catalogoExpandido = false;
+let marcasExpandidas = false;
 const CATALOG_INITIAL_LIMIT = 12;
 
 const DORADO_BRANDS = [
@@ -2392,8 +2393,26 @@ document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
     limpiarMarcaSeleccionada();
 });
 
+function actualizarVistaTodasMarcas(force=null){
+    const section=document.getElementById("marcas");
+    const button=document.getElementById("brand-show-all");
+    if(!section||!button)return;
+
+    marcasExpandidas=typeof force==="boolean" ? force : !marcasExpandidas;
+    section.classList.toggle("brands-expanded",marcasExpandidas);
+    button.setAttribute("aria-expanded",String(marcasExpandidas));
+
+    const textNode=[...button.childNodes].find(node=>node.nodeType===Node.TEXT_NODE);
+    if(textNode)textNode.nodeValue=marcasExpandidas?"VER MENOS ":"VER TODAS ";
+}
+
 document.getElementById("brand-show-all")?.addEventListener("click",()=>{
-    limpiarMarcaSeleccionada();
+    if(marcaActiva!=="todas"){
+        limpiarMarcaSeleccionada();
+        actualizarVistaTodasMarcas(true);
+        return;
+    }
+    actualizarVistaTodasMarcas();
 });
 
 (function configurarUIVisual(){
@@ -2518,29 +2537,143 @@ comprobarRetornoPago();
 // ==============================
 
 (() => {
-  const header = document.getElementById('site-header');
-  const toggle = document.getElementById('menu-toggle');
-  const nav = document.getElementById('primary-navigation');
-  if (!header || !toggle || !nav) return;
+  const header=document.getElementById("site-header");
+  const toggle=document.getElementById("menu-toggle");
+  const drawer=document.getElementById("mobile-menu-drawer");
+  const overlay=document.getElementById("mobile-menu-overlay");
+  const closeButton=document.getElementById("mobile-menu-close");
+  const categories=document.getElementById("mobile-menu-categories");
+  const searchForm=document.getElementById("mobile-menu-search-form");
+  const searchInput=document.getElementById("mobile-menu-search-input");
+  const cartAction=document.getElementById("mobile-menu-cart");
+  const ordersAction=document.getElementById("mobile-menu-orders");
+  const cartCount=document.getElementById("mobile-menu-cart-count");
 
-  const closeMenu = () => {
-    header.classList.remove('menu-open');
-    document.body.classList.remove('menu-open');
-    toggle.setAttribute('aria-expanded','false');
-    toggle.setAttribute('aria-label','Abrir menú');
+  if(!header||!toggle||!drawer||!overlay)return;
+
+  const renderCategories=()=>{
+    if(!categories)return;
+
+    const map=new Map();
+    [...catalogoProductos.values()].forEach(product=>{
+      const raw=String(product?.categoria||"").trim();
+      const key=normalizarClaveCategoria(raw);
+      if(!map.has(key)){
+        map.set(key,{key,label:key==="sin-categoria"?"Sin categoría":etiquetaCategoria(raw),count:0});
+      }
+      map.get(key).count+=1;
+    });
+
+    const rows=[...map.values()].sort((a,b)=>{
+      if(a.key==="sin-categoria")return 1;
+      if(b.key==="sin-categoria")return -1;
+      return a.label.localeCompare(b.label,"es",{sensitivity:"base"});
+    });
+
+    categories.innerHTML=rows.length
+      ? rows.map(item=>`<button type="button" data-mobile-category="${textoSeguro(item.key)}"><span>${textoSeguro(item.label)}</span><small>${item.count}</small></button>`).join("")
+      : '<span class="mobile-menu-loading">Todavía no hay categorías disponibles.</span>';
+
+    categories.querySelectorAll("[data-mobile-category]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const key=String(button.dataset.mobileCategory||"todos");
+        marcaActiva="todas";
+        categoriaActiva=key;
+        catalogoExpandido=true;
+
+        const search=document.getElementById("product-search");
+        if(search)search.value="";
+
+        construirFiltrosCategorias([...catalogoProductos.values()]);
+        actualizarFiltroCatalogo();
+        construirMarcas([...catalogoProductos.values()]);
+        closeMenu();
+
+        requestAnimationFrame(()=>{
+          document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
+        });
+      });
+    });
   };
 
-  toggle.addEventListener('click', () => {
-    const open = !header.classList.contains('menu-open');
-    header.classList.toggle('menu-open', open);
-    document.body.classList.toggle('menu-open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  const syncCartCount=()=>{
+    if(!cartCount)return;
+    const source=document.getElementById("cart-count");
+    cartCount.textContent=String(source?.textContent||cantidadTotal(leerCarrito())||0);
+  };
+
+  const openMenu=()=>{
+    renderCategories();
+    syncCartCount();
+    header.classList.add("menu-open");
+    document.body.classList.add("menu-open");
+    drawer.setAttribute("aria-hidden","false");
+    overlay.setAttribute("aria-hidden","false");
+    toggle.setAttribute("aria-expanded","true");
+    toggle.setAttribute("aria-label","Cerrar menú");
+    requestAnimationFrame(()=>closeButton?.focus({preventScroll:true}));
+  };
+
+  const closeMenu=()=>{
+    header.classList.remove("menu-open");
+    document.body.classList.remove("menu-open");
+    drawer.setAttribute("aria-hidden","true");
+    overlay.setAttribute("aria-hidden","true");
+    toggle.setAttribute("aria-expanded","false");
+    toggle.setAttribute("aria-label","Abrir menú");
+  };
+
+  toggle.addEventListener("click",()=>{
+    document.body.classList.contains("menu-open")?closeMenu():openMenu();
   });
 
-  nav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-  window.addEventListener('resize', () => { if (window.innerWidth > 980) closeMenu(); }, {passive:true});
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
+  closeButton?.addEventListener("click",closeMenu);
+  overlay.addEventListener("click",closeMenu);
+
+  drawer.querySelectorAll('a[href^="#"]').forEach(link=>{
+    link.addEventListener("click",closeMenu);
+  });
+
+  searchForm?.addEventListener("submit",event=>{
+    event.preventDefault();
+    const query=String(searchInput?.value||"").trim();
+    marcaActiva="todas";
+    categoriaActiva="todos";
+    catalogoExpandido=true;
+
+    const search=document.getElementById("product-search");
+    if(search){
+      search.value=query;
+      search.dispatchEvent(new Event("input",{bubbles:true}));
+    }
+
+    construirFiltrosCategorias([...catalogoProductos.values()]);
+    construirMarcas([...catalogoProductos.values()]);
+    actualizarFiltroCatalogo();
+    closeMenu();
+
+    requestAnimationFrame(()=>{
+      document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+
+  cartAction?.addEventListener("click",()=>{
+    closeMenu();
+    window.setTimeout(()=>abrirCarrito(),80);
+  });
+
+  ordersAction?.addEventListener("click",()=>{
+    closeMenu();
+    window.setTimeout(()=>abrirMisPedidos(),80);
+  });
+
+  const sourceCartCount=document.getElementById("cart-count");
+  if(sourceCartCount&&"MutationObserver" in window){
+    new MutationObserver(syncCartCount).observe(sourceCartCount,{childList:true,characterData:true,subtree:true});
+  }
+
+  window.addEventListener("resize",()=>{if(window.innerWidth>700)closeMenu();},{passive:true});
+  document.addEventListener("keydown",event=>{if(event.key==="Escape")closeMenu();});
 })();
 
 // ==============================
