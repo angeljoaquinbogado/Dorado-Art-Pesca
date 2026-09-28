@@ -64,5 +64,9 @@ El usuario de Authentication que gestione el comercio debe autorizarse en `admin
 - Verificar funciones `security definer` y su `search_path`.
 - No usar el producto demo como catálogo productivo.
 
+### `stock-lifecycle-2026-09-28.sql`
+
+Controla el inventario durante todo el ciclo del pedido: descuenta stock sólo al aprobar el pago, lo restaura al cancelar un pedido o al recibir un reembolso y evita duplicar descuentos/restauraciones ante webhooks repetidos. También agrega la actualización administrativa atómica del estado de preparación.
+
 ### `performance-scale-2026-09-27.sql`
 Índices idempotentes para las consultas públicas más frecuentes (`productos`, reseñas) y el cálculo de “Más elegidos”. No borra ni transforma datos. Recomendado antes de campañas o tráfico alto; aplicar primero en staging/backup y verificar en Supabase.
