@@ -29,12 +29,13 @@ export default function handler(req, res) {
         cardPaymentsEnabled: mercadoPagoEnabled && Boolean(mercadoPagoPublicKey),
         modoEnabled: String(process.env.MODO_ENABLED || "").toLowerCase() === "true",
         bankTransfer: {
-            // Datos públicos confirmados del comercio. Las variables de entorno pueden reemplazarlos sin tocar el código.
-            alias: String(process.env.BANK_TRANSFER_ALIAS || "dorado.art.pesca.").trim(),
-            cbu: String(process.env.BANK_TRANSFER_CBU || "0000003100042512469656").trim(),
-            holder: String(process.env.BANK_TRANSFER_HOLDER || "Guadalupe Villarino").trim(),
-            taxId: String(process.env.BANK_TRANSFER_TAX_ID || "27-47728170-8").trim(),
-            bank: String(process.env.BANK_TRANSFER_BANK || "Mercado Pago").trim()
+            // Datos públicos confirmados por Dorado el 28/09/2026.
+            // Se mantienen como valores del sitio para evitar que una variable antigua de Vercel muestre datos desactualizados.
+            alias: "dorado.art.pesca",
+            cbu: "0000003100061983343074",
+            holder: "Maximiliano Adrian Villarino",
+            taxId: "20-25635728-4",
+            bank: "Mercado Pago · Cuenta en pesos"
         }
     });
 }
