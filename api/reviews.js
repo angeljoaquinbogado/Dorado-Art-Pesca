@@ -78,7 +78,7 @@ function finishOAuth(res, params) {
     "Set-Cookie",
     "dorado_gbp_oauth=; Path=/api/google-business-oauth; Max-Age=0; HttpOnly; Secure; SameSite=Lax"
   );
-  return res.redirect(302, `/admin.html?${search.toString()}`);
+  return res.redirect(302, `https://www.doradoarticulosdepesca.com.ar/admin.html?${search.toString()}`);
 }
 
 async function startGoogleOAuth(req, res) {
