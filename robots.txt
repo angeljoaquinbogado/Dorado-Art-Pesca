@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
-Sitemap: https://dorado-art-pesca.vercel.app/sitemap.xml
+Sitemap: https://www.doradoarticulosdepesca.com.ar/sitemap.xml
