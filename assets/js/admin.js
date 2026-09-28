@@ -757,6 +757,18 @@ function normalizeBrandName(value){
     return String(value||"").trim().replace(/\s+/g," ").slice(0,80);
 }
 
+const DORADO_KNOWN_BRANDS=[
+    "Shimano",
+    "Albatros",
+    "TCL",
+    "Caster",
+    "Bando ARG",
+    "Fox Airguns",
+    "Payo",
+    "MorGui Outdoor",
+    "Surfish"
+];
+
 function renderProductOrganizationFilters(){
     const categorySelect=document.getElementById("product-category-filter");
     const brandSelect=document.getElementById("product-brand-filter");
@@ -765,6 +777,11 @@ function renderProductOrganizationFilters(){
 
     const categoriesMap=new Map();
     const brandsMap=new Map();
+
+    DORADO_KNOWN_BRANDS.forEach(brand=>{
+        const normalized=normalizeBrandName(brand);
+        brandsMap.set(normalized.toLocaleLowerCase("es"),normalized);
+    });
 
     productos.forEach(product=>{
         const category=normalizeCategoryName(product.categoria);
