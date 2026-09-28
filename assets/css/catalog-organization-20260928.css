@@ -180,7 +180,7 @@
     text-overflow:ellipsis;
     white-space:nowrap;
     color:#dfe6e8;
-    font:850 11.5px/1.2 Manrope,sans-serif;
+    font:850 12.5px/1.2 Manrope,sans-serif;
     letter-spacing:.025em;
 }
 .brand-marquee-meta small{
@@ -550,12 +550,28 @@
     background-position:center!important;
     background-color:#fff!important;
 }
+.brand-marquee-card[data-brand="payo"] .brand-sprite-logo,
+.catalog-brand-logo[data-brand="payo"]{
+    background-image:url("../images/brands/brands-sprite.webp?v=20260928b")!important;
+    background-size:1800% 200%!important;
+    background-position:73.53% 50%!important;
+    background-repeat:no-repeat!important;
+    background-color:#fff!important;
+}
+.brand-marquee-card[data-brand="morgui-outdoor"] .brand-sprite-logo,
+.catalog-brand-logo[data-brand="morgui-outdoor"]{
+    background-image:url("../images/brands/brands-sprite.webp?v=20260928b")!important;
+    background-size:1620% 180%!important;
+    background-position:85.53% 50%!important;
+    background-repeat:no-repeat!important;
+    background-color:#fff!important;
+}
 .brand-marquee-card[data-brand="surfish"] .brand-sprite-logo,
 .catalog-brand-logo[data-brand="surfish"]{
-    background-image:url("../images/brands/surfish-logo.webp?v=20260928a")!important;
-    background-size:contain!important;
+    background-image:url("../images/brands/brands-sprite.webp?v=20260928b")!important;
+    background-size:1980% 220%!important;
+    background-position:96.81% 50%!important;
     background-repeat:no-repeat!important;
-    background-position:center!important;
     background-color:#fff!important;
 }
 
