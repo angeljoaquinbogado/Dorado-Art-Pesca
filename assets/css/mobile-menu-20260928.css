@@ -386,16 +386,13 @@
   0%{
     opacity:0;
     transform:translate3d(92px,0,0) scale(.965);
-    filter:blur(2px);
   }
   60%{
     opacity:1;
-    filter:blur(0);
   }
   100%{
     opacity:1;
     transform:translate3d(0,0,0) scale(1);
-    filter:blur(0);
   }
 }
 
@@ -502,5 +499,90 @@
   .mobile-menu-section,
   .mobile-menu-actions{
     transition:none!important;
+  }
+}
+
+
+/* =========================================================
+   MOTION PERFORMANCE — compositor first
+   Aplicado según la guía de movimiento fluido:
+   solo transform/opacity durante el movimiento y sin blur animado.
+   ========================================================= */
+#marcas .brand-marquee-shell,
+.mobile-menu-drawer{
+  contain:layout paint style;
+}
+
+#marcas.brands-expanded .brand-marquee-card{
+  backface-visibility:hidden;
+  transform-style:preserve-3d;
+}
+
+.mobile-menu-drawer{
+  will-change:auto!important;
+}
+
+body.menu-open .mobile-menu-drawer{
+  will-change:transform!important;
+}
+
+.mobile-menu-head,
+.mobile-menu-search,
+.mobile-menu-section,
+.mobile-menu-actions{
+  will-change:auto!important;
+}
+
+body.menu-open .mobile-menu-head,
+body.menu-open .mobile-menu-search,
+body.menu-open .mobile-menu-section,
+body.menu-open .mobile-menu-actions{
+  will-change:transform,opacity!important;
+}
+
+@media(max-width:700px){
+  .mobile-menu-overlay{
+    transition:
+      opacity .22s ease,
+      visibility .22s linear!important;
+  }
+
+  .mobile-menu-drawer{
+    transition:
+      transform .34s cubic-bezier(.22,.78,.22,1),
+      visibility 0s linear .34s!important;
+  }
+
+  body.menu-open .mobile-menu-drawer{
+    transition:
+      transform .34s cubic-bezier(.22,.78,.22,1),
+      visibility 0s linear 0s!important;
+  }
+
+  .mobile-menu-head,
+  .mobile-menu-search,
+  .mobile-menu-section,
+  .mobile-menu-actions{
+    transition:
+      opacity .26s ease,
+      transform .34s cubic-bezier(.22,.78,.22,1)!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #marcas.brands-expanded .brand-marquee-card{
+    animation:none!important;
+    opacity:1!important;
+    transform:none!important;
+  }
+
+  .mobile-menu-overlay,
+  .mobile-menu-drawer,
+  .mobile-menu-head,
+  .mobile-menu-search,
+  .mobile-menu-section,
+  .mobile-menu-actions{
+    transition:opacity 140ms ease!important;
+    transform:none!important;
   }
 }
