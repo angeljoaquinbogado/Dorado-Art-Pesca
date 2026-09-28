@@ -550,3 +550,67 @@
 #opiniones .reviews-marquee-shell .review-card{
   box-shadow:none!important;
 }
+
+
+/* Google review CTA · 2026-09-28 */
+#opiniones .reviews-actions{
+  align-items:flex-end!important;
+}
+
+#opiniones .reviews-google-cta{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:18px!important;
+  min-width:0!important;
+}
+
+#opiniones .reviews-google-cta-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  gap:3px!important;
+  max-width:255px!important;
+  text-align:right!important;
+}
+
+#opiniones .reviews-google-cta-copy strong{
+  color:#f4f1e9!important;
+  font-size:10.5px!important;
+  font-weight:850!important;
+  line-height:1.25!important;
+}
+
+#opiniones .reviews-google-cta-copy span{
+  color:#8f9aa3!important;
+  font-size:8.5px!important;
+  font-weight:600!important;
+  line-height:1.35!important;
+}
+
+#opiniones .reviews-google-cta .reviews-google-link{
+  min-width:210px!important;
+  justify-content:center!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:820px){
+  #opiniones .reviews-google-cta{
+    width:100%!important;
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    gap:10px!important;
+  }
+
+  #opiniones .reviews-google-cta-copy{
+    align-items:flex-start!important;
+    text-align:left!important;
+    max-width:none!important;
+  }
+
+  #opiniones .reviews-google-cta .reviews-google-link{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
