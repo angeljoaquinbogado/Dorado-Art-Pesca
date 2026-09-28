@@ -2390,14 +2390,10 @@ document.getElementById("catalog-more-button")?.addEventListener("click",()=>{
 
 document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
     limpiarMarcaSeleccionada();
-    requestAnimationFrame(()=>{
-        document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
-    });
 });
-document.getElementById("brand-show-all")?.addEventListener("click",event=>{
-    event.preventDefault();
+
+document.getElementById("brand-show-all")?.addEventListener("click",()=>{
     limpiarMarcaSeleccionada();
-    document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
 });
 
 (function configurarUIVisual(){
