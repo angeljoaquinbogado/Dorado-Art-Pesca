@@ -154,7 +154,7 @@
 .catalog-brand-logo{
     display:block;
     background-color:#f7f7f4;
-    background-image:url("../images/brands/brands-sprite.webp");
+    background-image:url("../images/brands/brands-sprite.webp?v=20260928b");
     background-repeat:no-repeat;
     background-size:900% 100%;
     background-position:var(--brand-pos,0%) center;
@@ -532,3 +532,10 @@
         font-size:10px!important;
     }
 }
+
+/* Final catalog heading cleanup */
+.catalog-step-label strong{
+    font-size:13px!important;
+    letter-spacing:.11em!important;
+}
+.catalog-step-label>span{display:none!important}
