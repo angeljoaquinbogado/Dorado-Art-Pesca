@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="assets/css/admin-performance.css?v=20260927-perf2"/>
 <link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-loginmobile1"/>
 <link rel="stylesheet" href="assets/css/admin-organization-20260928.css?v=20260928b"/>
+<link rel="stylesheet" href="assets/css/admin-taxonomy-picker-20260928.css?v=20260928a"/>
 </head>
 <body>
 
@@ -196,16 +197,18 @@
                                 <div class="field-row stock-category-row">
                   <div class="field stock-field"><label for="product-stock">STOCK</label><input id="product-stock" type="number" min="0" step="1" required placeholder="10"></div>
                   <div class="field category-admin-field">
-                    <label for="product-category">CATEGORÍA</label>
-                    <div class="category-entry">
-                      <div class="category-input-wrap">
-                        <input id="product-category" maxlength="80" placeholder="Ej: Reels, Cañas, Señuelos" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-expanded="false" aria-controls="category-suggestions">
-                        <div id="category-suggestions" class="category-suggestions" role="listbox" hidden></div>
-                      </div>
+                    <label for="product-category-select">CATEGORÍA</label>
+                    <input id="product-category" type="hidden">
+                    <select id="product-category-select" aria-label="Categoría del producto">
+                      <option value="">Seleccioná una categoría</option>
+                      <option value="__new__">＋ Crear nueva categoría</option>
+                    </select>
+                    <div id="category-create-panel" class="taxonomy-create-panel" hidden>
+                      <input id="product-category-new" maxlength="80" placeholder="Nombre de la nueva categoría" autocomplete="off" spellcheck="false">
                       <button id="category-create" class="secondary category-create" type="button">CREAR</button>
                     </div>
                     <div class="category-tools">
-                      <span class="file-help">Escribí una nueva o elegí una ya creada.</span>
+                      <span class="file-help">Elegí dónde va el producto. Solo escribís si necesitás crear una categoría nueva.</span>
                       <button id="category-manage-toggle" class="category-manage-toggle" type="button" aria-expanded="false">ADMINISTRAR CATEGORÍAS</button>
                     </div>
                   </div>
@@ -222,10 +225,16 @@
                   </div>
                 </div>
                 <div class="field brand-admin-field">
-                  <label for="product-brand">MARCA</label>
-                  <input id="product-brand" maxlength="80" placeholder="Ej: Caster, Shimano, Marine Sports" autocomplete="off" spellcheck="false" list="product-brand-list">
-                  <datalist id="product-brand-list"></datalist>
-                  <div class="file-help">Escribí una marca nueva o elegí una de las que ya usaste. Después vas a poder filtrar el catálogo por marca.</div>
+                  <label for="product-brand-select">MARCA</label>
+                  <input id="product-brand" type="hidden">
+                  <select id="product-brand-select" aria-label="Marca del producto">
+                    <option value="">Seleccioná una marca</option>
+                    <option value="__new__">＋ Crear nueva marca</option>
+                  </select>
+                  <div id="brand-create-panel" class="taxonomy-create-panel" hidden>
+                    <input id="product-brand-new" maxlength="80" placeholder="Nombre de la nueva marca" autocomplete="off" spellcheck="false">
+                  </div>
+                  <div class="file-help">Elegí una marca existente. Si no está, seleccioná “Crear nueva marca” y escribila.</div>
                 </div>
                 <div class="field"><label for="product-active">VISIBILIDAD</label><select id="product-active"><option value="true">Activo / visible</option><option value="false">Oculto</option></select></div>
               </div>
@@ -373,6 +382,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20260928-catalogorg3"></script>
+<script src="assets/js/admin.js?v=20260928-taxonomypicker1"></script>
 </body>
 </html>
