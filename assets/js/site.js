@@ -3570,8 +3570,23 @@ comprobarRetornoPago();
         sdkPromise=new Promise((resolve,reject)=>{
             const existing=document.querySelector('script[data-mercadopago-sdk="true"]');
             if(existing){
-                existing.addEventListener("load",()=>resolve(window.MercadoPago),{once:true});
-                existing.addEventListener("error",()=>reject(new Error("No se pudo cargar Mercado Pago.")),{once:true});
+                if(window.MercadoPago){
+                    resolve(window.MercadoPago);
+                    return;
+                }
+                const timeout=window.setTimeout(()=>{
+                    if(window.MercadoPago)resolve(window.MercadoPago);
+                    else reject(new Error("Mercado Pago no terminó de cargar. Recargá la página."));
+                },5000);
+                existing.addEventListener("load",()=>{
+                    window.clearTimeout(timeout);
+                    if(window.MercadoPago)resolve(window.MercadoPago);
+                    else reject(new Error("Mercado Pago no inició correctamente."));
+                },{once:true});
+                existing.addEventListener("error",()=>{
+                    window.clearTimeout(timeout);
+                    reject(new Error("No se pudo cargar Mercado Pago."));
+                },{once:true});
                 return;
             }
             const script=document.createElement("script");
@@ -3764,11 +3779,31 @@ comprobarRetornoPago();
                     onFormMounted:error=>{
                         if(error){
                             console.error("Mercado Pago CardForm mount error");
-                            setStatus("No pudimos iniciar los campos seguros. Recargá la página e intentá nuevamente.","error");
+                            cardForm=null;
+                            window.__doradoCardFormReady=false;
+                            setStatus("No pudimos iniciar los campos seguros. Tocá Tarjeta nuevamente para reintentar.","error");
                             return;
                         }
-                        window.__doradoCardFormReady=true;
-                        setStatus("Campos seguros listos para pagar.","ok");
+
+                        window.setTimeout(()=>{
+                            const mounted=[
+                                "mp-card-number",
+                                "mp-expiration-date",
+                                "mp-security-code"
+                            ].every(id=>document.getElementById(id)?.querySelector("iframe"));
+
+                            if(!mounted){
+                                console.error("Mercado Pago secure fields were not mounted");
+                                cardForm=null;
+                                window.__doradoCardFormReady=false;
+                                setStatus("Los campos seguros no terminaron de cargar. Volvé a elegir Tarjeta para reintentar.","error");
+                                return;
+                            }
+
+                            window.__doradoCardFormReady=true;
+                            window.__doradoRefreshMpSelects?.();
+                            setStatus("Campos seguros listos para pagar.","ok");
+                        },250);
                     },
                     onSubmit:async event=>{
                         event.preventDefault();
@@ -3798,6 +3833,124 @@ comprobarRetornoPago();
     };
 
     window.__doradoInitCardPayment=init;
+})();
+
+/* DORADO — selects visuales de Mercado Pago (issuer / installments) */
+(function configurarSelectoresMercadoPago(){
+    const ids=["mp-issuer","mp-installments"];
+    const wrappers=new Map();
+
+    const createFor=select=>{
+        if(!select||wrappers.has(select))return;
+
+        select.classList.add("mp-native-select");
+
+        const wrapper=document.createElement("div");
+        wrapper.className="mp-visual-select";
+
+        const trigger=document.createElement("button");
+        trigger.type="button";
+        trigger.className="mp-visual-select-trigger";
+        trigger.setAttribute("aria-haspopup","listbox");
+        trigger.setAttribute("aria-expanded","false");
+
+        const value=document.createElement("span");
+        value.className="mp-visual-select-value";
+
+        const chevron=document.createElementNS("http://www.w3.org/2000/svg","svg");
+        chevron.setAttribute("viewBox","0 0 20 20");
+        chevron.setAttribute("aria-hidden","true");
+        chevron.classList.add("mp-visual-select-chevron");
+        chevron.innerHTML='<path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+
+        const menu=document.createElement("div");
+        menu.className="mp-visual-select-menu";
+        menu.setAttribute("role","listbox");
+        menu.hidden=true;
+
+        trigger.append(value,chevron);
+        select.insertAdjacentElement("afterend",wrapper);
+        wrapper.append(trigger,menu);
+
+        const close=()=>{
+            wrapper.classList.remove("is-open");
+            menu.hidden=true;
+            trigger.setAttribute("aria-expanded","false");
+        };
+
+        const rebuild=()=>{
+            const options=Array.from(select.options);
+            const current=select.options[select.selectedIndex];
+            value.textContent=current?.textContent?.trim()||(
+                select.id==="mp-installments"?"Cuotas":"Banco emisor"
+            );
+
+            menu.innerHTML="";
+            options.forEach(option=>{
+                const button=document.createElement("button");
+                button.type="button";
+                button.className="mp-visual-select-option";
+                button.textContent=option.textContent?.trim()||"";
+                button.disabled=option.disabled||!String(option.value||"").trim();
+                button.classList.toggle("is-selected",option.value===select.value);
+                button.setAttribute("role","option");
+                button.setAttribute("aria-selected",option.value===select.value?"true":"false");
+                button.addEventListener("click",()=>{
+                    if(button.disabled)return;
+                    select.value=option.value;
+                    select.dispatchEvent(new Event("change",{bubbles:true}));
+                    rebuild();
+                    close();
+                    trigger.focus({preventScroll:true});
+                });
+                menu.appendChild(button);
+            });
+
+            trigger.disabled=options.filter(option=>String(option.value||"").trim()).length===0;
+        };
+
+        trigger.addEventListener("click",()=>{
+            if(trigger.disabled)return;
+            const opening=menu.hidden;
+            document.querySelectorAll(".mp-visual-select.is-open").forEach(other=>{
+                if(other===wrapper)return;
+                other.classList.remove("is-open");
+                const otherMenu=other.querySelector(".mp-visual-select-menu");
+                const otherTrigger=other.querySelector(".mp-visual-select-trigger");
+                if(otherMenu)otherMenu.hidden=true;
+                otherTrigger?.setAttribute("aria-expanded","false");
+            });
+            menu.hidden=!opening;
+            wrapper.classList.toggle("is-open",opening);
+            trigger.setAttribute("aria-expanded",String(opening));
+        });
+
+        select.addEventListener("change",rebuild);
+
+        const observer=new MutationObserver(rebuild);
+        observer.observe(select,{childList:true,subtree:true,attributes:true});
+
+        wrappers.set(select,{wrapper,rebuild,observer});
+        rebuild();
+    };
+
+    const init=()=>ids.forEach(id=>createFor(document.getElementById(id)));
+    init();
+
+    document.addEventListener("click",event=>{
+        if(event.target.closest?.(".mp-visual-select"))return;
+        document.querySelectorAll(".mp-visual-select.is-open").forEach(wrapper=>{
+            wrapper.classList.remove("is-open");
+            const menu=wrapper.querySelector(".mp-visual-select-menu");
+            const trigger=wrapper.querySelector(".mp-visual-select-trigger");
+            if(menu)menu.hidden=true;
+            trigger?.setAttribute("aria-expanded","false");
+        });
+    });
+
+    window.__doradoRefreshMpSelects=()=>{
+        wrappers.forEach(entry=>entry.rebuild());
+    };
 })();
 
 (function configurarEstadoNuevosPagos(){

@@ -3121,3 +3121,154 @@ body::-webkit-scrollbar-corner{
     min-height:52px!important;
   }
 }
+
+
+/* =========================================================
+   MERCADO PAGO CARD FORM — INTERACTION + CUSTOM SELECTS FIX
+   ========================================================= */
+#checkout-modal .mp-secure-field{
+  position:relative!important;
+  z-index:2!important;
+  padding:0!important;
+  overflow:hidden!important;
+  pointer-events:auto!important;
+  cursor:text!important;
+}
+
+#checkout-modal .mp-secure-field iframe{
+  display:block!important;
+  position:relative!important;
+  z-index:3!important;
+  width:100%!important;
+  height:50px!important;
+  min-height:50px!important;
+  border:0!important;
+  background:transparent!important;
+  pointer-events:auto!important;
+}
+
+#checkout-modal .mp-card-form input{
+  position:relative!important;
+  z-index:2!important;
+  pointer-events:auto!important;
+}
+
+#checkout-modal .mp-native-select{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#checkout-modal .mp-visual-select{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+}
+
+#checkout-modal .mp-visual-select-trigger{
+  width:100%!important;
+  min-height:50px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding:0 13px!important;
+  border:1px solid #d8d0c4!important;
+  border-radius:13px!important;
+  background:#fbf7ef!important;
+  color:#172833!important;
+  font:inherit!important;
+  font-size:12px!important;
+  text-align:left!important;
+  cursor:pointer!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72)!important;
+}
+
+#checkout-modal .mp-visual-select-trigger:disabled{
+  cursor:not-allowed!important;
+  color:#8b9498!important;
+  opacity:.78!important;
+}
+
+#checkout-modal .mp-visual-select-trigger:focus-visible{
+  outline:0!important;
+  border-color:#d7a13a!important;
+  box-shadow:0 0 0 3px rgba(215,161,58,.12)!important;
+}
+
+#checkout-modal .mp-visual-select-value{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+#checkout-modal .mp-visual-select-chevron{
+  width:17px!important;
+  height:17px!important;
+  flex:0 0 auto!important;
+  transition:transform .16s ease!important;
+}
+
+#checkout-modal .mp-visual-select.is-open .mp-visual-select-chevron{
+  transform:rotate(180deg)!important;
+}
+
+#checkout-modal .mp-visual-select-menu{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:calc(100% + 6px)!important;
+  z-index:10050!important;
+  max-height:230px!important;
+  overflow:auto!important;
+  padding:6px!important;
+  border:1px solid #d8d0c4!important;
+  border-radius:13px!important;
+  background:#fffaf3!important;
+  box-shadow:0 16px 38px rgba(16,33,45,.16)!important;
+}
+
+#checkout-modal .mp-visual-select-menu[hidden]{
+  display:none!important;
+}
+
+#checkout-modal .mp-visual-select-option{
+  width:100%!important;
+  min-height:40px!important;
+  padding:9px 10px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  color:#172833!important;
+  font:inherit!important;
+  font-size:11px!important;
+  text-align:left!important;
+  cursor:pointer!important;
+}
+
+#checkout-modal .mp-visual-select-option:hover:not(:disabled),
+#checkout-modal .mp-visual-select-option.is-selected{
+  background:#f3ead8!important;
+}
+
+#checkout-modal .mp-visual-select-option:disabled{
+  color:#9aa2a6!important;
+  cursor:default!important;
+}
+
+@media(max-width:640px){
+  #checkout-modal .mp-secure-field iframe,
+  #checkout-modal .mp-visual-select-trigger{
+    min-height:52px!important;
+    height:52px!important;
+  }
+}

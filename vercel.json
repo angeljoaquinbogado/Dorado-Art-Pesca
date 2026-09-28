@@ -21,7 +21,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' https://sdk.mercadopago.com 'sha256-z1KyOwqNsIK1tktSIYD/GBoGKV86pZ6n/40FRLILRec=' 'sha256-1VwHVpQXTpjDxmuj6QRoT2cTTh3w81QS98/aHYB5BZI='; script-src-attr 'none'; connect-src 'self' https://*.supabase.co https://api.mercadopago.com https://sdk.mercadopago.com; frame-src https://www.google.com https://maps.google.com https://sdk.mercadopago.com https://*.mercadopago.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://www.mercadopago.com https://mercadopago.com; upgrade-insecure-requests"
+          "value": "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' https://sdk.mercadopago.com https://http2.mlstatic.com https://*.mercadopago.com 'sha256-z1KyOwqNsIK1tktSIYD/GBoGKV86pZ6n/40FRLILRec=' 'sha256-1VwHVpQXTpjDxmuj6QRoT2cTTh3w81QS98/aHYB5BZI='; script-src-attr 'none'; connect-src 'self' https://*.supabase.co https://api.mercadopago.com https://sdk.mercadopago.com https://*.mercadopago.com https://*.mlstatic.com; frame-src https://www.google.com https://maps.google.com https://sdk.mercadopago.com https://*.mercadopago.com https://*.mercadolibre.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://www.mercadopago.com https://mercadopago.com; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",
