@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="assets/css/admin-performance.css?v=20260927-perf2"/>
 <link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-loginmobile1"/>
 <link rel="stylesheet" href="assets/css/admin-organization-20260928.css?v=20260928b"/>
-<link rel="stylesheet" href="assets/css/admin-taxonomy-picker-20260928.css?v=20260928c"/>
+<link rel="stylesheet" href="assets/css/admin-taxonomy-picker-20260928.css?v=20260928d"/>
 </head>
 <body>
 
@@ -177,7 +177,7 @@
           </div>
 
           <div class="grid">
-            <form id="product-form" class="card form-card">
+            <form id="product-form" class="card form-card" hidden>
               <div class="card-head">
                 <div><span class="section-tag">EDITOR DE PRODUCTO</span><h2 id="product-form-title" style="margin-top:10px">Nuevo producto</h2><p>Completá la información que va a ver el cliente.</p></div>
               </div>
@@ -271,7 +271,7 @@
 
             <div class="card catalog-card">
               <div class="catalog-toolbar">
-                <div class="catalog-title-row"><div><h2>Catálogo</h2><p>Visualizá y administrá todos los productos.</p></div><div class="catalog-status-row"><span id="product-stock-alert" class="stock-alert-chip" hidden></span><span id="product-list-count" class="catalog-count">0 productos</span></div></div>
+                <div class="catalog-title-row"><div><h2>Catálogo</h2><p>Visualizá y administrá todos los productos.</p></div><div class="catalog-title-actions"><div class="catalog-status-row"><span id="product-stock-alert" class="stock-alert-chip" hidden></span><span id="product-list-count" class="catalog-count">0 productos</span></div><button class="primary catalog-new-product" type="button" id="catalog-new-product-button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>NUEVO PRODUCTO</button></div></div>
                 <div class="catalog-filters">
                   <label class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="product-search" type="search" placeholder="Buscar por producto, marca o categoría"></label>
                   <select id="product-category-filter" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option></select>
@@ -281,6 +281,12 @@
                 <div class="admin-brand-tabs" id="admin-brand-tabs" aria-label="Secciones por marca"></div>
               </div>
               <div class="table-wrap product-table-wrap"><table><thead><tr><th>PRODUCTO</th><th>PRECIO</th><th>STOCK</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="products-table"><tr><td colspan="5" class="loading">Cargando productos...</td></tr></tbody></table></div>
+              <div class="admin-products-more" id="admin-products-more" hidden>
+                <button class="secondary admin-products-more-button" id="admin-products-more-button" type="button" aria-expanded="false">
+                  <span>VER TODOS LOS PRODUCTOS</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -382,6 +388,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20260928-googleoauth1"></script>
+<script src="assets/js/admin.js?v=20260928-productcap1"></script>
 </body>
 </html>
