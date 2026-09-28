@@ -117,23 +117,22 @@ export default async function handler(req, res) {
 
             if (currentPaymentId && ["refunded", "charged_back"].includes(currentStatus)) {
                 const mapped = currentStatus === "charged_back" ? "contracargo" : "reembolsado";
-                const patchResponse = await sb(
-                    `/rest/v1/pedidos?id=eq.${encodeURIComponent(id)}`,
-                    {
-                        method: "PATCH",
-                        headers: { Prefer: "return=minimal" },
-                        body: JSON.stringify({
-                            estado: mapped,
-                            mp_payment_id: currentPaymentId
-                        })
-                    }
-                );
+                const stateResponse = await sb("/rest/v1/rpc/registrar_estado_pago", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        p_pedido_id: id,
+                        p_payment_id: currentPaymentId,
+                        p_estado: mapped
+                    })
+                });
+                const stateData = await stateResponse.json().catch(() => null);
 
-                if (!patchResponse.ok) {
-                    console.error("Payment reconcile terminal-state patch failed", {
-                        status: patchResponse.status,
+                if (!stateResponse.ok || stateData?.ok === false) {
+                    console.error("Payment reconcile terminal-state RPC failed", {
+                        status: stateResponse.status,
                         orderId: id,
-                        paymentStatus: currentStatus
+                        paymentStatus: currentStatus,
+                        result: stateData
                     });
                     return res.status(500).json({ error: "No se pudo actualizar el estado final del pago" });
                 }
@@ -141,7 +140,8 @@ export default async function handler(req, res) {
                 return res.status(200).json({
                     ok: true,
                     status: mapped,
-                    reconciled: true
+                    reconciled: true,
+                    stock_restaurado: Boolean(stateData?.stock_restaurado)
                 });
             }
 
@@ -182,7 +182,7 @@ export default async function handler(req, res) {
         });
         const confirmData = await confirmResponse.json().catch(() => null);
 
-        if (!confirmResponse.ok || !confirmData?.ok) {
+        if (!confirmResponse.ok) {
             console.error("Payment reconcile confirm failed", {
                 status: confirmResponse.status,
                 orderId: id,
@@ -190,6 +190,29 @@ export default async function handler(req, res) {
             });
             return res.status(500).json({
                 error: "El pago fue encontrado pero no se pudo confirmar el pedido"
+            });
+        }
+
+        if (!confirmData?.ok) {
+            const reviewReason = String(confirmData?.reason || "");
+            if (confirmData?.review || ["pedido_cancelado", "stock_insuficiente", "stock_en_revision"].includes(reviewReason)) {
+                return res.status(200).json({
+                    ok: true,
+                    status: reviewReason === "pedido_cancelado"
+                        ? "pagado_cancelado_revisar"
+                        : "pagado_revisar_stock",
+                    reconciled: true,
+                    review: true,
+                    reason: reviewReason
+                });
+            }
+
+            console.error("Payment reconcile confirmation returned non-ok result", {
+                orderId: id,
+                result: confirmData
+            });
+            return res.status(500).json({
+                error: "El pago fue encontrado pero el pedido necesita revisión"
             });
         }
 
