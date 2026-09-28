@@ -18,6 +18,13 @@ const money = new Intl.NumberFormat("es-AR", {
     maximumFractionDigits:0
 });
 
+const moneyExact = new Intl.NumberFormat("es-AR", {
+    style:"currency",
+    currency:"ARS",
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+});
+
 function orderCode(id){
     const raw=String(id||"").replaceAll("-","").toUpperCase();
     return raw ? `DP-${raw.slice(0,10)}` : "DP-—";
@@ -1465,7 +1472,7 @@ async function loadOrders(){
     tbody.innerHTML='<tr><td colspan="8" class="loading">Cargando pedidos...</td></tr>';
     updateOrderSelectionUI();
 
-    let r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,subtotal,descuento_total,cupon_codigo,total,estado,preparacion_estado,tracking_token,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at&order=created_at.desc&limit=300");
+    let r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,subtotal,descuento_total,cupon_codigo,total,estado,mp_payment_id,preparacion_estado,tracking_token,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at&order=created_at.desc&limit=300");
     let d=await r.json().catch(()=>[]);
     if(!r.ok){
         r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,total,estado,preparacion_estado,tracking_token,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at&order=created_at.desc&limit=300");
@@ -1515,6 +1522,112 @@ async function updateFulfillment(id,value){
     }
 }
 
+
+function mercadoPagoSettlementMarkup(order){
+    const paymentId=String(order?.mp_payment_id||"").trim();
+    if(!paymentId)return "";
+
+    return `
+        <section class="order-mp-settlement" data-mp-settlement>
+            <div class="order-mp-settlement-head">
+                <div class="order-mp-settlement-brand">
+                    <span class="order-mp-logo"><img src="assets/images/payment/mercado-pago.svg" alt="" loading="lazy" decoding="async"></span>
+                    <div><span>LIQUIDACIÓN REAL</span><h3>Descuentos de Mercado Pago</h3></div>
+                </div>
+                <span class="order-mp-state" data-mp-settlement-state>CONSULTANDO…</span>
+            </div>
+            <div class="order-mp-settlement-body" data-mp-settlement-body>
+                <div class="order-mp-loading">Consultando los importes informados por Mercado Pago…</div>
+            </div>
+        </section>
+    `;
+}
+
+function mercadoPagoStatusLabel(status){
+    const value=String(status||"").toLowerCase();
+    const labels={
+        approved:"APROBADO",
+        pending:"PENDIENTE",
+        in_process:"EN PROCESO",
+        rejected:"RECHAZADO",
+        cancelled:"CANCELADO",
+        refunded:"REEMBOLSADO",
+        charged_back:"CONTRACARGO"
+    };
+    return labels[value]||value.toUpperCase().replaceAll("_"," ")||"SIN ESTADO";
+}
+
+async function loadMercadoPagoSettlement(order,content){
+    const panel=content?.querySelector?.("[data-mp-settlement]");
+    if(!panel)return;
+
+    const state=panel.querySelector("[data-mp-settlement-state]");
+    const body=panel.querySelector("[data-mp-settlement-body]");
+
+    try{
+        await refreshSessionIfNeeded();
+        if(!session?.access_token)throw new Error("La sesión del administrador venció.");
+
+        const response=await fetch(`/api/admin-payment-details?id=${encodeURIComponent(order.id)}`,{
+            method:"GET",
+            headers:{
+                Authorization:`Bearer ${session.access_token}`,
+                Accept:"application/json"
+            },
+            cache:"no-store"
+        });
+        const data=await response.json().catch(()=>({}));
+
+        if(!response.ok){
+            throw new Error(data.error||"No se pudo consultar la liquidación.");
+        }
+
+        const amount=Number(data.transaction_amount)||0;
+        const net=data.net_received_amount===null||data.net_received_amount===undefined
+            ? null
+            : Number(data.net_received_amount);
+        const deductions=data.deductions_total===null||data.deductions_total===undefined
+            ? null
+            : Number(data.deductions_total);
+        const breakdown=Array.isArray(data.breakdown)?data.breakdown:[];
+
+        if(state){
+            state.textContent=mercadoPagoStatusLabel(data.status);
+            state.className=`order-mp-state is-${String(data.status||"unknown").toLowerCase().replace(/[^a-z0-9_-]/g,"")}`;
+        }
+
+        const rows=breakdown.length
+            ? breakdown.map(item=>`
+                <div class="order-mp-breakdown-row">
+                    <span>${esc(item.label||"Cargo")}</span>
+                    <strong>-${esc(moneyExact.format(Math.max(0,Number(item.amount)||0)))}</strong>
+                </div>
+            `).join("")
+            : `<div class="order-mp-breakdown-empty">Mercado Pago no separó cargos adicionales para esta operación.</div>`;
+
+        body.innerHTML=`
+            <div class="order-mp-summary-grid">
+                <div><span>MONTO COBRADO</span><strong>${esc(moneyExact.format(amount))}</strong></div>
+                <div><span>DESCUENTOS MP</span><strong class="order-mp-deduction">${deductions===null?"Pendiente":`-${esc(moneyExact.format(Math.max(0,deductions)))}`}</strong></div>
+                <div class="order-mp-net"><span>NETO RECIBIDO</span><strong>${net===null?"Pendiente de liquidación":esc(moneyExact.format(Math.max(0,net)))}</strong></div>
+            </div>
+            <div class="order-mp-breakdown">
+                <div class="order-mp-breakdown-title"><span>DETALLE INFORMADO POR MERCADO PAGO</span><small>ID ${esc(data.payment_id||"—")}</small></div>
+                ${rows}
+            </div>
+            <p class="order-mp-note">Los importes son los reales informados por Mercado Pago para esta operación. El IVA, las retenciones u otros impuestos pueden aparecer separados o incluidos dentro de un cargo, según cómo Mercado Pago liquide el pago.</p>
+        `;
+    }catch(error){
+        if(state){
+            state.textContent="NO DISPONIBLE";
+            state.className="order-mp-state is-error";
+        }
+        if(body){
+            body.innerHTML=`<div class="order-mp-error">${esc(error?.message||"No se pudo consultar la liquidación de Mercado Pago.")}</div>`;
+        }
+    }
+}
+
 async function openOrder(order){
     const modal=document.getElementById("order-modal");
     const content=document.getElementById("order-modal-content");
@@ -1551,6 +1664,7 @@ async function openOrder(order){
                 <div><span>PAGO</span><strong>${esc(orderStatusLabel(order.estado))}</strong></div>
                 <div><span>PREPARACIÓN</span><strong>${esc(String(order.preparacion_estado||"nuevo").toUpperCase())}</strong></div>
             </div>
+            ${mercadoPagoSettlementMarkup(order)}
             <section class="order-shipping-card" aria-label="Seguimiento del envío">
                 <div class="order-shipping-head">
                     <div><span class="section-tag">LOGÍSTICA</span><h3>Seguimiento del envío</h3></div>
@@ -1593,6 +1707,8 @@ async function openOrder(order){
                 `).join("") || '<div class="loading">Sin ítems.</div>'}
             </div>
         `;
+
+        loadMercadoPagoSettlement(order,content);
 
         content.querySelector(".save-shipping")?.addEventListener("click",async e=>{
             const button=e.currentTarget;
