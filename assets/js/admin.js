@@ -2151,6 +2151,7 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
         handleGoogleBusinessCallbackResult();
         await loadProducts();
         await loadCategories();
+        await loadCategories();
     }catch(err){
         msg("login-message",err.message||"No se pudo iniciar sesión.");
     }finally{
