@@ -713,19 +713,19 @@ function showApp(){
 
 async function loadProducts(){
     const tbody=document.getElementById("products-table");
-    tbody.innerHTML='<tr><td colspan="6" class="loading">Cargando productos...</td></tr>';
+    tbody.innerHTML='<tr><td colspan="5" class="loading">Cargando productos...</td></tr>';
 
     const pageSize=1000;
     const all=[];
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,stock,activo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,activo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         let d=await r.json().catch(()=>[]);
         if(!r.ok){
-            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,stock,activo&order=id.asc",{
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo&order=id.asc",{
                 headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
             });
             d=await r.json().catch(()=>[]);
@@ -748,16 +748,100 @@ async function loadProducts(){
         stockAlert.textContent=critical===1?"1 PRODUCTO REQUIERE STOCK":`${critical} PRODUCTOS REQUIEREN STOCK`;
     }
 
+    renderProductOrganizationFilters();
     renderProducts();
     renderCategoryManager();
+}
+
+function normalizeBrandName(value){
+    return String(value||"").trim().replace(/\s+/g," ").slice(0,80);
+}
+
+function renderProductOrganizationFilters(){
+    const categorySelect=document.getElementById("product-category-filter");
+    const brandSelect=document.getElementById("product-brand-filter");
+    const brandList=document.getElementById("product-brand-list");
+    const brandTabs=document.getElementById("admin-brand-tabs");
+
+    const categoriesMap=new Map();
+    const brandsMap=new Map();
+
+    productos.forEach(product=>{
+        const category=normalizeCategoryName(product.categoria);
+        const categoryKey=category.toLocaleLowerCase("es");
+        if(category&&!categoriesMap.has(categoryKey))categoriesMap.set(categoryKey,category);
+
+        const brand=normalizeBrandName(product.marca);
+        const brandKey=brand.toLocaleLowerCase("es");
+        if(brand&&!brandsMap.has(brandKey))brandsMap.set(brandKey,brand);
+    });
+
+    const categoryNames=[...categoriesMap.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
+    const brandNames=[...brandsMap.values()].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
+
+    if(categorySelect){
+        const previous=categorySelect.value||"all";
+        categorySelect.innerHTML='<option value="all">Todas las categorías</option>'+
+            categoryNames.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
+        categorySelect.value=categoryNames.some(name=>name===previous)?previous:"all";
+    }
+
+    if(brandSelect){
+        const previous=brandSelect.value||"all";
+        brandSelect.innerHTML='<option value="all">Todas las marcas</option>'+
+            brandNames.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
+        brandSelect.value=brandNames.some(name=>name===previous)?previous:"all";
+    }
+
+    if(brandList){
+        brandList.innerHTML=brandNames.map(name=>`<option value="${esc(name)}"></option>`).join("");
+    }
+
+    if(brandTabs){
+        const selected=String(brandSelect?.value||"all");
+        const buttons=[
+            `<button type="button" class="admin-brand-tab ${selected==="all"?"active":""}" data-brand="all">Todas <span>${productos.length}</span></button>`
+        ];
+
+        brandNames.forEach(name=>{
+            const key=name.toLocaleLowerCase("es");
+            const count=productos.filter(product=>normalizeBrandName(product.marca).toLocaleLowerCase("es")===key).length;
+            buttons.push(`<button type="button" class="admin-brand-tab ${selected===name?"active":""}" data-brand="${esc(name)}">${esc(name)} <span>${count}</span></button>`);
+        });
+
+        brandTabs.innerHTML=buttons.join("");
+        brandTabs.hidden=brandNames.length===0;
+
+        brandTabs.querySelectorAll(".admin-brand-tab").forEach(button=>{
+            button.addEventListener("click",()=>{
+                if(brandSelect){
+                    brandSelect.value=button.dataset.brand||"all";
+                    window.__doradoRefreshAdminSelects?.();
+                }
+                renderProducts();
+            });
+        });
+    }
+
+    window.__doradoRefreshAdminSelects?.();
+}
+
+function syncAdminBrandTabs(){
+    const selected=String(document.getElementById("product-brand-filter")?.value||"all");
+    document.querySelectorAll("#admin-brand-tabs .admin-brand-tab").forEach(button=>{
+        button.classList.toggle("active",String(button.dataset.brand||"all")===selected);
+    });
 }
 
 function renderProducts(){
     const tbody=document.getElementById("products-table");
     const search=(document.getElementById("product-search")?.value||"").trim().toLowerCase();
     const filter=document.getElementById("product-filter")?.value||"all";
+    const categoryFilter=normalizeCategoryName(document.getElementById("product-category-filter")?.value||"all");
+    const brandFilter=normalizeBrandName(document.getElementById("product-brand-filter")?.value||"all");
+
     const filtered=productos.filter(p=>{
-        const haystack=`${p.nombre||""} ${p.categoria||""}`.toLowerCase();
+        const haystack=`${p.nombre||""} ${p.categoria||""} ${p.marca||""}`.toLowerCase();
         const matchesSearch=!search||haystack.includes(search);
         const stock=Math.max(0,Number(p.stock)||0);
         const matchesFilter=filter==="all" ||
@@ -765,14 +849,20 @@ function renderProducts(){
             (filter==="hidden"&&!p.activo) ||
             (filter==="low"&&stock>0&&stock<=3) ||
             (filter==="out"&&stock===0);
-        return matchesSearch&&matchesFilter;
+        const matchesCategory=categoryFilter==="all" ||
+            normalizeCategoryName(p.categoria).toLocaleLowerCase("es")===categoryFilter.toLocaleLowerCase("es");
+        const matchesBrand=brandFilter==="all" ||
+            normalizeBrandName(p.marca).toLocaleLowerCase("es")===brandFilter.toLocaleLowerCase("es");
+        return matchesSearch&&matchesFilter&&matchesCategory&&matchesBrand;
     });
 
     const count=document.getElementById("product-list-count");
     if(count)count.textContent=`${filtered.length} de ${productos.length} productos`;
+    syncAdminBrandTabs();
+
     tbody.innerHTML="";
     if(!filtered.length){
-        tbody.innerHTML='<tr><td colspan="6" class="loading empty-state">No encontramos productos con esos filtros.</td></tr>';
+        tbody.innerHTML='<tr><td colspan="5" class="loading empty-state">No encontramos productos con esos filtros.</td></tr>';
         return;
     }
 
@@ -783,9 +873,19 @@ function renderProducts(){
         const stock=Math.max(0,Number(p.stock)||0);
         const stockClass=stock===0?"stock-out":stock<=3?"stock-low":"stock-ok";
         const stockText=stock===0?"SIN STOCK":stock<=3?`${stock} · BAJO`:`${stock}`;
+        const category=normalizeCategoryName(p.categoria)||"Sin categoría";
+        const brand=normalizeBrandName(p.marca)||"Sin marca";
+
         tr.innerHTML=`
-            <td><div class="thumb-shell"><img class="product-thumb" src="${esc(resolveAdminImage(p.imagen))}" alt="" loading="lazy" decoding="async"></div></td>
-            <td><strong class="product-name-cell">${esc(p.nombre)}</strong><div class="cell-sub">${esc(p.categoria||"Sin categoría")}</div></td>
+            <td>
+                <div class="admin-product-main">
+                    <div class="thumb-shell"><img class="product-thumb" src="${esc(resolveAdminImage(p.imagen))}" alt="" loading="lazy" decoding="async"></div>
+                    <div class="admin-product-copy">
+                        <strong class="product-name-cell">${esc(p.nombre)}</strong>
+                        <div class="cell-sub">${esc(brand)} · ${esc(category)}</div>
+                    </div>
+                </div>
+            </td>
             <td><strong class="price-cell">${esc(money.format((Number(p.precio)||0)*(1-Math.min(90,Math.max(0,Number(p.descuento_porcentaje)||0))/100)))}</strong>${Number(p.descuento_porcentaje)>0?`<div class="cell-sub"><s>${esc(money.format(Number(p.precio)||0))}</s> · -${Math.round(Number(p.descuento_porcentaje)||0)}%</div>`:""}</td>
             <td><span class="stock-pill ${stockClass}">${stockText}</span></td>
             <td><span class="badge ${p.activo?"on":"off"}">${p.activo?"ACTIVO":"OCULTO"}</span></td>
@@ -797,7 +897,6 @@ function renderProducts(){
     });
     tbody.appendChild(productRows);
 }
-
 
 function normalizeCategoryName(value){
     return String(value||"").trim().replace(/\s+/g," ").slice(0,80);
@@ -1118,6 +1217,7 @@ function editProduct(id){
     document.getElementById("product-discount").value=Math.max(0,Number(p.descuento_porcentaje)||0);
     document.getElementById("product-stock").value=Number(p.stock)||0;
     document.getElementById("product-category").value=p.categoria||"";
+    document.getElementById("product-brand").value=p.marca||"";
     document.getElementById("product-image").value="";
     document.getElementById("product-active").value=String(Boolean(p.activo));
     document.getElementById("product-form-title").textContent="Editar producto";
@@ -1197,6 +1297,7 @@ async function saveProduct(event){
             descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
             categoria:normalizeCategoryName(document.getElementById("product-category").value),
+            marca:normalizeBrandName(document.getElementById("product-brand").value),
             imagen:imagenes[0],
             imagenes,
             activo:document.getElementById("product-active").value==="true"
@@ -1419,7 +1520,6 @@ function renderOrders(){
     const visible=filteredOrders();
     const visibleIds=new Set(visible.map(o=>String(o.id)));
 
-    // Nunca dejamos pedidos seleccionados pero ocultos por un filtro.
     for(const id of [...selectedOrders]){
         if(!visibleIds.has(id))selectedOrders.delete(id);
     }
@@ -1429,7 +1529,7 @@ function renderOrders(){
 
     tbody.innerHTML="";
     if(!visible.length){
-        tbody.innerHTML='<tr><td colspan="8" class="loading">No encontramos pedidos con esos filtros.</td></tr>';
+        tbody.innerHTML='<tr><td colspan="7" class="loading">No encontramos pedidos con esos filtros.</td></tr>';
         updateOrderSelectionUI();
         return;
     }
@@ -1440,11 +1540,15 @@ function renderOrders(){
         const tr=document.createElement("tr");
         const date=new Date(o.created_at);
         const code=orderCode(o.id);
+        const dateText=date.toLocaleString("es-AR",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"});
+
         tr.innerHTML=`
             <td class="order-check-cell"><input class="order-checkbox" type="checkbox" data-order-id="${esc(o.id)}" aria-label="Seleccionar pedido ${esc(code)}"></td>
-            <td>${esc(date.toLocaleString("es-AR"))}</td>
-            <td><strong>${esc(o.cliente_nombre)}</strong><div class="cell-sub">${esc(code)}</div></td>
-            <td>${esc(o.cliente_email)}<div class="cell-sub">${esc(o.cliente_telefono)}</div></td>
+            <td><strong class="order-code-cell">${esc(code)}</strong><div class="cell-sub">${esc(dateText)}</div></td>
+            <td>
+                <strong>${esc(o.cliente_nombre)}</strong>
+                <div class="cell-sub contact-stack">${esc(o.cliente_email)}<br>${esc(o.cliente_telefono)}</div>
+            </td>
             <td><strong>${esc(money.format(Number(o.total)||0))}</strong></td>
             <td><span class="badge ${orderBadgeClass(String(o.estado||""))}">${esc(orderStatusLabel(o.estado))}</span></td>
             <td>
@@ -1456,7 +1560,7 @@ function renderOrders(){
                     <option value="cancelado" ${o.preparacion_estado==="cancelado"?"selected":""}>CANCELADO</option>
                 </select>
             </td>
-            <td><button class="icon-btn order-view" type="button">${icon("eye")}<span>VER PEDIDO</span></button></td>
+            <td><button class="icon-btn order-view" type="button">${icon("eye")}<span>VER</span></button></td>
         `;
         tr.querySelector(".fulfillment-select")?.setAttribute("data-order-id",String(o.id));
         tr.querySelector(".order-view")?.setAttribute("data-order-id",String(o.id));
@@ -1470,7 +1574,7 @@ function renderOrders(){
 async function loadOrders(){
     const tbody=document.getElementById("orders-table");
     selectedOrders.clear();
-    tbody.innerHTML='<tr><td colspan="8" class="loading">Cargando pedidos...</td></tr>';
+    tbody.innerHTML='<tr><td colspan="7" class="loading">Cargando pedidos...</td></tr>';
     updateOrderSelectionUI();
 
     let r=await sb("/rest/v1/pedidos?select=id,created_at,cliente_nombre,cliente_email,cliente_telefono,domicilio,ciudad,provincia,codigo_postal,metodo_entrega,notas,subtotal,descuento_total,cupon_codigo,total,estado,mp_payment_id,preparacion_estado,tracking_token,envio_transportista,envio_tracking_codigo,envio_tracking_url,envio_estado,envio_despachado_at,envio_actualizado_at&order=created_at.desc&limit=300");
@@ -2227,6 +2331,8 @@ document.addEventListener("pointerdown",event=>{
 
 document.getElementById("product-search")?.addEventListener("input",renderProducts);
 document.getElementById("product-filter")?.addEventListener("change",renderProducts);
+document.getElementById("product-category-filter")?.addEventListener("change",renderProducts);
+document.getElementById("product-brand-filter")?.addEventListener("change",renderProducts);
 
 const rerenderOrderFilters=()=>{
     selectedOrders.clear();
