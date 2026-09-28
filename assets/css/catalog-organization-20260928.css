@@ -75,10 +75,10 @@
 .catalog-step-label{
     display:inline-flex;
     align-items:center;
-    gap:9px;
-    color:#dbe3e6;
-    font:900 9px/1 Manrope,sans-serif;
-    letter-spacing:.11em;
+    gap:0;
+    color:#eef3f5;
+    font:900 12px/1 Manrope,sans-serif;
+    letter-spacing:.10em;
 }
 .catalog-step-label span{
     width:25px;
@@ -153,10 +153,14 @@
 .brand-sprite-logo,
 .catalog-brand-logo{
     display:block;
+    background-color:#f7f7f4;
     background-image:url("../images/brands/brands-sprite.webp");
     background-repeat:no-repeat;
     background-size:900% 100%;
     background-position:var(--brand-pos,0%) center;
+    border:1px solid rgba(16,33,45,.08);
+    border-radius:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,.10);
 }
 .brand-sprite-logo{
     width:134px;
@@ -515,4 +519,16 @@
     .catalog-step-label{font-size:8px}
     .catalog-step-label span{width:22px;height:22px;font-size:7px}
     .dorado-catalog .product-img .product-real-image{padding:2px!important}
+}
+
+/* Stronger label sizing after removing 01/02/03 badges. */
+.catalog-step-label strong{
+    font-size:12px!important;
+    line-height:1!important;
+}
+@media (max-width:560px){
+    .catalog-step-label,
+    .catalog-step-label strong{
+        font-size:10px!important;
+    }
 }
