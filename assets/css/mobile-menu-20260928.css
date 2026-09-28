@@ -342,3 +342,165 @@
     grid-template-columns:1fr 1fr!important;
   }
 }
+
+
+/* =========================================================
+   CENTRADO DE MARCAS + ANIMACIÓN DESDE "VER TODAS"
+   ========================================================= */
+#marcas.brands-expanded .brand-marquee-set{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  width:100%!important;
+  padding:10px!important;
+}
+
+#marcas.brands-expanded .brand-marquee-card{
+  flex:1 1 245px!important;
+  width:auto!important;
+  min-width:220px!important;
+  max-width:285px!important;
+  margin:0!important;
+  opacity:0;
+  transform:translate3d(92px,0,0) scale(.965);
+  animation:doradoBrandReveal .46s cubic-bezier(.22,.78,.22,1) forwards;
+  transform-origin:right center;
+}
+
+#marcas.brands-expanded .brand-marquee-card:nth-child(1){animation-delay:.015s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(2){animation-delay:.045s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(3){animation-delay:.075s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(4){animation-delay:.105s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(5){animation-delay:.135s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(6){animation-delay:.165s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(7){animation-delay:.195s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(8){animation-delay:.225s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(9){animation-delay:.255s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(10){animation-delay:.285s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(11){animation-delay:.315s}
+#marcas.brands-expanded .brand-marquee-card:nth-child(12){animation-delay:.345s}
+
+@keyframes doradoBrandReveal{
+  0%{
+    opacity:0;
+    transform:translate3d(92px,0,0) scale(.965);
+    filter:blur(2px);
+  }
+  60%{
+    opacity:1;
+    filter:blur(0);
+  }
+  100%{
+    opacity:1;
+    transform:translate3d(0,0,0) scale(1);
+    filter:blur(0);
+  }
+}
+
+@media(max-width:900px){
+  #marcas.brands-expanded .brand-marquee-card{
+    flex:1 1 calc(33.333% - 10px)!important;
+    min-width:190px!important;
+    max-width:270px!important;
+  }
+}
+
+@media(max-width:700px){
+  #marcas.brands-expanded .brand-marquee-set{
+    justify-content:center!important;
+    gap:8px!important;
+    padding:8px!important;
+  }
+
+  #marcas.brands-expanded .brand-marquee-card{
+    flex:0 1 calc(50% - 4px)!important;
+    width:calc(50% - 4px)!important;
+    min-width:0!important;
+    max-width:210px!important;
+  }
+
+  /* Drawer Dorado: entra desde la DERECHA hacia la izquierda,
+     igual al movimiento del video de referencia. */
+  .mobile-menu-drawer{
+    inset:0 0 0 auto!important;
+    border-right:0!important;
+    border-left:1px solid rgba(234,183,77,.16)!important;
+    box-shadow:-28px 0 70px rgba(1,6,10,.34)!important;
+    transform:translate3d(104%,0,0)!important;
+    transition:
+      transform .34s cubic-bezier(.22,.78,.22,1),
+      visibility .34s ease!important;
+  }
+
+  body.menu-open .mobile-menu-drawer{
+    transform:translate3d(0,0,0)!important;
+  }
+
+  .mobile-menu-head,
+  .mobile-menu-search,
+  .mobile-menu-section,
+  .mobile-menu-actions{
+    opacity:0;
+    transform:translate3d(24px,0,0);
+    transition:
+      opacity .26s ease,
+      transform .34s cubic-bezier(.22,.78,.22,1);
+  }
+
+  body.menu-open .mobile-menu-head{
+    opacity:1;
+    transform:translate3d(0,0,0);
+    transition-delay:.08s;
+  }
+
+  body.menu-open .mobile-menu-search{
+    opacity:1;
+    transform:translate3d(0,0,0);
+    transition-delay:.12s;
+  }
+
+  body.menu-open .mobile-menu-section:nth-of-type(1){
+    opacity:1;
+    transform:translate3d(0,0,0);
+    transition-delay:.16s;
+  }
+
+  body.menu-open .mobile-menu-section:nth-of-type(2){
+    opacity:1;
+    transform:translate3d(0,0,0);
+    transition-delay:.20s;
+  }
+
+  body.menu-open .mobile-menu-actions{
+    opacity:1;
+    transform:translate3d(0,0,0);
+    transition-delay:.24s;
+  }
+}
+
+@media(max-width:420px){
+  #marcas.brands-expanded .brand-marquee-card{
+    flex-basis:calc(50% - 4px)!important;
+    width:calc(50% - 4px)!important;
+    max-width:190px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #marcas.brands-expanded .brand-marquee-card{
+    animation:none!important;
+    opacity:1!important;
+    transform:none!important;
+    filter:none!important;
+  }
+
+  .mobile-menu-drawer,
+  .mobile-menu-head,
+  .mobile-menu-search,
+  .mobile-menu-section,
+  .mobile-menu-actions{
+    transition:none!important;
+  }
+}
