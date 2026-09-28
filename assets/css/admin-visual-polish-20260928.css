@@ -1,0 +1,300 @@
+/* Dorado Admin — pulido tipográfico y visual final · 2026-09-28 */
+
+:root{
+  --admin-polish-gold:#e6bb48;
+  --admin-polish-gold-strong:#c89422;
+  --admin-polish-gold-soft:rgba(230,187,72,.14);
+  --admin-polish-ink:#202328;
+  --admin-polish-muted:#777d84;
+}
+
+/* Tipografía coherente en todo el panel */
+body,
+button,
+input,
+textarea,
+select,
+option,
+table,
+th,
+td{
+  font-family:"Manrope",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+
+.hero-head h1,
+.hero-head .admin-page-title,
+.card-head h2,
+.catalog-title-row h2,
+.orders-toolbar h2,
+.order-modal-card h2,
+.confirm-card h2,
+.login-card h2{
+  font-family:"Montserrat","Manrope",sans-serif!important;
+  font-weight:700!important;
+}
+
+/* Evita textos excesivamente pequeños o con espaciado artificial */
+.field label,
+.form-section-title,
+.side-label,
+.head-kicker,
+.stat-label,
+th,
+.order-meta span{
+  letter-spacing:.075em!important;
+}
+
+.field label{
+  font-size:9.5px!important;
+  line-height:1.25!important;
+  color:#62676d!important;
+}
+
+.file-help{
+  font-size:10.5px!important;
+  line-height:1.55!important;
+  color:#858a90!important;
+}
+
+.card-head h2,
+.catalog-title-row h2,
+.orders-toolbar h2{
+  font-size:19px!important;
+  line-height:1.2!important;
+  letter-spacing:-.025em!important;
+}
+
+.card-head p,
+.catalog-title-row p,
+.orders-toolbar p{
+  font-size:10.5px!important;
+  line-height:1.55!important;
+}
+
+.form-section-title{
+  font-size:8.5px!important;
+  font-weight:800!important;
+  color:#91969c!important;
+}
+
+/* Controles */
+.field input,
+.field textarea,
+.field select,
+.search-wrap input,
+.catalog-filters select,
+.fulfillment-select,
+.shipping-form-grid input,
+.shipping-form-grid select{
+  font-size:11.5px!important;
+  font-weight:550!important;
+}
+
+.field input::placeholder,
+.field textarea::placeholder,
+.search-wrap input::placeholder{
+  color:#a1a6ab!important;
+  opacity:1!important;
+}
+
+.primary,
+.secondary,
+.danger,
+.icon-btn,
+.tab,
+.store-link{
+  font-size:10px!important;
+  font-weight:750!important;
+  letter-spacing:.025em!important;
+}
+
+/* Dorado menos naranja y más elegante */
+.primary{
+  background:linear-gradient(135deg,#efc85c,#d7a535)!important;
+  color:#101820!important;
+  box-shadow:0 10px 24px rgba(194,146,34,.18)!important;
+}
+
+.primary:hover{
+  box-shadow:0 13px 28px rgba(194,146,34,.23)!important;
+}
+
+.section-tag,
+.head-kicker,
+.login-kicker{
+  color:#9f7418!important;
+}
+
+.section-tag{
+  background:var(--admin-polish-gold-soft)!important;
+}
+
+.tab.active{
+  color:#f3d47d!important;
+  background:linear-gradient(135deg,rgba(230,187,72,.18),rgba(230,187,72,.07))!important;
+}
+
+.stat-icon{
+  color:#9b7017!important;
+  background:#f6ecd1!important;
+}
+
+/* Tablas: mejor legibilidad */
+th{
+  font-size:8.5px!important;
+  font-weight:800!important;
+  color:#83888f!important;
+}
+
+td{
+  font-size:10.5px!important;
+  line-height:1.4!important;
+}
+
+.product-name-cell,
+.price-cell{
+  font-size:11.5px!important;
+  line-height:1.35!important;
+}
+
+.cell-sub{
+  font-size:9.5px!important;
+  line-height:1.4!important;
+}
+
+.badge,
+.stock-pill{
+  font-size:7.5px!important;
+  letter-spacing:.035em!important;
+}
+
+/* Header lateral y navegación */
+.side-brand small{
+  font-size:8.5px!important;
+  letter-spacing:.11em!important;
+}
+
+.side-label{
+  font-size:8.5px!important;
+  letter-spacing:.10em!important;
+}
+
+.tab{
+  font-size:10.5px!important;
+  letter-spacing:.015em!important;
+}
+
+.user-meta strong{
+  font-size:10.5px!important;
+}
+
+.top-user{
+  font-size:8.5px!important;
+}
+
+/* Barra superior */
+.crumb{
+  font-size:9.5px!important;
+  letter-spacing:.045em!important;
+}
+
+.connection-pill{
+  font-size:8.5px!important;
+  letter-spacing:.025em!important;
+}
+
+/* Catálogo: controles de gestión */
+.catalog-count{
+  font-size:9.5px!important;
+}
+
+#products-panel .catalog-new-product,
+#products-panel .admin-products-more-button{
+  font-size:9px!important;
+  letter-spacing:.025em!important;
+}
+
+/* Selectores propios */
+.admin-select-trigger{
+  font-family:"Manrope",sans-serif!important;
+  font-size:11.5px!important;
+  font-weight:650!important;
+}
+
+.admin-select-option{
+  font-family:"Manrope",sans-serif!important;
+  font-size:11px!important;
+  line-height:1.25!important;
+}
+
+.admin-select-option[data-value="__new__"]{
+  color:#8f6512!important;
+}
+
+/* Toasts y mensajes */
+.admin-toast,
+.message{
+  font-size:10.5px!important;
+  line-height:1.45!important;
+}
+
+/* Mobile: no caer en tipografía nativa y evitar tamaños microscópicos */
+@media(max-width:700px){
+  .tab{
+    font-size:10px!important;
+  }
+
+  .hero-head h1,
+  .hero-head .admin-page-title{
+    font-size:30px!important;
+    letter-spacing:-.035em!important;
+  }
+
+  .hero-head p{
+    font-size:11.5px!important;
+  }
+
+  .field label{
+    font-size:10px!important;
+  }
+
+  .field input,
+  .field textarea,
+  .field select,
+  .search-wrap input,
+  .catalog-filters select,
+  .admin-select-trigger{
+    font-family:"Manrope",sans-serif!important;
+    font-size:16px!important;
+  }
+
+  tbody td{
+    font-size:11px!important;
+  }
+
+  tbody td::before{
+    font-family:"Manrope",sans-serif!important;
+    font-size:7.5px!important;
+    letter-spacing:.07em!important;
+  }
+
+  .icon-btn{
+    font-size:9px!important;
+  }
+
+  #products-panel .catalog-new-product,
+  #products-panel .admin-products-more-button{
+    font-size:8.5px!important;
+  }
+}
+
+/* Respeta el modo oscuro existente sin volver dorados los textos base */
+html.admin-dark .field label,
+body.admin-dark .field label{
+  color:#aab2b8!important;
+}
+
+html.admin-dark .file-help,
+body.admin-dark .file-help{
+  color:#8f9aa1!important;
+}
