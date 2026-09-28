@@ -11,6 +11,16 @@
     width:100%!important;
 }
 
+/* Al pasar Productos a una sola columna el formulario ya no puede quedar
+   sticky: de lo contrario el catálogo se desplaza por detrás y parece
+   superpuesto mientras se completa un producto. */
+#products-panel .form-card{
+    position:relative!important;
+    top:auto!important;
+    z-index:auto!important;
+    align-self:stretch!important;
+}
+
 .brand-admin-field{
     margin-top:14px;
 }
