@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="assets/css/admin-performance.css?v=20260927-perf2"/>
 <link rel="stylesheet" href="assets/css/admin-apple-fluid.css?v=20260927-loginmobile1"/>
 <link rel="stylesheet" href="assets/css/admin-organization-20260928.css?v=20260928b"/>
-<link rel="stylesheet" href="assets/css/admin-taxonomy-picker-20260928.css?v=20260928b"/>
+<link rel="stylesheet" href="assets/css/admin-taxonomy-picker-20260928.css?v=20260928c"/>
 </head>
 <body>
 
@@ -199,18 +199,16 @@
                   <div class="field category-admin-field">
                     <label for="product-category-select">CATEGORÍA</label>
                     <input id="product-category" type="hidden">
-                    <div class="category-picker-row">
-                      <select id="product-category-select" aria-label="Categoría del producto">
-                        <option value="">Seleccioná una categoría</option>
-                      </select>
-                      <button id="category-create-toggle" class="secondary category-create-toggle" type="button" aria-expanded="false" aria-controls="category-create-panel">CREAR</button>
-                    </div>
+                    <select id="product-category-select" aria-label="Categoría del producto">
+                      <option value="">Seleccioná una categoría</option>
+                      <option value="__new__">＋ Crear nueva categoría</option>
+                    </select>
                     <div id="category-create-panel" class="taxonomy-create-panel" hidden>
                       <input id="product-category-new" maxlength="80" placeholder="Nombre de la nueva categoría" autocomplete="off" spellcheck="false">
                       <button id="category-create" class="secondary category-create" type="button">AGREGAR</button>
                     </div>
                     <div class="category-tools">
-                      <span class="file-help">Elegí una categoría existente o creá una nueva.</span>
+                      <span class="file-help">Elegí una categoría existente. Si no está, seleccioná “Crear nueva categoría”.</span>
                       <button id="category-manage-toggle" class="category-manage-toggle" type="button" aria-expanded="false">ADMINISTRAR CATEGORÍAS</button>
                     </div>
                   </div>
@@ -384,6 +382,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20260928-taxonomypicker2"></script>
+<script src="assets/js/admin.js?v=20260928-taxonomypicker3"></script>
 </body>
 </html>
