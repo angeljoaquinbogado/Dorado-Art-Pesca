@@ -2262,7 +2262,10 @@ function construirFiltrosCategorias(productos = []) {
     }
 
     const total=source.length;
-    const allButton=`<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`;
+    const showAllButton=marcaActiva==="todas";
+    const allButton=showAllButton
+        ? `<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`
+        : "";
     const categoryButtons=categorias.map(cat=>`
         <button class="category-chip${cat.key===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat.key)}" aria-pressed="${cat.key===categoriaActiva?"true":"false"}">
             ${textoSeguro(cat.label)} <span class="category-chip-count">${cat.count}</span>
@@ -2271,9 +2274,18 @@ function construirFiltrosCategorias(productos = []) {
     wrap.innerHTML=allButton+categoryButtons;
 
     wrap.querySelectorAll(".category-chip").forEach(btn=>btn.addEventListener("click",()=>{
-        categoriaActiva=btn.dataset.category||"todos";
+        const key=btn.dataset.category||"todos";
+
+        // Dentro de una marca, tocar de nuevo la categoría activa vuelve
+        // a mostrar todos los productos de esa marca sin agregar un chip "Todos".
+        if(marcaActiva!=="todas" && categoriaActiva===key){
+            categoriaActiva="todos";
+        }else{
+            categoriaActiva=key;
+        }
+
         wrap.querySelectorAll(".category-chip").forEach(b=>{
-            const active=b===btn;
+            const active=(b.dataset.category||"todos")===categoriaActiva;
             b.classList.toggle("active",active);
             b.setAttribute("aria-pressed",String(active));
         });
@@ -2376,7 +2388,12 @@ document.getElementById("catalog-more-button")?.addEventListener("click",()=>{
     }
 });
 
-document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>limpiarMarcaSeleccionada({scroll:true}));
+document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
+    limpiarMarcaSeleccionada();
+    requestAnimationFrame(()=>{
+        document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+});
 document.getElementById("brand-show-all")?.addEventListener("click",event=>{
     event.preventDefault();
     limpiarMarcaSeleccionada();
