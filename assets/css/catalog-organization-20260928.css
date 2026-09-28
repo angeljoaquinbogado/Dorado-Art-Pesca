@@ -742,3 +742,98 @@ button.brand-showcase-link{
     font-size:11px!important;
   }
 }
+
+
+/* =========================================================
+   BRAND CARDS — blanco tipo tarjeta de producto
+   Sin "fondo oscuro + recuadro blanco interno".
+   ========================================================= */
+.brand-marquee-card{
+  background:#fff!important;
+  border:1px solid #e8e5df!important;
+  color:#111b23!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.08)!important;
+}
+
+.brand-marquee-card:hover,
+.brand-marquee-card:focus-visible{
+  background:#fff!important;
+  border-color:rgba(240,196,79,.78)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.12)!important;
+}
+
+.brand-marquee-card.active{
+  background:#fff!important;
+  border-color:var(--dorado-catalog-gold)!important;
+  box-shadow:inset 0 -3px 0 var(--dorado-catalog-gold),0 10px 26px rgba(0,0,0,.10)!important;
+}
+
+.brand-marquee-card .brand-sprite-logo{
+  background-color:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+.brand-marquee-meta strong{
+  color:#18242c!important;
+  font-weight:700!important;
+}
+
+.brand-marquee-meta small{
+  color:#7c878e!important;
+  font-weight:600!important;
+}
+
+/* Las marcas con assets dedicados también se funden con la tarjeta blanca. */
+.brand-marquee-card[data-brand="fox-airguns"] .brand-sprite-logo,
+.brand-marquee-card[data-brand="payo"] .brand-sprite-logo,
+.brand-marquee-card[data-brand="morgui-outdoor"] .brand-sprite-logo,
+.brand-marquee-card[data-brand="surfish"] .brand-sprite-logo{
+  background-color:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+/* Marca seleccionada: misma lógica visual que una card de producto. */
+.catalog-brand-context{
+  background:#fff!important;
+  border:1px solid #e8e5df!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.08)!important;
+}
+
+.catalog-brand-logo{
+  background-color:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+.catalog-brand-copy strong{
+  color:#18242c!important;
+}
+
+.catalog-brand-copy small{
+  color:#9a7119!important;
+}
+
+.catalog-brand-copy span{
+  color:#7b868d!important;
+}
+
+.catalog-brand-clear{
+  background:#f7f7f4!important;
+  border-color:#dedbd4!important;
+  color:#26323a!important;
+}
+
+.catalog-brand-clear:hover{
+  border-color:#d8b346!important;
+  background:#fffaf0!important;
+}
+
+@media(max-width:560px){
+  .brand-marquee-meta strong{
+    font-size:10.5px!important;
+  }
+}
