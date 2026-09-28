@@ -1,0 +1,132 @@
+/* Dorado Admin — selectores de marca y categoría · 2026-09-28 */
+
+#product-form .brand-admin-field,
+#product-form .category-admin-field{
+  min-width:0;
+}
+
+#product-form .brand-admin-field > .admin-select,
+#product-form .category-admin-field > .admin-select{
+  width:100%!important;
+  min-width:0!important;
+}
+
+#product-form .brand-admin-field .admin-select-trigger,
+#product-form .category-admin-field .admin-select-trigger{
+  min-height:48px!important;
+  border-radius:14px!important;
+  padding:0 14px!important;
+  background:#fff!important;
+  border:1px solid #dedbd4!important;
+  color:#24262a!important;
+  font-size:11.5px!important;
+  font-weight:750!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset!important;
+}
+
+#product-form .brand-admin-field .admin-select-trigger:hover,
+#product-form .category-admin-field .admin-select-trigger:hover{
+  border-color:#c9bea9!important;
+}
+
+#product-form .brand-admin-field .admin-select.is-open .admin-select-trigger,
+#product-form .category-admin-field .admin-select.is-open .admin-select-trigger{
+  border-color:#c8a13a!important;
+  box-shadow:0 0 0 4px rgba(200,161,58,.11)!important;
+}
+
+#product-form .taxonomy-create-panel{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  align-items:center;
+  margin-top:8px;
+  padding:10px;
+  border:1px solid #e5ded1;
+  border-radius:15px;
+  background:linear-gradient(180deg,#fffdf9,#fbf7ef);
+}
+
+#product-form .taxonomy-create-panel[hidden]{
+  display:none!important;
+}
+
+#product-form .taxonomy-create-panel input{
+  width:100%;
+  min-width:0;
+  min-height:46px;
+  border:1px solid #dcd7ce;
+  border-radius:12px;
+  padding:0 13px;
+  background:#fff;
+  color:#202226;
+  outline:none;
+  font-size:11px;
+}
+
+#product-form .taxonomy-create-panel input:focus{
+  border-color:#c8a13a;
+  box-shadow:0 0 0 4px rgba(200,161,58,.10);
+}
+
+#product-form .taxonomy-create-panel .category-create{
+  min-width:82px!important;
+  width:auto!important;
+  min-height:46px!important;
+  border-radius:12px!important;
+}
+
+#product-form .brand-admin-field .file-help,
+#product-form .category-admin-field .file-help{
+  margin-top:7px;
+  line-height:1.5;
+}
+
+#product-form .category-tools{
+  margin-top:6px;
+}
+
+/* La última opción de los menús propios es la acción de crear. */
+.admin-select-option[data-value="__new__"]{
+  margin-top:5px;
+  padding-top:11px;
+  border-top:1px solid #ebe3d5;
+  border-radius:0 0 10px 10px;
+  color:#8a620d;
+  font-weight:850;
+}
+
+.admin-select-option[data-value="__new__"]:hover,
+.admin-select-option[data-value="__new__"]:focus-visible{
+  background:#fbf4e5;
+  color:#6f4d08;
+}
+
+/* El placeholder no compite visualmente con una selección real. */
+#product-form .admin-select-value{
+  font-weight:750;
+}
+
+@media(max-width:700px){
+  #product-form .brand-admin-field .admin-select-trigger,
+  #product-form .category-admin-field .admin-select-trigger{
+    min-height:50px!important;
+    font-size:16px!important;
+    padding-inline:14px!important;
+  }
+
+  #product-form .taxonomy-create-panel{
+    grid-template-columns:1fr;
+  }
+
+  #product-form .taxonomy-create-panel input{
+    min-height:50px;
+    font-size:16px;
+  }
+
+  #product-form .taxonomy-create-panel .category-create{
+    width:100%!important;
+    min-width:0!important;
+    min-height:48px!important;
+  }
+}
