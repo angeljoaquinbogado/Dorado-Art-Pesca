@@ -2,6 +2,8 @@ const SESSION_KEY = "doradoAdminSession";
 let CONFIG = null;
 let session = null;
 let productos = [];
+let adminProductsExpanded = false;
+const ADMIN_PRODUCTS_INITIAL_LIMIT = 12;
 let pedidos = [];
 let cupones = [];
 let categorias = [];
@@ -970,9 +972,36 @@ function renderProducts(){
         return matchesSearch&&matchesFilter&&matchesCategory&&matchesBrand;
     });
 
+    const hasActiveFilter=Boolean(search)||
+        filter!=="all"||
+        categoryFilter!=="all"||
+        brandFilter!=="all";
+    const visibleProducts=hasActiveFilter||adminProductsExpanded
+        ? filtered
+        : filtered.slice(0,ADMIN_PRODUCTS_INITIAL_LIMIT);
+
     const count=document.getElementById("product-list-count");
-    if(count)count.textContent=`${filtered.length} de ${productos.length} productos`;
+    if(count){
+        count.textContent=visibleProducts.length===filtered.length
+            ? `${filtered.length} de ${productos.length} productos`
+            : `Mostrando ${visibleProducts.length} de ${filtered.length} productos`;
+    }
     syncAdminBrandTabs();
+
+    const moreWrap=document.getElementById("admin-products-more");
+    const moreButton=document.getElementById("admin-products-more-button");
+    if(moreWrap&&moreButton){
+        const shouldShow=!hasActiveFilter&&filtered.length>ADMIN_PRODUCTS_INITIAL_LIMIT;
+        moreWrap.hidden=!shouldShow;
+        moreButton.setAttribute("aria-expanded",String(adminProductsExpanded));
+        const label=moreButton.querySelector("span");
+        if(label){
+            label.textContent=adminProductsExpanded
+                ? "MOSTRAR MENOS"
+                : `VER TODOS LOS ${filtered.length} PRODUCTOS`;
+        }
+        moreButton.classList.toggle("expanded",adminProductsExpanded);
+    }
 
     tbody.innerHTML="";
     if(!filtered.length){
@@ -982,7 +1011,7 @@ function renderProducts(){
 
     const productRows=document.createDocumentFragment();
 
-    filtered.forEach(p=>{
+    visibleProducts.forEach(p=>
         const tr=document.createElement("tr");
         const stock=Math.max(0,Number(p.stock)||0);
         const stockClass=stock===0?"stock-out":stock<=3?"stock-low":"stock-ok";
@@ -1346,9 +1375,31 @@ function resetProductForm(){
     requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
 }
 
+function showProductEditor(){
+    const form=document.getElementById("product-form");
+    if(form)form.hidden=false;
+}
+
+function hideProductEditor(){
+    const form=document.getElementById("product-form");
+    if(form)form.hidden=true;
+}
+
+function openNewProductEditor(){
+    const productsTab=document.querySelector('.tab[data-tab="products"]');
+    document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===productsTab));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    document.getElementById("products-panel")?.classList.add("active");
+    resetProductForm();
+    showProductEditor();
+    document.getElementById("product-form")?.scrollIntoView({behavior:"smooth",block:"start"});
+    setTimeout(()=>document.getElementById("product-name")?.focus(),380);
+}
+
 function editProduct(id){
     const p=productos.find(x=>String(x.id)===String(id));
     if(!p)return;
+    showProductEditor();
     document.getElementById("product-id").value=p.id;
     document.getElementById("product-name").value=p.nombre||"";
     document.getElementById("product-description").value=p.descripcion||"";
@@ -1463,7 +1514,11 @@ async function saveProduct(event){
         msg("product-message",id?"Cambios guardados.":"Producto creado.","ok");
         showToast(id?"Cambios guardados correctamente.":"Producto creado correctamente.");
         await loadProducts();
-        setTimeout(resetProductForm,700);
+        setTimeout(()=>{
+            resetProductForm();
+            hideProductEditor();
+            document.querySelector("#products-panel .catalog-card")?.scrollIntoView({behavior:"smooth",block:"start"});
+        },700);
     }catch(e){
         msg("product-message",e.message||"Ocurrió un error.","error");
     }finally{
@@ -1484,6 +1539,7 @@ async function deleteProduct(id,name){
         if(!r.ok)throw new Error("No se pudo eliminar. Si el producto tiene pedidos asociados, ocultalo en lugar de borrarlo.");
         await loadProducts();
         resetProductForm();
+        hideProductEditor();
         showToast("Producto eliminado.");
     }catch(e){
         showToast(e.message||"No se pudo eliminar.","error");
@@ -2373,7 +2429,11 @@ document.getElementById("product-form").addEventListener("submit",saveProduct);
 document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
 document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
 document.getElementById("coupon-code")?.addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,"");});
-document.getElementById("product-cancel").addEventListener("click",resetProductForm);
+document.getElementById("product-cancel").addEventListener("click",()=>{
+    resetProductForm();
+    hideProductEditor();
+    document.querySelector("#products-panel .catalog-card")?.scrollIntoView({behavior:"smooth",block:"start"});
+});
 document.getElementById("logout-button").addEventListener("click",()=>logout());
 document.getElementById("refresh-button").addEventListener("click",refreshAll);
 document.getElementById("google-business-connect-button")?.addEventListener("click",connectGoogleBusiness);
@@ -2496,10 +2556,10 @@ document.getElementById("category-delete-selected")?.addEventListener("click",()
 
 document.getElementById("category-delete-all")?.addEventListener("click",deleteAllCategories);
 
-document.getElementById("product-search")?.addEventListener("input",renderProducts);
-document.getElementById("product-filter")?.addEventListener("change",renderProducts);
-document.getElementById("product-category-filter")?.addEventListener("change",renderProducts);
-document.getElementById("product-brand-filter")?.addEventListener("change",renderProducts);
+document.getElementById("product-search")?.addEventListener("input",()=>{adminProductsExpanded=false;renderProducts();});
+document.getElementById("product-filter")?.addEventListener("change",()=>{adminProductsExpanded=false;renderProducts();});
+document.getElementById("product-category-filter")?.addEventListener("change",()=>{adminProductsExpanded=false;renderProducts();});
+document.getElementById("product-brand-filter")?.addEventListener("change",()=>{adminProductsExpanded=false;renderProducts();});
 
 const rerenderOrderFilters=()=>{
     selectedOrders.clear();
@@ -2515,14 +2575,14 @@ document.getElementById("order-prep-filter")?.addEventListener("change",rerender
 document.getElementById("order-date-from")?.addEventListener("change",rerenderOrderFilters);
 document.getElementById("order-date-to")?.addEventListener("change",rerenderOrderFilters);
 document.getElementById("export-orders")?.addEventListener("click",exportFilteredOrders);
-document.getElementById("new-product-button")?.addEventListener("click",()=>{
-    const productsTab=document.querySelector('.tab[data-tab="products"]');
-    document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===productsTab));
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    document.getElementById("products-panel").classList.add("active");
-    resetProductForm();
-    document.getElementById("product-form").scrollIntoView({behavior:"smooth",block:"start"});
-    setTimeout(()=>document.getElementById("product-name")?.focus(),450);
+document.getElementById("new-product-button")?.addEventListener("click",openNewProductEditor);
+document.getElementById("catalog-new-product-button")?.addEventListener("click",openNewProductEditor);
+document.getElementById("admin-products-more-button")?.addEventListener("click",()=>{
+    adminProductsExpanded=!adminProductsExpanded;
+    renderProducts();
+    if(!adminProductsExpanded){
+        document.querySelector("#products-panel .catalog-card")?.scrollIntoView({behavior:"smooth",block:"start"});
+    }
 });
 document.getElementById("product-image-add-url")?.addEventListener("click",addUrlToGallery);
 document.getElementById("product-image")?.addEventListener("keydown",e=>{
