@@ -121,9 +121,9 @@
     padding:10px 10px 10px 0;
 }
 .brand-marquee-card{
-    flex:0 0 188px;
-    width:188px;
-    min-height:94px;
+    flex:0 0 205px;
+    width:205px;
+    min-height:112px;
     border:1px solid rgba(255,255,255,.08);
     border-radius:14px;
     background:rgba(255,255,255,.025);
@@ -131,7 +131,7 @@
     cursor:pointer;
     padding:10px 12px 9px;
     display:grid;
-    grid-template-rows:58px auto;
+    grid-template-rows:72px auto;
     align-items:center;
     justify-items:center;
     gap:4px;
@@ -163,8 +163,8 @@
     box-shadow:0 4px 14px rgba(0,0,0,.10);
 }
 .brand-sprite-logo{
-    width:150px;
-    height:60px;
+    width:174px;
+    height:70px;
 }
 .brand-marquee-meta{
     width:100%;
@@ -180,13 +180,13 @@
     text-overflow:ellipsis;
     white-space:nowrap;
     color:#dfe6e8;
-    font:800 9px/1.2 Manrope,sans-serif;
+    font:850 11.5px/1.2 Manrope,sans-serif;
     letter-spacing:.025em;
 }
 .brand-marquee-meta small{
     flex:0 0 auto;
     color:#778790;
-    font:700 8px/1 Manrope,sans-serif;
+    font:750 8.5px/1 Manrope,sans-serif;
 }
 .brand-marquee-hint{
     display:flex;
@@ -540,10 +540,19 @@
 }
 .catalog-step-label>span{display:none!important}
 
-/* Fox Airguns usa el logo nuevo provisto por el usuario. */
+/* Fox Airguns y Surfish usan las imágenes provistas por el usuario,
+   recortadas sólo para quitar margen blanco y aprovechar mejor el recuadro. */
 .brand-marquee-card[data-brand="fox-airguns"] .brand-sprite-logo,
 .catalog-brand-logo[data-brand="fox-airguns"]{
-    background-image:url("../images/brands/fox-airguns.jpg?v=20260928a")!important;
+    background-image:url("../images/brands/fox-airguns-logo.webp?v=20260928a")!important;
+    background-size:contain!important;
+    background-repeat:no-repeat!important;
+    background-position:center!important;
+    background-color:#fff!important;
+}
+.brand-marquee-card[data-brand="surfish"] .brand-sprite-logo,
+.catalog-brand-logo[data-brand="surfish"]{
+    background-image:url("../images/brands/surfish-logo.webp?v=20260928a")!important;
     background-size:contain!important;
     background-repeat:no-repeat!important;
     background-position:center!important;
@@ -553,23 +562,29 @@
 /* Un poco más grandes para que las marcas se lean mejor sin romper la cinta. */
 @media (max-width:860px){
     .brand-marquee-card{
-        flex-basis:174px!important;
-        width:174px!important;
-        min-height:90px!important;
+        flex-basis:184px!important;
+        width:184px!important;
+        min-height:102px!important;
     }
     .brand-sprite-logo{
-        width:138px!important;
-        height:56px!important;
+        width:154px!important;
+        height:62px!important;
+    }
+    .brand-marquee-meta strong{
+        font-size:10.5px!important;
     }
 }
 @media (max-width:560px){
     .brand-marquee-card{
-        flex-basis:154px!important;
-        width:154px!important;
-        min-height:82px!important;
+        flex-basis:164px!important;
+        width:164px!important;
+        min-height:94px!important;
     }
     .brand-sprite-logo{
-        width:124px!important;
-        height:50px!important;
+        width:136px!important;
+        height:56px!important;
+    }
+    .brand-marquee-meta strong{
+        font-size:10px!important;
     }
 }
