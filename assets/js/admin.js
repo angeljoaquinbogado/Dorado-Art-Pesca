@@ -2264,6 +2264,7 @@ function handleGoogleBusinessCallbackResult(){
             estado_invalido:"La autorización venció o no pudo validarse. Intentá conectar otra vez.",
             sin_cuentas:"La cuenta de Google no tiene un Perfil de Empresa accesible.",
             sin_ubicaciones:"No encontramos una ubicación administrada para Dorado.",
+            acceso_api:"Google autorizó la cuenta, pero el acceso a la API de Perfil de Empresa todavía está pendiente.",
             oauth_google:"Google no pudo completar la autorización.",
             conexion:"No se pudo completar la conexión con Google."
         };
