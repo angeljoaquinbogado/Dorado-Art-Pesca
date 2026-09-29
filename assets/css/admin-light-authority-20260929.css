@@ -1,0 +1,236 @@
+/* Dorado authoritative admin LIGHT default · 2026-09-29
+   Loaded last. Light means light everywhere; dark stays available when explicitly selected. */
+
+:root{
+  --adm-authority-gold:#c9952b;
+  --adm-authority-cream:#f7f4ec;
+  --adm-authority-paper:#fffdfa;
+  --adm-authority-ink:#20272c;
+  --adm-authority-muted:#6f7b81;
+  --adm-authority-line:#e5ded2;
+}
+
+/* DEFAULT/LIGHT — no leftover navy/black structural surfaces. */
+html[data-admin-theme="light"] body,
+html[data-admin-theme="light"] #admin-app,
+html[data-admin-theme="light"] .app,
+html[data-admin-theme="light"] .admin-layout,
+html[data-admin-theme="light"] .workspace,
+html[data-admin-theme="light"] .shell,
+html[data-admin-theme="light"] main{
+  background:var(--adm-authority-cream)!important;
+  color:var(--adm-authority-ink)!important;
+}
+
+/* Sidebar is part of the light theme too. */
+html[data-admin-theme="light"] .sidebar{
+  background:#fffdfa!important;
+  color:var(--adm-authority-ink)!important;
+  border-right:1px solid var(--adm-authority-line)!important;
+  box-shadow:none!important;
+}
+html[data-admin-theme="light"] .side-brand small,
+html[data-admin-theme="light"] .side-label,
+html[data-admin-theme="light"] .top-user,
+html[data-admin-theme="light"] .user-meta span{
+  color:#7b858a!important;
+}
+html[data-admin-theme="light"] .user-meta strong{
+  color:var(--adm-authority-ink)!important;
+}
+html[data-admin-theme="light"] .tab{
+  background:transparent!important;
+  color:#4f5a60!important;
+  border-color:transparent!important;
+}
+html[data-admin-theme="light"] .tab.active{
+  background:linear-gradient(135deg,#fff8e8,#f5e7c2)!important;
+  color:#71500f!important;
+  border:1px solid rgba(201,149,43,.34)!important;
+}
+html[data-admin-theme="light"] .store-link,
+html[data-admin-theme="light"] #logout-button{
+  background:#fff!important;
+  color:#344148!important;
+  border-color:#ded7cc!important;
+  box-shadow:none!important;
+}
+
+/* Top bar and hero are light. This is the main conflict visible in the screenshot. */
+html[data-admin-theme="light"] .workspace-top{
+  background:rgba(247,244,236,.98)!important;
+  color:var(--adm-authority-ink)!important;
+  border-bottom:1px solid #e2dbcf!important;
+  box-shadow:none!important;
+}
+html[data-admin-theme="light"] .crumb,
+html[data-admin-theme="light"] .crumb span,
+html[data-admin-theme="light"] .crumb strong{
+  color:#4c565c!important;
+}
+
+html[data-admin-theme="light"] .hero-head{
+  background:linear-gradient(135deg,#fff 0%,#fffdf8 68%,#f6e8c4 100%)!important;
+  color:var(--adm-authority-ink)!important;
+  border:1px solid rgba(201,149,43,.30)!important;
+  box-shadow:0 14px 34px rgba(28,38,44,.055),0 0 22px rgba(201,149,43,.045)!important;
+}
+html[data-admin-theme="light"] .hero-head h1,
+html[data-admin-theme="light"] .hero-head h2,
+html[data-admin-theme="light"] .hero-head .admin-page-title{
+  color:var(--adm-authority-ink)!important;
+  text-shadow:none!important;
+}
+html[data-admin-theme="light"] .hero-head p,
+html[data-admin-theme="light"] .hero-head small{
+  color:#69767c!important;
+}
+
+/* Cards, stats, products, orders and coupons are all paper-light by default. */
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card,
+html[data-admin-theme="light"] .coupon-admin-grid .card,
+html[data-admin-theme="light"] .table-wrap,
+html[data-admin-theme="light"] .product-table-wrap,
+html[data-admin-theme="light"] .orders-table-wrap,
+html[data-admin-theme="light"] table,
+html[data-admin-theme="light"] thead,
+html[data-admin-theme="light"] tbody,
+html[data-admin-theme="light"] tr,
+html[data-admin-theme="light"] td{
+  background:#fff!important;
+  color:var(--adm-authority-ink)!important;
+  border-color:#e9e2d7!important;
+}
+html[data-admin-theme="light"] thead th{
+  background:#faf7f1!important;
+  color:#748087!important;
+  border-color:#e9e2d7!important;
+}
+
+/* Filters and form controls. */
+html[data-admin-theme="light"] .field input,
+html[data-admin-theme="light"] .field textarea,
+html[data-admin-theme="light"] .field select,
+html[data-admin-theme="light"] .search-wrap input,
+html[data-admin-theme="light"] .catalog-filters select,
+html[data-admin-theme="light"] .orders-filterbar select,
+html[data-admin-theme="light"] .orders-filterbar .date-filter,
+html[data-admin-theme="light"] .admin-select-trigger,
+html[data-admin-theme="light"] .orders-filterbar,
+html[data-admin-theme="light"] .orders-bulkbar,
+html[data-admin-theme="light"] .orders-toolbar{
+  background:#fffdfa!important;
+  color:var(--adm-authority-ink)!important;
+  -webkit-text-fill-color:var(--adm-authority-ink)!important;
+  border-color:#ddd5c8!important;
+  box-shadow:none!important;
+  color-scheme:light!important;
+}
+html[data-admin-theme="light"] input::placeholder,
+html[data-admin-theme="light"] textarea::placeholder{
+  color:#949ca0!important;
+  -webkit-text-fill-color:#949ca0!important;
+}
+html[data-admin-theme="light"] input[type="date"]{
+  color-scheme:light!important;
+}
+
+/* Buttons in the top-right are light, not dark. */
+html[data-admin-theme="light"] .top-actions .secondary,
+html[data-admin-theme="light"] #store-theme-settings-button,
+html[data-admin-theme="light"] #google-business-connect-button,
+html[data-admin-theme="light"] #refresh-button{
+  background:#fff!important;
+  color:#263239!important;
+  border-color:#d9d1c5!important;
+  box-shadow:0 4px 12px rgba(23,36,45,.035)!important;
+}
+
+/* Keep only restrained gold details. */
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card{
+  border:1.5px solid rgba(201,149,43,.34)!important;
+  box-shadow:0 10px 26px rgba(23,36,45,.045),0 0 18px rgba(201,149,43,.035)!important;
+}
+html[data-admin-theme="light"] .stat::before,
+html[data-admin-theme="light"] .orders-card::before,
+html[data-admin-theme="light"] #coupons-panel .form-card::before,
+html[data-admin-theme="light"] #coupons-panel .catalog-card::before,
+html[data-admin-theme="light"] #products-panel .catalog-card::before{
+  background:linear-gradient(90deg,transparent,rgba(201,149,43,.72),transparent)!important;
+  height:2px!important;
+  box-shadow:0 2px 12px rgba(201,149,43,.12)!important;
+}
+html[data-admin-theme="light"] .stat::after,
+html[data-admin-theme="light"] .stats .stat::after{
+  display:none!important;
+  content:none!important;
+}
+
+/* Light theme panel itself. */
+html[data-admin-theme="light"] .store-theme-admin-panel,
+html[data-admin-theme="light"] .admin-select-menu{
+  background:#fff!important;
+  color:var(--adm-authority-ink)!important;
+  border-color:#ddd4c7!important;
+  box-shadow:0 18px 44px rgba(23,36,45,.12)!important;
+}
+html[data-admin-theme="light"] .store-theme-admin-options button{
+  background:#fffdfa!important;
+  color:#39464d!important;
+  border-color:#ddd4c7!important;
+}
+html[data-admin-theme="light"] .store-theme-admin-options button.active{
+  background:linear-gradient(135deg,#fff7e4,#f2e1b4)!important;
+  color:#765510!important;
+  border-color:#d8b75f!important;
+}
+
+/* Explicit DARK remains untouched by the light rules above. */
+
+/* Theme transition: colors only, no geometry. */
+html.admin-theme-transitioning body,
+html.admin-theme-transitioning .sidebar,
+html.admin-theme-transitioning .workspace,
+html.admin-theme-transitioning .workspace-top,
+html.admin-theme-transitioning .hero-head,
+html.admin-theme-transitioning .stat,
+html.admin-theme-transitioning .card,
+html.admin-theme-transitioning .table-wrap{
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease!important;
+}
+
+@media(max-width:700px){
+  html[data-admin-theme="light"] .workspace-top{
+    background:#f7f4ec!important;
+  }
+  html[data-admin-theme="light"] .sidebar{
+    background:#fffdfa!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.admin-theme-transitioning body,
+  html.admin-theme-transitioning .sidebar,
+  html.admin-theme-transitioning .workspace,
+  html.admin-theme-transitioning .workspace-top,
+  html.admin-theme-transitioning .hero-head,
+  html.admin-theme-transitioning .stat,
+  html.admin-theme-transitioning .card{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}

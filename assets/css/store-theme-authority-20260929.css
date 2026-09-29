@@ -1,0 +1,98 @@
+/* Dorado authoritative storefront theme fix · 2026-09-29
+   Loaded last. This file only resolves the remaining header/theme conflict. */
+
+:root{
+  --theme-authority-ease-out:cubic-bezier(0.23,1,0.32,1);
+  --theme-authority-ui:220ms;
+}
+
+/* At the top of the hero the header must float over the image in BOTH themes.
+   No opaque dark slab in dark mode, no opaque white slab in light mode. */
+html[data-store-theme] .nav:not(.scrolled){
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+/* Keep navigation text readable over the hero. */
+html[data-store-theme] .nav:not(.scrolled) .navlinks a{
+  color:rgba(255,255,255,.78)!important;
+  text-shadow:0 1px 12px rgba(0,0,0,.26)!important;
+}
+html[data-store-theme] .nav:not(.scrolled) .navlinks a.active,
+html[data-store-theme] .nav:not(.scrolled) .navlinks a:hover,
+html[data-store-theme] .nav:not(.scrolled) .navlinks a:focus-visible{
+  color:#fff!important;
+}
+html[data-store-theme] .nav:not(.scrolled) .navlinks a::after{
+  background:#e8b13f!important;
+}
+
+/* Header actions over the hero are glass, not solid dark blocks. */
+html[data-store-theme] .nav:not(.scrolled) .nav-cta,
+html[data-store-theme] .nav:not(.scrolled) .orders-trigger{
+  background:rgba(8,20,28,.18)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.28)!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  backdrop-filter:blur(10px)!important;
+}
+html[data-store-theme] .nav:not(.scrolled) .nav-cta .ui-icon{
+  color:#42dc82!important;
+}
+html[data-store-theme] .nav:not(.scrolled) .orders-trigger .ui-icon{
+  color:#eef3f4!important;
+}
+
+/* Once the page scrolls, each theme gets its own compact rounded material. */
+html[data-store-theme="light"] .nav.scrolled{
+  background:rgba(255,253,248,.97)!important;
+  color:#18262f!important;
+  border:1px solid rgba(24,38,47,.10)!important;
+  border-radius:24px!important;
+  box-shadow:0 14px 34px rgba(24,38,47,.10)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  backdrop-filter:blur(14px)!important;
+}
+
+html[data-store-theme="dark"] .nav.scrolled{
+  background:rgba(13,30,41,.94)!important;
+  color:#f4f0e8!important;
+  border:1px solid rgba(255,255,255,.11)!important;
+  border-radius:24px!important;
+  box-shadow:0 14px 34px rgba(2,8,12,.24)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  backdrop-filter:blur(14px)!important;
+}
+
+/* Smooth color-only changes. No layout animation. */
+html.store-theme-transitioning .nav,
+html.store-theme-transitioning .nav-cta,
+html.store-theme-transitioning .orders-trigger{
+  transition:
+    background-color var(--theme-authority-ui) ease,
+    color var(--theme-authority-ui) ease,
+    border-color var(--theme-authority-ui) ease,
+    box-shadow var(--theme-authority-ui) ease!important;
+}
+
+@media(max-width:700px){
+  /* The mobile floating menu button stays visible; this only removes the old solid nav strip. */
+  html[data-store-theme] .nav:not(.scrolled){
+    background:transparent!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.store-theme-transitioning .nav,
+  html.store-theme-transitioning .nav-cta,
+  html.store-theme-transitioning .orders-trigger{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}
