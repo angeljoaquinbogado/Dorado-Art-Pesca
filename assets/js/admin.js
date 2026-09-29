@@ -2251,7 +2251,7 @@ function couponDiscountText(c){
 
 async function loadCoupons(){
     const tbody=document.getElementById("coupons-table");
-    if(tbody)tbody.innerHTML='<tr><td colspan="6" class="loading">Cargando cupones...</td></tr>';
+    if(tbody)tbody.innerHTML='<tr class="coupon-empty-row"><td colspan="6" class="loading coupon-empty-state">Cargando cupones...</td></tr>';
     const r=await sb("/rest/v1/cupones?select=id,codigo,tipo,valor,minimo_compra,activo,vigente_desde,vigente_hasta,limite_usos,usos,created_at&order=created_at.desc");
     const d=await r.json().catch(()=>[]);
     if(!r.ok)throw new Error("No se pudieron cargar los cupones. Ejecutá la migración commerce-features.sql en Supabase.");
@@ -2269,7 +2269,7 @@ function renderCoupons(){
     if(count)count.textContent=`${cupones.length} ${cupones.length===1?"cupón":"cupones"}`;
     tbody.innerHTML="";
     if(!cupones.length){
-        tbody.innerHTML='<tr><td colspan="6" class="loading">Todavía no hay cupones creados.</td></tr>';
+        tbody.innerHTML='<tr class="coupon-empty-row"><td colspan="6" class="loading coupon-empty-state">Todavía no hay cupones creados.</td></tr>';
         return;
     }
     cupones.forEach(c=>{
