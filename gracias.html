@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#10212d">
+  <title>Gracias por tu compra | DORADO Artículos de Pesca</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/brand/apple-touch-icon.png">
+  <style>
+    :root{color-scheme:light;--ink:#10212d;--muted:#64727a;--line:#dce3e7;--bg:#f4f6f7;--card:#fff;--gold:#b58b2a;--ok:#177245}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100svh;background:var(--bg);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);display:grid;place-items:center;padding:24px}
+    main{width:min(680px,100%);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:34px;box-shadow:0 18px 60px rgba(16,33,45,.10)}
+    .brand{display:flex;align-items:center;gap:14px;margin-bottom:30px}
+    .brand img{width:72px;height:72px;object-fit:contain}
+    .brand strong{display:block;font-size:1.08rem;letter-spacing:.03em}
+    .brand span{display:block;color:var(--muted);font-size:.92rem;margin-top:2px}
+    .icon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#e9f7ef;color:var(--ok);font-size:30px;font-weight:800;margin-bottom:18px}
+    h1{font-size:clamp(1.8rem,5vw,2.55rem);line-height:1.05;margin:0 0 12px}
+    p{margin:0;color:var(--muted);line-height:1.55}
+    .details{margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#fafbfb;display:grid;gap:10px}
+    .row{display:flex;justify-content:space-between;gap:18px}
+    .row span:first-child{color:var(--muted)}
+    .row strong{text-align:right}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+    a{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:12px;text-decoration:none;font-weight:700}
+    .primary{background:var(--ink);color:#fff}.secondary{border:1px solid var(--line);color:var(--ink);background:#fff}
+    .state{padding:14px 16px;border-radius:12px;background:#fff8e8;color:#755a17;margin-top:20px;display:none}
+    @media(max-width:520px){main{padding:24px 20px;border-radius:20px}.brand img{width:58px;height:58px}.actions a{width:100%}.row{align-items:flex-start;flex-direction:column;gap:3px}.row strong{text-align:left}}
+  </style>
+</head>
+<body>
+  <main id="card" aria-live="polite">
+    <div class="brand">
+      <img src="/assets/images/brand/logo-dorado-640.webp" alt="DORADO Artículos de Pesca">
+      <div><strong>DORADO Artículos de Pesca</strong><span>Compra segura</span></div>
+    </div>
+    <div class="icon" aria-hidden="true">✓</div>
+    <h1 id="title">Verificando tu compra…</h1>
+    <p id="message">Estamos confirmando el pago y preparando los datos de tu pedido.</p>
+    <div class="state" id="state"></div>
+    <div class="details" id="details" hidden>
+      <div class="row"><span>Pedido</span><strong id="order-code">—</strong></div>
+      <div class="row"><span>Total</span><strong id="order-total">—</strong></div>
+      <div class="row"><span>Estado</span><strong>Pago aprobado</strong></div>
+    </div>
+    <div class="actions" id="actions" hidden>
+      <a class="primary" id="tracking-link" href="/">VER MI PEDIDO</a>
+      <a class="secondary" href="/">SEGUIR COMPRANDO</a>
+    </div>
+  </main>
+<script>
+(function(){
+  const params=new URLSearchParams(location.search);
+  const order=String(params.get("order")||"").trim();
+  const tracking=String(params.get("tracking")||"").trim();
+  const title=document.getElementById("title");
+  const message=document.getElementById("message");
+  const state=document.getElementById("state");
+  const details=document.getElementById("details");
+  const actions=document.getElementById("actions");
+  const orderCode=document.getElementById("order-code");
+  const orderTotal=document.getElementById("order-total");
+  const trackingLink=document.getElementById("tracking-link");
+
+  const money=value=>new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format(Number(value)||0);
+  const invalid=()=>{
+    title.textContent="No encontramos una compra para confirmar";
+    message.textContent="Volvé a la tienda o ingresá desde el enlace de seguimiento de tu pedido.";
+    state.style.display="block";
+    state.textContent="Esta página se muestra únicamente después de una compra.";
+    actions.hidden=false;
+    trackingLink.style.display="none";
+  };
+
+  if(!order||!tracking){ invalid(); return; }
+
+  fetch("/api/order-status?id="+encodeURIComponent(order)+"&tracking="+encodeURIComponent(tracking),{
+    headers:{Accept:"application/json"},cache:"no-store"
+  }).then(async response=>{
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data?.error||"No se pudo verificar el pedido.");
+
+    const status=String(data?.status||"").toLowerCase();
+    if(status!=="pagado"){
+      title.textContent=status==="revision"?"Pago recibido":"Estamos verificando tu pago";
+      message.textContent=status==="revision"
+        ?"Tu pago fue recibido y el pedido necesita una revisión antes de quedar confirmado."
+        :"La operación todavía no figura como aprobada. No vuelvas a pagar.";
+      state.style.display="block";
+      state.textContent="Podés consultar el estado actualizado desde Mis pedidos.";
+      actions.hidden=false;
+      trackingLink.href="/pedido.html?id="+encodeURIComponent(order)+"&tracking="+encodeURIComponent(tracking);
+      return;
+    }
+
+    try{
+      localStorage.removeItem("doradoCarrito");
+      sessionStorage.removeItem("doradoUltimoPedido");
+    }catch(e){}
+
+    title.textContent="¡Gracias por tu compra!";
+    message.textContent="Tu pago fue aprobado y tu pedido quedó confirmado correctamente.";
+    orderCode.textContent=String(data?.code||"Pedido confirmado");
+    orderTotal.textContent=money(data?.total);
+    trackingLink.href="/pedido.html?id="+encodeURIComponent(order)+"&tracking="+encodeURIComponent(tracking);
+    details.hidden=false;
+    actions.hidden=false;
+  }).catch(()=>{
+    title.textContent="Estamos verificando tu compra";
+    message.textContent="No pudimos consultar el estado en este momento. Si ya pagaste, no vuelvas a realizar el pago.";
+    state.style.display="block";
+    state.textContent="Podés revisar tu pedido desde Mis pedidos o volver a intentarlo en unos instantes.";
+    actions.hidden=false;
+    trackingLink.href="/pedido.html?id="+encodeURIComponent(order)+"&tracking="+encodeURIComponent(tracking);
+  });
+})();
+</script>
+</body>
+</html>
