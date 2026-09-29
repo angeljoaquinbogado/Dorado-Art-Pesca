@@ -35,7 +35,7 @@ const CATALOG_INITIAL_LIMIT = 12;
 const DORADO_BRANDS = [
     { name:"Shimano", key:"shimano", sprite:0 },
     { name:"Albatros", key:"albatros", sprite:1 },
-    { name:"TCL", key:"tcl", sprite:2 },
+    { name:"TICA", key:"tica", sprite:2 },
     { name:"Caster", key:"caster", sprite:3 },
     { name:"Bando ARG", key:"bando-arg", sprite:4 },
     { name:"Fox Airguns", key:"fox-airguns", sprite:5 },
@@ -2101,12 +2101,13 @@ function etiquetaCategoria(value){
 function normalizarClaveMarca(value){
     const text=String(value||"").trim();
     if(!text)return "sin-marca";
-    return text
+    const key=text
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g,"")
         .toLocaleLowerCase("es")
         .replace(/[^a-z0-9]+/g,"-")
-        .replace(/^-+|-+$/g,"") || "sin-marca";
+        .replace(/^-+|-+$/g,"");
+    return key==="tcl" ? "tica" : (key || "sin-marca");
 }
 
 function construirMarcas(productos=[]){

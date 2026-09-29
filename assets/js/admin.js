@@ -756,13 +756,14 @@ async function loadProducts(){
 }
 
 function normalizeBrandName(value){
-    return String(value||"").trim().replace(/\s+/g," ").slice(0,80);
+    const normalized=String(value||"").trim().replace(/\s+/g," ").slice(0,80);
+    return normalized.toLocaleLowerCase("es")==="tcl" ? "TICA" : normalized;
 }
 
 const DORADO_KNOWN_BRANDS=[
     "Shimano",
     "Albatros",
-    "TCL",
+    "TICA",
     "Caster",
     "Bando ARG",
     "Fox Airguns",
