@@ -1,0 +1,77 @@
+/* Best sellers theme correction — 2026-09-29
+   Light theme gets light cards/text; dark theme keeps the existing dark design. */
+
+html[data-store-theme="light"] .best-sellers-section{
+  background:#f7f4ec!important;
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .best-sellers-section .kicker{
+  color:#9b7114!important;
+}
+
+html[data-store-theme="light"] .best-sellers-section .section-title{
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .best-sellers-section .section-title span{
+  color:#a97b16!important;
+}
+
+html[data-store-theme="light"] .best-sellers-section .section-desc{
+  color:#6f787e!important;
+}
+
+html[data-store-theme="light"] .best-seller-card{
+  background:#fff!important;
+  color:#17242d!important;
+  border:1px solid #e5ddcf!important;
+  box-shadow:0 12px 30px rgba(41,31,18,.06)!important;
+}
+
+html[data-store-theme="light"] .best-seller-card img{
+  background:#fbfaf7!important;
+  border:1px solid #eee7dc!important;
+}
+
+html[data-store-theme="light"] .best-seller-category{
+  color:#a97b16!important;
+}
+
+html[data-store-theme="light"] .best-seller-card strong,
+html[data-store-theme="light"] .best-seller-price{
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .best-seller-action{
+  color:#69757b!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] .best-seller-card:hover{
+    border-color:rgba(213,161,48,.65)!important;
+    box-shadow:0 16px 34px rgba(213,161,48,.10)!important;
+    background:linear-gradient(180deg,#fff 0%,#fffaf0 100%)!important;
+  }
+}
+
+/* Keep the card comfortable on phones without changing the dark-theme design. */
+@media(max-width:430px){
+  html[data-store-theme="light"] .best-sellers-grid{
+    gap:12px!important;
+  }
+
+  html[data-store-theme="light"] .best-seller-card{
+    padding:12px!important;
+    border-radius:18px!important;
+  }
+
+  html[data-store-theme="light"] .best-seller-card strong{
+    font-size:12px!important;
+    line-height:1.35!important;
+  }
+
+  html[data-store-theme="light"] .best-seller-price{
+    font-size:18px!important;
+  }
+}
