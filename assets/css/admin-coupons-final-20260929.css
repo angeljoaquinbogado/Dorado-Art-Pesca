@@ -537,3 +537,23 @@ html[data-admin-store-theme="light"] #coupons-panel .secondary{
     font-size:10px!important;
   }
 }
+
+
+/* =========================================================
+   CUPONES — separación visual final en escritorio
+   Evita que el listado parezca pegado/encimado al formulario.
+   Móvil queda sin cambios.
+   ========================================================= */
+@media(min-width:900px){
+  #coupons-panel .coupon-admin-grid{
+    row-gap:34px!important;
+  }
+
+  #coupons-panel #coupon-form{
+    margin-bottom:0!important;
+  }
+
+  #coupons-panel .catalog-card{
+    margin-top:0!important;
+  }
+}
