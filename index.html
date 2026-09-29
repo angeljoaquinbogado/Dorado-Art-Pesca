@@ -98,7 +98,7 @@
     {"@type":"Question","name":"¿El stock que veo en la web está actualizado?","acceptedAnswer":{"@type":"Answer","text":"El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito."}},
     {"@type":"Question","name":"¿Cómo se coordina el envío?","acceptedAnswer":{"@type":"Answer","text":"El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido."}},
     {"@type":"Question","name":"¿Puedo retirar en el local?","acceptedAnswer":{"@type":"Answer","text":"Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado."}},
-    {"@type":"Question","name":"¿Qué medios de pago están disponibles?","acceptedAnswer":{"@type":"Answer","text":"Podés pagar por Mercado Pago, MODO, tarjeta de débito o crédito, transferencia, efectivo si retirás en el local, o coordinar el pago por WhatsApp."}},
+    {"@type":"Question","name":"¿Qué medios de pago están disponibles?","acceptedAnswer":{"@type":"Answer","text":"Podés pagar por Mercado Pago, tarjeta de débito o crédito, transferencia, efectivo si retirás en el local, o coordinar el pago por WhatsApp."}},
     {"@type":"Question","name":"¿Cómo sigo mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Cuando hacés una compra recibís un enlace privado para ver si el pedido está en preparación, enviado o entregado y, cuando corresponde, consultar el transporte y el código de seguimiento."}}
   ]
 }
@@ -522,7 +522,7 @@
       <details><summary>¿El stock que veo en la web está actualizado?</summary><p>El catálogo muestra la disponibilidad registrada por Dorado. Si un producto figura sin stock, no se puede agregar al carrito.</p></details>
       <details><summary>¿Cómo se coordina el envío?</summary><p>El costo y la empresa de transporte se coordinan según localidad, modalidad disponible y características del pedido. El total del checkout corresponde a los productos.</p></details>
       <details><summary>¿Puedo retirar en el local?</summary><p>Sí. Podés elegir retiro en el local y coordinar la preparación del pedido con Dorado.</p></details>
-      <details><summary>¿Qué medios de pago están disponibles?</summary><p>Podés pagar por Mercado Pago, MODO, tarjeta de débito o crédito, transferencia, efectivo si retirás en el local, o coordinar el pago por WhatsApp.</p></details>
+      <details><summary>¿Qué medios de pago están disponibles?</summary><p>Podés pagar por Mercado Pago, tarjeta de débito o crédito, transferencia, efectivo si retirás en el local, o coordinar el pago por WhatsApp.</p></details>
       <details><summary>¿Cómo sigo mi pedido?</summary><p>Cuando hacés una compra te damos un enlace privado para seguirla. Ahí vas a ver si el pedido está en preparación, enviado o entregado y, si corresponde, también el transporte y el código de seguimiento.</p></details>
     </div>
   </div>
@@ -809,7 +809,6 @@
   <option value="transferencia">Transferencia bancaria</option>
   <option value="tarjeta">Tarjeta de débito / crédito</option>
   <option value="mercadopago">Mercado Pago</option>
-  <option value="modo">MODO</option>
 </select>
 
 <div class="payment-picker" id="payment-picker">
@@ -853,13 +852,7 @@
       <span class="payment-picker-copy"><strong>Mercado Pago</strong><small>Pago online mediante Mercado Pago.</small></span>
       <span class="payment-picker-status">A activar</span>
     </button>
-
-    <button class="payment-picker-option" type="button" role="option" aria-selected="false" data-payment-value="modo">
-      <span class="payment-picker-icon payment-picker-logo payment-picker-logo-modo"><img src="assets/images/payment/modo.svg" alt="" loading="lazy" decoding="async"></span>
-      <span class="payment-picker-copy"><strong>MODO</strong><small>Disponible cuando se conecte la cuenta comercial.</small></span>
-      <span class="payment-picker-status">A activar</span>
-    </button>
-  </div>
+</div>
 </div>
 </div>
 
@@ -911,18 +904,7 @@
     </div>
     <p class="payment-detail-note">Si preferís otro medio, podés cambiar la opción antes de confirmar.</p>
   </section>
-
-  <section class="payment-detail-panel" data-payment-panel="modo" hidden>
-    <div class="payment-detail-head">
-      <span class="payment-detail-icon payment-brand-logo payment-brand-modo" aria-hidden="true">
-        <img src="assets/images/payment/modo.svg" alt="" loading="lazy" decoding="async">
-      </span>
-      <div><strong>MODO</strong><small>Cuando continúes te vamos a avisar antes de salir de Dorado para completar el pago.</small></div>
-    </div>
-    <p class="payment-detail-note">La integración real se habilita cuando el negocio conecte su cuenta comercial de MODO.</p>
-  </section>
-
-  <section class="payment-detail-panel" data-payment-panel="tarjeta" hidden>
+<section class="payment-detail-panel" data-payment-panel="tarjeta" hidden>
     <div class="payment-detail-head">
       <span class="payment-detail-icon payment-brand-logo payment-brand-card" aria-hidden="true">
         <svg viewBox="0 0 32 32" role="img">

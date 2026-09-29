@@ -1539,7 +1539,7 @@ function confirmarRedireccionPago(metodo){
     const cancel=document.getElementById("payment-confirm-cancel");
     if(!overlay||!title||!text||!accept||!cancel)return Promise.resolve(true);
 
-    const provider=metodo==="modo"?"MODO":"Mercado Pago";
+    const provider="Mercado Pago";
     title.textContent=`Vas a continuar a ${provider}`;
     text.textContent=`Te vamos a redirigir a ${provider} para confirmar tu compra de forma segura. Si preferís otro medio de pago, podés volver y cambiarlo.`;
     overlay.hidden=false;
@@ -1651,13 +1651,9 @@ async function iniciarPagoMercadoPago(evento) {
         return;
     }
 
-    if(["mercadopago","modo"].includes(metodoPago)){
+    if(metodoPago==="mercadopago"){
         const confirmed=await confirmarRedireccionPago(metodoPago);
         if(!confirmed)return;
-        if(metodoPago==="modo"){
-            mostrarErrorCheckout("MODO todavía no está conectado a la cuenta comercial. Podés elegir otro medio de pago mientras terminamos esa integración.");
-            return;
-        }
     }
 
     const availability=window.doradoPaymentAvailability||{};
@@ -1667,10 +1663,6 @@ async function iniciarPagoMercadoPago(evento) {
     }
     if(metodoPago==="tarjeta" && availability.card===false){
         mostrarErrorCheckout("El cobro directo con tarjeta todavía no está habilitado. Falta configurar la Public Key de Mercado Pago.");
-        return;
-    }
-    if(metodoPago==="modo" && availability.modo===false){
-        mostrarErrorCheckout("MODO todavía no está habilitado para cobrar. Podés elegir otro medio de pago.");
         return;
     }
 
@@ -3714,9 +3706,6 @@ comprobarRetornoPago();
         if(method==="mercadopago"){
             if(span)span.textContent="Continuar con Mercado Pago";
             if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
-        }else if(method==="modo"){
-            if(span)span.textContent="Continuar con MODO";
-            if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
         }else if(method==="tarjeta"){
             if(span)span.textContent="Pagar con tarjeta";
             if(help)help.textContent="🔒 Número, vencimiento y CVV se tokenizan con Mercado Pago y no se guardan en Dorado.";
@@ -3796,8 +3785,7 @@ comprobarRetornoPago();
         whatsapp:"Coordinar por WhatsApp",
         transferencia:"Transferencia bancaria",
         tarjeta:"Tarjeta de débito / crédito",
-        mercadopago:"Mercado Pago",
-        modo:"MODO"
+        mercadopago:"Mercado Pago"
     };
 
     const closeMenu=()=>{
@@ -3822,10 +3810,6 @@ comprobarRetornoPago();
         }
         if(value==="tarjeta"){
             const enabled=Boolean(availability?.card);
-            return {enabled,label:enabled?"Disponible":"A activar"};
-        }
-        if(value==="modo"){
-            const enabled=Boolean(availability?.modo);
             return {enabled,label:enabled?"Disponible":"A activar"};
         }
         return {enabled:true,label:"Disponible"};
@@ -4082,23 +4066,19 @@ comprobarRetornoPago();
     const payment=document.getElementById("checkout-payment-method");
     const mpOption=payment?.querySelector('option[value="mercadopago"]');
     const cardOption=payment?.querySelector('option[value="tarjeta"]');
-    const modoOption=payment?.querySelector('option[value="modo"]');
     if(payment){
       try{
         const data=await obtenerConfigPublica();
         const mpEnabled=Boolean(data?.mercadoPagoEnabled);
         const cardEnabled=Boolean(data?.cardPaymentsEnabled);
-        const modoEnabled=Boolean(data?.modoEnabled);
-        window.doradoPaymentAvailability={mercadoPago:mpEnabled,card:cardEnabled,modo:modoEnabled};
+        window.doradoPaymentAvailability={mercadoPago:mpEnabled,card:cardEnabled};
         if(mpOption)mpOption.textContent=mpEnabled?"Mercado Pago":"Mercado Pago — a activar";
         if(cardOption)cardOption.textContent=cardEnabled?"Tarjeta de débito / crédito":"Tarjeta de débito / crédito — falta Public Key";
-        if(modoOption)modoOption.textContent=modoEnabled?"MODO":"MODO — a activar";
         payment.dispatchEvent(new Event("change",{bubbles:true}));
       }catch{
-        window.doradoPaymentAvailability={mercadoPago:false,card:false,modo:false};
+        window.doradoPaymentAvailability={mercadoPago:false,card:false};
         if(mpOption)mpOption.textContent="Mercado Pago — a activar";
         if(cardOption)cardOption.textContent="Tarjeta de débito / crédito — a activar";
-        if(modoOption)modoOption.textContent="MODO — a activar";
       }
     }
 

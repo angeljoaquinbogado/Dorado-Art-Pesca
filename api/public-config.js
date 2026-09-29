@@ -48,7 +48,6 @@ export default async function handler(req, res) {
         mercadoPagoEnabled,
         mercadoPagoPublicKey,
         cardPaymentsEnabled: mercadoPagoEnabled && Boolean(mercadoPagoPublicKey),
-        modoEnabled: String(process.env.MODO_ENABLED || "").toLowerCase() === "true",
         bankTransfer: {
             alias: "dorado.art.pesca",
             cbu: "0000003100061983343074",
