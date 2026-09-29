@@ -2232,6 +2232,32 @@ function limpiarMarcaSeleccionada({scroll=false}={}){
     }
 }
 
+function syncCategoryLiquidIndicator({animate=true}={}){
+    const wrap=document.getElementById("categorias");
+    const indicator=wrap?.querySelector(".category-liquid-indicator");
+    const active=wrap?.querySelector(".category-chip.active");
+    if(!wrap||!indicator||!active)return;
+
+    const apply=()=>{
+        const x=active.offsetLeft;
+        const y=active.offsetTop;
+        const w=active.offsetWidth;
+        const h=active.offsetHeight;
+
+        if(!animate)indicator.classList.add("is-instant");
+        wrap.style.setProperty("--category-x",`${x}px`);
+        wrap.style.setProperty("--category-y",`${y}px`);
+        wrap.style.setProperty("--category-w",`${w}px`);
+        wrap.style.setProperty("--category-h",`${h}px`);
+
+        if(!animate){
+            requestAnimationFrame(()=>indicator.classList.remove("is-instant"));
+        }
+    };
+
+    requestAnimationFrame(apply);
+}
+
 function construirFiltrosCategorias(productos = []) {
     const wrap = document.getElementById("categorias");
     if (!wrap) return;
@@ -2264,16 +2290,14 @@ function construirFiltrosCategorias(productos = []) {
         categoriaActiva="todos";
     }
 
-    const total=source.length;
-    // "Todos" siempre existe, pero cuando hay una marca activa
-    // source ya está limitado exclusivamente a esa marca.
-    const allButton=`<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos <span class="category-chip-count">${total}</span></button>`;
+    // Sin contadores: el foco visual queda en la categoría.
+    const allButton=`<button class="category-chip${categoriaActiva==="todos"?" active":""}" type="button" data-category="todos" aria-pressed="${categoriaActiva==="todos"?"true":"false"}">Todos</button>`;
     const categoryButtons=categorias.map(cat=>`
         <button class="category-chip${cat.key===categoriaActiva?" active":""}" type="button" data-category="${textoSeguro(cat.key)}" aria-pressed="${cat.key===categoriaActiva?"true":"false"}">
-            ${textoSeguro(cat.label)} <span class="category-chip-count">${cat.count}</span>
+            ${textoSeguro(cat.label)}
         </button>`).join("");
 
-    wrap.innerHTML=allButton+categoryButtons;
+    wrap.innerHTML=`<span class="category-liquid-indicator" aria-hidden="true"></span>`+allButton+categoryButtons;
 
     wrap.querySelectorAll(".category-chip").forEach(btn=>btn.addEventListener("click",()=>{
         const key=btn.dataset.category||"todos";
@@ -2292,7 +2316,10 @@ function construirFiltrosCategorias(productos = []) {
             b.setAttribute("aria-pressed",String(active));
         });
         actualizarFiltroCatalogo();
+        syncCategoryLiquidIndicator({animate:true});
     }));
+
+    syncCategoryLiquidIndicator({animate:false});
 }
 
 function actualizarFiltroCatalogo() {
@@ -2483,9 +2510,19 @@ comprobarRetornoPago();
 // y Productos una vez que el catálogo alcanza aproximadamente el centro visual.
 // Se usa scroll pasivo + requestAnimationFrame para evitar estados incorrectos en Safari/iOS.
 (function configurarDockMovil(){
+    const dock=document.querySelector('.mobile-dock');
     const items = Array.from(document.querySelectorAll('.mobile-dock-item[data-dock]'));
+    const allItems=dock?Array.from(dock.querySelectorAll('.mobile-dock-item')):[];
     const productos = document.getElementById('productos');
-    if (!items.length || !productos) return;
+    if (!dock || !items.length || !productos) return;
+
+    const setLiquidToItem=(item,{instant=false}={})=>{
+        const index=allItems.indexOf(item);
+        if(index<0)return;
+        dock.classList.toggle('dock-instant',instant);
+        dock.style.setProperty('--dock-index',String(index));
+        if(instant)requestAnimationFrame(()=>dock.classList.remove('dock-instant'));
+    };
 
     const mobileQuery = window.matchMedia('(max-width: 900px)');
     let scheduled = false;
@@ -2498,8 +2535,12 @@ comprobarRetornoPago();
         items.forEach(item => {
             const active = item.dataset.dock === id;
             item.classList.toggle('active', active);
-            if (active) item.setAttribute('aria-current','page');
-            else item.removeAttribute('aria-current');
+            if (active) {
+                item.setAttribute('aria-current','page');
+                setLiquidToItem(item);
+            } else {
+                item.removeAttribute('aria-current');
+            }
         });
     };
 
@@ -2519,6 +2560,13 @@ comprobarRetornoPago();
         scheduled = true;
         window.requestAnimationFrame(syncDock);
     };
+
+    allItems.forEach(item=>{
+        item.addEventListener('pointerdown',()=>{
+            if(!mobileQuery.matches)return;
+            setLiquidToItem(item);
+        },{passive:true});
+    });
 
     items.forEach(item => {
         item.addEventListener('click', () => {
@@ -2543,6 +2591,7 @@ comprobarRetornoPago();
   const drawer=document.getElementById("mobile-menu-drawer");
   const overlay=document.getElementById("mobile-menu-overlay");
   const closeButton=document.getElementById("mobile-menu-close");
+  const brands=document.getElementById("mobile-menu-brands");
   const categories=document.getElementById("mobile-menu-categories");
   const searchForm=document.getElementById("mobile-menu-search-form");
   const searchInput=document.getElementById("mobile-menu-search-input");
@@ -2551,6 +2600,24 @@ comprobarRetornoPago();
   const cartCount=document.getElementById("mobile-menu-cart-count");
 
   if(!header||!toggle||!drawer||!overlay)return;
+
+  const renderBrands=()=>{
+    if(!brands)return;
+
+    brands.innerHTML=DORADO_BRANDS.map(brand=>`
+      <button type="button" data-mobile-brand="${textoSeguro(brand.key)}">
+        <span>${textoSeguro(brand.name)}</span>
+      </button>`
+    ).join("");
+
+    brands.querySelectorAll("[data-mobile-brand]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const key=String(button.dataset.mobileBrand||"");
+        seleccionarMarca(key,{scroll:true});
+        closeMenu();
+      });
+    });
+  };
 
   const renderCategories=()=>{
     if(!categories)return;
@@ -2572,7 +2639,7 @@ comprobarRetornoPago();
     });
 
     categories.innerHTML=rows.length
-      ? rows.map(item=>`<button type="button" data-mobile-category="${textoSeguro(item.key)}"><span>${textoSeguro(item.label)}</span><small>${item.count}</small></button>`).join("")
+      ? rows.map(item=>`<button type="button" data-mobile-category="${textoSeguro(item.key)}"><span>${textoSeguro(item.label)}</span></button>`).join("")
       : '<span class="mobile-menu-loading">Todavía no hay categorías disponibles.</span>';
 
     categories.querySelectorAll("[data-mobile-category]").forEach(button=>{
@@ -2604,6 +2671,7 @@ comprobarRetornoPago();
   };
 
   const openMenu=()=>{
+    renderBrands();
     renderCategories();
     syncCartCount();
     header.classList.add("menu-open");
@@ -2624,11 +2692,27 @@ comprobarRetornoPago();
     toggle.setAttribute("aria-label","Abrir menú");
   };
 
+  const closeMenuAnimated=(source)=>{
+    if(drawer.classList.contains("is-close-press"))return;
+    drawer.classList.add("is-close-press");
+    source?.classList.add("is-close-press");
+
+    window.setTimeout(()=>{
+      closeMenu();
+      window.setTimeout(()=>{
+        drawer.classList.remove("is-close-press");
+        source?.classList.remove("is-close-press");
+      },360);
+    },120);
+  };
+
   toggle.addEventListener("click",()=>{
-    document.body.classList.contains("menu-open")?closeMenu():openMenu();
+    document.body.classList.contains("menu-open")
+      ? closeMenuAnimated(toggle)
+      : openMenu();
   });
 
-  closeButton?.addEventListener("click",closeMenu);
+  closeButton?.addEventListener("click",()=>closeMenuAnimated(closeButton));
   overlay.addEventListener("click",closeMenu);
 
   drawer.querySelectorAll('a[href^="#"]').forEach(link=>{
@@ -4900,3 +4984,7 @@ comprobarRetornoPago();
         close:cerrarMisPedidos
     });
 })();
+
+window.addEventListener("resize",()=>{
+  if(window.innerWidth<=900)syncCategoryLiquidIndicator({animate:false});
+},{passive:true});
