@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     const mercadoPagoEnabled = String(process.env.MERCADOPAGO_ENABLED || "").toLowerCase() === "true";
     const mercadoPagoPublicKey = String(process.env.MERCADOPAGO_PUBLIC_KEY || "").trim();
 
-    let siteThemeDefault = "dark";
+    let siteThemeDefault = "light";
     try {
         const response = await fetch(
             `${url}/rest/v1/site_settings?id=eq.1&select=default_theme`,
@@ -31,12 +31,12 @@ export default async function handler(req, res) {
             }
         );
         const rows = await response.json().catch(() => []);
-        const value = String(rows?.[0]?.default_theme || "dark").toLowerCase();
+        const value = String(rows?.[0]?.default_theme || "light").toLowerCase();
         if (response.ok && ["default","light","dark"].includes(value)) {
             siteThemeDefault = value;
         }
     } catch {
-        siteThemeDefault = "dark";
+        siteThemeDefault = "light";
     }
 
     // La publishable key de Supabase y la Public Key de Mercado Pago son públicas por diseño.

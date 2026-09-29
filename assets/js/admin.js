@@ -14,7 +14,7 @@ let refreshPromise = null;
 let recoveryAccessToken = "";
 let recoveryRefreshToken = "";
 
-let adminSiteThemeDefault="dark";
+let adminSiteThemeDefault="light";
 
 function normalizeAdminSiteTheme(value){
     const theme=String(value||"default").toLowerCase();
@@ -23,18 +23,21 @@ function normalizeAdminSiteTheme(value){
 
 function syncAdminSiteThemeControls(){
     const value=normalizeAdminSiteTheme(adminSiteThemeDefault);
+    const resolved=value==="dark"?"dark":"light";
     document.querySelectorAll("[data-site-default-theme]").forEach(button=>{
         const active=button.dataset.siteDefaultTheme===value;
         button.classList.toggle("active",active);
         button.setAttribute("aria-checked",String(active));
     });
+    const trigger=document.getElementById("store-theme-settings-button");
+    if(trigger)trigger.textContent=`TEMA WEB · ${resolved==="dark"?"OSCURO":"CLARO"}`;
 }
 
 async function loadAdminSiteThemeSetting(){
     const response=await sb("/rest/v1/site_settings?id=eq.1&select=default_theme");
     const rows=await response.json().catch(()=>[]);
     if(!response.ok)throw new Error("No se pudo cargar el tema predeterminado de la web.");
-    adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"dark");
+    adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"light");
     syncAdminSiteThemeControls();
 }
 
@@ -54,7 +57,22 @@ async function saveAdminSiteThemeSetting(value){
     }
     adminSiteThemeDefault=next;
     syncAdminSiteThemeControls();
-    showToast(next==="dark"?"Tema predeterminado: oscuro.":next==="light"?"Tema predeterminado: claro.":"Tema restablecido al predeterminado oscuro.");
+
+    const resolved=next==="dark"?"dark":"light";
+    try{
+        localStorage.setItem("doradoStoreSiteDefaultTheme",resolved);
+        // En el navegador del administrador, volver a "predeterminado"
+        // permite comprobar inmediatamente el cambio global en la tienda.
+        localStorage.setItem("doradoStoreThemePreference","default");
+    }catch{}
+
+    showToast(
+        next==="dark"
+            ?"Tema predeterminado de la tienda: oscuro."
+            : next==="light"
+                ?"Tema predeterminado de la tienda: claro."
+                :"Tema restablecido al predeterminado claro."
+    );
 }
 
 function setAdminStoreThemePanel(open){

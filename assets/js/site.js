@@ -71,7 +71,7 @@ function obtenerConfigPublica(){
 
 const DORADO_THEME_KEY="doradoStoreThemePreference";
 const DORADO_THEME_VALUES=new Set(["default","light","dark"]);
-let doradoSiteDefaultTheme="dark";
+let doradoSiteDefaultTheme="light";
 
 function normalizeStoreTheme(value){
     const theme=String(value||"default").toLowerCase();
@@ -80,8 +80,10 @@ function normalizeStoreTheme(value){
 
 function resolveStoreTheme(preference){
     const requested=normalizeStoreTheme(preference);
-    const source=requested==="default"?normalizeStoreTheme(doradoSiteDefaultTheme):requested;
-    return source==="light"?"light":"dark";
+    const configured=normalizeStoreTheme(doradoSiteDefaultTheme);
+    const defaultResolved=configured==="dark"?"dark":"light";
+    if(requested==="default")return defaultResolved;
+    return requested==="dark"?"dark":"light";
 }
 
 function syncStoreThemeControls(preference,resolved){
@@ -132,10 +134,14 @@ async function configureStoreTheme(){
 
     try{
         const config=await obtenerConfigPublica();
-        doradoSiteDefaultTheme=normalizeStoreTheme(config?.siteThemeDefault||"default");
+        doradoSiteDefaultTheme=normalizeStoreTheme(config?.siteThemeDefault||"light");
     }catch{
-        doradoSiteDefaultTheme="dark";
+        doradoSiteDefaultTheme="light";
     }
+
+    try{
+        localStorage.setItem("doradoStoreSiteDefaultTheme",resolveStoreTheme("default"));
+    }catch{}
 
     applyStoreTheme(localPreference,{animate:false});
 
@@ -143,6 +149,19 @@ async function configureStoreTheme(){
         button.addEventListener("click",()=>{
             applyStoreTheme(button.dataset.storeThemeChoice,{persist:true,animate:true});
         });
+    });
+
+    window.addEventListener("storage",event=>{
+        if(event.key==="doradoStoreSiteDefaultTheme"){
+            doradoSiteDefaultTheme=normalizeStoreTheme(event.newValue||"light");
+            const current=normalizeStoreTheme(localStorage.getItem(DORADO_THEME_KEY)||"default");
+            if(current==="default")applyStoreTheme("default",{animate:true});
+            else syncStoreThemeControls(current,resolveStoreTheme(current));
+            return;
+        }
+        if(event.key===DORADO_THEME_KEY){
+            applyStoreTheme(event.newValue||"default",{animate:true});
+        }
     });
 }
 
