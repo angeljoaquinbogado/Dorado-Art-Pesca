@@ -916,16 +916,14 @@ function renderProductOrganizationFilters(){
     if(brandTabs){
         const selected=String(brandSelect?.value||"all");
         const buttons=[
-            `<button type="button" class="admin-brand-tab ${selected==="all"?"active":""}" data-brand="all">Todas <span>${productos.length}</span></button>`
+            `<button type="button" class="admin-brand-tab ${selected==="all"?"active":""}" data-brand="all">Todas</button>`
         ];
 
         brandNames.forEach(name=>{
-            const key=name.toLocaleLowerCase("es");
-            const count=productos.filter(product=>normalizeBrandName(product.marca).toLocaleLowerCase("es")===key).length;
-            buttons.push(`<button type="button" class="admin-brand-tab ${selected===name?"active":""}" data-brand="${esc(name)}">${esc(name)} <span>${count}</span></button>`);
+            buttons.push(`<button type="button" class="admin-brand-tab ${selected===name?"active":""}" data-brand="${esc(name)}">${esc(name)}</button>`);
         });
 
-        brandTabs.innerHTML=buttons.join("");
+        brandTabs.innerHTML=`<span class="admin-brand-liquid" aria-hidden="true"></span>`+buttons.join("");
         brandTabs.hidden=brandNames.length===0;
 
         brandTabs.querySelectorAll(".admin-brand-tab").forEach(button=>{
@@ -935,19 +933,42 @@ function renderProductOrganizationFilters(){
                     window.__doradoRefreshAdminSelects?.();
                 }
                 renderProducts();
+                syncAdminBrandTabs({animate:true});
             });
         });
+
+        syncAdminBrandTabs({animate:false});
     }
 
     renderProductFormTaxonomyPickers();
     window.__doradoRefreshAdminSelects?.();
 }
 
-function syncAdminBrandTabs(){
+function syncAdminBrandTabs({animate=true}={}){
+    const tabs=document.getElementById("admin-brand-tabs");
     const selected=String(document.getElementById("product-brand-filter")?.value||"all");
-    document.querySelectorAll("#admin-brand-tabs .admin-brand-tab").forEach(button=>{
-        button.classList.toggle("active",String(button.dataset.brand||"all")===selected);
+    let activeButton=null;
+
+    tabs?.querySelectorAll(".admin-brand-tab").forEach(button=>{
+        const active=String(button.dataset.brand||"all")===selected;
+        button.classList.toggle("active",active);
+        if(active)activeButton=button;
     });
+
+    const indicator=tabs?.querySelector(".admin-brand-liquid");
+    if(!tabs||!indicator||!activeButton)return;
+
+    const paint=()=>{
+        if(!animate)indicator.classList.add("is-instant");
+        tabs.style.setProperty("--admin-brand-x",`${activeButton.offsetLeft}px`);
+        tabs.style.setProperty("--admin-brand-y",`${activeButton.offsetTop}px`);
+        tabs.style.setProperty("--admin-brand-w",`${activeButton.offsetWidth}px`);
+        tabs.style.setProperty("--admin-brand-h",`${activeButton.offsetHeight}px`);
+        activeButton.scrollIntoView({behavior:animate?"smooth":"auto",block:"nearest",inline:"nearest"});
+        if(!animate)requestAnimationFrame(()=>indicator.classList.remove("is-instant"));
+    };
+
+    requestAnimationFrame(paint);
 }
 
 function renderProducts(){
@@ -2984,3 +3005,7 @@ window.addEventListener("beforeunload",releaseDraftPreviews,{once:true});
         }
     });
 })();
+
+window.addEventListener("resize",()=>{
+  if(window.innerWidth<=900)syncAdminBrandTabs({animate:false});
+},{passive:true});

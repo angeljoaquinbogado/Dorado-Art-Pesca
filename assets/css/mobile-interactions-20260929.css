@@ -488,3 +488,83 @@
     transition:none!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE MENU FIXED LAYOUT + CATEGORY ACTIVE TONE
+   ========================================================= */
+@media(max-width:700px){
+  .mobile-menu-drawer{
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+
+  .mobile-menu-head,
+  .mobile-menu-search{
+    flex:0 0 auto!important;
+  }
+
+  .mobile-menu-scroll{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding-right:3px!important;
+    scrollbar-width:thin!important;
+    scrollbar-color:rgba(160,173,181,.55) transparent!important;
+  }
+
+  .mobile-menu-scroll::-webkit-scrollbar{
+    width:4px!important;
+  }
+  .mobile-menu-scroll::-webkit-scrollbar-track{
+    background:transparent!important;
+  }
+  .mobile-menu-scroll::-webkit-scrollbar-thumb{
+    background:rgba(160,173,181,.50)!important;
+    border-radius:999px!important;
+  }
+
+  .mobile-menu-actions{
+    flex:0 0 auto!important;
+    position:relative!important;
+    margin-top:8px!important;
+    padding-top:10px!important;
+    padding-bottom:0!important;
+    background:
+      linear-gradient(180deg,rgba(9,21,29,0),rgba(9,21,29,.94) 22%,#09151d 100%)!important;
+    border-top:1px solid rgba(255,255,255,.075)!important;
+  }
+
+  .mobile-menu-actions>button,
+  .mobile-menu-actions>a{
+    min-height:44px!important;
+  }
+}
+
+/* Category selection: the moving pill is tinted, not a flat orange fill. */
+#categorias .category-liquid-indicator{
+  background:
+    linear-gradient(180deg,rgba(240,196,79,.17),rgba(219,161,48,.10))!important;
+  border:1px solid rgba(240,196,79,.58)!important;
+  box-shadow:
+    0 7px 20px rgba(194,145,34,.08),
+    inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+
+#categorias .category-chip.active{
+  color:#f4cf72!important;
+}
+
+#categorias .category-chip:not(.active){
+  color:#d8dfe3!important;
+}
+
+#categorias .category-chip:hover{
+  color:#fff!important;
+  background:transparent!important;
+}

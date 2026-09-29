@@ -640,3 +640,106 @@ th,
     font-size:10.5px!important;
   }
 }
+
+
+/* =========================================================
+   ADMIN BRAND TABS — same moving-chip language as storefront
+   ========================================================= */
+.admin-brand-tabs{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:12px 2px 6px!important;
+  isolation:isolate!important;
+  scrollbar-width:none!important;
+  scroll-snap-type:none!important;
+}
+
+.admin-brand-tabs::-webkit-scrollbar{
+  display:none!important;
+}
+
+.admin-brand-liquid{
+  position:absolute!important;
+  z-index:0!important;
+  left:0!important;
+  top:0!important;
+  width:var(--admin-brand-w,0px)!important;
+  height:var(--admin-brand-h,0px)!important;
+  border-radius:999px!important;
+  background:
+    linear-gradient(180deg,rgba(230,187,72,.18),rgba(200,148,34,.09))!important;
+  border:1px solid rgba(214,169,53,.58)!important;
+  box-shadow:
+    0 7px 18px rgba(171,123,25,.08),
+    inset 0 1px 0 rgba(255,255,255,.42)!important;
+  transform:translate3d(var(--admin-brand-x,0px),var(--admin-brand-y,0px),0)!important;
+  transition:
+    transform .40s cubic-bezier(.2,.82,.2,1),
+    width .32s cubic-bezier(.2,.82,.2,1),
+    height .32s cubic-bezier(.2,.82,.2,1)!important;
+  pointer-events:none!important;
+  will-change:transform,width!important;
+}
+
+.admin-brand-liquid.is-instant{
+  transition:none!important;
+}
+
+.admin-brand-tab{
+  position:relative!important;
+  z-index:1!important;
+  flex:0 0 auto!important;
+  min-height:38px!important;
+  padding:0 14px!important;
+  border:1px solid #ddd9d1!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:#757b80!important;
+  box-shadow:none!important;
+  font-family:"Manrope",sans-serif!important;
+  font-size:10px!important;
+  font-weight:650!important;
+  letter-spacing:.005em!important;
+  transition:
+    color .25s ease,
+    border-color .25s ease,
+    transform .18s ease!important;
+}
+
+.admin-brand-tab:hover{
+  background:transparent!important;
+  color:#3d4348!important;
+  border-color:#cfc8ba!important;
+}
+
+.admin-brand-tab.active{
+  background:transparent!important;
+  color:#9b7017!important;
+  border-color:transparent!important;
+}
+
+.admin-brand-tab:active{
+  transform:scale(.97)!important;
+}
+
+.admin-brand-tab span{
+  display:none!important;
+}
+
+@media(max-width:700px){
+  .admin-brand-tabs{
+    margin-inline:0!important;
+    padding-inline:0!important;
+    padding-bottom:7px!important;
+  }
+
+  .admin-brand-tab{
+    min-height:39px!important;
+    padding-inline:13px!important;
+    font-size:9.5px!important;
+  }
+}
