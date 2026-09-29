@@ -939,6 +939,10 @@ if (stockElemento) {
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
 
+    modal.scrollTop = 0;
+    const detailInfo = modal.querySelector(".product-detail-info");
+    if (detailInfo) detailInfo.scrollTop = 0;
+
     requestAnimationFrame(() => {
         modal.querySelector(".product-detail-close")?.focus({ preventScroll: true });
     });

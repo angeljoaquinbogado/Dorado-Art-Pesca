@@ -1,0 +1,297 @@
+/* Dorado storefront authoritative modal pass · 2026-09-29
+   Goal: product details fit inside the viewport on desktop/laptop in BOTH themes.
+   Motion stays transform/opacity only and interaction remains interruptible. */
+
+:root{
+  --d-modal-ease-out:cubic-bezier(.23,1,.32,1);
+}
+
+/* Full overlay stays scrollable as a fallback, but the card is sized to fit. */
+#producto-dinamico.product-detail{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:clamp(10px,1.6vw,22px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+#producto-dinamico .product-detail-inner{
+  width:min(1080px,calc(100vw - 24px))!important;
+  height:min(620px,calc(100dvh - 28px))!important;
+  min-height:0!important;
+  max-height:calc(100dvh - 28px)!important;
+  margin:auto!important;
+  grid-template-columns:minmax(0,42%) minmax(0,58%)!important;
+  border-radius:26px!important;
+  overflow:hidden!important;
+}
+
+#producto-dinamico .product-detail-gallery{
+  min-width:0!important;
+  min-height:0!important;
+  height:100%!important;
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto!important;
+  overflow:hidden!important;
+}
+
+#producto-dinamico .product-detail-image{
+  min-height:0!important;
+  height:100%!important;
+  padding:clamp(18px,2.2vw,30px)!important;
+  overflow:hidden!important;
+}
+
+#producto-dinamico .dynamic-product-image{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:360px!important;
+  object-fit:contain!important;
+  margin:auto!important;
+}
+
+#producto-dinamico .product-gallery-thumbs{
+  min-height:0!important;
+  max-height:74px!important;
+  padding:8px 12px 12px!important;
+}
+
+#producto-dinamico .product-detail-info{
+  min-width:0!important;
+  min-height:0!important;
+  height:100%!important;
+  padding:clamp(26px,2.5vw,34px) clamp(26px,2.6vw,38px) 24px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  scrollbar-width:thin!important;
+}
+
+#producto-dinamico .dynamic-product-category{
+  margin-bottom:8px!important;
+  font-size:9px!important;
+}
+
+#producto-dinamico .dynamic-product-name{
+  margin:0!important;
+  font-size:clamp(26px,2.55vw,39px)!important;
+  line-height:1.01!important;
+  letter-spacing:-.045em!important;
+}
+
+#producto-dinamico .product-info-section{
+  margin-top:14px!important;
+}
+
+#producto-dinamico .product-info-section-title{
+  margin-bottom:6px!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+
+#producto-dinamico .dynamic-product-description,
+#producto-dinamico .dynamic-product-features{
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+
+#producto-dinamico .dynamic-product-description p{
+  margin:0 0 6px!important;
+}
+
+#producto-dinamico .dynamic-product-description ul,
+#producto-dinamico .product-features-list{
+  margin:6px 0 0!important;
+  padding-left:16px!important;
+}
+
+#producto-dinamico .dynamic-product-description li,
+#producto-dinamico .product-features-list li{
+  margin:3px 0!important;
+}
+
+#producto-dinamico .dynamic-product-price{
+  margin-top:16px!important;
+  font-size:28px!important;
+  line-height:1!important;
+}
+
+#producto-dinamico .dynamic-product-stock{
+  margin-top:4px!important;
+}
+
+#producto-dinamico .product-assurances{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin-top:14px!important;
+}
+
+#producto-dinamico .product-assurances>div{
+  padding:9px!important;
+  border-radius:12px!important;
+}
+
+#producto-dinamico .product-assurances strong{
+  font-size:8.5px!important;
+}
+#producto-dinamico .product-assurances small{
+  font-size:7.5px!important;
+}
+
+#producto-dinamico .quantity-block{
+  margin-top:14px!important;
+}
+
+#producto-dinamico .quantity-label-row{
+  margin-bottom:6px!important;
+}
+
+#producto-dinamico .quantity-selector{
+  min-height:42px!important;
+}
+
+#producto-dinamico .dynamic-add-cart{
+  min-height:46px!important;
+  margin-top:12px!important;
+}
+
+/* Light keeps the same compact geometry with clean warm surfaces. */
+html[data-store-theme="light"] #producto-dinamico .product-detail-inner{
+  background:#fffdf9!important;
+  color:#17242d!important;
+  border:1px solid #e2d9cb!important;
+}
+html[data-store-theme="light"] #producto-dinamico .product-detail-gallery,
+html[data-store-theme="light"] #producto-dinamico .product-detail-image{
+  background:linear-gradient(160deg,#fbfaf7,#f2ede4)!important;
+}
+html[data-store-theme="light"] #producto-dinamico .product-detail-info{
+  background:#fffdf9!important;
+  color:#17242d!important;
+  border-left:1px solid #e6ddd0!important;
+}
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-description,
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-features,
+html[data-store-theme="light"] #producto-dinamico .dynamic-qty-help{
+  color:#66747b!important;
+}
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-description strong{
+  color:#17242d!important;
+}
+
+/* Dark uses the same compact geometry; only palette changes. */
+html[data-store-theme="dark"] #producto-dinamico .product-detail-inner{
+  background:#102531!important;
+  color:#f4efe7!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+}
+html[data-store-theme="dark"] #producto-dinamico .product-detail-gallery,
+html[data-store-theme="dark"] #producto-dinamico .product-detail-image{
+  background:linear-gradient(155deg,#132a36,#0c1b24)!important;
+}
+html[data-store-theme="dark"] #producto-dinamico .product-detail-info{
+  background:#102531!important;
+  color:#f4efe7!important;
+  border-left:1px solid rgba(255,255,255,.09)!important;
+}
+html[data-store-theme="dark"] #producto-dinamico .dynamic-product-name,
+html[data-store-theme="dark"] #producto-dinamico .dynamic-product-price,
+html[data-store-theme="dark"] #producto-dinamico .dynamic-product-description strong{
+  color:#f4efe7!important;
+}
+html[data-store-theme="dark"] #producto-dinamico .dynamic-product-description,
+html[data-store-theme="dark"] #producto-dinamico .dynamic-product-features{
+  color:#bac5ca!important;
+}
+html[data-store-theme="dark"] #producto-dinamico .product-assurances>div{
+  background:#142f3d!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* Laptop heights: prioritize seeing image + purchasing controls immediately. */
+@media(min-width:901px) and (max-height:760px){
+  #producto-dinamico .product-detail-inner{
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
+  #producto-dinamico .dynamic-product-image{
+    max-height:300px!important;
+  }
+  #producto-dinamico .product-detail-info{
+    padding-top:22px!important;
+    padding-bottom:18px!important;
+  }
+  #producto-dinamico .dynamic-product-name{
+    font-size:clamp(24px,2.35vw,34px)!important;
+  }
+  #producto-dinamico .dynamic-product-description,
+  #producto-dinamico .dynamic-product-features{
+    font-size:10.5px!important;
+    line-height:1.42!important;
+  }
+  #producto-dinamico .product-info-section{
+    margin-top:11px!important;
+  }
+  #producto-dinamico .product-assurances{
+    margin-top:11px!important;
+  }
+  #producto-dinamico .quantity-block{
+    margin-top:11px!important;
+  }
+}
+
+/* Tablet/mobile: image first, details underneath, normal vertical reading. */
+@media(max-width:900px){
+  #producto-dinamico.product-detail{
+    display:block!important;
+    padding:10px!important;
+  }
+  #producto-dinamico .product-detail-inner{
+    width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    grid-template-columns:1fr!important;
+    border-radius:22px!important;
+  }
+  #producto-dinamico .product-detail-gallery{
+    height:auto!important;
+  }
+  #producto-dinamico .product-detail-image{
+    height:min(50dvh,330px)!important;
+    min-height:230px!important;
+    padding:18px!important;
+  }
+  #producto-dinamico .dynamic-product-image{
+    max-height:290px!important;
+  }
+  #producto-dinamico .product-detail-info{
+    height:auto!important;
+    overflow:visible!important;
+    padding:24px 18px 28px!important;
+    border-left:0!important;
+  }
+  #producto-dinamico .dynamic-product-name{
+    font-size:clamp(26px,8.5vw,38px)!important;
+  }
+}
+
+@media(max-width:560px){
+  #producto-dinamico .product-detail-image{
+    height:260px!important;
+    min-height:210px!important;
+  }
+  #producto-dinamico .dynamic-product-image{
+    max-height:230px!important;
+  }
+  #producto-dinamico .product-assurances{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #producto-dinamico.product-detail{
+    transition:opacity 160ms ease!important;
+  }
+}

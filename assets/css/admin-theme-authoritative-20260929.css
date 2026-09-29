@@ -1,0 +1,256 @@
+/* Dorado admin authoritative theme pass · 2026-09-29
+   Light is the default first-paint theme; dark persists only when the same user chose it.
+   Decorative accents: gold in light, white/neutral in dark. */
+
+:root{
+  --adm-auth-gold:#c9952b;
+  --adm-auth-gold-soft:rgba(201,149,43,.42);
+  --adm-auth-light:#f4f0e7;
+  --adm-auth-surface:#fff;
+  --adm-auth-ink:#20272c;
+}
+
+/* -------- LIGHT: remove every legacy dark surface -------- */
+html[data-admin-theme="light"],
+html[data-admin-theme="light"] body,
+html[data-admin-theme="light"] #admin-app,
+html[data-admin-theme="light"] .app,
+html[data-admin-theme="light"] .admin-layout,
+html[data-admin-theme="light"] .workspace,
+html[data-admin-theme="light"] .shell,
+html[data-admin-theme="light"] .panel,
+html[data-admin-theme="light"] main{
+  background:var(--adm-auth-light)!important;
+  color:var(--adm-auth-ink)!important;
+}
+
+html[data-admin-theme="light"] .sidebar{
+  background:#fffdf9!important;
+  color:var(--adm-auth-ink)!important;
+  border-right:1px solid #ddd4c6!important;
+  box-shadow:none!important;
+}
+
+html[data-admin-theme="light"] .side-brand small,
+html[data-admin-theme="light"] .side-label,
+html[data-admin-theme="light"] .admin-user small{
+  color:#7b858a!important;
+}
+
+html[data-admin-theme="light"] .tab,
+html[data-admin-theme="light"] .store-link,
+html[data-admin-theme="light"] #logout-button{
+  color:#46545b!important;
+}
+html[data-admin-theme="light"] .tab.active{
+  background:linear-gradient(135deg,#fff9ea,#f2e3bd)!important;
+  color:#77550f!important;
+  border-color:#dfc780!important;
+}
+
+html[data-admin-theme="light"] .workspace-top{
+  background:rgba(249,246,239,.98)!important;
+  color:var(--adm-auth-ink)!important;
+  border-bottom:1px solid #ddd4c6!important;
+  box-shadow:none!important;
+}
+
+html[data-admin-theme="light"] .crumb,
+html[data-admin-theme="light"] .crumb span,
+html[data-admin-theme="light"] .crumb strong{
+  color:#4c565b!important;
+}
+
+html[data-admin-theme="light"] .hero-head{
+  background:linear-gradient(135deg,#fff 0%,#fffdf8 72%,#f7ebce 100%)!important;
+  color:var(--adm-auth-ink)!important;
+  border:1.5px solid rgba(201,149,43,.46)!important;
+  box-shadow:0 12px 30px rgba(23,36,45,.05),0 0 22px rgba(201,149,43,.06)!important;
+}
+html[data-admin-theme="light"] .hero-head h1,
+html[data-admin-theme="light"] .hero-head h2{
+  color:var(--adm-auth-ink)!important;
+}
+html[data-admin-theme="light"] .hero-head p{
+  color:#68757c!important;
+}
+
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card,
+html[data-admin-theme="light"] .coupon-admin-grid .card{
+  background:#fff!important;
+  color:var(--adm-auth-ink)!important;
+  border:1.5px solid rgba(201,149,43,.42)!important;
+  box-shadow:0 10px 26px rgba(23,36,45,.045),0 0 18px rgba(201,149,43,.045)!important;
+}
+
+html[data-admin-theme="light"] .table-wrap,
+html[data-admin-theme="light"] .product-table-wrap,
+html[data-admin-theme="light"] .orders-table-wrap,
+html[data-admin-theme="light"] #products-panel table,
+html[data-admin-theme="light"] #orders-panel table,
+html[data-admin-theme="light"] #coupons-panel table,
+html[data-admin-theme="light"] #products-panel thead,
+html[data-admin-theme="light"] #orders-panel thead,
+html[data-admin-theme="light"] #coupons-panel thead,
+html[data-admin-theme="light"] #products-panel tbody,
+html[data-admin-theme="light"] #orders-panel tbody,
+html[data-admin-theme="light"] #coupons-panel tbody,
+html[data-admin-theme="light"] #products-panel tr,
+html[data-admin-theme="light"] #orders-panel tr,
+html[data-admin-theme="light"] #coupons-panel tr,
+html[data-admin-theme="light"] #products-panel td,
+html[data-admin-theme="light"] #orders-panel td,
+html[data-admin-theme="light"] #coupons-panel td{
+  background:#fff!important;
+  color:var(--adm-auth-ink)!important;
+  border-color:#ece4d8!important;
+}
+
+html[data-admin-theme="light"] #orders-panel .orders-toolbar,
+html[data-admin-theme="light"] #orders-panel .orders-filterbar,
+html[data-admin-theme="light"] #orders-panel .orders-bulkbar,
+html[data-admin-theme="light"] #products-panel .catalog-toolbar,
+html[data-admin-theme="light"] #coupons-panel .catalog-toolbar{
+  background:#fff!important;
+  color:var(--adm-auth-ink)!important;
+  border-color:#ece4d8!important;
+}
+
+html[data-admin-theme="light"] input,
+html[data-admin-theme="light"] textarea,
+html[data-admin-theme="light"] select,
+html[data-admin-theme="light"] .admin-select-trigger,
+html[data-admin-theme="light"] .date-filter{
+  background:#fffdfa!important;
+  color:var(--adm-auth-ink)!important;
+  -webkit-text-fill-color:var(--adm-auth-ink)!important;
+  border-color:#ddd4c7!important;
+  color-scheme:light!important;
+}
+
+html[data-admin-theme="light"] input::placeholder,
+html[data-admin-theme="light"] textarea::placeholder{
+  color:#929b9f!important;
+  -webkit-text-fill-color:#929b9f!important;
+}
+
+html[data-admin-theme="light"] .secondary,
+html[data-admin-theme="light"] .icon-btn,
+html[data-admin-theme="light"] #store-theme-settings-button,
+html[data-admin-theme="light"] #google-business-connect-button,
+html[data-admin-theme="light"] #refresh-button,
+html[data-admin-theme="light"] .store-link,
+html[data-admin-theme="light"] #logout-button{
+  background:#fff!important;
+  color:#303c43!important;
+  border-color:#d9d1c5!important;
+}
+
+/* Gold accents are clear enough to read in LIGHT. */
+html[data-admin-theme="light"] .stat::before,
+html[data-admin-theme="light"] .orders-card::before,
+html[data-admin-theme="light"] #coupons-panel .form-card::before,
+html[data-admin-theme="light"] #coupons-panel .catalog-card::before,
+html[data-admin-theme="light"] #products-panel .catalog-card::before{
+  height:2px!important;
+  background:linear-gradient(90deg,transparent 0%,rgba(201,149,43,.42) 14%,#c9952b 48%,rgba(224,179,75,.78) 64%,transparent 100%)!important;
+  box-shadow:0 2px 10px rgba(201,149,43,.16)!important;
+}
+html[data-admin-theme="light"] #products-panel .catalog-title-row h2::after,
+html[data-admin-theme="light"] #orders-panel .orders-toolbar h2::after,
+html[data-admin-theme="light"] #coupons-panel .catalog-title-row h2::after{
+  background:linear-gradient(90deg,#c9952b,rgba(201,149,43,.12))!important;
+}
+
+/* -------- DARK: decorative gold lines become WHITE/neutral -------- */
+html[data-admin-theme="dark"] .stat,
+html[data-admin-theme="dark"] .card,
+html[data-admin-theme="dark"] .form-card,
+html[data-admin-theme="dark"] .catalog-card,
+html[data-admin-theme="dark"] .orders-card{
+  border-color:rgba(255,255,255,.13)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.20),0 0 0 1px rgba(255,255,255,.025)!important;
+}
+
+html[data-admin-theme="dark"] .stat::before,
+html[data-admin-theme="dark"] .orders-card::before,
+html[data-admin-theme="dark"] #coupons-panel .form-card::before,
+html[data-admin-theme="dark"] #coupons-panel .catalog-card::before,
+html[data-admin-theme="dark"] #products-panel .catalog-card::before{
+  height:2px!important;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.18) 14%,rgba(255,255,255,.78) 48%,rgba(255,255,255,.34) 64%,transparent 100%)!important;
+  box-shadow:0 2px 10px rgba(255,255,255,.06)!important;
+}
+
+html[data-admin-theme="dark"] #products-panel .catalog-title-row h2::after,
+html[data-admin-theme="dark"] #orders-panel .orders-toolbar h2::after,
+html[data-admin-theme="dark"] #coupons-panel .catalog-title-row h2::after{
+  background:linear-gradient(90deg,rgba(255,255,255,.82),rgba(255,255,255,.08))!important;
+}
+
+/* Stock warning + status semantics: readable in both themes. */
+html[data-admin-theme="light"] #product-stock-alert{
+  color:#7a5a13!important;
+}
+html[data-admin-theme="dark"] #product-stock-alert{
+  color:#ffd97a!important;
+  -webkit-text-fill-color:#ffd97a!important;
+}
+
+html[data-admin-theme="dark"] .stock-pill.stock-low{
+  background:rgba(239,183,53,.26)!important;
+  color:#ffe18a!important;
+  border-color:rgba(239,183,53,.48)!important;
+}
+html[data-admin-theme="dark"] .stock-pill.stock-ok,
+html[data-admin-theme="dark"] .badge.on,
+html[data-admin-theme="dark"] .badge.pagado{
+  background:rgba(45,193,108,.24)!important;
+  color:#9cf0ba!important;
+  border-color:rgba(74,211,132,.42)!important;
+}
+html[data-admin-theme="dark"] .stock-pill.stock-out,
+html[data-admin-theme="dark"] .badge.off,
+html[data-admin-theme="dark"] .badge.pago_rechazado,
+html[data-admin-theme="dark"] .badge.pago_cancelado{
+  background:rgba(220,77,67,.25)!important;
+  color:#ffaaa3!important;
+  border-color:rgba(230,94,84,.42)!important;
+}
+
+/* Do not reintroduce old decorative blobs. */
+.stat::after,
+.stats .stat::after{
+  display:none!important;
+  content:none!important;
+}
+
+@media(max-width:700px){
+  html[data-admin-theme="light"] .sidebar{
+    background:#fffdf9!important;
+  }
+  html[data-admin-theme="light"] .workspace-top{
+    background:#f8f5ee!important;
+  }
+  html[data-admin-theme="light"] .stat,
+  html[data-admin-theme="light"] .card,
+  html[data-admin-theme="light"] .form-card,
+  html[data-admin-theme="light"] .catalog-card,
+  html[data-admin-theme="light"] .orders-card{
+    border-width:1.5px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.admin-theme-transitioning body,
+  html.admin-theme-transitioning #admin-app,
+  html.admin-theme-transitioning .workspace,
+  html.admin-theme-transitioning .stat,
+  html.admin-theme-transitioning .card{
+    transition:background-color 140ms ease,color 140ms ease,border-color 140ms ease!important;
+  }
+}
