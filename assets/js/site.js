@@ -4290,7 +4290,7 @@ comprobarRetornoPago();
 
             if(paymentStatus==="approved"){
                 setStatus("Pago aprobado. Confirmando tu pedido…","ok");
-                window.location.assign(`/?checkout=success&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(tracking)}`);
+                window.location.assign(`/gracias.html?order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(tracking)}`);
                 return;
             }
 
