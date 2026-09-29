@@ -66,6 +66,11 @@ async function loadAdminSiteThemeSetting(){
 
 async function saveAdminSiteThemeSetting(value){
     const next=normalizeAdminSiteTheme(value);
+    const previous=adminSiteThemeDefault;
+    adminSiteThemeDefault=next;
+    applyAdminPanelTheme(next,{animate:true});
+    syncAdminSiteThemeControls();
+
     const response=await sb("/rest/v1/site_settings?id=eq.1",{
         method:"PATCH",
         headers:{Prefer:"return=representation"},
@@ -76,11 +81,11 @@ async function saveAdminSiteThemeSetting(value){
     });
     const rows=await response.json().catch(()=>[]);
     if(!response.ok||!Array.isArray(rows)||!rows.length){
+        adminSiteThemeDefault=previous;
+        applyAdminPanelTheme(previous,{animate:true});
+        syncAdminSiteThemeControls();
         throw new Error("No se pudo guardar el tema predeterminado de la web.");
     }
-    adminSiteThemeDefault=next;
-    applyAdminPanelTheme(next,{animate:true});
-    syncAdminSiteThemeControls();
 
     const resolved=next==="dark"?"dark":"light";
     try{

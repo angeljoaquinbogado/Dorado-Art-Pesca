@@ -1,0 +1,227 @@
+/* Dorado admin — final visible light/dark completion · 2026-09-29 */
+:root{
+  --adm-ease-out:cubic-bezier(0.23,1,0.32,1);
+  --adm-ui:220ms;
+}
+
+/* LIGHT */
+html[data-admin-theme="light"] body,
+html[data-admin-theme="light"] #admin-app,
+html[data-admin-theme="light"] .workspace{
+  background:#f4f0e7!important;
+  color:#202328!important;
+}
+html[data-admin-theme="light"] .workspace-top{
+  background:rgba(244,240,231,.97)!important;
+  color:#202328!important;
+  border-color:#ded8cd!important;
+}
+html[data-admin-theme="light"] .crumb,
+html[data-admin-theme="light"] .crumb strong{color:#454b50!important}
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card{
+  background:#fff!important;
+  color:#202328!important;
+  border-color:#e4ded3!important;
+}
+html[data-admin-theme="light"] .field input,
+html[data-admin-theme="light"] .field textarea,
+html[data-admin-theme="light"] .field select,
+html[data-admin-theme="light"] .search-wrap input,
+html[data-admin-theme="light"] .catalog-filters select,
+html[data-admin-theme="light"] .orders-filterbar select,
+html[data-admin-theme="light"] .admin-select-trigger{
+  background:#fffdfa!important;
+  color:#202328!important;
+  border-color:#ddd6c9!important;
+}
+html[data-admin-theme="light"] .admin-select-menu{
+  background:#fff!important;
+  color:#202328!important;
+  border-color:#ded8cd!important;
+}
+html[data-admin-theme="light"] .product-table-wrap,
+html[data-admin-theme="light"] .orders-table-wrap,
+html[data-admin-theme="light"] .table-wrap,
+html[data-admin-theme="light"] table{
+  background:#fff!important;
+  color:#202328!important;
+}
+html[data-admin-theme="light"] th{color:#7c8388!important}
+html[data-admin-theme="light"] td{color:#2b3034!important}
+
+/* DARK: override every hard-coded light surface from legacy admin styles. */
+html[data-admin-theme="dark"] body,
+html[data-admin-theme="dark"] #admin-app,
+html[data-admin-theme="dark"] .app,
+html[data-admin-theme="dark"] .admin-layout,
+html[data-admin-theme="dark"] .workspace,
+html[data-admin-theme="dark"] .shell{
+  background:#09151d!important;
+  color:#edf1f2!important;
+}
+
+html[data-admin-theme="dark"] .workspace-top{
+  background:rgba(9,21,29,.98)!important;
+  color:#edf1f2!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+html[data-admin-theme="dark"] .crumb,
+html[data-admin-theme="dark"] .crumb span,
+html[data-admin-theme="dark"] .crumb strong{
+  color:#d9e1e4!important;
+}
+
+html[data-admin-theme="dark"] .hero-head{
+  background:linear-gradient(135deg,#10212d,#091820)!important;
+  color:#f3efe8!important;
+}
+
+html[data-admin-theme="dark"] .stat,
+html[data-admin-theme="dark"] .card,
+html[data-admin-theme="dark"] .form-card,
+html[data-admin-theme="dark"] .catalog-card,
+html[data-admin-theme="dark"] .orders-card,
+html[data-admin-theme="dark"] .coupon-admin-grid .card{
+  background:#102531!important;
+  color:#eef2f3!important;
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.20)!important;
+}
+
+html[data-admin-theme="dark"] h1,
+html[data-admin-theme="dark"] h2,
+html[data-admin-theme="dark"] h3,
+html[data-admin-theme="dark"] .product-name-cell,
+html[data-admin-theme="dark"] .price-cell,
+html[data-admin-theme="dark"] .stat strong{
+  color:#f4f0e9!important;
+}
+html[data-admin-theme="dark"] p,
+html[data-admin-theme="dark"] small,
+html[data-admin-theme="dark"] .cell-sub,
+html[data-admin-theme="dark"] .catalog-count,
+html[data-admin-theme="dark"] .file-help,
+html[data-admin-theme="dark"] .stat-label{
+  color:#98a7ae!important;
+}
+
+html[data-admin-theme="dark"] .field input,
+html[data-admin-theme="dark"] .field textarea,
+html[data-admin-theme="dark"] .field select,
+html[data-admin-theme="dark"] .search-wrap input,
+html[data-admin-theme="dark"] .catalog-filters select,
+html[data-admin-theme="dark"] .orders-filterbar select,
+html[data-admin-theme="dark"] .orders-filterbar .date-filter,
+html[data-admin-theme="dark"] .admin-select-trigger{
+  background:#0b1d27!important;
+  color:#edf1f2!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:none!important;
+}
+
+html[data-admin-theme="dark"] input::placeholder,
+html[data-admin-theme="dark"] textarea::placeholder{color:#70818a!important}
+
+html[data-admin-theme="dark"] .admin-select-menu{
+  background:#102531!important;
+  color:#edf1f2!important;
+  border-color:rgba(255,255,255,.11)!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.30)!important;
+}
+
+html[data-admin-theme="dark"] .product-table-wrap,
+html[data-admin-theme="dark"] .orders-table-wrap,
+html[data-admin-theme="dark"] .table-wrap,
+html[data-admin-theme="dark"] table,
+html[data-admin-theme="dark"] thead,
+html[data-admin-theme="dark"] tbody,
+html[data-admin-theme="dark"] tr{
+  background:#102531!important;
+  color:#e5ebed!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+html[data-admin-theme="dark"] thead th{
+  background:#0d202b!important;
+  color:#93a2aa!important;
+}
+html[data-admin-theme="dark"] tbody td{
+  color:#e3eaec!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+html[data-admin-theme="dark"] .orders-filterbar,
+html[data-admin-theme="dark"] .orders-bulkbar,
+html[data-admin-theme="dark"] .orders-toolbar{
+  background:#0d202b!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+html[data-admin-theme="dark"] .secondary,
+html[data-admin-theme="dark"] .icon-btn,
+html[data-admin-theme="dark"] .store-link{
+  background:#102531!important;
+  color:#e2e9eb!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:none!important;
+}
+
+html[data-admin-theme="dark"] .store-theme-admin-panel{
+  background:#102531!important;
+  color:#eef2f3!important;
+  border-color:rgba(255,255,255,.12)!important;
+}
+html[data-admin-theme="dark"] .store-theme-admin-options button{
+  background:#0b1d27!important;
+  color:#e4ebed!important;
+  border-color:rgba(255,255,255,.11)!important;
+}
+html[data-admin-theme="dark"] .store-theme-admin-options button.active{
+  background:linear-gradient(135deg,rgba(224,176,62,.20),rgba(224,176,62,.08))!important;
+  color:#f3cc6d!important;
+  border-color:rgba(224,176,62,.55)!important;
+}
+
+/* Make theme switching visibly animate without moving layout. */
+html.admin-theme-transitioning body,
+html.admin-theme-transitioning #admin-app,
+html.admin-theme-transitioning .workspace,
+html.admin-theme-transitioning .workspace-top,
+html.admin-theme-transitioning .stat,
+html.admin-theme-transitioning .card,
+html.admin-theme-transitioning .form-card,
+html.admin-theme-transitioning .catalog-card,
+html.admin-theme-transitioning .orders-card,
+html.admin-theme-transitioning input,
+html.admin-theme-transitioning textarea,
+html.admin-theme-transitioning select{
+  transition:
+    background-color var(--adm-ui) ease,
+    color var(--adm-ui) ease,
+    border-color var(--adm-ui) ease!important;
+}
+
+@media(max-width:700px){
+  html[data-admin-theme="dark"] .workspace-top{
+    background:#09151d!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.admin-theme-transitioning body,
+  html.admin-theme-transitioning #admin-app,
+  html.admin-theme-transitioning .workspace,
+  html.admin-theme-transitioning .workspace-top,
+  html.admin-theme-transitioning .stat,
+  html.admin-theme-transitioning .card{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}

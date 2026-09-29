@@ -1,0 +1,326 @@
+/* Dorado storefront — final light/dark completion · 2026-09-29
+   Loaded last. Keeps the existing dark design and makes light mode coherent. */
+:root{
+  --d-theme-ease-out:cubic-bezier(0.23,1,0.32,1);
+  --d-theme-ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --d-theme-ui:220ms;
+  --d-theme-press:120ms;
+}
+
+html[data-store-theme="light"] body{
+  background:#f7f4ec!important;
+  color:#17242d!important;
+}
+
+html[data-store-theme="dark"] body{
+  background:#10212d!important;
+  color:#f1ece3!important;
+}
+
+/* ---------- Header: preserve Dorado dark bar in BOTH themes ---------- */
+html[data-store-theme] .nav,
+html[data-store-theme] .nav.scrolled{
+  background:linear-gradient(135deg,#142936,#0d1e29)!important;
+  color:#f4f0e8!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 15px 34px rgba(4,12,18,.18)!important;
+}
+
+html[data-store-theme] .navlinks a{
+  color:#c0c9cd!important;
+}
+html[data-store-theme] .navlinks a.active,
+html[data-store-theme] .navlinks a:hover{
+  color:#fff!important;
+}
+html[data-store-theme] .navlinks a::after{background:#e4ad36!important}
+
+html[data-store-theme] .nav-cta,
+html[data-store-theme] .orders-trigger{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(255,255,255,.16)!important;
+  color:#f1ece3!important;
+  box-shadow:none!important;
+}
+html[data-store-theme] .nav-cta .ui-icon{color:#34d77b!important}
+html[data-store-theme] .orders-trigger .ui-icon{color:#dce5e8!important}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme] .nav-cta:hover,
+  html[data-store-theme] .orders-trigger:hover{
+    background:rgba(255,255,255,.09)!important;
+    border-color:rgba(228,173,54,.38)!important;
+    color:#fff!important;
+  }
+}
+
+html[data-store-theme] .cart-trigger{
+  background:linear-gradient(135deg,#efbc4b,#dda12d)!important;
+  border-color:#d59a27!important;
+  color:#10212d!important;
+}
+
+/* ---------- LIGHT surface continuity: eliminate black side gutters ---------- */
+html[data-store-theme="light"] main,
+html[data-store-theme="light"] .section,
+html[data-store-theme="light"] #productos,
+html[data-store-theme="light"] #productos .catalog-shell-dark,
+html[data-store-theme="light"] #como-comprar,
+html[data-store-theme="light"] #opiniones,
+html[data-store-theme="light"] #preguntas-frecuentes,
+html[data-store-theme="light"] #contacto{
+  background:#f7f4ec!important;
+  box-shadow:none!important;
+}
+
+html[data-store-theme="light"] #productos .catalog-shell-dark{
+  width:100%!important;
+  max-width:none!important;
+  border:0!important;
+}
+
+html[data-store-theme="light"] #productos::before,
+html[data-store-theme="light"] #productos::after,
+html[data-store-theme="light"] .catalog-shell-dark::before,
+html[data-store-theme="light"] .catalog-shell-dark::after{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+/* ---------- Reviews CTA: no orange outline box ---------- */
+html[data-store-theme="light"] #opiniones .reviews-google-cta{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding-inline:0!important;
+}
+
+html[data-store-theme="light"] #opiniones .reviews-google-cta strong{
+  color:#24323a!important;
+}
+html[data-store-theme="light"] #opiniones .reviews-google-cta small{
+  color:#768188!important;
+}
+html[data-store-theme="light"] #opiniones .reviews-google-link{
+  background:linear-gradient(135deg,#f3bd4a,#dda02f)!important;
+  color:#15242d!important;
+  border:1px solid rgba(190,131,26,.42)!important;
+  box-shadow:0 7px 18px rgba(181,119,16,.10)!important;
+}
+
+/* ---------- Process cards: subtle white -> warm gradient only ---------- */
+html[data-store-theme="light"] #como-comprar .process-step,
+html[data-store-theme="light"] #como-comprar .process-step.is-active{
+  background:linear-gradient(135deg,#fff 0%,#fffdf9 72%,#f7ead0 100%)!important;
+  color:#17242d!important;
+  border:1px solid #e5ded1!important;
+  box-shadow:0 9px 24px rgba(23,36,45,.045)!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] #como-comprar .process-step:hover{
+    background:linear-gradient(135deg,#fff 0%,#fffaf0 76%,#f1d99e 100%)!important;
+    border-color:#dfc78f!important;
+    transform:translate3d(0,-2px,0)!important;
+    transition:
+      transform var(--d-theme-press) var(--d-theme-ease-out),
+      background-color var(--d-theme-ui) ease,
+      border-color var(--d-theme-ui) ease!important;
+  }
+}
+
+/* ---------- Product detail: one clean surface, no nested beige square ---------- */
+html[data-store-theme="light"] #producto-dinamico .product-detail-inner{
+  background:#fff!important;
+  border:1px solid #e7e0d5!important;
+  box-shadow:0 28px 70px rgba(23,36,45,.18)!important;
+}
+html[data-store-theme="light"] #producto-dinamico .product-detail-gallery{
+  background:linear-gradient(180deg,#fdfcf9,#f7f3eb)!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+html[data-store-theme="light"] #producto-dinamico .product-detail-image{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:clamp(18px,3vw,42px)!important;
+}
+html[data-store-theme="light"] #producto-dinamico .product-detail-image::after{display:none!important}
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-image{
+  width:min(94%,680px)!important;
+  height:auto!important;
+  max-height:82%!important;
+  object-fit:contain!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+html[data-store-theme="light"] #producto-dinamico .product-detail-info{
+  background:#fff!important;
+  border-left:1px solid #eee7dc!important;
+}
+
+/* ---------- Story rows: unboxed and calm ---------- */
+html[data-store-theme="light"] #nosotros .about-highlights{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+html[data-store-theme="light"] #nosotros .about-highlight,
+html[data-store-theme="light"] #nosotros .about-highlight:nth-child(3){
+  min-height:auto!important;
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid #e4ddd2!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:15px 0!important;
+}
+html[data-store-theme="light"] #nosotros .about-highlight:last-child{border-bottom:0!important}
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] #nosotros .about-highlight:hover{
+    background:transparent!important;
+    transform:none!important;
+  }
+}
+html[data-store-theme="light"] #nosotros .about-highlight-icon{
+  background:#fff8ea!important;
+  color:#c38319!important;
+  border:1px solid #ecd7ad!important;
+  box-shadow:none!important;
+}
+
+/* ---------- Map truly follows theme ---------- */
+html[data-store-theme="light"] #contacto .dorado-map-live,
+html[data-store-theme="light"] #contacto .dorado-map-live iframe{
+  background:#f2f2ef!important;
+  filter:none!important;
+  opacity:1!important;
+}
+html[data-store-theme="dark"] #contacto .dorado-map-live iframe{
+  filter:invert(.90) hue-rotate(180deg) saturate(.70) brightness(.72) contrast(.94)!important;
+  opacity:.98!important;
+}
+
+/* ---------- Footer / tiny badges readability ---------- */
+html[data-store-theme="light"] .footer-badges span{
+  background:transparent!important;
+  color:#5d696f!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+html[data-store-theme="light"] .footer-badges .ui-icon{color:#b87a14!important}
+html[data-store-theme="light"] .footer-rights,
+html[data-store-theme="light"] .footer-address,
+html[data-store-theme="light"] .footer-bottom{
+  color:#5f6b71!important;
+}
+
+/* ---------- Cart and Orders: compact, floating, theme-aware on desktop ---------- */
+@media(min-width:701px){
+  .cart-drawer,
+  .orders-drawer{
+    top:50%!important;
+    bottom:auto!important;
+    right:22px!important;
+    left:auto!important;
+    width:min(440px,calc(100vw - 44px))!important;
+    height:min(650px,calc(100dvh - 64px))!important;
+    max-height:calc(100dvh - 64px)!important;
+    border-radius:24px!important;
+    overflow:hidden!important;
+    transform:translate3d(calc(100% + 44px),-50%,0)!important;
+    transition:transform 280ms cubic-bezier(0.32,0.72,0,1)!important;
+  }
+  .cart-drawer.active,
+  .orders-drawer.active{
+    transform:translate3d(0,-50%,0)!important;
+  }
+}
+
+html[data-store-theme="light"] .cart-drawer,
+html[data-store-theme="light"] .orders-drawer{
+  background:#f8f6f1!important;
+  color:#17242d!important;
+  border:1px solid #dfd7ca!important;
+}
+html[data-store-theme="light"] .cart-head,
+html[data-store-theme="light"] .orders-head{
+  background:#172731!important;
+  color:#fff!important;
+  border-color:rgba(228,173,54,.22)!important;
+}
+html[data-store-theme="light"] .cart-head-copy strong,
+html[data-store-theme="light"] .orders-head strong{color:#fff!important}
+html[data-store-theme="light"] .cart-head-copy span,
+html[data-store-theme="light"] .orders-head small{color:#b8c2c7!important}
+html[data-store-theme="light"] .cart-close,
+html[data-store-theme="light"] .orders-close{
+  background:rgba(255,255,255,.07)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.16)!important;
+}
+html[data-store-theme="light"] .cart-items,
+html[data-store-theme="light"] .orders-list,
+html[data-store-theme="light"] .orders-toolbar,
+html[data-store-theme="light"] .orders-foot,
+html[data-store-theme="light"] .cart-footer{
+  background:#fff!important;
+  color:#17242d!important;
+}
+
+/* ---------- Theme selector readability ---------- */
+html[data-store-theme="light"] .footer-theme-control{
+  border-color:#ddd5c9!important;
+}
+html[data-store-theme="light"] .footer-theme-control>strong{color:#17242d!important}
+html[data-store-theme="light"] .footer-theme-control>small,
+html[data-store-theme="light"] .footer-theme-status{color:#6d797f!important}
+
+/* Smooth theme changes: color only, under 300ms. */
+html.store-theme-transitioning body,
+html.store-theme-transitioning .nav,
+html.store-theme-transitioning .section,
+html.store-theme-transitioning .process-step,
+html.store-theme-transitioning .reviews-google-cta,
+html.store-theme-transitioning .about-highlight,
+html.store-theme-transitioning .product-detail-inner,
+html.store-theme-transitioning .product-detail-gallery,
+html.store-theme-transitioning .product-detail-info,
+html.store-theme-transitioning .cart-drawer,
+html.store-theme-transitioning .orders-drawer,
+html.store-theme-transitioning .site-footer{
+  transition:
+    background-color var(--d-theme-ui) ease,
+    color var(--d-theme-ui) ease,
+    border-color var(--d-theme-ui) ease!important;
+}
+
+@media(max-width:700px){
+  html[data-store-theme] .nav,
+  html[data-store-theme] .nav.scrolled{
+    background:linear-gradient(135deg,#142936,#0d1e29)!important;
+  }
+  html[data-store-theme="light"] #producto-dinamico .product-detail-info{
+    border-left:0!important;
+    border-top:1px solid #eee7dc!important;
+  }
+  html[data-store-theme="light"] #nosotros .about-highlight{
+    padding:13px 0!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.store-theme-transitioning body,
+  html.store-theme-transitioning .nav,
+  html.store-theme-transitioning .section,
+  html.store-theme-transitioning .product-detail-inner,
+  html.store-theme-transitioning .cart-drawer,
+  html.store-theme-transitioning .orders-drawer{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}
