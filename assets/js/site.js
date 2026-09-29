@@ -2004,7 +2004,21 @@ async function comprobarRetornoPago() {
     const orderId = params.get("order");
     const trackingToken = params.get("tracking");
 
-    if (!estadoRetorno || !orderId) return;
+    if (!estadoRetorno) return;
+
+    if (esPaginaGracias && !orderId) {
+        mostrarResultadoPago({
+            estado: "success",
+            titulo: "¡Gracias por tu compra!",
+            mensaje: "Tu compra fue recibida correctamente.",
+            pedido: "",
+            tracking: "",
+            ayuda: "Si ya realizaste el pago, vas a poder seguir tu pedido desde Mis pedidos."
+        });
+        return;
+    }
+
+    if (!orderId) return;
     if (trackingToken) guardarReferenciaPedido(orderId, trackingToken);
 
     try {
