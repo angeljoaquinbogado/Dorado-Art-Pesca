@@ -143,6 +143,7 @@
 <link rel="stylesheet" href="assets/css/storefront-light-final-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/product-modal-final-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/best-sellers-theme-fix-20260929.css?v=20260929a"/>
+<link rel="stylesheet" href="assets/css/payment-result-polish-20260929.css?v=20260929a"/>
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -1136,9 +1137,19 @@
         <div class="payment-result-kicker">Dorado Artículos de Pesca</div>
         <h2 id="payment-result-title">¡Compra confirmada!</h2>
         <p id="payment-result-message">Recibimos tu pago correctamente.</p>
-        <div class="payment-result-order">
-            <span>NÚMERO DE PEDIDO</span>
-            <strong id="payment-result-order-id">—</strong>
+        <div class="payment-result-order" id="payment-result-order" hidden>
+            <div class="payment-result-order-row">
+                <span>NÚMERO DE PEDIDO</span>
+                <strong id="payment-result-order-id">—</strong>
+            </div>
+            <div class="payment-result-order-row" id="payment-result-total-row" hidden>
+                <span>TOTAL</span>
+                <strong id="payment-result-total">—</strong>
+            </div>
+            <div class="payment-result-order-row" id="payment-result-status-row" hidden>
+                <span>ESTADO</span>
+                <strong id="payment-result-status">—</strong>
+            </div>
         </div>
         <p class="payment-result-help" id="payment-result-help">
             Guardá este número. Nos comunicaremos para coordinar la entrega.
@@ -1158,7 +1169,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20260929-gracias2"></script>
+<script src="assets/js/site.js?v=20260929-gracias3"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
