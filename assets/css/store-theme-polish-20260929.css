@@ -1,0 +1,519 @@
+/* Dorado storefront — final theme polish · 2026-09-29
+   Loaded LAST. Theme-specific overrides only; dark design remains intact. */
+
+:root{
+  --theme-polish-ease-out:cubic-bezier(0.23,1,0.32,1);
+  --theme-polish-ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --theme-polish-ui:200ms;
+  --theme-polish-press:120ms;
+}
+
+/* =========================================================
+   LIGHT HEADER — no dark bar/buttons in clear theme
+   ========================================================= */
+html[data-store-theme="light"] .nav,
+html[data-store-theme="light"] .nav.scrolled{
+  background:rgba(255,253,248,.96)!important;
+  color:#18262f!important;
+  border:1px solid rgba(24,38,47,.10)!important;
+  box-shadow:0 14px 34px rgba(24,38,47,.10)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  backdrop-filter:blur(14px)!important;
+}
+
+html[data-store-theme="light"] .navlinks a{
+  color:#5f6c73!important;
+}
+html[data-store-theme="light"] .navlinks a.active,
+html[data-store-theme="light"] .navlinks a:focus-visible{
+  color:#18262f!important;
+}
+html[data-store-theme="light"] .navlinks a::after{
+  background:#d89a26!important;
+}
+
+html[data-store-theme="light"] .nav-cta,
+html[data-store-theme="light"] .orders-trigger{
+  background:#fff!important;
+  color:#26343b!important;
+  border-color:#d8d1c6!important;
+  box-shadow:0 4px 12px rgba(24,38,47,.035)!important;
+}
+html[data-store-theme="light"] .nav-cta .ui-icon{color:#19b85b!important}
+html[data-store-theme="light"] .orders-trigger .ui-icon{color:#65737a!important}
+
+html[data-store-theme="light"] .cart-trigger{
+  background:linear-gradient(135deg,#f1bf4f,#dda12e)!important;
+  border-color:#d79b28!important;
+  color:#15242d!important;
+  box-shadow:0 7px 17px rgba(190,126,18,.11)!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] .navlinks a:hover{color:#18262f!important}
+  html[data-store-theme="light"] .nav-cta:hover,
+  html[data-store-theme="light"] .orders-trigger:hover{
+    background:#fffaf0!important;
+    color:#18262f!important;
+    border-color:#d8b56a!important;
+    transform:translate3d(0,-1px,0)!important;
+  }
+}
+
+/* =========================================================
+   LIGHT BACKGROUNDS — eliminate navy/black side gutters
+   ========================================================= */
+html[data-store-theme="light"],
+html[data-store-theme="light"] body,
+html[data-store-theme="light"] main{
+  background:#f7f4ec!important;
+}
+
+html[data-store-theme="light"] .location,
+html[data-store-theme="light"] #contacto{
+  width:100%!important;
+  max-width:none!important;
+  background:#f7f4ec!important;
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .location::before,
+html[data-store-theme="light"] #contacto::before{
+  background:
+    radial-gradient(circle at 78% 24%,rgba(215,161,58,.045),transparent 34%),
+    linear-gradient(180deg,#f7f4ec 0%,#f4f0e7 100%)!important;
+}
+
+html[data-store-theme="light"] .location-box{
+  background:#fff!important;
+  border:1px solid #e1dacf!important;
+  box-shadow:0 18px 44px rgba(24,38,47,.07)!important;
+}
+
+html[data-store-theme="light"] .location-copy,
+html[data-store-theme="light"] .location-copy h2,
+html[data-store-theme="light"] .location-copy>p{
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .location-copy>p,
+html[data-store-theme="light"] #contacto .contact-detail{
+  color:#68757c!important;
+}
+
+html[data-store-theme="light"] #contacto .kicker{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#98701c!important;
+  padding:0!important;
+}
+
+html[data-store-theme="light"] #contacto .contact-list{
+  border-color:#e1dacf!important;
+}
+
+html[data-store-theme="light"] #contacto .contact-line{
+  background:#fff!important;
+  border-color:#e7e1d8!important;
+  color:#17242d!important;
+  box-shadow:0 7px 20px rgba(24,38,47,.035)!important;
+}
+
+html[data-store-theme="light"] #contacto .contact-icon{
+  background:#fff8ea!important;
+  color:#c08016!important;
+  border-color:#ead3a6!important;
+}
+
+/* Maps: native light in light theme, filtered only in dark. */
+html[data-store-theme="light"] #contacto .dorado-map-live,
+html[data-store-theme="light"] #contacto .dorado-map-live iframe{
+  background:#eef1f2!important;
+  filter:none!important;
+  opacity:1!important;
+}
+
+/* =========================================================
+   CATALOG — restore breathing room + centered brand layout
+   ========================================================= */
+#productos.catalog-section{
+  width:100%!important;
+  max-width:none!important;
+  padding:
+    clamp(78px,8vw,118px)
+    max(18px,calc((100vw - 1240px)/2))
+    clamp(82px,8vw,122px)!important;
+}
+
+#productos .catalog-shell-dark{
+  width:100%!important;
+  max-width:1240px!important;
+  margin-inline:auto!important;
+  box-sizing:border-box!important;
+}
+
+html[data-store-theme="light"] #productos,
+html[data-store-theme="light"] #productos .catalog-shell-dark{
+  background:#f7f4ec!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+html[data-store-theme="light"] #productos::before,
+html[data-store-theme="light"] #productos::after,
+html[data-store-theme="light"] #productos .catalog-shell-dark::before,
+html[data-store-theme="light"] #productos .catalog-shell-dark::after{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+/* Expanded brands: canonical DOM order, four columns, last row centered. */
+#marcas.brands-expanded .brand-marquee-set{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  gap:10px!important;
+  width:100%!important;
+  padding:10px!important;
+}
+
+#marcas.brands-expanded .brand-marquee-card{
+  flex:0 1 calc(25% - 8px)!important;
+  width:calc(25% - 8px)!important;
+  min-width:210px!important;
+  max-width:292px!important;
+  margin:0!important;
+  animation-duration:260ms!important;
+  animation-timing-function:var(--theme-polish-ease-out)!important;
+}
+
+#marcas.brands-expanded .brand-marquee-card:nth-child(1){animation-delay:0ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(2){animation-delay:20ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(3){animation-delay:40ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(4){animation-delay:60ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(5){animation-delay:80ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(n+6){animation-delay:80ms!important}
+
+/* =========================================================
+   PROCESS CARDS — subtle white→warm gradient, never solid orange
+   ========================================================= */
+html[data-store-theme="light"] #como-comprar .process-step,
+html[data-store-theme="light"] #como-comprar .process-step.is-active{
+  background:linear-gradient(135deg,#fff 0%,#fffdfa 73%,#f7ead1 100%)!important;
+  color:#17242d!important;
+  border:1px solid #e5ded2!important;
+  box-shadow:0 9px 24px rgba(23,36,45,.045)!important;
+}
+
+html[data-store-theme="light"] #como-comprar .process-step h3,
+html[data-store-theme="light"] #como-comprar .process-step strong{
+  color:#17242d!important;
+}
+html[data-store-theme="light"] #como-comprar .process-step p{
+  color:#68757c!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] #como-comprar .process-steps .process-step:hover{
+    background:linear-gradient(135deg,#fff 0%,#fffaf1 78%,#f3ddb0 100%)!important;
+    border-color:#dfc68d!important;
+    color:#17242d!important;
+    transform:translate3d(0,-2px,0)!important;
+    transition:
+      transform var(--theme-polish-press) var(--theme-polish-ease-out),
+      background-color var(--theme-polish-ui) ease,
+      border-color var(--theme-polish-ui) ease,
+      color var(--theme-polish-ui) ease!important;
+  }
+}
+
+/* =========================================================
+   REVIEWS CTA — readable without an orange outline box
+   ========================================================= */
+html[data-store-theme="light"] #opiniones .reviews-google-cta{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#17242d!important;
+  padding:0!important;
+}
+html[data-store-theme="light"] #opiniones .reviews-google-cta strong{
+  color:#25333b!important;
+}
+html[data-store-theme="light"] #opiniones .reviews-google-cta small{
+  color:#6f7b81!important;
+}
+html[data-store-theme="light"] #opiniones .reviews-google-link{
+  background:linear-gradient(135deg,#f2bd4b,#dda12f)!important;
+  color:#15242d!important;
+  border:1px solid rgba(190,131,26,.38)!important;
+  box-shadow:0 7px 18px rgba(181,119,16,.09)!important;
+}
+
+/* =========================================================
+   PRODUCT DETAIL — one coherent surface; white image blends in
+   ========================================================= */
+html[data-store-theme="light"] #producto-dinamico .product-detail-inner{
+  background:#fff!important;
+  border:1px solid #e7e0d5!important;
+  box-shadow:0 28px 70px rgba(23,36,45,.17)!important;
+}
+
+html[data-store-theme="light"] #producto-dinamico .product-detail-gallery,
+html[data-store-theme="light"] #producto-dinamico .product-detail-image{
+  background:#fff!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+html[data-store-theme="light"] #producto-dinamico .product-detail-image{
+  padding:clamp(18px,3vw,38px)!important;
+}
+
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-image{
+  width:min(92%,650px)!important;
+  height:auto!important;
+  max-height:82%!important;
+  object-fit:contain!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+
+html[data-store-theme="light"] #producto-dinamico .product-detail-info{
+  background:#fffdfa!important;
+  color:#17242d!important;
+  border-left:1px solid #eee7dc!important;
+}
+
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-name,
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-price{
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-description,
+html[data-store-theme="light"] #producto-dinamico .dynamic-product-features,
+html[data-store-theme="light"] #producto-dinamico .product-info-section-title{
+  color:#65727a!important;
+}
+
+/* =========================================================
+   STORY HIGHLIGHTS — remove white boxed rows
+   ========================================================= */
+html[data-store-theme="light"] #nosotros .about-highlights{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+html[data-store-theme="light"] #nosotros .about-highlight,
+html[data-store-theme="light"] #nosotros .about-highlight:nth-child(n){
+  min-height:auto!important;
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid #e3dcd1!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:15px 0!important;
+}
+
+html[data-store-theme="light"] #nosotros .about-highlight:last-child{
+  border-bottom:0!important;
+}
+
+html[data-store-theme="light"] #nosotros .about-highlight strong{
+  color:#26343b!important;
+}
+html[data-store-theme="light"] #nosotros .about-highlight span{
+  color:#6d797f!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] #nosotros .about-highlight:hover{
+    background:transparent!important;
+    transform:none!important;
+  }
+}
+
+/* =========================================================
+   FOOTER / small labels
+   ========================================================= */
+html[data-store-theme="light"] .site-footer{
+  background:#f7f4ec!important;
+  color:#17242d!important;
+  border-top-color:#ddd6ca!important;
+}
+
+html[data-store-theme="light"] .footer-badges span{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#56636a!important;
+}
+
+html[data-store-theme="light"] .footer-badges .ui-icon{
+  color:#b77a15!important;
+}
+
+html[data-store-theme="light"] .footer-column a,
+html[data-store-theme="light"] .footer-rights,
+html[data-store-theme="light"] .footer-address{
+  color:#56636a!important;
+}
+
+/* =========================================================
+   CART / ORDERS — theme-aware compact desktop panels
+   ========================================================= */
+@media(min-width:701px){
+  .cart-drawer,
+  .orders-drawer{
+    top:50%!important;
+    bottom:auto!important;
+    right:22px!important;
+    left:auto!important;
+    width:min(440px,calc(100vw - 44px))!important;
+    height:min(650px,calc(100dvh - 64px))!important;
+    max-height:calc(100dvh - 64px)!important;
+    border-radius:24px!important;
+    overflow:hidden!important;
+    transform:translate3d(calc(100% + 44px),-50%,0)!important;
+    transition:transform 280ms cubic-bezier(0.32,0.72,0,1)!important;
+  }
+  .cart-drawer.active,
+  .orders-drawer.active{
+    transform:translate3d(0,-50%,0)!important;
+  }
+}
+
+html[data-store-theme="light"] .cart-drawer,
+html[data-store-theme="light"] .orders-drawer{
+  background:#f8f6f1!important;
+  color:#17242d!important;
+  border:1px solid #dfd7ca!important;
+}
+html[data-store-theme="light"] .cart-head,
+html[data-store-theme="light"] .orders-head{
+  background:#fff!important;
+  color:#17242d!important;
+  border-color:#e4ddd2!important;
+}
+html[data-store-theme="light"] .cart-head-copy strong,
+html[data-store-theme="light"] .orders-head strong{color:#17242d!important}
+html[data-store-theme="light"] .cart-head-copy span,
+html[data-store-theme="light"] .orders-head small{color:#7b878d!important}
+html[data-store-theme="light"] .cart-close,
+html[data-store-theme="light"] .orders-close{
+  background:#f3efe7!important;
+  color:#17242d!important;
+  border-color:#ddd5c9!important;
+}
+html[data-store-theme="light"] .cart-items,
+html[data-store-theme="light"] .cart-footer,
+html[data-store-theme="light"] .orders-list,
+html[data-store-theme="light"] .orders-toolbar,
+html[data-store-theme="light"] .orders-foot{
+  background:#fff!important;
+  color:#17242d!important;
+  border-color:#e5ded2!important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+@media(max-width:900px){
+  #productos.catalog-section{
+    padding:
+      68px
+      16px
+      78px!important;
+  }
+  #productos .catalog-shell-dark{
+    max-width:none!important;
+  }
+
+  #marcas.brands-expanded .brand-marquee-card{
+    flex:0 1 calc(33.333% - 8px)!important;
+    width:calc(33.333% - 8px)!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+}
+
+@media(max-width:700px){
+  #productos.catalog-section{
+    padding:
+      58px
+      12px
+      70px!important;
+  }
+
+  #marcas.brands-expanded .brand-marquee-card{
+    flex:0 1 calc(50% - 5px)!important;
+    width:calc(50% - 5px)!important;
+  }
+
+  html[data-store-theme="light"] .mobile-menu-actions{
+    background:
+      linear-gradient(180deg,rgba(255,253,248,0),rgba(255,253,248,.95) 22%,#fffdf8 100%)!important;
+    border-top-color:#e1dacf!important;
+  }
+
+  html[data-store-theme="light"] .mobile-menu-actions>button,
+  html[data-store-theme="light"] .mobile-menu-actions>a{
+    background:#fff!important;
+    color:#26343b!important;
+    border-color:#ddd6ca!important;
+  }
+
+  html[data-store-theme="light"] .mobile-menu-actions a[href*="wa.me"]{
+    color:#14994b!important;
+  }
+
+  html[data-store-theme="light"] .product-detail{
+    background:rgba(23,36,45,.30)!important;
+  }
+
+  html[data-store-theme="light"] #producto-dinamico .product-detail-inner{
+    min-height:100dvh!important;
+    border-radius:0!important;
+  }
+
+  html[data-store-theme="light"] #producto-dinamico .product-detail-info{
+    border-left:0!important;
+    border-top:1px solid #eee7dc!important;
+  }
+}
+
+/* =========================================================
+   THEME SWITCH + MOTION
+   ========================================================= */
+html.store-theme-transitioning .nav,
+html.store-theme-transitioning .nav-cta,
+html.store-theme-transitioning .orders-trigger,
+html.store-theme-transitioning .cart-trigger,
+html.store-theme-transitioning .location,
+html.store-theme-transitioning .location-box,
+html.store-theme-transitioning .site-footer,
+html.store-theme-transitioning .process-step,
+html.store-theme-transitioning .about-highlight,
+html.store-theme-transitioning .cart-drawer,
+html.store-theme-transitioning .orders-drawer{
+  transition:
+    background-color var(--theme-polish-ui) ease,
+    color var(--theme-polish-ui) ease,
+    border-color var(--theme-polish-ui) ease!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.store-theme-transitioning .nav,
+  html.store-theme-transitioning .location,
+  html.store-theme-transitioning .site-footer,
+  html.store-theme-transitioning .process-step{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}
