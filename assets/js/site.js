@@ -71,7 +71,7 @@ function obtenerConfigPublica(){
 
 const DORADO_THEME_KEY="doradoStoreThemePreference";
 const DORADO_THEME_VALUES=new Set(["default","light","dark"]);
-let doradoSiteDefaultTheme="default";
+let doradoSiteDefaultTheme="dark";
 
 function normalizeStoreTheme(value){
     const theme=String(value||"default").toLowerCase();
@@ -81,7 +81,7 @@ function normalizeStoreTheme(value){
 function resolveStoreTheme(preference){
     const requested=normalizeStoreTheme(preference);
     const source=requested==="default"?normalizeStoreTheme(doradoSiteDefaultTheme):requested;
-    return source==="dark"?"dark":"light";
+    return source==="light"?"light":"dark";
 }
 
 function syncStoreThemeControls(preference,resolved){
@@ -134,7 +134,7 @@ async function configureStoreTheme(){
         const config=await obtenerConfigPublica();
         doradoSiteDefaultTheme=normalizeStoreTheme(config?.siteThemeDefault||"default");
     }catch{
-        doradoSiteDefaultTheme="default";
+        doradoSiteDefaultTheme="dark";
     }
 
     applyStoreTheme(localPreference,{animate:false});
@@ -145,6 +145,8 @@ async function configureStoreTheme(){
         });
     });
 }
+
+void configureStoreTheme();
 
 const formatoPesos = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -280,8 +282,7 @@ function leerCarrito() {
 
 function guardarCarrito(carrito) {
     localStorage.setItem(DORADO_CART_KEY, JSON.stringify(carrito));
-    configureStoreTheme();
-renderCarrito();
+    renderCarrito();
 }
 
 function cantidadTotal(carrito = leerCarrito()) {

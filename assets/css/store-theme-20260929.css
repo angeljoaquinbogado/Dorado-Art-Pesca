@@ -519,3 +519,209 @@ body.menu-open .mobile-menu-drawer{
       background-color 180ms ease!important;
   }
 }
+
+
+/* =========================================================
+   THEME COMPLETION — storefront controls, drawers and mobile UI
+   ========================================================= */
+html.store-theme-transitioning .mobile-menu-drawer,
+html.store-theme-transitioning .mobile-dock,
+html.store-theme-transitioning .cart-drawer,
+html.store-theme-transitioning .orders-drawer,
+html.store-theme-transitioning .cart-items,
+html.store-theme-transitioning .cart-footer,
+html.store-theme-transitioning .orders-list,
+html.store-theme-transitioning .orders-toolbar,
+html.store-theme-transitioning .orders-foot{
+  transition:
+    background-color var(--motion-ui) ease,
+    color var(--motion-ui) ease,
+    border-color var(--motion-ui) ease!important;
+}
+
+/* Light mobile navigation */
+html[data-store-theme="light"] .mobile-menu-drawer{
+  background:
+    radial-gradient(circle at 0 0,rgba(213,161,48,.10),transparent 24%),
+    linear-gradient(180deg,#fffdf8 0%,#f5f0e7 100%)!important;
+  border-right-color:rgba(23,36,45,.12)!important;
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .mobile-menu-brands button,
+html[data-store-theme="light"] .mobile-menu-categories button,
+html[data-store-theme="light"] .mobile-menu-navigation a{
+  color:#25333b!important;
+}
+
+html[data-store-theme="light"] .mobile-menu-brands button::after,
+html[data-store-theme="light"] .mobile-menu-categories button::after,
+html[data-store-theme="light"] .mobile-menu-navigation a::after{
+  color:#89949a!important;
+}
+
+html[data-store-theme="light"] .mobile-menu-search{
+  background:#fff!important;
+  border-color:#d9d3c8!important;
+}
+
+html[data-store-theme="light"] .mobile-menu-search input{
+  background:#fff!important;
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] .mobile-menu-close{
+  color:#17242d!important;
+  background:rgba(23,36,45,.05)!important;
+  border-color:rgba(23,36,45,.11)!important;
+}
+
+html[data-store-theme="light"] .mobile-dock{
+  background:rgba(255,253,248,.97)!important;
+  border-color:rgba(23,36,45,.10)!important;
+  box-shadow:0 14px 40px rgba(23,36,45,.14)!important;
+}
+
+html[data-store-theme="light"] .mobile-dock-item{
+  color:#68757c!important;
+}
+
+html[data-store-theme="light"] .mobile-dock-item.active{
+  color:#946915!important;
+}
+
+/* Dark mobile navigation */
+html[data-store-theme="dark"] .mobile-menu-drawer{
+  background:
+    radial-gradient(circle at 0 0,rgba(215,161,58,.10),transparent 24%),
+    linear-gradient(180deg,#0c1a24 0%,#09151d 100%)!important;
+  color:#f1ece3!important;
+}
+
+html[data-store-theme="dark"] .mobile-dock{
+  background:rgba(6,14,21,.985)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+html[data-store-theme="dark"] .mobile-dock-item{
+  color:#aeb8bf!important;
+}
+
+html[data-store-theme="dark"] .mobile-dock-item.active{
+  color:#f5bd4e!important;
+}
+
+/* Light drawers */
+html[data-store-theme="light"] .cart-drawer,
+html[data-store-theme="light"] .orders-drawer{
+  background:#f8f8f6!important;
+  color:#222!important;
+  border-color:#e6e2d9!important;
+}
+
+html[data-store-theme="light"] .cart-items,
+html[data-store-theme="light"] .orders-list,
+html[data-store-theme="light"] .orders-toolbar,
+html[data-store-theme="light"] .orders-foot,
+html[data-store-theme="light"] .cart-footer{
+  background:#fff!important;
+  color:#222!important;
+  border-color:#e6e2d9!important;
+}
+
+/* Dark drawers */
+html[data-store-theme="dark"] .cart-drawer,
+html[data-store-theme="dark"] .orders-drawer{
+  background:#10212d!important;
+  color:#f1ece3!important;
+  border-color:rgba(241,236,227,.12)!important;
+}
+
+html[data-store-theme="dark"] .cart-head,
+html[data-store-theme="dark"] .orders-head{
+  background:#0b171f!important;
+  color:#f1ece3!important;
+  border-color:rgba(215,161,58,.22)!important;
+}
+
+html[data-store-theme="dark"] .cart-items,
+html[data-store-theme="dark"] .orders-list,
+html[data-store-theme="dark"] .orders-toolbar,
+html[data-store-theme="dark"] .orders-foot,
+html[data-store-theme="dark"] .cart-footer{
+  background:#10212d!important;
+  color:#f1ece3!important;
+  border-color:rgba(241,236,227,.12)!important;
+}
+
+html[data-store-theme="dark"] .cart-item{
+  border-color:rgba(241,236,227,.12)!important;
+}
+
+html[data-store-theme="dark"] .cart-item-name,
+html[data-store-theme="dark"] .cart-item-subtotal,
+html[data-store-theme="dark"] .cart-total-row strong,
+html[data-store-theme="dark"] .cart-empty h3,
+html[data-store-theme="dark"] .orders-empty strong,
+html[data-store-theme="dark"] .customer-order-number,
+html[data-store-theme="dark"] .customer-order-total strong{
+  color:#f1ece3!important;
+}
+
+html[data-store-theme="dark"] .cart-item-category,
+html[data-store-theme="dark"] .cart-item-unit,
+html[data-store-theme="dark"] .cart-summary-row,
+html[data-store-theme="dark"] .cart-checkout-note,
+html[data-store-theme="dark"] .orders-empty,
+html[data-store-theme="dark"] .orders-toolbar span,
+html[data-store-theme="dark"] .orders-foot{
+  color:#aeb9be!important;
+}
+
+html[data-store-theme="dark"] .cart-item-image,
+html[data-store-theme="dark"] .cart-item .quantity-selector,
+html[data-store-theme="dark"] .cart-item .qty-btn,
+html[data-store-theme="dark"] .cart-item .qty-input,
+html[data-store-theme="dark"] .cart-empty-icon,
+html[data-store-theme="dark"] .customer-order-card{
+  background:#19313f!important;
+  color:#f1ece3!important;
+  border-color:rgba(241,236,227,.13)!important;
+}
+
+html[data-store-theme="dark"] .customer-order-card{
+  box-shadow:0 10px 28px rgba(0,0,0,.20)!important;
+}
+
+html[data-store-theme="dark"] .customer-order-item,
+html[data-store-theme="dark"] .customer-order-total{
+  border-color:rgba(241,236,227,.11)!important;
+}
+
+/* Theme selector itself always stays readable in both modes. */
+html[data-store-theme="dark"] .footer-theme-control>strong{
+  color:#f1ece3!important;
+}
+
+html[data-store-theme="dark"] .footer-theme-options button{
+  color:#dce3e6!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+
+html[data-store-theme="dark"] .footer-theme-options button.active{
+  color:#f2c965!important;
+  border-color:#d7a13a!important;
+  background:rgba(215,161,58,.13)!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.store-theme-transitioning .mobile-menu-drawer,
+  html.store-theme-transitioning .mobile-dock,
+  html.store-theme-transitioning .cart-drawer,
+  html.store-theme-transitioning .orders-drawer{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}

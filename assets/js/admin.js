@@ -14,7 +14,7 @@ let refreshPromise = null;
 let recoveryAccessToken = "";
 let recoveryRefreshToken = "";
 
-let adminSiteThemeDefault="default";
+let adminSiteThemeDefault="dark";
 
 function normalizeAdminSiteTheme(value){
     const theme=String(value||"default").toLowerCase();
@@ -34,7 +34,7 @@ async function loadAdminSiteThemeSetting(){
     const response=await sb("/rest/v1/site_settings?id=eq.1&select=default_theme");
     const rows=await response.json().catch(()=>[]);
     if(!response.ok)throw new Error("No se pudo cargar el tema predeterminado de la web.");
-    adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"default");
+    adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"dark");
     syncAdminSiteThemeControls();
 }
 
@@ -54,7 +54,7 @@ async function saveAdminSiteThemeSetting(value){
     }
     adminSiteThemeDefault=next;
     syncAdminSiteThemeControls();
-    showToast(next==="dark"?"Tema predeterminado: oscuro.":next==="light"?"Tema predeterminado: claro.":"Tema restablecido al predeterminado claro.");
+    showToast(next==="dark"?"Tema predeterminado: oscuro.":next==="light"?"Tema predeterminado: claro.":"Tema restablecido al predeterminado oscuro.");
 }
 
 function setAdminStoreThemePanel(open){
