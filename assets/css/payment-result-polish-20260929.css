@@ -2,9 +2,9 @@
 .payment-result{
   background:
     radial-gradient(circle at 50% 15%,rgba(181,139,42,.16),transparent 38%),
-    rgba(4,6,8,.58)!important;
-  -webkit-backdrop-filter:blur(30px) saturate(1.22)!important;
-  backdrop-filter:blur(30px) saturate(1.22)!important;
+    rgba(4,6,8,.46)!important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.08)!important;
+  backdrop-filter:blur(12px) saturate(1.08)!important;
 }
 
 .payment-result::before{
@@ -13,8 +13,8 @@
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(circle at 12% 10%,rgba(216,175,55,.16),transparent 28%),
-    radial-gradient(circle at 88% 82%,rgba(181,139,42,.11),transparent 30%);
+    radial-gradient(circle at 12% 10%,rgba(216,175,55,.10),transparent 28%),
+    radial-gradient(circle at 88% 82%,rgba(181,139,42,.07),transparent 30%);
 }
 
 .payment-result-card{
@@ -154,8 +154,8 @@
 
 @media (max-width:640px){
   .payment-result{
-    -webkit-backdrop-filter:blur(24px) saturate(1.18)!important;
-    backdrop-filter:blur(24px) saturate(1.18)!important;
+    -webkit-backdrop-filter:blur(10px) saturate(1.06)!important;
+    backdrop-filter:blur(10px) saturate(1.06)!important;
   }
 
   .payment-result-card{
