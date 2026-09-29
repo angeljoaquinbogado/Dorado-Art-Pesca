@@ -1524,21 +1524,16 @@ function scrollProductEditorIntoView({focusName=false}={}){
 
     const isMobile=window.matchMedia("(max-width:700px)").matches || window.matchMedia("(pointer:coarse)").matches;
 
-    if(isMobile){
-        // En móvil evitamos cálculos de scroll basados en alturas que cambian
-        // mientras el formulario se termina de renderizar.
-        requestAnimationFrame(()=>{
-            form.scrollIntoView({behavior:"auto",block:"start"});
-            requestAnimationFrame(()=>{
-                const top=Math.max(0,window.scrollY-8);
-                window.scrollTo({top,behavior:"auto"});
-            });
-        });
-        return;
-    }
-
     requestAnimationFrame(()=>{
         const top=Math.max(0,window.scrollY+form.getBoundingClientRect().top-12);
+
+        if(isMobile){
+            // Una sola corrección de posición: evita el salto doble mientras
+            // el usuario empieza a bajar por un formulario largo.
+            window.scrollTo({top,behavior:"auto"});
+            return;
+        }
+
         window.scrollTo({top,behavior:"smooth"});
         if(focusName){
             window.setTimeout(()=>{
