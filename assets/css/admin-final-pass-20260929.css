@@ -394,3 +394,61 @@ html[data-admin-theme="light"] .store-theme-admin-options button.active{
     border-width:1px!important;
   }
 }
+
+
+/* =========================================================
+   ADMIN GOLD EDGE VISIBILITY · 2026-09-29
+   ========================================================= */
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card{
+  border-color:rgba(201,149,43,.46)!important;
+  box-shadow:
+    0 12px 28px rgba(23,36,45,.045),
+    0 0 0 1px rgba(201,149,43,.07),
+    0 0 22px rgba(201,149,43,.07)!important;
+}
+
+html[data-admin-theme="dark"] .stat,
+html[data-admin-theme="dark"] .card,
+html[data-admin-theme="dark"] .form-card,
+html[data-admin-theme="dark"] .catalog-card,
+html[data-admin-theme="dark"] .orders-card{
+  border-color:rgba(224,179,75,.38)!important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.18),
+    0 0 0 1px rgba(224,179,75,.06),
+    0 0 22px rgba(224,179,75,.06)!important;
+}
+
+.stat::before,
+.orders-card::before,
+#coupons-panel .form-card::before,
+#coupons-panel .catalog-card::before,
+#products-panel .catalog-card::before{
+  height:2px!important;
+  top:-1px!important;
+  background:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201,149,43,.30) 12%,
+    rgba(201,149,43,.92) 48%,
+    rgba(224,179,75,.72) 64%,
+    transparent 100%
+  )!important;
+  box-shadow:
+    0 2px 8px rgba(201,149,43,.18),
+    0 0 14px rgba(201,149,43,.10)!important;
+}
+
+@media(max-width:700px){
+  html[data-admin-theme] .stat,
+  html[data-admin-theme] .card,
+  html[data-admin-theme] .form-card,
+  html[data-admin-theme] .catalog-card,
+  html[data-admin-theme] .orders-card{
+    border-width:1px!important;
+  }
+}
