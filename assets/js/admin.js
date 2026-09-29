@@ -1518,6 +1518,32 @@ function hideProductEditor(){
     if(form)form.hidden=true;
 }
 
+function scrollProductEditorIntoView({focusName=false}={}){
+    const form=document.getElementById("product-form");
+    if(!form)return;
+
+    const isMobile=window.matchMedia("(max-width:700px)").matches || window.matchMedia("(pointer:coarse)").matches;
+
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+            const sticky=document.querySelector(".sidebar");
+            const stickyHeight=isMobile ? Math.max(0,sticky?.getBoundingClientRect().height||0) : 0;
+            const top=Math.max(0,window.scrollY+form.getBoundingClientRect().top-stickyHeight-12);
+
+            window.scrollTo({
+                top,
+                behavior:isMobile?"auto":"smooth"
+            });
+
+            if(focusName&&!isMobile){
+                window.setTimeout(()=>{
+                    document.getElementById("product-name")?.focus({preventScroll:true});
+                },220);
+            }
+        });
+    });
+}
+
 function openNewProductEditor(){
     const productsTab=document.querySelector('.tab[data-tab="products"]');
     document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===productsTab));
@@ -1525,8 +1551,7 @@ function openNewProductEditor(){
     document.getElementById("products-panel")?.classList.add("active");
     resetProductForm();
     showProductEditor();
-    document.getElementById("product-form")?.scrollIntoView({behavior:"smooth",block:"start"});
-    setTimeout(()=>document.getElementById("product-name")?.focus(),380);
+    scrollProductEditorIntoView({focusName:true});
 }
 
 function editProduct(id){
@@ -1550,7 +1575,7 @@ function editProduct(id){
     resetProductGallery(p);
     renderProductFormTaxonomyPickers();
     requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
-    document.getElementById("product-form").scrollIntoView({behavior:"smooth",block:"start"});
+    scrollProductEditorIntoView({focusName:false});
 }
 
 async function uploadImage(file){

@@ -498,13 +498,13 @@ async function cargarProductosDesdeSupabase() {
             tarjeta.dataset.categoryKey = normalizarClaveCategoria(producto.categoria);
             tarjeta.dataset.brand = String(producto.marca || "").trim();
             tarjeta.dataset.brandKey = normalizarClaveMarca(producto.marca);
-            tarjeta.dataset.search = [
+            tarjeta.dataset.search = normalizarTextoBusqueda([
                 producto.nombre || "",
                 producto.categoria || "",
                 producto.marca || "",
                 producto.descripcion || "",
                 producto.caracteristicas || ""
-            ].join(" ").toLowerCase();
+            ].join(" "));
 
             const stock = Math.max(0, Number(producto.stock) || 0);
             const sinStock = stock <= 0;
@@ -2424,6 +2424,15 @@ function construirFiltrosCategorias(productos = []) {
     syncCategoryLiquidIndicator({animate:false});
 }
 
+function normalizarTextoBusqueda(value){
+    return String(value||"")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLocaleLowerCase("es")
+        .replace(/[^a-z0-9]+/g," ")
+        .trim();
+}
+
 function actualizarFiltroCatalogo() {
     const input = document.getElementById("product-search");
     const contador = document.getElementById("product-result-count");
@@ -2431,7 +2440,7 @@ function actualizarFiltroCatalogo() {
     const grid = document.getElementById("products-grid");
     const moreWrap = document.getElementById("catalog-more-wrap");
     const moreButton = document.getElementById("catalog-more-button");
-    const query = String(input?.value || "").trim().toLowerCase();
+    const query = normalizarTextoBusqueda(input?.value || "");
     const cards = Array.from(document.querySelectorAll("#products-grid .product"));
     const hasActiveFilter = Boolean(query) || categoriaActiva !== "todos" || marcaActiva !== "todas";
 
@@ -2439,7 +2448,7 @@ function actualizarFiltroCatalogo() {
     let shown = 0;
 
     cards.forEach(card => {
-        const coincideTexto = !query || String(card.dataset.search || card.textContent || "").includes(query);
+        const coincideTexto = !query || normalizarTextoBusqueda(card.dataset.search || card.textContent || "").includes(query);
         const coincideCategoria = categoriaActiva === "todos" || String(card.dataset.categoryKey || "sin-categoria") === categoriaActiva;
         const coincideMarca = marcaActiva === "todas" || String(card.dataset.brandKey || "sin-marca") === marcaActiva;
         const coincide = coincideTexto && coincideCategoria && coincideMarca;
@@ -2500,7 +2509,18 @@ function actualizarFiltroCatalogo() {
 
 const productSearch=document.getElementById("product-search");
 productSearch?.addEventListener("input",()=>{
-    catalogoExpandido=true;
+    const query=normalizarTextoBusqueda(productSearch.value);
+
+    // La búsqueda principal es global: no queda limitada por una marca/categoría
+    // que el usuario haya seleccionado antes.
+    if(query&&(marcaActiva!=="todas"||categoriaActiva!=="todos")){
+        marcaActiva="todas";
+        categoriaActiva="todos";
+        construirFiltrosCategorias([...catalogoProductos.values()]);
+        construirMarcas([...catalogoProductos.values()]);
+    }
+
+    catalogoExpandido=Boolean(query);
     actualizarFiltroCatalogo();
 });
 document.getElementById("product-search-clear")?.addEventListener("click",()=>{

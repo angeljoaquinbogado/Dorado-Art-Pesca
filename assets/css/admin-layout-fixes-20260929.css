@@ -1,0 +1,145 @@
+/* Dorado admin — final layout stability pass · 2026-09-29
+   Loaded last. Fixes coupon overlap and mobile product-editor scroll jumps. */
+
+/* CUPONES: real vertical document flow. The list can never overlap the form. */
+#coupons-panel .coupon-admin-grid{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+#coupons-panel #coupon-form,
+#coupons-panel .coupon-admin-grid > .catalog-card{
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  float:none!important;
+  clear:both!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  transform:none!important;
+  contain:none!important;
+}
+
+#coupons-panel #coupon-form{
+  display:grid!important;
+  overflow:visible!important;
+  margin-bottom:40px!important;
+  z-index:1!important;
+}
+
+#coupons-panel .coupon-admin-grid > .catalog-card{
+  display:block!important;
+  margin-top:0!important;
+  z-index:0!important;
+}
+
+/* Desktop: compact form across the available width. */
+@media(min-width:1181px){
+  #coupons-panel #coupon-form{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    column-gap:16px!important;
+    row-gap:14px!important;
+    align-items:end!important;
+  }
+
+  #coupons-panel #coupon-form .card-head,
+  #coupons-panel #coupon-form > .message,
+  #coupons-panel #coupon-form > .form-actions{
+    grid-column:1 / -1!important;
+  }
+
+  #coupons-panel #coupon-form > .field-row{
+    grid-column:span 2!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:16px!important;
+    margin:0!important;
+  }
+
+  #coupons-panel #coupon-form > .field:first-of-type{
+    grid-column:span 2!important;
+  }
+
+  #coupons-panel #coupon-form > .field:last-of-type{
+    grid-column:span 1!important;
+  }
+
+  #coupons-panel #coupon-form > .form-actions{
+    display:flex!important;
+    position:static!important;
+    margin-top:6px!important;
+    padding:0!important;
+  }
+}
+
+@media(min-width:900px) and (max-width:1180px){
+  #coupons-panel #coupon-form{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px 18px!important;
+  }
+
+  #coupons-panel #coupon-form .card-head,
+  #coupons-panel #coupon-form > .field,
+  #coupons-panel #coupon-form > .field-row,
+  #coupons-panel #coupon-form > .message,
+  #coupons-panel #coupon-form > .form-actions{
+    grid-column:1 / -1!important;
+  }
+
+  #coupons-panel #coupon-form > .field-row{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px 18px!important;
+  }
+}
+
+@media(max-width:899px){
+  #coupons-panel #coupon-form{
+    display:block!important;
+    margin-bottom:22px!important;
+  }
+
+  #coupons-panel #coupon-form .field-row{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:0!important;
+  }
+
+  #coupons-panel .coupon-admin-grid > .catalog-card{
+    margin-top:0!important;
+  }
+}
+
+/* Product editor: prevent scroll anchoring/focus from throwing the viewport on phones. */
+#products-panel #product-form{
+  overflow-anchor:none!important;
+}
+
+@media(max-width:700px){
+  html,body{
+    overflow-anchor:none!important;
+  }
+
+  #products-panel #product-form{
+    scroll-margin-top:0!important;
+  }
+
+  #products-panel #product-form input,
+  #products-panel #product-form textarea,
+  #products-panel #product-form select,
+  #products-panel #product-form button{
+    scroll-margin-block:12px!important;
+  }
+}
