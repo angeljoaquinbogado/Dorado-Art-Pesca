@@ -69,6 +69,83 @@ function obtenerConfigPublica(){
     return doradoPublicConfigPromise;
 }
 
+const DORADO_THEME_KEY="doradoStoreThemePreference";
+const DORADO_THEME_VALUES=new Set(["default","light","dark"]);
+let doradoSiteDefaultTheme="default";
+
+function normalizeStoreTheme(value){
+    const theme=String(value||"default").toLowerCase();
+    return DORADO_THEME_VALUES.has(theme)?theme:"default";
+}
+
+function resolveStoreTheme(preference){
+    const requested=normalizeStoreTheme(preference);
+    const source=requested==="default"?normalizeStoreTheme(doradoSiteDefaultTheme):requested;
+    return source==="dark"?"dark":"light";
+}
+
+function syncStoreThemeControls(preference,resolved){
+    const normalized=normalizeStoreTheme(preference);
+    document.querySelectorAll("[data-store-theme-choice]").forEach(button=>{
+        const active=button.dataset.storeThemeChoice===normalized;
+        button.classList.toggle("active",active);
+        button.setAttribute("aria-pressed",String(active));
+    });
+
+    const globalResolved=resolveStoreTheme("default");
+    const defaultLabel=document.getElementById("store-theme-default-label");
+    if(defaultLabel)defaultLabel.textContent=`Predeterminado (${globalResolved==="dark"?"oscuro":"claro"})`;
+
+    const status=document.getElementById("store-theme-status");
+    if(status)status.textContent=`Tema actual: ${resolved==="dark"?"oscuro":"claro"}`;
+}
+
+function applyStoreTheme(preference,{persist=false,animate=false}={}){
+    const normalized=normalizeStoreTheme(preference);
+    const resolved=resolveStoreTheme(normalized);
+    const root=document.documentElement;
+    const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if(persist){
+        try{localStorage.setItem(DORADO_THEME_KEY,normalized);}catch{}
+    }
+
+    if(animate&&!reduce){
+        root.classList.add("store-theme-transitioning");
+        window.clearTimeout(applyStoreTheme._timer);
+        applyStoreTheme._timer=window.setTimeout(()=>root.classList.remove("store-theme-transitioning"),240);
+    }
+
+    root.dataset.storeTheme=resolved;
+    root.dataset.storeThemePreference=normalized;
+    root.style.colorScheme=resolved;
+
+    const meta=document.getElementById("store-theme-color");
+    if(meta)meta.setAttribute("content",resolved==="dark"?"#10212d":"#f7f4ec");
+
+    syncStoreThemeControls(normalized,resolved);
+}
+
+async function configureStoreTheme(){
+    let localPreference="default";
+    try{localPreference=normalizeStoreTheme(localStorage.getItem(DORADO_THEME_KEY)||"default");}catch{}
+
+    try{
+        const config=await obtenerConfigPublica();
+        doradoSiteDefaultTheme=normalizeStoreTheme(config?.siteThemeDefault||"default");
+    }catch{
+        doradoSiteDefaultTheme="default";
+    }
+
+    applyStoreTheme(localPreference,{animate:false});
+
+    document.querySelectorAll("[data-store-theme-choice]").forEach(button=>{
+        button.addEventListener("click",()=>{
+            applyStoreTheme(button.dataset.storeThemeChoice,{persist:true,animate:true});
+        });
+    });
+}
+
 const formatoPesos = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
@@ -203,7 +280,8 @@ function leerCarrito() {
 
 function guardarCarrito(carrito) {
     localStorage.setItem(DORADO_CART_KEY, JSON.stringify(carrito));
-    renderCarrito();
+    configureStoreTheme();
+renderCarrito();
 }
 
 function cantidadTotal(carrito = leerCarrito()) {
@@ -2247,7 +2325,7 @@ function syncCategoryLiquidIndicator({animate=true}={}){
         if(!animate)indicator.classList.add("is-instant");
         wrap.style.setProperty("--category-x",`${x}px`);
         wrap.style.setProperty("--category-y",`${y}px`);
-        wrap.style.setProperty("--category-w",`${w}px`);
+        wrap.style.setProperty("--category-scale",String(Math.max(1,w)/100));
         wrap.style.setProperty("--category-h",`${h}px`);
 
         if(!animate){

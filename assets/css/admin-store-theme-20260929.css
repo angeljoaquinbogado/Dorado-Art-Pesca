@@ -1,0 +1,156 @@
+/* Dorado admin — storefront theme control + motion audit · 2026-09-29 */
+
+:root{
+  --motion-ease-out:cubic-bezier(0.23,1,0.32,1);
+  --motion-ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --motion-popover:180ms;
+  --motion-ui:220ms;
+  --motion-press:120ms;
+}
+
+.store-theme-admin-wrap{
+  position:relative;
+  display:inline-flex;
+}
+
+.store-theme-admin-panel{
+  position:absolute;
+  z-index:160;
+  top:calc(100% + 9px);
+  right:0;
+  width:min(320px,calc(100vw - 24px));
+  padding:16px;
+  border:1px solid #e3ded4;
+  border-radius:18px;
+  background:#fff;
+  color:#202328;
+  box-shadow:0 18px 46px rgba(20,24,28,.16);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform-origin:top right;
+  transform:translate3d(0,-6px,0) scale(.97);
+  transition:
+    opacity var(--motion-popover) var(--motion-ease-out),
+    transform var(--motion-popover) var(--motion-ease-out),
+    visibility 0s linear var(--motion-popover);
+}
+
+.store-theme-admin-wrap.is-open .store-theme-admin-panel{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translate3d(0,0,0) scale(1);
+  transition:
+    opacity var(--motion-popover) var(--motion-ease-out),
+    transform var(--motion-popover) var(--motion-ease-out),
+    visibility 0s linear 0s;
+}
+
+.store-theme-admin-kicker{
+  display:block;
+  margin-bottom:7px;
+  color:#9b7017;
+  font:800 8px/1.2 "Manrope",sans-serif;
+  letter-spacing:.09em;
+}
+
+.store-theme-admin-panel>strong{
+  display:block;
+  font:700 14px/1.25 "Manrope",sans-serif;
+}
+
+.store-theme-admin-panel>p{
+  margin:6px 0 12px;
+  color:#7c8287;
+  font:500 10px/1.5 "Manrope",sans-serif;
+}
+
+.store-theme-admin-options{
+  display:grid;
+  gap:7px;
+}
+
+.store-theme-admin-options button{
+  width:100%;
+  min-height:54px;
+  padding:10px 12px;
+  border:1px solid #e2ddd4;
+  border-radius:13px;
+  background:#faf9f6;
+  color:#25292d;
+  text-align:left;
+  cursor:pointer;
+  transition:
+    transform var(--motion-press) var(--motion-ease-out),
+    background-color var(--motion-ui) ease,
+    border-color var(--motion-ui) ease,
+    color var(--motion-ui) ease;
+}
+
+.store-theme-admin-options button span{
+  display:block;
+  font:700 10.5px/1.25 "Manrope",sans-serif;
+}
+
+.store-theme-admin-options button small{
+  display:block;
+  margin-top:3px;
+  color:#858a90;
+  font:500 9px/1.4 "Manrope",sans-serif;
+}
+
+.store-theme-admin-options button.active{
+  border-color:#d8b34c;
+  background:#fff8e7;
+  color:#75520f;
+}
+
+.store-theme-admin-options button.active small{
+  color:#8b6c2d;
+}
+
+.store-theme-admin-options button:active{
+  transform:scale(.97);
+}
+
+/* Admin brand liquid: transform only, no width animation. */
+.admin-brand-liquid{
+  width:100px!important;
+  height:var(--admin-brand-h,38px)!important;
+  transform-origin:left center!important;
+  transform:
+    translate3d(var(--admin-brand-x,0px),var(--admin-brand-y,0px),0)
+    scaleX(var(--admin-brand-scale,1))!important;
+  transition:transform 220ms var(--motion-ease-in-out)!important;
+  will-change:transform!important;
+}
+
+.admin-brand-liquid.is-instant{
+  transition:none!important;
+}
+
+.admin-brand-tab{
+  transition:
+    transform var(--motion-press) var(--motion-ease-out),
+    color var(--motion-ui) ease,
+    border-color var(--motion-ui) ease!important;
+}
+
+@media(max-width:700px){
+  .store-theme-admin-panel{
+    position:fixed;
+    top:76px;
+    right:12px;
+    left:12px;
+    width:auto;
+    transform-origin:top center;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .store-theme-admin-panel,
+  .admin-brand-liquid{
+    transition:opacity 180ms ease!important;
+  }
+}

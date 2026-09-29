@@ -14,6 +14,60 @@ let refreshPromise = null;
 let recoveryAccessToken = "";
 let recoveryRefreshToken = "";
 
+let adminSiteThemeDefault="default";
+
+function normalizeAdminSiteTheme(value){
+    const theme=String(value||"default").toLowerCase();
+    return ["default","light","dark"].includes(theme)?theme:"default";
+}
+
+function syncAdminSiteThemeControls(){
+    const value=normalizeAdminSiteTheme(adminSiteThemeDefault);
+    document.querySelectorAll("[data-site-default-theme]").forEach(button=>{
+        const active=button.dataset.siteDefaultTheme===value;
+        button.classList.toggle("active",active);
+        button.setAttribute("aria-checked",String(active));
+    });
+}
+
+async function loadAdminSiteThemeSetting(){
+    const response=await sb("/rest/v1/site_settings?id=eq.1&select=default_theme");
+    const rows=await response.json().catch(()=>[]);
+    if(!response.ok)throw new Error("No se pudo cargar el tema predeterminado de la web.");
+    adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"default");
+    syncAdminSiteThemeControls();
+}
+
+async function saveAdminSiteThemeSetting(value){
+    const next=normalizeAdminSiteTheme(value);
+    const response=await sb("/rest/v1/site_settings?id=eq.1",{
+        method:"PATCH",
+        headers:{Prefer:"return=representation"},
+        body:JSON.stringify({
+            default_theme:next,
+            updated_at:new Date().toISOString()
+        })
+    });
+    const rows=await response.json().catch(()=>[]);
+    if(!response.ok||!Array.isArray(rows)||!rows.length){
+        throw new Error("No se pudo guardar el tema predeterminado de la web.");
+    }
+    adminSiteThemeDefault=next;
+    syncAdminSiteThemeControls();
+    showToast(next==="dark"?"Tema predeterminado: oscuro.":next==="light"?"Tema predeterminado: claro.":"Tema restablecido al predeterminado claro.");
+}
+
+function setAdminStoreThemePanel(open){
+    const wrap=document.getElementById("store-theme-admin-wrap");
+    const button=document.getElementById("store-theme-settings-button");
+    const panel=document.getElementById("store-theme-settings-panel");
+    if(!wrap||!button||!panel)return;
+    wrap.classList.toggle("is-open",open);
+    button.setAttribute("aria-expanded",String(open));
+    panel.setAttribute("aria-hidden",String(!open));
+}
+
+
 const money = new Intl.NumberFormat("es-AR", {
     style:"currency",
     currency:"ARS",
@@ -962,7 +1016,7 @@ function syncAdminBrandTabs({animate=true}={}){
         if(!animate)indicator.classList.add("is-instant");
         tabs.style.setProperty("--admin-brand-x",`${activeButton.offsetLeft}px`);
         tabs.style.setProperty("--admin-brand-y",`${activeButton.offsetTop}px`);
-        tabs.style.setProperty("--admin-brand-w",`${activeButton.offsetWidth}px`);
+        tabs.style.setProperty("--admin-brand-scale",String(Math.max(1,activeButton.offsetWidth)/100));
         tabs.style.setProperty("--admin-brand-h",`${activeButton.offsetHeight}px`);
         activeButton.scrollIntoView({behavior:animate?"smooth":"auto",block:"nearest",inline:"nearest"});
         if(!animate)requestAnimationFrame(()=>indicator.classList.remove("is-instant"));
@@ -2369,6 +2423,7 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
         );
         showApp();
         handleGoogleBusinessCallbackResult();
+        try{await loadAdminSiteThemeSetting();}catch(error){console.warn(error);}
         await loadProducts();
         await loadCategories();
     }catch(err){
@@ -2459,6 +2514,28 @@ document.getElementById("product-cancel").addEventListener("click",()=>{
 document.getElementById("logout-button").addEventListener("click",()=>logout());
 document.getElementById("refresh-button").addEventListener("click",refreshAll);
 document.getElementById("google-business-connect-button")?.addEventListener("click",connectGoogleBusiness);
+document.getElementById("store-theme-settings-button")?.addEventListener("click",event=>{
+    event.stopPropagation();
+    const wrap=document.getElementById("store-theme-admin-wrap");
+    setAdminStoreThemePanel(!wrap?.classList.contains("is-open"));
+});
+document.querySelectorAll("[data-site-default-theme]").forEach(button=>{
+    button.addEventListener("click",async event=>{
+        event.stopPropagation();
+        try{
+            await saveAdminSiteThemeSetting(button.dataset.siteDefaultTheme);
+        }catch(error){
+            showToast(error.message||"No se pudo guardar el tema.","error");
+        }
+    });
+});
+document.addEventListener("click",event=>{
+    const wrap=document.getElementById("store-theme-admin-wrap");
+    if(wrap?.classList.contains("is-open")&&!wrap.contains(event.target))setAdminStoreThemePanel(false);
+});
+document.addEventListener("keydown",event=>{
+    if(event.key==="Escape")setAdminStoreThemePanel(false);
+});
 
 document.querySelectorAll(".tab").forEach(button=>{
     button.addEventListener("click",async()=>{

@@ -4,8 +4,10 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta content="#071019" name="theme-color"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" name="viewport"/>
+<meta content="#f7f4ec" name="theme-color" id="store-theme-color"/>
+<meta name="color-scheme" content="light dark"/>
+<script>(function(){try{var p=localStorage.getItem("doradoStoreThemePreference")||"default";var r=p==="dark"?"dark":"light";document.documentElement.dataset.storeTheme=r;document.documentElement.dataset.storeThemePreference=p;document.documentElement.style.colorScheme=r}catch(e){document.documentElement.dataset.storeTheme="light"}})();</script>
 <meta name="robots" content="index,follow,max-image-preview:large"/>
 <link rel="canonical" href="https://www.doradoarticulosdepesca.com.ar/"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png"/>
@@ -128,6 +130,7 @@
 <link rel="stylesheet" href="assets/css/mobile-menu-20260928.css?v=20260929e"/>
 <link rel="stylesheet" href="assets/css/mobile-typography-20260928.css?v=20260928b"/>
 <link rel="stylesheet" href="assets/css/mobile-interactions-20260929.css?v=20260929b"/>
+<link rel="stylesheet" href="assets/css/store-theme-20260929.css?v=20260929a"/>
 
 
 </head>
@@ -645,8 +648,19 @@
 <div class="footer-column footer-contact">
 <h4>Contacto</h4>
 <a href="tel:+5491168070039"><svg class="ui-icon"><use href="#i-phone"></use></svg> +54 9 11 6807-0039</a>
-
 <a href="https://wa.me/5491168070039" rel="noopener" target="_blank"><svg class="ui-icon"><use href="#i-whatsapp"></use></svg> WhatsApp</a>
+
+<div class="footer-theme-control" id="footer-theme-control">
+  <span class="footer-theme-kicker">APARIENCIA</span>
+  <strong>Tema de la web</strong>
+  <small>Elegí el contraste que te resulte más cómodo.</small>
+  <div class="footer-theme-options" role="group" aria-label="Tema de la web">
+    <button type="button" data-store-theme-choice="default"><span id="store-theme-default-label">Predeterminado (claro)</span></button>
+    <button type="button" data-store-theme-choice="light">Claro</button>
+    <button type="button" data-store-theme-choice="dark">Oscuro</button>
+  </div>
+  <span class="footer-theme-status" id="store-theme-status" aria-live="polite">Tema actual: claro</span>
+</div>
 </div>
 </div>
 <div class="footer-wordmark" aria-hidden="true"><span class="footer-wordmark-name">Dorado</span><span class="footer-wordmark-desc">Artículos de Pesca</span></div>

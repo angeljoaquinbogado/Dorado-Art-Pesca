@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="assets/css/admin-taxonomy-picker-20260928.css?v=20260928d"/>
 <link rel="stylesheet" href="assets/css/admin-products-flow-20260928.css?v=20260928a"/>
 <link rel="stylesheet" href="assets/css/admin-visual-polish-20260928.css?v=20260929e"/>
+<link rel="stylesheet" href="assets/css/admin-store-theme-20260929.css?v=20260929a"/>
 </head>
 <body>
 
@@ -139,6 +140,27 @@
           <button class="secondary" type="button" id="google-business-connect-button">
             RESEÑAS GOOGLE
           </button>
+          <div class="store-theme-admin-wrap" id="store-theme-admin-wrap">
+            <button class="secondary" type="button" id="store-theme-settings-button" aria-expanded="false" aria-controls="store-theme-settings-panel">
+              TEMA WEB
+            </button>
+            <div class="store-theme-admin-panel" id="store-theme-settings-panel" aria-hidden="true">
+              <span class="store-theme-admin-kicker">APARIENCIA PÚBLICA</span>
+              <strong>Elegí el color de tema de la web</strong>
+              <p>Define qué ve un cliente que todavía no eligió su propio tema.</p>
+              <div class="store-theme-admin-options" role="radiogroup" aria-label="Tema predeterminado de la tienda">
+                <button type="button" data-site-default-theme="default" role="radio" aria-checked="false">
+                  <span>Predeterminado (claro)</span><small>Restablece el tema base de Dorado.</small>
+                </button>
+                <button type="button" data-site-default-theme="light" role="radio" aria-checked="false">
+                  <span>Claro</span><small>Fondo claro y contraste suave.</small>
+                </button>
+                <button type="button" data-site-default-theme="dark" role="radio" aria-checked="false">
+                  <span>Oscuro</span><small>Menos luminosidad para ambientes oscuros.</small>
+                </button>
+              </div>
+            </div>
+          </div>
           <button class="secondary" type="button" id="refresh-button">
             <svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M18.4 9A7 7 0 0 0 6.8 6.2L4 11M20 13l-2.8 4.8A7 7 0 0 1 5.6 15"/></svg>
             ACTUALIZAR
