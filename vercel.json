@@ -101,6 +101,19 @@
           "value": "public, max-age=0, s-maxage=60, stale-while-revalidate=600"
         }
       ]
+    },
+    {
+      "source": "/gracias.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
     }
   ],
   "rewrites": [
@@ -111,6 +124,10 @@
     {
       "source": "/api/google-business-oauth/callback",
       "destination": "/api/reviews?action=google_oauth_callback"
+    },
+    {
+      "source": "/gracias.html",
+      "destination": "/index.html"
     }
   ]
 }
