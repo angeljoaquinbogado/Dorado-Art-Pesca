@@ -316,3 +316,81 @@ html[data-admin-theme="dark"] #products-panel .admin-products-more{
     right:14px!important;
   }
 }
+
+
+/* =========================================================
+   FINAL ADMIN THEME PERSISTENCE + GOLD DETAIL PASS
+   ========================================================= */
+
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card{
+  border-color:rgba(201,149,43,.34)!important;
+  box-shadow:
+    0 12px 28px rgba(23,36,45,.045),
+    0 0 0 1px rgba(201,149,43,.025),
+    0 0 26px rgba(201,149,43,.055)!important;
+}
+
+html[data-admin-theme="dark"] .stat,
+html[data-admin-theme="dark"] .card,
+html[data-admin-theme="dark"] .form-card,
+html[data-admin-theme="dark"] .catalog-card,
+html[data-admin-theme="dark"] .orders-card{
+  border-color:rgba(224,179,75,.28)!important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.18),
+    0 0 0 1px rgba(224,179,75,.025),
+    0 0 24px rgba(224,179,75,.045)!important;
+}
+
+/* Gold top line is visible but restrained on Products / Orders / Coupons. */
+.stat::before,
+.orders-card::before,
+#coupons-panel .form-card::before,
+#coupons-panel .catalog-card::before,
+#products-panel .catalog-card::before{
+  opacity:1!important;
+  background:linear-gradient(90deg,transparent 0%,rgba(201,149,43,.78) 45%,rgba(224,179,75,.58) 62%,transparent 100%)!important;
+  box-shadow:0 2px 13px rgba(201,149,43,.14)!important;
+}
+
+/* Keep old decorative blobs removed in every section. */
+.stat::after,
+.stats .stat::after{
+  display:none!important;
+  content:none!important;
+}
+
+/* Theme control itself stays consistent on first paint. */
+html[data-admin-theme="light"] .store-theme-admin-panel{
+  background:#fff!important;
+  color:#20272c!important;
+  border-color:rgba(201,149,43,.28)!important;
+  box-shadow:0 20px 48px rgba(23,36,45,.12)!important;
+}
+
+html[data-admin-theme="light"] .store-theme-admin-options button{
+  background:#fffdfa!important;
+  color:#2a3034!important;
+  border-color:#ded7cb!important;
+}
+
+html[data-admin-theme="light"] .store-theme-admin-options button.active{
+  background:linear-gradient(135deg,rgba(224,179,75,.13),rgba(201,149,43,.06))!important;
+  color:#7d5812!important;
+  border-color:rgba(201,149,43,.58)!important;
+}
+
+/* Small-screen parity. */
+@media(max-width:700px){
+  html[data-admin-theme] .stat,
+  html[data-admin-theme] .card,
+  html[data-admin-theme] .form-card,
+  html[data-admin-theme] .catalog-card,
+  html[data-admin-theme] .orders-card{
+    border-width:1px!important;
+  }
+}

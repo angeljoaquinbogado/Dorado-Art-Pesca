@@ -15,17 +15,22 @@ let recoveryAccessToken = "";
 let recoveryRefreshToken = "";
 
 let adminSiteThemeDefault="light";
+const ADMIN_PANEL_THEME_KEY="doradoAdminPanelTheme";
 
 function normalizeAdminSiteTheme(value){
     const theme=String(value||"default").toLowerCase();
     return ["default","light","dark"].includes(theme)?theme:"default";
 }
 
-function applyAdminPanelTheme(value,{animate=false}={}){
+function applyAdminPanelTheme(value,{animate=false,persist=false}={}){
     const normalized=normalizeAdminSiteTheme(value);
     const resolved=normalized==="dark"?"dark":"light";
     const root=document.documentElement;
     const reduce=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+    if(persist){
+        try{localStorage.setItem(ADMIN_PANEL_THEME_KEY,resolved);}catch{}
+    }
 
     if(animate&&!reduce){
         root.classList.add("admin-theme-transitioning");
@@ -60,13 +65,20 @@ async function loadAdminSiteThemeSetting(){
     if(!response.ok)throw new Error("No se pudo cargar el tema predeterminado de la web.");
     adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"light");
     syncAdminSiteThemeControls();
+
+    let savedPanelTheme="light";
+    try{
+        const stored=localStorage.getItem(ADMIN_PANEL_THEME_KEY);
+        if(stored==="dark"||stored==="light")savedPanelTheme=stored;
+    }catch{}
+    applyAdminPanelTheme(savedPanelTheme,{animate:false});
 }
 
 async function saveAdminSiteThemeSetting(value){
     const next=normalizeAdminSiteTheme(value);
     const previous=adminSiteThemeDefault;
     adminSiteThemeDefault=next;
-    applyAdminPanelTheme(next,{animate:true});
+    applyAdminPanelTheme(next,{animate:true,persist:true});
     syncAdminSiteThemeControls();
 
     const response=await sb("/rest/v1/site_settings?id=eq.1",{
@@ -80,7 +92,7 @@ async function saveAdminSiteThemeSetting(value){
     const rows=await response.json().catch(()=>[]);
     if(!response.ok||!Array.isArray(rows)||!rows.length){
         adminSiteThemeDefault=previous;
-        applyAdminPanelTheme(previous,{animate:true});
+        applyAdminPanelTheme(previous,{animate:true,persist:true});
         syncAdminSiteThemeControls();
         throw new Error("No se pudo guardar el tema predeterminado de la web.");
     }
