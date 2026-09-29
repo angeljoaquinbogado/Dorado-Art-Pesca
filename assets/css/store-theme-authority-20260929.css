@@ -96,3 +96,132 @@ html.store-theme-transitioning .orders-trigger{
       border-color 140ms ease!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE LIGHT FAQ — authoritative contrast/layout fix
+   Keeps the dark theme untouched.
+   ========================================================= */
+@media(max-width:700px){
+  html[data-store-theme="light"],
+  html[data-store-theme="light"] body{
+    background:#f7f4ec!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes.faq-section{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:42px 0 52px!important;
+    background:#f7f4ec!important;
+    color:#17242d!important;
+    border:0!important;
+    overflow:hidden!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-shell{
+    box-sizing:border-box!important;
+    width:calc(100% - 28px)!important;
+    max-width:none!important;
+    margin:0 auto!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:20px!important;
+    background:transparent!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro{
+    min-width:0!important;
+    color:#17242d!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro .section-index,
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro .section-index b,
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro .kicker{
+    color:#b77a13!important;
+    -webkit-text-fill-color:#b77a13!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro h2{
+    display:block!important;
+    margin:10px 0 0!important;
+    color:#17242d!important;
+    -webkit-text-fill-color:#17242d!important;
+    opacity:1!important;
+    visibility:visible!important;
+    font-size:clamp(30px,9vw,39px)!important;
+    line-height:1!important;
+    letter-spacing:-.045em!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro h2 span{
+    color:#d49b25!important;
+    -webkit-text-fill-color:#d49b25!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-intro p{
+    margin:12px 0 0!important;
+    color:#6c7980!important;
+    -webkit-text-fill-color:#6c7980!important;
+    opacity:1!important;
+    font-size:10.5px!important;
+    line-height:1.6!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-list{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    gap:8px!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-list details{
+    width:100%!important;
+    box-sizing:border-box!important;
+    margin:0!important;
+    background:#fff!important;
+    color:#17242d!important;
+    border:1px solid #ddd5c9!important;
+    border-radius:14px!important;
+    box-shadow:0 6px 18px rgba(23,36,45,.045)!important;
+    overflow:hidden!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-list details[open]{
+    background:#fffaf0!important;
+    border-color:#d8b15e!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-list summary{
+    min-height:46px!important;
+    display:flex!important;
+    align-items:center!important;
+    box-sizing:border-box!important;
+    padding:13px 42px 13px 14px!important;
+    color:#22313a!important;
+    -webkit-text-fill-color:#22313a!important;
+    opacity:1!important;
+    font-size:11px!important;
+    font-weight:750!important;
+    line-height:1.35!important;
+    text-wrap:balance!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-list summary::after{
+    right:14px!important;
+    color:#c78918!important;
+    -webkit-text-fill-color:#c78918!important;
+  }
+
+  html[data-store-theme="light"] #preguntas-frecuentes .faq-list details p{
+    margin:0!important;
+    padding:0 14px 14px!important;
+    color:#65737a!important;
+    -webkit-text-fill-color:#65737a!important;
+    opacity:1!important;
+    font-size:10px!important;
+    line-height:1.6!important;
+  }
+}
