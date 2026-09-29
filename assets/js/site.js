@@ -2519,17 +2519,35 @@ document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
     limpiarMarcaSeleccionada();
 });
 
+let brandsCollapseTimer=0;
+
 function actualizarVistaTodasMarcas(force=null){
     const section=document.getElementById("marcas");
     const button=document.getElementById("brand-show-all");
     if(!section||!button)return;
 
-    marcasExpandidas=typeof force==="boolean" ? force : !marcasExpandidas;
-    section.classList.toggle("brands-expanded",marcasExpandidas);
-    button.setAttribute("aria-expanded",String(marcasExpandidas));
+    const next=typeof force==="boolean" ? force : !marcasExpandidas;
+    marcasExpandidas=next;
+    window.clearTimeout(brandsCollapseTimer);
+
+    if(next){
+        section.classList.remove("brands-closing");
+        section.classList.add("brands-expanded","brands-opening");
+        requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>section.classList.remove("brands-opening"));
+        });
+    }else{
+        section.classList.remove("brands-opening");
+        section.classList.add("brands-closing");
+        brandsCollapseTimer=window.setTimeout(()=>{
+            section.classList.remove("brands-expanded","brands-closing");
+        },220);
+    }
+
+    button.setAttribute("aria-expanded",String(next));
 
     const textNode=[...button.childNodes].find(node=>node.nodeType===Node.TEXT_NODE);
-    if(textNode)textNode.nodeValue=marcasExpandidas?"VER MENOS ":"VER TODAS ";
+    if(textNode)textNode.nodeValue=next?"VER MENOS ":"VER TODAS ";
 }
 
 document.getElementById("brand-show-all")?.addEventListener("click",()=>{
@@ -4081,11 +4099,11 @@ comprobarRetornoPago();
           6:[[540,1200]]
         };
         const open=(ranges[day]||[]).some(([from,to])=>minutes>=from&&minutes<to);
-        status.textContent=open?"Abierto ahora":"Cerrado ahora";
+        status.textContent=open?"Local abierto":"Local cerrado";
         status.classList.toggle("is-open",open);
         status.classList.toggle("is-closed",!open);
       }catch{
-        status.textContent="Consultá el horario antes de venir";
+        status.textContent="Local cerrado";
         status.classList.add("is-closed");
       }
     }
