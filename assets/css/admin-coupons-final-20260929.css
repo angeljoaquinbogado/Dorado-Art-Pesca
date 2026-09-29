@@ -303,3 +303,114 @@ html[data-admin-store-theme="light"] #coupons-panel .secondary{
     animation:none!important;
   }
 }
+
+
+/* =========================================================
+   CUPONES — desktop definitivo
+   Formulario arriba a todo el ancho; listado debajo.
+   Aprovecha el ancho de PC sin dejar columnas vacías.
+   ========================================================= */
+@media(min-width:900px){
+  #coupons-panel .coupon-admin-grid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:18px!important;
+    width:100%!important;
+  }
+
+  #coupons-panel #coupon-form{
+    order:1!important;
+    width:100%!important;
+    max-width:none!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    column-gap:16px!important;
+    row-gap:12px!important;
+    align-items:end!important;
+    padding:22px!important;
+  }
+
+  #coupons-panel #coupon-form .card-head{
+    grid-column:1 / -1!important;
+    margin-bottom:4px!important;
+  }
+
+  #coupons-panel #coupon-form > .field{
+    grid-column:auto!important;
+    margin-bottom:0!important;
+  }
+
+  #coupons-panel #coupon-form > .field-row{
+    grid-column:span 2!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:16px!important;
+    margin:0!important;
+  }
+
+  #coupons-panel #coupon-form > .field-row .field{
+    margin-bottom:0!important;
+  }
+
+  /* Código ocupa dos columnas para que sea cómodo de leer/escribir. */
+  #coupons-panel #coupon-form > .field:first-of-type{
+    grid-column:span 2!important;
+  }
+
+  /* Estado + acciones cierran la fila sin dejar huecos visuales. */
+  #coupons-panel #coupon-form > .field:last-of-type{
+    grid-column:span 1!important;
+  }
+
+  #coupons-panel #coupon-form > .message{
+    grid-column:1 / -1!important;
+    margin:0!important;
+  }
+
+  #coupons-panel #coupon-form > .form-actions{
+    grid-column:1 / -1!important;
+    display:flex!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    margin-top:2px!important;
+  }
+
+  #coupons-panel .catalog-card{
+    order:2!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+  }
+
+  #coupons-panel .catalog-card .catalog-toolbar,
+  #coupons-panel .catalog-card .table-wrap{
+    width:100%!important;
+  }
+}
+
+@media(min-width:900px) and (max-width:1180px){
+  #coupons-panel #coupon-form{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  #coupons-panel #coupon-form > .field:first-of-type,
+  #coupons-panel #coupon-form > .field-row,
+  #coupons-panel #coupon-form > .field:last-of-type{
+    grid-column:1 / -1!important;
+  }
+}
+
+@media(max-width:899px){
+  #coupons-panel .coupon-admin-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+
+  #coupons-panel #coupon-form{
+    order:1!important;
+  }
+
+  #coupons-panel .catalog-card{
+    order:2!important;
+  }
+}
