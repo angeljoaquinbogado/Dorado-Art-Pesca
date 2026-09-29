@@ -1,11 +1,98 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-admin-theme="light" style="color-scheme:light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
 <meta name="theme-color" content="#f7f4ec" id="admin-theme-color">
-<script>(function(){var t="light";try{var s=localStorage.getItem("doradoAdminPanelTheme");if(s==="dark"||s==="light")t=s}catch(e){}document.documentElement.dataset.adminTheme=t;document.documentElement.style.colorScheme=t;})();</script>
+<script>
+(function(){
+  var root=document.documentElement;
+  var theme="light";
+  try{
+    var saved=localStorage.getItem("doradoAdminPanelTheme");
+    if(saved==="dark"||saved==="light"){
+      theme=saved;
+    }else{
+      localStorage.setItem("doradoAdminPanelTheme","light");
+    }
+  }catch(e){}
+  root.dataset.adminTheme=theme;
+  root.style.colorScheme=theme;
+  root.classList.add("admin-theme-booting");
+  window.addEventListener("DOMContentLoaded",function(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        root.classList.remove("admin-theme-booting");
+        root.classList.add("admin-theme-ready");
+      });
+    });
+  },{once:true});
+})();
+</script>
+<style id="admin-critical-theme">
+  html,body{min-height:100%;margin:0}
+  html[data-admin-theme="light"]{background:#f4f0e7!important;color:#20272c!important}
+  html[data-admin-theme="light"] body,
+  html[data-admin-theme="light"] #admin-app,
+  html[data-admin-theme="light"] .app,
+  html[data-admin-theme="light"] .admin-layout,
+  html[data-admin-theme="light"] .workspace,
+  html[data-admin-theme="light"] main{
+    background:#f4f0e7!important;
+    color:#20272c!important;
+  }
+  html[data-admin-theme="light"] .sidebar,
+  html[data-admin-theme="light"] .workspace-top,
+  html[data-admin-theme="light"] .stat,
+  html[data-admin-theme="light"] .card,
+  html[data-admin-theme="light"] .form-card,
+  html[data-admin-theme="light"] .catalog-card,
+  html[data-admin-theme="light"] .orders-card{
+    background:#fff!important;
+    color:#20272c!important;
+  }
+  html[data-admin-theme="light"] .workspace-top{
+    background:#f7f4ec!important;
+  }
+  html[data-admin-theme="light"] .hero-head{
+    background:linear-gradient(135deg,#fff 0%,#fffdf8 72%,#f7ebce 100%)!important;
+    color:#20272c!important;
+  }
+
+  html[data-admin-theme="dark"]{background:#09151d!important;color:#edf1f2!important}
+  html[data-admin-theme="dark"] body,
+  html[data-admin-theme="dark"] #admin-app,
+  html[data-admin-theme="dark"] .app,
+  html[data-admin-theme="dark"] .admin-layout,
+  html[data-admin-theme="dark"] .workspace,
+  html[data-admin-theme="dark"] main{
+    background:#09151d!important;
+    color:#edf1f2!important;
+  }
+  html[data-admin-theme="dark"] .sidebar,
+  html[data-admin-theme="dark"] .workspace-top{
+    background:#07131c!important;
+    color:#edf1f2!important;
+  }
+  html[data-admin-theme="dark"] .stat,
+  html[data-admin-theme="dark"] .card,
+  html[data-admin-theme="dark"] .form-card,
+  html[data-admin-theme="dark"] .catalog-card,
+  html[data-admin-theme="dark"] .orders-card{
+    background:#102531!important;
+    color:#edf1f2!important;
+  }
+
+  /* Nunca animar el tema durante el primer frame: evita el flash oscuro→claro. */
+  html.admin-theme-booting *,
+  html.admin-theme-booting *::before,
+  html.admin-theme-booting *::after{
+    transition:none!important;
+    animation-duration:0s!important;
+    animation-delay:0s!important;
+  }
+</style>
 <meta name="description" content="Panel privado de DORADO ARTÍCULOS DE PESCA para gestionar productos, stock y pedidos. Acceso exclusivo para administradores autorizados.">
 <link rel="canonical" href="https://www.doradoarticulosdepesca.com.ar/admin.html">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
