@@ -1934,6 +1934,10 @@ function cerrarResultadoPago() {
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("payment-result-open");
+
+    if (/\/gracias\.html$/i.test(window.location.pathname)) {
+        history.replaceState({}, document.title, "/");
+    }
 }
 
 function mostrarResultadoPago({
@@ -1995,7 +1999,8 @@ function mostrarResultadoPago({
 
 async function comprobarRetornoPago() {
     const params = new URLSearchParams(window.location.search);
-    const estadoRetorno = params.get("checkout");
+    const esPaginaGracias = /\/gracias\.html$/i.test(window.location.pathname);
+    const estadoRetorno = params.get("checkout") || (esPaginaGracias ? "success" : "");
     const orderId = params.get("order");
     const trackingToken = params.get("tracking");
 
@@ -2018,8 +2023,8 @@ async function comprobarRetornoPago() {
 
             if (!mostrarResultadoPago({
                 estado: "success",
-                titulo: "¡Compra confirmada!",
-                mensaje: "Tu pago fue aprobado y el pedido quedó confirmado correctamente.",
+                titulo: "¡Gracias por tu compra!",
+                mensaje: "Tu pago fue aprobado y tu pedido quedó confirmado correctamente.",
                 pedido: orderId,
                 tracking: trackingToken,
                 ayuda: "Guardá este número de pedido. Nos comunicaremos para coordinar la entrega."
