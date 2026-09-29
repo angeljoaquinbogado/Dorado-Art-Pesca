@@ -1945,7 +1945,10 @@ function mostrarResultadoPago({
     titulo = "¡Compra confirmada!",
     mensaje = "Recibimos tu pago correctamente.",
     pedido = "",
+    codigo = "",
     tracking = "",
+    total = null,
+    estadoTexto = "",
     ayuda = "Guardá este número. Nos comunicaremos para coordinar la entrega."
 } = {}) {
     const modal = document.getElementById("payment-result");
@@ -1954,7 +1957,12 @@ function mostrarResultadoPago({
     const icono = document.getElementById("payment-result-icon");
     const tituloEl = document.getElementById("payment-result-title");
     const mensajeEl = document.getElementById("payment-result-message");
+    const pedidoBox = document.getElementById("payment-result-order");
     const pedidoEl = document.getElementById("payment-result-order-id");
+    const totalRow = document.getElementById("payment-result-total-row");
+    const totalEl = document.getElementById("payment-result-total");
+    const statusRow = document.getElementById("payment-result-status-row");
+    const statusEl = document.getElementById("payment-result-status");
     const ayudaEl = document.getElementById("payment-result-help");
     const botonCerrar = document.getElementById("payment-result-close");
     const seguimientoEl = document.getElementById("payment-result-tracking");
@@ -1964,7 +1972,30 @@ function mostrarResultadoPago({
 
     if (tituloEl) tituloEl.textContent = titulo;
     if (mensajeEl) mensajeEl.textContent = mensaje;
-    if (pedidoEl) pedidoEl.textContent = pedido ? formatoPedido(pedido) : "—";
+
+    const tienePedido = Boolean(pedido || codigo);
+    if (pedidoBox) pedidoBox.hidden = !tienePedido;
+    if (pedidoEl) pedidoEl.textContent = codigo || (pedido ? formatoPedido(pedido) : "—");
+
+    const totalNumero = Number(total);
+    const tieneTotal = Number.isFinite(totalNumero) && totalNumero > 0;
+    if (totalRow) totalRow.hidden = !tieneTotal;
+    if (totalEl && tieneTotal) {
+        totalEl.textContent = new Intl.NumberFormat("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            maximumFractionDigits: 0
+        }).format(totalNumero);
+    }
+
+    const textoEstado = estadoTexto || (
+        estado === "success" ? "Pago aprobado" :
+        estado === "failure" ? "Pago no completado" :
+        "En verificación"
+    );
+    if (statusRow) statusRow.hidden = !tienePedido;
+    if (statusEl) statusEl.textContent = textoEstado;
+
     if (seguimientoEl) {
         const href = enlaceSeguimientoPedido(pedido, tracking);
         seguimientoEl.hidden = !href;
@@ -2040,7 +2071,10 @@ async function comprobarRetornoPago() {
                 titulo: "¡Gracias por tu compra!",
                 mensaje: "Tu pago fue aprobado y tu pedido quedó confirmado correctamente.",
                 pedido: orderId,
+                codigo: String(data?.code || ""),
                 tracking: trackingToken,
+                total: data?.total,
+                estadoTexto: "Pago aprobado",
                 ayuda: "Guardá este número de pedido. Nos comunicaremos para coordinar la entrega."
             })) {
                 mostrarToastCarrito(
@@ -2059,7 +2093,10 @@ async function comprobarRetornoPago() {
                 titulo: "Pago recibido · pedido en revisión",
                 mensaje: "Mercado Pago registró el pago y estamos revisando un detalle del pedido.",
                 pedido: orderId,
+                codigo: String(data?.code || ""),
                 tracking: trackingToken,
+                total: data?.total,
+                estadoTexto: "Pedido en revisión",
                 ayuda: "No vuelvas a pagar. Podés seguir el estado desde el enlace de seguimiento o escribirnos por WhatsApp."
             })) {
                 mostrarToastCarrito(
@@ -2089,7 +2126,10 @@ async function comprobarRetornoPago() {
                 titulo: "Pago pendiente",
                 mensaje: "Mercado Pago todavía está procesando tu pago.",
                 pedido: orderId,
+                codigo: String(data?.code || ""),
                 tracking: trackingToken,
+                total: data?.total,
+                estadoTexto: "Pago pendiente",
                 ayuda: "No vuelvas a pagar este pedido. Cuando Mercado Pago lo apruebe, registraremos la confirmación automáticamente."
             })) {
                 mostrarToastCarrito(
