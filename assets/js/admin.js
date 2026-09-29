@@ -747,7 +747,7 @@ async function loadProducts(){
     if(stockAlert){
         const critical=productos.filter(p=>p.activo&&Math.max(0,Number(p.stock)||0)<=3).length;
         stockAlert.hidden=critical===0;
-        stockAlert.textContent=critical===1?"1 PRODUCTO REQUIERE STOCK":`${critical} PRODUCTOS REQUIEREN STOCK`;
+        stockAlert.textContent=critical===1?"1 producto requiere stock":`${critical} productos requieren stock`;
     }
 
     renderProductOrganizationFilters();
