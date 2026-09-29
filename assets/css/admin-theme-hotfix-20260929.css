@@ -1,0 +1,235 @@
+/* Dorado admin — authoritative light theme hardening · 2026-09-29
+   Light is the default. Dark is untouched and remains user-persisted. */
+
+:root{
+  --admin-gold:#d8a332;
+  --admin-gold-line:rgba(201,145,30,.34);
+  --admin-gold-glow:rgba(201,145,30,.08);
+}
+
+/* Full light canvas: no legacy navy surfaces when data-admin-theme=light. */
+html[data-admin-theme="light"],
+html[data-admin-theme="light"] body,
+html[data-admin-theme="light"] #admin-app,
+html[data-admin-theme="light"] .app,
+html[data-admin-theme="light"] .admin-layout,
+html[data-admin-theme="light"] .workspace,
+html[data-admin-theme="light"] .shell,
+html[data-admin-theme="light"] main{
+  background:#f4f0e7!important;
+  color:#20272c!important;
+}
+
+html[data-admin-theme="light"] .sidebar{
+  background:#fffdf9!important;
+  color:#20272c!important;
+  border-right:1px solid #ddd4c5!important;
+  box-shadow:none!important;
+}
+
+html[data-admin-theme="light"] .workspace-top{
+  background:rgba(248,245,238,.98)!important;
+  color:#20272c!important;
+  border-bottom:1px solid #ddd4c5!important;
+  box-shadow:none!important;
+}
+
+html[data-admin-theme="light"] .hero-head{
+  background:linear-gradient(135deg,#fff 0%,#fffdf8 72%,#f8ecd0 100%)!important;
+  color:#20272c!important;
+  border:1.5px solid var(--admin-gold-line)!important;
+  box-shadow:
+    0 14px 34px rgba(23,36,45,.055),
+    0 0 22px var(--admin-gold-glow)!important;
+}
+
+html[data-admin-theme="light"] .hero-head h1,
+html[data-admin-theme="light"] .hero-head h2,
+html[data-admin-theme="light"] .hero-head p,
+html[data-admin-theme="light"] .admin-page-title{
+  color:#20272c!important;
+}
+
+html[data-admin-theme="light"] .hero-head p{
+  color:#68757c!important;
+}
+
+/* Cards: slightly more visible gold edge, no decorative blobs. */
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card,
+html[data-admin-theme="light"] .coupon-admin-grid .card{
+  background:#fff!important;
+  color:#20272c!important;
+  border:1.5px solid var(--admin-gold-line)!important;
+  box-shadow:
+    0 10px 28px rgba(23,36,45,.045),
+    0 0 18px var(--admin-gold-glow)!important;
+}
+
+html[data-admin-theme="light"] .stat::after{
+  display:none!important;
+  content:none!important;
+}
+
+/* Navigation and buttons */
+html[data-admin-theme="light"] .tab{
+  background:transparent!important;
+  color:#536168!important;
+  border-color:transparent!important;
+}
+html[data-admin-theme="light"] .tab.active{
+  background:linear-gradient(135deg,#fff7e4,#f2e1b4)!important;
+  color:#765510!important;
+  border:1px solid #e0c47f!important;
+}
+
+html[data-admin-theme="light"] .store-link,
+html[data-admin-theme="light"] #logout-button,
+html[data-admin-theme="light"] .secondary,
+html[data-admin-theme="light"] .icon-btn,
+html[data-admin-theme="light"] #store-theme-settings-button,
+html[data-admin-theme="light"] #google-business-connect-button,
+html[data-admin-theme="light"] #refresh-button{
+  background:#fff!important;
+  color:#303c43!important;
+  border-color:#d9d1c5!important;
+  box-shadow:none!important;
+}
+
+/* Inputs and filter controls. */
+html[data-admin-theme="light"] .field input,
+html[data-admin-theme="light"] .field textarea,
+html[data-admin-theme="light"] .field select,
+html[data-admin-theme="light"] .search-wrap input,
+html[data-admin-theme="light"] .catalog-filters select,
+html[data-admin-theme="light"] .orders-filterbar select,
+html[data-admin-theme="light"] .orders-filterbar .date-filter,
+html[data-admin-theme="light"] .admin-select-trigger{
+  background:#fffdfa!important;
+  color:#20272c!important;
+  -webkit-text-fill-color:#20272c!important;
+  border-color:#ddd4c7!important;
+  box-shadow:none!important;
+  color-scheme:light!important;
+}
+
+html[data-admin-theme="light"] input::placeholder,
+html[data-admin-theme="light"] textarea::placeholder{
+  color:#929b9f!important;
+  -webkit-text-fill-color:#929b9f!important;
+}
+
+html[data-admin-theme="light"] input[type="date"]{
+  color-scheme:light!important;
+}
+
+/* Tables and order/coupon surfaces: fully light, no dark remnants. */
+html[data-admin-theme="light"] .table-wrap,
+html[data-admin-theme="light"] .product-table-wrap,
+html[data-admin-theme="light"] .orders-table-wrap,
+html[data-admin-theme="light"] table,
+html[data-admin-theme="light"] thead,
+html[data-admin-theme="light"] tbody,
+html[data-admin-theme="light"] tr,
+html[data-admin-theme="light"] td,
+html[data-admin-theme="light"] #orders-panel .orders-filterbar,
+html[data-admin-theme="light"] #orders-panel .orders-bulkbar,
+html[data-admin-theme="light"] #orders-panel .orders-toolbar{
+  background:#fff!important;
+  color:#20272c!important;
+  border-color:#ece4d8!important;
+}
+
+html[data-admin-theme="light"] thead th{
+  background:#faf7f1!important;
+  color:#748087!important;
+  border-color:#ece4d8!important;
+}
+
+html[data-admin-theme="light"] .product-name-cell,
+html[data-admin-theme="light"] .price-cell,
+html[data-admin-theme="light"] .stat strong,
+html[data-admin-theme="light"] .card h2,
+html[data-admin-theme="light"] .orders-card h2{
+  color:#20272c!important;
+}
+
+html[data-admin-theme="light"] .cell-sub,
+html[data-admin-theme="light"] .catalog-count,
+html[data-admin-theme="light"] .file-help,
+html[data-admin-theme="light"] .stat-label,
+html[data-admin-theme="light"] .orders-card p{
+  color:#7a858a!important;
+}
+
+/* Keep semantic status colors readable and a little stronger. */
+html[data-admin-theme="light"] .stock-pill.stock-low{
+  background:#ffe59a!important;
+  color:#755000!important;
+  border-color:#edc956!important;
+}
+html[data-admin-theme="light"] .stock-pill.stock-ok,
+html[data-admin-theme="light"] .badge.on,
+html[data-admin-theme="light"] .badge.pagado{
+  background:#cdeedb!important;
+  color:#0e673e!important;
+  border-color:#99d8b5!important;
+}
+html[data-admin-theme="light"] .stock-pill.stock-out,
+html[data-admin-theme="light"] .badge.off,
+html[data-admin-theme="light"] .badge.pago_rechazado,
+html[data-admin-theme="light"] .badge.pago_cancelado{
+  background:#f7cbc6!important;
+  color:#96362f!important;
+  border-color:#e9a49c!important;
+}
+
+/* Theme panel itself must be light on first paint. */
+html[data-admin-theme="light"] .store-theme-admin-panel,
+html[data-admin-theme="light"] .admin-select-menu{
+  background:#fff!important;
+  color:#20272c!important;
+  border-color:#ddd4c7!important;
+  box-shadow:0 18px 44px rgba(23,36,45,.12)!important;
+}
+
+html[data-admin-theme="light"] .store-theme-admin-options button{
+  background:#fffdfa!important;
+  color:#39464d!important;
+  border-color:#ddd4c7!important;
+}
+
+html[data-admin-theme="light"] .store-theme-admin-options button.active{
+  background:linear-gradient(135deg,#fff7e4,#f2e1b4)!important;
+  color:#765510!important;
+  border-color:#d8b75f!important;
+}
+
+/* Brand tabs stay light and clean. */
+html[data-admin-theme="light"] .admin-brand-tab{
+  background:#fff!important;
+  color:#667279!important;
+  border-color:#ddd4c7!important;
+}
+html[data-admin-theme="light"] .admin-brand-tab.active{
+  background:linear-gradient(135deg,#fff6df,#f1deaa)!important;
+  color:#75530f!important;
+  border-color:#d6b154!important;
+}
+
+@media(max-width:700px){
+  html[data-admin-theme="light"] .workspace-top{
+    background:#f8f5ee!important;
+  }
+
+  html[data-admin-theme="light"] .stat,
+  html[data-admin-theme="light"] .card,
+  html[data-admin-theme="light"] .form-card,
+  html[data-admin-theme="light"] .catalog-card,
+  html[data-admin-theme="light"] .orders-card{
+    border-width:1.5px!important;
+  }
+}
