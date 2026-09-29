@@ -1974,7 +1974,7 @@ function mostrarResultadoPago({
     if (mensajeEl) mensajeEl.textContent = mensaje;
 
     const tienePedido = Boolean(pedido || codigo);
-    if (pedidoBox) pedidoBox.hidden = !tienePedido;
+    if (pedidoBox) pedidoBox.hidden = false;
     if (pedidoEl) pedidoEl.textContent = codigo || (pedido ? formatoPedido(pedido) : "—");
 
     const totalNumero = Number(total);
