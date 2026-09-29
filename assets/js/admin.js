@@ -21,6 +21,28 @@ function normalizeAdminSiteTheme(value){
     return ["default","light","dark"].includes(theme)?theme:"default";
 }
 
+function applyAdminPanelTheme(value,{animate=false}={}){
+    const normalized=normalizeAdminSiteTheme(value);
+    const resolved=normalized==="dark"?"dark":"light";
+    const root=document.documentElement;
+    const reduce=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+    if(animate&&!reduce){
+        root.classList.add("admin-theme-transitioning");
+        window.clearTimeout(applyAdminPanelTheme._timer);
+        applyAdminPanelTheme._timer=window.setTimeout(()=>root.classList.remove("admin-theme-transitioning"),240);
+    }
+
+    root.dataset.adminTheme=resolved;
+    root.style.colorScheme=resolved;
+
+    const meta=document.getElementById("admin-theme-color");
+    if(meta)meta.setAttribute("content",resolved==="dark"?"#0c1a24":"#f7f4ec");
+
+    try{localStorage.setItem("doradoAdminPanelTheme",resolved);}catch{}
+}
+
+
 function syncAdminSiteThemeControls(){
     const value=normalizeAdminSiteTheme(adminSiteThemeDefault);
     const resolved=value==="dark"?"dark":"light";
@@ -38,6 +60,7 @@ async function loadAdminSiteThemeSetting(){
     const rows=await response.json().catch(()=>[]);
     if(!response.ok)throw new Error("No se pudo cargar el tema predeterminado de la web.");
     adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"light");
+    applyAdminPanelTheme(adminSiteThemeDefault,{animate:false});
     syncAdminSiteThemeControls();
 }
 
@@ -56,6 +79,7 @@ async function saveAdminSiteThemeSetting(value){
         throw new Error("No se pudo guardar el tema predeterminado de la web.");
     }
     adminSiteThemeDefault=next;
+    applyAdminPanelTheme(next,{animate:true});
     syncAdminSiteThemeControls();
 
     const resolved=next==="dark"?"dark":"light";

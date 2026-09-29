@@ -1,0 +1,278 @@
+/* Dorado admin — visible light/dark panel theme · 2026-09-29 */
+
+:root{
+  --admin-theme-ui:220ms;
+  --admin-theme-press:120ms;
+  --admin-theme-ease-out:cubic-bezier(0.23,1,0.32,1);
+}
+
+html[data-admin-theme="light"]{
+  color-scheme:light;
+}
+
+html[data-admin-theme="dark"]{
+  color-scheme:dark;
+}
+
+/* Smooth visual theme switch, no layout movement. */
+html.admin-theme-transitioning #admin-app,
+html.admin-theme-transitioning .workspace,
+html.admin-theme-transitioning .workspace-top,
+html.admin-theme-transitioning .hero-head,
+html.admin-theme-transitioning .stat,
+html.admin-theme-transitioning .card,
+html.admin-theme-transitioning .catalog-card,
+html.admin-theme-transitioning .orders-card,
+html.admin-theme-transitioning .admin-select-trigger,
+html.admin-theme-transitioning .admin-select-menu,
+html.admin-theme-transitioning input,
+html.admin-theme-transitioning textarea,
+html.admin-theme-transitioning select,
+html.admin-theme-transitioning .store-theme-admin-panel{
+  transition:
+    background-color var(--admin-theme-ui) ease,
+    color var(--admin-theme-ui) ease,
+    border-color var(--admin-theme-ui) ease!important;
+}
+
+/* DARK admin */
+html[data-admin-theme="dark"] #admin-app{
+  background:#09151d!important;
+  color:#edf1f2!important;
+}
+
+html[data-admin-theme="dark"] .workspace{
+  background:#0c1a24!important;
+  color:#edf1f2!important;
+}
+
+html[data-admin-theme="dark"] .workspace-top{
+  background:rgba(9,21,29,.96)!important;
+  border-color:rgba(255,255,255,.08)!important;
+  color:#edf1f2!important;
+}
+
+html[data-admin-theme="dark"] .crumb,
+html[data-admin-theme="dark"] .crumb strong{
+  color:#d8e0e3!important;
+}
+
+html[data-admin-theme="dark"] .hero-head{
+  background:linear-gradient(135deg,#10212d,#0b1821)!important;
+  color:#f2eee8!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+html[data-admin-theme="dark"] .hero-head p{
+  color:#aab6bc!important;
+}
+
+html[data-admin-theme="dark"] .stat,
+html[data-admin-theme="dark"] .card,
+html[data-admin-theme="dark"] .catalog-card,
+html[data-admin-theme="dark"] .orders-card{
+  background:#112531!important;
+  color:#eef2f3!important;
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.18)!important;
+}
+
+html[data-admin-theme="dark"] .stat-label,
+html[data-admin-theme="dark"] .cell-sub,
+html[data-admin-theme="dark"] .file-help,
+html[data-admin-theme="dark"] .catalog-count,
+html[data-admin-theme="dark"] .card-head p,
+html[data-admin-theme="dark"] .catalog-title-row p,
+html[data-admin-theme="dark"] .orders-toolbar p{
+  color:#93a2aa!important;
+}
+
+html[data-admin-theme="dark"] .stat strong,
+html[data-admin-theme="dark"] .card h2,
+html[data-admin-theme="dark"] .catalog-title-row h2,
+html[data-admin-theme="dark"] .orders-toolbar h2,
+html[data-admin-theme="dark"] .product-name-cell,
+html[data-admin-theme="dark"] .price-cell{
+  color:#f2eee8!important;
+}
+
+html[data-admin-theme="dark"] .field input,
+html[data-admin-theme="dark"] .field textarea,
+html[data-admin-theme="dark"] .field select,
+html[data-admin-theme="dark"] .search-wrap input,
+html[data-admin-theme="dark"] .catalog-filters select,
+html[data-admin-theme="dark"] .orders-filterbar select,
+html[data-admin-theme="dark"] .admin-select-trigger{
+  background:#0d1e28!important;
+  color:#edf1f2!important;
+  border-color:rgba(255,255,255,.11)!important;
+}
+
+html[data-admin-theme="dark"] .field input::placeholder,
+html[data-admin-theme="dark"] .field textarea::placeholder,
+html[data-admin-theme="dark"] .search-wrap input::placeholder{
+  color:#71828b!important;
+}
+
+html[data-admin-theme="dark"] .admin-select-menu{
+  background:#102531!important;
+  color:#edf1f2!important;
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.28)!important;
+}
+
+html[data-admin-theme="dark"] .admin-select-option{
+  color:#dce4e7!important;
+}
+
+html[data-admin-theme="dark"] .admin-select-option:hover,
+html[data-admin-theme="dark"] .admin-select-option.is-selected{
+  background:rgba(216,171,69,.12)!important;
+  color:#f4cf76!important;
+}
+
+html[data-admin-theme="dark"] .product-table-wrap,
+html[data-admin-theme="dark"] .orders-table-wrap,
+html[data-admin-theme="dark"] .table-wrap{
+  background:#112531!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+html[data-admin-theme="dark"] table,
+html[data-admin-theme="dark"] thead,
+html[data-admin-theme="dark"] tbody,
+html[data-admin-theme="dark"] tr,
+html[data-admin-theme="dark"] td,
+html[data-admin-theme="dark"] th{
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+html[data-admin-theme="dark"] th{
+  color:#8fa0a8!important;
+}
+
+html[data-admin-theme="dark"] td{
+  color:#dfe6e8!important;
+}
+
+html[data-admin-theme="dark"] .thumb-shell,
+html[data-admin-theme="dark"] .product-gallery-preview{
+  background:#0d1e28!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+html[data-admin-theme="dark"] .secondary,
+html[data-admin-theme="dark"] .icon-btn{
+  background:#102531!important;
+  color:#dfe6e8!important;
+  border-color:rgba(255,255,255,.12)!important;
+}
+
+html[data-admin-theme="dark"] .store-theme-admin-panel{
+  background:#102531!important;
+  color:#eef2f3!important;
+  border-color:rgba(255,255,255,.11)!important;
+  box-shadow:0 20px 52px rgba(0,0,0,.32)!important;
+}
+
+html[data-admin-theme="dark"] .store-theme-admin-panel>p{
+  color:#96a5ad!important;
+}
+
+html[data-admin-theme="dark"] .store-theme-admin-options button{
+  background:#0d1e28!important;
+  color:#dfe6e8!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+html[data-admin-theme="dark"] .store-theme-admin-options button small{
+  color:#8ea0a9!important;
+}
+
+html[data-admin-theme="dark"] .store-theme-admin-options button.active{
+  background:linear-gradient(135deg,rgba(216,171,69,.18),rgba(216,171,69,.08))!important;
+  border-color:rgba(216,171,69,.62)!important;
+  color:#f4cf76!important;
+}
+
+/* Admin brand chips: same liquid treatment as storefront, no ugly line. */
+.admin-brand-tabs{
+  position:relative!important;
+  isolation:isolate!important;
+  padding:10px 0 4px!important;
+  gap:8px!important;
+  scrollbar-width:none!important;
+}
+
+.admin-brand-tabs::-webkit-scrollbar{
+  display:none!important;
+}
+
+.admin-brand-liquid{
+  position:absolute!important;
+  z-index:0!important;
+  left:0!important;
+  top:0!important;
+  border-radius:999px!important;
+  background:linear-gradient(180deg,rgba(245,208,128,.68),rgba(228,174,65,.36))!important;
+  border:1px solid rgba(194,133,21,.42)!important;
+  box-shadow:0 7px 18px rgba(166,112,22,.08)!important;
+}
+
+.admin-brand-tab{
+  position:relative!important;
+  z-index:1!important;
+  min-height:38px!important;
+  padding:0 14px!important;
+  border:1px solid #ddd5c9!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:#65727a!important;
+  box-shadow:none!important;
+  font:650 10.5px/1 "Manrope",sans-serif!important;
+  letter-spacing:0!important;
+}
+
+.admin-brand-tab.active{
+  background:transparent!important;
+  border-color:transparent!important;
+  color:#6a490d!important;
+}
+
+html[data-admin-theme="dark"] .admin-brand-tab{
+  border-color:rgba(255,255,255,.12)!important;
+  color:#aab7bd!important;
+}
+
+html[data-admin-theme="dark"] .admin-brand-tab.active{
+  color:#f1cb72!important;
+  border-color:transparent!important;
+}
+
+html[data-admin-theme="dark"] .admin-brand-liquid{
+  background:linear-gradient(180deg,rgba(216,171,69,.22),rgba(216,171,69,.10))!important;
+  border-color:rgba(216,171,69,.50)!important;
+}
+
+button:active,
+.admin-brand-tab:active,
+.store-theme-admin-options button:active{
+  transform:scale(.97);
+  transition:transform var(--admin-theme-press) var(--admin-theme-ease-out)!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.admin-theme-transitioning #admin-app,
+  html.admin-theme-transitioning .workspace,
+  html.admin-theme-transitioning .workspace-top,
+  html.admin-theme-transitioning .hero-head,
+  html.admin-theme-transitioning .stat,
+  html.admin-theme-transitioning .card,
+  html.admin-theme-transitioning .catalog-card,
+  html.admin-theme-transitioning .orders-card{
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease!important;
+  }
+}
