@@ -2376,14 +2376,49 @@ async function deleteCoupon(id,code){
 }
 
 async function refreshAll(){
-    const current=document.querySelector(".tab.active")?.dataset.tab;
-    try{
-        if(current==="orders")await loadOrders();
-        else if(current==="coupons")await loadCoupons();
-        else await loadProducts();
-    }catch(e){
-        showToast(e.message||"No se pudo actualizar.","error");
-    }
+    if(refreshPromise)return refreshPromise;
+
+    const button=document.getElementById("refresh-button");
+    const previousLabel=button?.lastChild?.textContent||"ACTUALIZAR";
+
+    refreshPromise=(async()=>{
+        if(button){
+            button.disabled=true;
+            button.classList.add("is-refreshing");
+            if(button.lastChild)button.lastChild.textContent=" ACTUALIZANDO…";
+        }
+
+        await refreshSessionIfNeeded();
+
+        const results=await Promise.allSettled([
+            loadCategories(),
+            loadProducts(),
+            loadOrders(),
+            loadCoupons(),
+            loadAdminSiteThemeSetting()
+        ]);
+
+        const failures=results.filter(result=>result.status==="rejected");
+        if(failures.length){
+            const first=failures[0]?.reason;
+            throw new Error(first?.message||"No se pudo actualizar todo el panel.");
+        }
+
+        showToast("Panel actualizado correctamente.");
+    })()
+    .catch(error=>{
+        showToast(error?.message||"No se pudo actualizar.","error");
+    })
+    .finally(()=>{
+        if(button){
+            button.disabled=false;
+            button.classList.remove("is-refreshing");
+            if(button.lastChild)button.lastChild.textContent=previousLabel;
+        }
+        refreshPromise=null;
+    });
+
+    return refreshPromise;
 }
 
 async function connectGoogleBusiness(){

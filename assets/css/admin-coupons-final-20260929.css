@@ -235,3 +235,71 @@ html[data-admin-store-theme="light"] #coupons-panel .secondary{
 #coupons-panel table{
   width:100%!important;
 }
+
+
+/* =========================================================
+   CUPONES — layout vertical final
+   Nuevo cupón arriba a todo el ancho; listado debajo.
+   ========================================================= */
+#coupons-panel .coupon-admin-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:18px!important;
+  align-items:stretch!important;
+}
+
+#coupons-panel #coupon-form{
+  order:1!important;
+  width:100%!important;
+  max-width:none!important;
+}
+
+#coupons-panel .catalog-card{
+  order:2!important;
+  width:100%!important;
+  max-width:none!important;
+}
+
+@media(min-width:900px){
+  #coupons-panel #coupon-form{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px 18px!important;
+  }
+
+  #coupons-panel #coupon-form .card-head,
+  #coupons-panel #coupon-form > .field,
+  #coupons-panel #coupon-form > .field-row,
+  #coupons-panel #coupon-form > .message,
+  #coupons-panel #coupon-form > .form-actions{
+    grid-column:1 / -1!important;
+  }
+
+  #coupons-panel #coupon-form .field-row{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px 18px!important;
+  }
+
+  #coupons-panel .catalog-card .table-wrap{
+    width:100%!important;
+  }
+}
+
+/* El botón ACTUALIZAR ahora comunica claramente que está trabajando. */
+#refresh-button.is-refreshing{
+  cursor:progress!important;
+  opacity:.82!important;
+}
+#refresh-button.is-refreshing svg{
+  animation:admin-refresh-spin .72s linear infinite!important;
+  transform-origin:50% 50%!important;
+}
+@keyframes admin-refresh-spin{
+  to{transform:rotate(360deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  #refresh-button.is-refreshing svg{
+    animation:none!important;
+  }
+}
