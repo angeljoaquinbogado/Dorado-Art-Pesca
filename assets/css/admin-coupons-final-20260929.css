@@ -1,0 +1,237 @@
+/* Dorado admin — coupons light theme final polish · 2026-09-29
+   Keeps dark theme intact; fixes coupon layout/overflow in light mode. */
+
+html[data-admin-store-theme="light"] #coupons-panel,
+html[data-admin-store-theme="light"] #coupons-panel .grid,
+html[data-admin-store-theme="light"] #coupons-panel .coupon-admin-grid{
+  background:transparent!important;
+  color:#1c2a32!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .stats{
+  gap:14px!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .stat{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  color:#1c2a32!important;
+  border:1.5px solid rgba(203,151,47,.38)!important;
+  box-shadow:
+    0 10px 28px rgba(51,42,22,.045),
+    0 0 0 1px rgba(255,255,255,.72) inset!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .stat::before,
+html[data-admin-store-theme="light"] #coupons-panel .stat::after{
+  display:none!important;
+  content:none!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .stat-label,
+html[data-admin-store-theme="light"] #coupons-panel .stat small{
+  color:#7b858a!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .stat strong{
+  color:#18262f!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .card,
+html[data-admin-store-theme="light"] #coupons-panel .form-card,
+html[data-admin-store-theme="light"] #coupons-panel .catalog-card{
+  background:#fff!important;
+  color:#1c2a32!important;
+  border:1.5px solid rgba(203,151,47,.34)!important;
+  box-shadow:0 14px 34px rgba(51,42,22,.055)!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .section-tag{
+  background:#fff6df!important;
+  color:#9d6a0c!important;
+  border:1px solid rgba(203,151,47,.28)!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .card-head h2,
+html[data-admin-store-theme="light"] #coupons-panel .catalog-title-row h2{
+  color:#1c2a32!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .card-head p,
+html[data-admin-store-theme="light"] #coupons-panel .catalog-title-row p,
+html[data-admin-store-theme="light"] #coupons-panel .catalog-count{
+  color:#7b858a!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .field label{
+  color:#707b81!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .field input,
+html[data-admin-store-theme="light"] #coupons-panel .field select{
+  background:#fffdfa!important;
+  color:#1c2a32!important;
+  border:1px solid #ddd5c9!important;
+  box-shadow:none!important;
+  color-scheme:light!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .field input::placeholder{
+  color:#a0a6aa!important;
+  opacity:1!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .field input:focus,
+html[data-admin-store-theme="light"] #coupons-panel .field select:focus{
+  border-color:#d2a33c!important;
+  box-shadow:0 0 0 3px rgba(210,163,60,.10)!important;
+  outline:none!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .table-wrap{
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:hidden!important;
+  border-radius:0 0 20px 20px!important;
+  background:#fff!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel table{
+  width:100%!important;
+  min-width:0!important;
+  table-layout:fixed!important;
+  background:#fff!important;
+  color:#1c2a32!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel thead{
+  background:#faf7f1!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel th{
+  color:#8b9296!important;
+  border-bottom:1px solid #e8e1d7!important;
+  white-space:normal!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel td{
+  color:#26353d!important;
+  border-bottom:1px solid #eee8df!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel tbody tr:hover{
+  background:#fffaf0!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .loading{
+  color:#8a9195!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .primary{
+  background:linear-gradient(135deg,#f1c34f,#dca62d)!important;
+  color:#18262f!important;
+  border-color:#d7a129!important;
+}
+
+html[data-admin-store-theme="light"] #coupons-panel .secondary{
+  background:#fff!important;
+  color:#334149!important;
+  border-color:#dcd5ca!important;
+}
+
+@media(min-width:1100px){
+  html[data-admin-store-theme="light"] #coupons-panel .coupon-admin-grid{
+    display:grid!important;
+    grid-template-columns:minmax(320px,.9fr) minmax(0,1.55fr)!important;
+    gap:18px!important;
+    align-items:start!important;
+  }
+}
+
+@media(max-width:1099px){
+  html[data-admin-store-theme="light"] #coupons-panel .coupon-admin-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media(max-width:760px){
+  html[data-admin-store-theme="light"] #coupons-panel{
+    padding-inline:0!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel .stats{
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel .stats .stat:last-child{
+    grid-column:1 / -1!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel .card,
+  html[data-admin-store-theme="light"] #coupons-panel .form-card,
+  html[data-admin-store-theme="light"] #coupons-panel .catalog-card{
+    border-radius:18px!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel .table-wrap{
+    overflow:visible!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel table{
+    display:block!important;
+    min-width:0!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel thead{
+    display:none!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel tbody{
+    display:grid!important;
+    gap:10px!important;
+    padding:10px!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel tbody tr{
+    display:block!important;
+    padding:12px!important;
+    border:1px solid #e4ddd2!important;
+    border-radius:14px!important;
+    background:#fff!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel tbody td{
+    display:grid!important;
+    grid-template-columns:92px minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:center!important;
+    width:100%!important;
+    padding:7px 0!important;
+    border:0!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel tbody td::before{
+    color:#9a8657!important;
+    font-size:7px!important;
+    font-weight:800!important;
+    letter-spacing:.08em!important;
+  }
+
+  html[data-admin-store-theme="light"] #coupons-panel #coupons-table td:nth-child(1)::before{content:"CÓDIGO"}
+  html[data-admin-store-theme="light"] #coupons-panel #coupons-table td:nth-child(2)::before{content:"DESCUENTO"}
+  html[data-admin-store-theme="light"] #coupons-panel #coupons-table td:nth-child(3)::before{content:"VIGENCIA"}
+  html[data-admin-store-theme="light"] #coupons-panel #coupons-table td:nth-child(4)::before{content:"USOS"}
+  html[data-admin-store-theme="light"] #coupons-panel #coupons-table td:nth-child(5)::before{content:"ESTADO"}
+  html[data-admin-store-theme="light"] #coupons-panel #coupons-table td:nth-child(6)::before{content:"ACCIONES"}
+}
+
+/* Dark theme only gets overflow/layout parity; colors stay untouched. */
+#coupons-panel .table-wrap{
+  max-width:100%!important;
+}
+#coupons-panel table{
+  width:100%!important;
+}

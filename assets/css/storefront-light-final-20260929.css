@@ -1,0 +1,65 @@
+/* Dorado storefront — light review contrast final patch · 2026-09-29
+   Loaded last to neutralize older mobile dark-only overrides in light mode. */
+
+html[data-store-theme="light"] #opiniones,
+html[data-store-theme="light"] #opiniones .trust-shell,
+html[data-store-theme="light"] #opiniones .trust-head,
+html[data-store-theme="light"] #opiniones .trust-copy{
+  color:#17242d!important;
+}
+
+html[data-store-theme="light"] #opiniones .trust-copy h2{
+  color:#17242d!important;
+  -webkit-text-fill-color:#17242d!important;
+  opacity:1!important;
+  visibility:visible!important;
+  text-shadow:none!important;
+}
+
+html[data-store-theme="light"] #opiniones .trust-copy h2 span{
+  color:#d49b25!important;
+  -webkit-text-fill-color:#d49b25!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+html[data-store-theme="light"] #opiniones .trust-copy p{
+  color:#6c7980!important;
+  -webkit-text-fill-color:#6c7980!important;
+  opacity:1!important;
+}
+
+html[data-store-theme="light"] #opiniones .review-card{
+  background:#fff!important;
+  color:#17242d!important;
+  border-color:#e3dbce!important;
+}
+
+html[data-store-theme="light"] #opiniones .review-author strong,
+html[data-store-theme="light"] #opiniones .review-card p{
+  color:#29373f!important;
+  -webkit-text-fill-color:#29373f!important;
+}
+
+html[data-store-theme="light"] #opiniones .review-author span,
+html[data-store-theme="light"] #opiniones .review-date{
+  color:#7a858b!important;
+  -webkit-text-fill-color:#7a858b!important;
+}
+
+@media(max-width:700px){
+  html[data-store-theme="light"] #opiniones.trust-section{
+    background:#f7f4ec!important;
+  }
+
+  html[data-store-theme="light"] #opiniones .trust-shell{
+    width:calc(100% - 28px)!important;
+    margin-inline:auto!important;
+  }
+
+  html[data-store-theme="light"] #opiniones .trust-copy h2{
+    font-size:clamp(30px,9vw,39px)!important;
+    line-height:1!important;
+    letter-spacing:-.045em!important;
+  }
+}
