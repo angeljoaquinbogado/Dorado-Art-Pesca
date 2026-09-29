@@ -506,7 +506,7 @@ export default async function handler(req, res) {
             external_reference: String(orderId),
             notification_url: `${origin}/api/mercadopago-webhook`,
             back_urls: {
-                success: `${origin}/?checkout=success&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
+                success: `${origin}/gracias.html?order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
                 pending: `${origin}/?checkout=pending&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`,
                 failure: `${origin}/?checkout=failure&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`
             },
