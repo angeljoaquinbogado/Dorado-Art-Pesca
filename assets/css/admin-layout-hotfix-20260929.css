@@ -1,0 +1,127 @@
+/* Dorado Admin — coupon separation + mobile editor stability · 2026-09-29
+   Loaded last on purpose. */
+
+/* =========================================================
+   CUPONES — separación física real entre formulario y listado
+   ========================================================= */
+#coupons-panel .coupon-admin-grid{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:58px!important;
+  width:100%!important;
+  max-width:none!important;
+}
+
+#coupons-panel #coupon-form,
+#coupons-panel .coupon-admin-grid > .catalog-card{
+  position:relative!important;
+  inset:auto!important;
+  float:none!important;
+  clear:both!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  transform:none!important;
+}
+
+#coupons-panel #coupon-form{
+  order:1!important;
+  margin:0!important;
+  padding-bottom:34px!important;
+  overflow:visible!important;
+  z-index:1!important;
+}
+
+#coupons-panel #coupon-form > .form-actions{
+  position:relative!important;
+  inset:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-height:48px!important;
+  margin:18px 0 0!important;
+  padding:0!important;
+  float:none!important;
+  transform:none!important;
+  z-index:2!important;
+}
+
+#coupons-panel #coupon-form > .form-actions .primary,
+#coupons-panel #coupon-form > .form-actions .secondary{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+}
+
+#coupons-panel .coupon-admin-grid > .catalog-card{
+  order:2!important;
+  margin:0!important;
+  z-index:0!important;
+}
+
+/* Más aire en PC para que nunca parezca encimado. */
+@media(min-width:900px){
+  #coupons-panel .coupon-admin-grid{
+    gap:64px!important;
+  }
+
+  #coupons-panel #coupon-form{
+    padding-bottom:38px!important;
+  }
+}
+
+/* Móvil: conserva una separación clara sin desperdiciar espacio. */
+@media(max-width:899px){
+  #coupons-panel .coupon-admin-grid{
+    gap:26px!important;
+  }
+
+  #coupons-panel #coupon-form{
+    padding-bottom:22px!important;
+  }
+}
+
+/* =========================================================
+   EDITOR DE PRODUCTO MÓVIL — scroll estable
+   ========================================================= */
+@media(max-width:700px){
+  html,
+  body{
+    overflow-anchor:none!important;
+    scroll-behavior:auto!important;
+  }
+
+  .admin-layout,
+  .workspace,
+  .shell,
+  #products-panel,
+  #products-panel .grid,
+  #products-panel #product-form{
+    overflow-anchor:none!important;
+  }
+
+  #products-panel #product-form{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    transform:none!important;
+    contain:none!important;
+    content-visibility:visible!important;
+    scroll-margin-top:10px!important;
+  }
+
+  #products-panel #product-form *,
+  #products-panel .admin-select,
+  #products-panel .admin-select-menu{
+    overflow-anchor:none!important;
+  }
+
+  /* Nada del editor debe forzar scroll suave al recibir foco. */
+  #products-panel #product-form input,
+  #products-panel #product-form textarea,
+  #products-panel #product-form select,
+  #products-panel #product-form button{
+    scroll-margin-block:10px!important;
+  }
+}

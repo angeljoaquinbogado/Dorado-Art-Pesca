@@ -1075,7 +1075,8 @@ function syncAdminBrandTabs({animate=true}={}){
         tabs.style.setProperty("--admin-brand-y",`${activeButton.offsetTop}px`);
         tabs.style.setProperty("--admin-brand-scale",String(Math.max(1,activeButton.offsetWidth)/100));
         tabs.style.setProperty("--admin-brand-h",`${activeButton.offsetHeight}px`);
-        activeButton.scrollIntoView({behavior:animate?"smooth":"auto",block:"nearest",inline:"nearest"});
+        const targetLeft=Math.max(0,activeButton.offsetLeft-(tabs.clientWidth-activeButton.offsetWidth)/2);
+        tabs.scrollTo({left:targetLeft,behavior:animate?"smooth":"auto"});
         if(!animate)requestAnimationFrame(()=>indicator.classList.remove("is-instant"));
     };
 
@@ -1525,14 +1526,11 @@ function scrollProductEditorIntoView({focusName=false}={}){
     const isMobile=window.matchMedia("(max-width:700px)").matches || window.matchMedia("(pointer:coarse)").matches;
 
     if(isMobile){
-        // En móvil evitamos cálculos de scroll basados en alturas que cambian
-        // mientras el formulario se termina de renderizar.
+        // Una sola corrección de posición. Evita el segundo salto que antes
+        // ocurría cuando el layout del editor terminaba de calcularse.
         requestAnimationFrame(()=>{
-            form.scrollIntoView({behavior:"auto",block:"start"});
-            requestAnimationFrame(()=>{
-                const top=Math.max(0,window.scrollY-8);
-                window.scrollTo({top,behavior:"auto"});
-            });
+            const top=Math.max(0,window.scrollY+form.getBoundingClientRect().top-10);
+            window.scrollTo({top,behavior:"auto"});
         });
         return;
     }
