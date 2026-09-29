@@ -1524,23 +1524,27 @@ function scrollProductEditorIntoView({focusName=false}={}){
 
     const isMobile=window.matchMedia("(max-width:700px)").matches || window.matchMedia("(pointer:coarse)").matches;
 
-    requestAnimationFrame(()=>{
+    if(isMobile){
+        // En móvil evitamos cálculos de scroll basados en alturas que cambian
+        // mientras el formulario se termina de renderizar.
         requestAnimationFrame(()=>{
-            const sticky=document.querySelector(".sidebar");
-            const stickyHeight=isMobile ? Math.max(0,sticky?.getBoundingClientRect().height||0) : 0;
-            const top=Math.max(0,window.scrollY+form.getBoundingClientRect().top-stickyHeight-12);
-
-            window.scrollTo({
-                top,
-                behavior:isMobile?"auto":"smooth"
+            form.scrollIntoView({behavior:"auto",block:"start"});
+            requestAnimationFrame(()=>{
+                const top=Math.max(0,window.scrollY-8);
+                window.scrollTo({top,behavior:"auto"});
             });
-
-            if(focusName&&!isMobile){
-                window.setTimeout(()=>{
-                    document.getElementById("product-name")?.focus({preventScroll:true});
-                },220);
-            }
         });
+        return;
+    }
+
+    requestAnimationFrame(()=>{
+        const top=Math.max(0,window.scrollY+form.getBoundingClientRect().top-12);
+        window.scrollTo({top,behavior:"smooth"});
+        if(focusName){
+            window.setTimeout(()=>{
+                document.getElementById("product-name")?.focus({preventScroll:true});
+            },220);
+        }
     });
 }
 
