@@ -652,3 +652,85 @@ body.menu-open .mobile-menu-actions{
     transform:translate3d(0,0,0)!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE HAMBURGER — hard visibility fix
+   El botón queda anclado arriba a la derecha del viewport para
+   no depender de reglas históricas de nav/grid.
+   ========================================================= */
+@media(max-width:700px){
+  #site-header #menu-toggle{
+    position:fixed!important;
+    top:calc(12px + env(safe-area-inset-top))!important;
+    right:14px!important;
+    left:auto!important;
+    z-index:2147483000!important;
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+
+    width:46px!important;
+    min-width:46px!important;
+    max-width:46px!important;
+    height:46px!important;
+    min-height:46px!important;
+    max-height:46px!important;
+
+    margin:0!important;
+    padding:0!important;
+    flex:0 0 46px!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+
+    border:1px solid rgba(240,196,79,.42)!important;
+    border-radius:14px!important;
+    background:rgba(10,26,37,.96)!important;
+    color:#f0c44f!important;
+    box-shadow:0 10px 26px rgba(0,0,0,.24)!important;
+    transform:none!important;
+  }
+
+  #site-header #menu-toggle span{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+
+    display:block!important;
+    width:21px!important;
+    height:2px!important;
+    min-height:2px!important;
+    margin:0!important;
+    padding:0!important;
+
+    border:0!important;
+    border-radius:999px!important;
+    background:#f0c44f!important;
+    opacity:1!important;
+    transform:none!important;
+    transform-origin:center!important;
+    transition:
+      transform .34s cubic-bezier(.2,.8,.2,1),
+      opacity .18s ease,
+      width .24s ease!important;
+  }
+
+  #site-header #menu-toggle[aria-expanded="true"] span:nth-child(1){
+    transform:translateY(6px) rotate(45deg)!important;
+  }
+
+  #site-header #menu-toggle[aria-expanded="true"] span:nth-child(2){
+    width:0!important;
+    opacity:0!important;
+  }
+
+  #site-header #menu-toggle[aria-expanded="true"] span:nth-child(3){
+    transform:translateY(-6px) rotate(-45deg)!important;
+  }
+}
