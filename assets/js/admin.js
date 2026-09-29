@@ -39,7 +39,6 @@ function applyAdminPanelTheme(value,{animate=false}={}){
     const meta=document.getElementById("admin-theme-color");
     if(meta)meta.setAttribute("content",resolved==="dark"?"#0c1a24":"#f7f4ec");
 
-    try{localStorage.setItem("doradoAdminPanelTheme",resolved);}catch{}
 }
 
 
@@ -60,7 +59,6 @@ async function loadAdminSiteThemeSetting(){
     const rows=await response.json().catch(()=>[]);
     if(!response.ok)throw new Error("No se pudo cargar el tema predeterminado de la web.");
     adminSiteThemeDefault=normalizeAdminSiteTheme(rows?.[0]?.default_theme||"light");
-    applyAdminPanelTheme(adminSiteThemeDefault,{animate:false});
     syncAdminSiteThemeControls();
 }
 

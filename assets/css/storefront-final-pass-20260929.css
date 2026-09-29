@@ -1,0 +1,240 @@
+/* Dorado storefront finishing pass · 2026-09-29
+   Final visual overrides only. Motion stays transform/opacity and <= 300ms. */
+:root{
+  --d-final-gold:#d79a27;
+  --d-final-gold-2:#efb644;
+  --d-final-ease-out:cubic-bezier(.23,1,.32,1);
+  --d-final-ease-in-out:cubic-bezier(.77,0,.175,1);
+}
+
+/* Light header: transparent over hero; rounded white surface after scrolling. */
+html[data-store-theme="light"] .nav:not(.scrolled){
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+html[data-store-theme="light"] .nav.scrolled{
+  background:rgba(255,253,248,.97)!important;
+  color:#18262f!important;
+  border:1px solid rgba(24,38,47,.10)!important;
+  border-radius:24px!important;
+  box-shadow:0 14px 34px rgba(24,38,47,.10)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  backdrop-filter:blur(14px)!important;
+}
+
+html[data-store-theme="light"] .nav.scrolled .navlinks a{
+  color:#5f6c73!important;
+  text-shadow:none!important;
+}
+html[data-store-theme="light"] .nav.scrolled .navlinks a.active,
+html[data-store-theme="light"] .nav.scrolled .navlinks a:hover,
+html[data-store-theme="light"] .nav.scrolled .navlinks a:focus-visible{
+  color:#18262f!important;
+}
+
+html[data-store-theme="light"] .nav.scrolled .nav-cta,
+html[data-store-theme="light"] .nav.scrolled .orders-trigger{
+  background:#fff!important;
+  color:#26343b!important;
+  border-color:#d8d1c6!important;
+  box-shadow:0 4px 12px rgba(24,38,47,.035)!important;
+}
+
+/* Desktop nav CTA hover glow: green for WhatsApp, Dorado gold for Orders. */
+@media(hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] .nav.scrolled .nav-cta:hover{
+    background:linear-gradient(135deg,#fff 0%,#fbfffc 68%,rgba(42,198,103,.10) 100%)!important;
+    border-color:rgba(32,190,93,.68)!important;
+    box-shadow:
+      0 0 0 2px rgba(32,190,93,.08),
+      0 7px 18px rgba(32,190,93,.11)!important;
+    color:#1d4930!important;
+    transform:translate3d(0,-1px,0)!important;
+  }
+
+  html[data-store-theme="light"] .nav.scrolled .orders-trigger:hover{
+    background:linear-gradient(135deg,#fff 0%,#fffdf8 68%,rgba(222,160,42,.12) 100%)!important;
+    border-color:rgba(211,148,34,.66)!important;
+    box-shadow:
+      0 0 0 2px rgba(211,148,34,.07),
+      0 7px 18px rgba(211,148,34,.10)!important;
+    color:#5e4515!important;
+    transform:translate3d(0,-1px,0)!important;
+  }
+}
+
+/* Purchase steps: copy starts on the same baseline in every card. */
+#como-comprar .process-step{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+}
+#como-comprar .process-step-head{
+  flex:0 0 auto!important;
+}
+#como-comprar .process-step-copy{
+  margin-top:46px!important;
+  min-height:84px!important;
+}
+#como-comprar .process-step-copy strong{
+  display:block!important;
+  margin:0 0 8px!important;
+}
+#como-comprar .process-step-copy p{
+  margin:0!important;
+}
+
+/* Contact actions: WhatsApp green, Instagram brand gradient, both subtle. */
+#contacto .contact-actions{
+  gap:12px!important;
+  align-items:stretch!important;
+}
+#contacto .contact-actions .gold-btn,
+#contacto .contact-actions .outline-btn{
+  min-height:48px!important;
+  border-radius:999px!important;
+  font-weight:750!important;
+  transition:
+    transform 120ms var(--d-final-ease-out),
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    background-color 200ms ease,
+    color 200ms ease!important;
+}
+
+html[data-store-theme="light"] #contacto .contact-actions .gold-btn{
+  background:linear-gradient(135deg,#22c96a,#18b85d)!important;
+  color:#fff!important;
+  border:1px solid #18ae57!important;
+  box-shadow:0 10px 24px rgba(27,187,94,.12)!important;
+}
+
+html[data-store-theme="light"] #contacto .contact-actions .outline-btn{
+  color:#b42e73!important;
+  border:1px solid transparent!important;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg,#f58529,#dd2a7b 43%,#8134af 72%,#515bd4) border-box!important;
+  box-shadow:0 9px 22px rgba(131,52,175,.08)!important;
+}
+
+html[data-store-theme="light"] #contacto .contact-actions .outline-btn .ui-icon{
+  color:#d62976!important;
+}
+
+@media(hover:hover) and (pointer:fine){
+  #contacto .contact-actions .gold-btn:hover{
+    transform:translate3d(0,-1px,0)!important;
+    box-shadow:0 0 0 3px rgba(35,199,104,.08),0 10px 24px rgba(35,199,104,.16)!important;
+  }
+  html[data-store-theme="light"] #contacto .contact-actions .outline-btn:hover{
+    transform:translate3d(0,-1px,0)!important;
+    color:#99245f!important;
+    background:
+      linear-gradient(135deg,#fff 0%,#fff 58%,rgba(245,133,41,.055) 76%,rgba(221,42,123,.065) 100%) padding-box,
+      linear-gradient(135deg,#f58529,#dd2a7b 43%,#8134af 72%,#515bd4) border-box!important;
+    box-shadow:0 0 0 3px rgba(221,42,123,.055),0 10px 24px rgba(131,52,175,.12)!important;
+  }
+}
+
+/* Catalog-more: tiny warm hint only on hover. */
+html[data-store-theme="light"] .catalog-more-button{
+  background:transparent!important;
+  border-color:rgba(202,145,33,.42)!important;
+}
+@media(hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] .catalog-more-button:hover{
+    background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(239,182,68,.14))!important;
+    border-color:rgba(202,145,33,.62)!important;
+    color:#8d5d0d!important;
+    box-shadow:0 8px 20px rgba(196,132,24,.07)!important;
+  }
+}
+
+/* Brands: opening and closing are the same motion in opposite directions. */
+#marcas.brands-expanded .brand-marquee-card{
+  transition:
+    transform 240ms var(--d-final-ease-in-out),
+    opacity 180ms var(--d-final-ease-out),
+    border-color 180ms ease,
+    background-color 180ms ease!important;
+}
+#marcas.brands-expanded.brands-opening .brand-marquee-card{
+  opacity:0!important;
+  transform:translate3d(30px,0,0) scale(.97)!important;
+}
+#marcas.brands-expanded.brands-closing .brand-marquee-card{
+  opacity:0!important;
+  transform:translate3d(30px,0,0) scale(.97)!important;
+}
+
+/* Footer socials: optical alignment; Facebook no longer appears clipped. */
+.footer-social-links{
+  align-items:center!important;
+}
+.footer-social-links a{
+  width:50px!important;
+  height:50px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+}
+.footer-social-links .ui-icon{
+  width:28px!important;
+  height:28px!important;
+  overflow:visible!important;
+  flex:0 0 28px!important;
+  transform:none!important;
+}
+.footer-social-links a[href*="facebook.com"] .ui-icon{
+  width:25px!important;
+  height:25px!important;
+  flex-basis:25px!important;
+  transform:translate3d(0,-.5px,0)!important;
+}
+
+/* Theme-aware mobile parity. */
+@media(max-width:700px){
+  #como-comprar .process-step-copy{
+    margin-top:26px!important;
+    min-height:0!important;
+  }
+
+  #contacto .contact-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+
+  #contacto .contact-actions .gold-btn,
+  #contacto .contact-actions .outline-btn{
+    width:100%!important;
+    min-height:48px!important;
+  }
+
+  .footer-social-links a{
+    width:42px!important;
+    height:42px!important;
+  }
+  .footer-social-links .ui-icon{
+    width:25px!important;
+    height:25px!important;
+    flex-basis:25px!important;
+  }
+  .footer-social-links a[href*="facebook.com"] .ui-icon{
+    width:23px!important;
+    height:23px!important;
+    flex-basis:23px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #marcas.brands-expanded .brand-marquee-card{
+    transform:none!important;
+    transition:opacity 160ms ease!important;
+  }
+}

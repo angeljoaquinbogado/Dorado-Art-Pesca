@@ -1,0 +1,318 @@
+/* Dorado admin finishing pass · 2026-09-29
+   Light-first admin, gold micro-details, clean stats and coupon geometry. */
+:root{
+  --adm-final-gold:#c9952b;
+  --adm-final-gold-2:#e0b34b;
+  --adm-final-line:rgba(201,149,43,.34);
+  --adm-final-ease-out:cubic-bezier(.23,1,.32,1);
+}
+
+/* The admin starts light after Ctrl+F5. Dark is a live preview only after selection. */
+html[data-admin-theme="light"] body,
+html[data-admin-theme="light"] #admin-app,
+html[data-admin-theme="light"] .app,
+html[data-admin-theme="light"] .admin-layout,
+html[data-admin-theme="light"] .workspace,
+html[data-admin-theme="light"] .shell{
+  background:#f4f0e7!important;
+  color:#20272c!important;
+}
+
+/* Gold micro-accent language across Products, Orders and Coupons. */
+.stat,
+.card,
+.form-card,
+.catalog-card,
+.orders-card{
+  position:relative!important;
+}
+
+html[data-admin-theme="light"] .stat,
+html[data-admin-theme="light"] .card,
+html[data-admin-theme="light"] .form-card,
+html[data-admin-theme="light"] .catalog-card,
+html[data-admin-theme="light"] .orders-card{
+  border:1px solid rgba(201,149,43,.24)!important;
+  box-shadow:
+    0 12px 28px rgba(23,36,45,.045),
+    0 0 24px rgba(201,149,43,.035)!important;
+}
+
+html[data-admin-theme="dark"] .stat,
+html[data-admin-theme="dark"] .card,
+html[data-admin-theme="dark"] .form-card,
+html[data-admin-theme="dark"] .catalog-card,
+html[data-admin-theme="dark"] .orders-card{
+  border:1px solid rgba(224,179,75,.20)!important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.18),
+    0 0 22px rgba(224,179,75,.025)!important;
+}
+
+/* Remove the old decorative blobs completely. */
+.stat::after,
+.stats .stat::after{
+  display:none!important;
+  content:none!important;
+}
+
+/* One thin, quiet gold line on every metric card instead. */
+.stat::before{
+  content:""!important;
+  position:absolute!important;
+  left:18px!important;
+  right:18px!important;
+  top:-1px!important;
+  height:1px!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,transparent,rgba(210,159,50,.72),transparent)!important;
+  box-shadow:0 2px 12px rgba(210,159,50,.16)!important;
+  pointer-events:none!important;
+}
+
+.orders-card::before,
+#coupons-panel .form-card::before,
+#coupons-panel .catalog-card::before,
+#products-panel .catalog-card::before{
+  content:""!important;
+  position:absolute!important;
+  left:22px!important;
+  right:22px!important;
+  top:-1px!important;
+  height:1px!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,transparent,rgba(210,159,50,.60),transparent)!important;
+  box-shadow:0 2px 14px rgba(210,159,50,.12)!important;
+  pointer-events:none!important;
+}
+
+/* Coupon section: centered, breathable, no 'grey line with text' feeling. */
+#coupons-panel{
+  padding:4px 0 34px!important;
+}
+#coupons-panel>.stats{
+  width:min(100%,1180px)!important;
+  margin:0 auto 24px!important;
+  gap:16px!important;
+}
+#coupons-panel .coupon-admin-grid{
+  width:min(100%,1180px)!important;
+  margin:0 auto!important;
+  grid-template-columns:minmax(340px,420px) minmax(0,1fr)!important;
+  gap:24px!important;
+  align-items:start!important;
+}
+#coupons-panel .form-card,
+#coupons-panel .catalog-card{
+  min-width:0!important;
+  border-radius:22px!important;
+}
+#coupons-panel .card-head{
+  margin-bottom:22px!important;
+}
+#coupons-panel .card-head>div{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:7px!important;
+}
+#coupons-panel .section-tag{
+  display:inline-flex!important;
+  align-items:center!important;
+  width:max-content!important;
+  min-height:26px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  border:1px solid rgba(201,149,43,.28)!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,rgba(201,149,43,.10),rgba(224,179,75,.05))!important;
+  color:#946a15!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  letter-spacing:.11em!important;
+}
+#coupons-panel .card-head h2{
+  margin:0!important;
+  line-height:1.16!important;
+}
+#coupons-panel .card-head p{
+  margin:0!important;
+  line-height:1.5!important;
+}
+
+/* Precise coupon field rhythm. */
+#coupons-panel .field-row{
+  gap:14px!important;
+}
+#coupons-panel .field{
+  gap:7px!important;
+  margin-bottom:15px!important;
+}
+#coupons-panel .field label{
+  margin:0!important;
+  line-height:1.2!important;
+  letter-spacing:.045em!important;
+}
+#coupons-panel .catalog-title-row{
+  align-items:flex-start!important;
+  gap:18px!important;
+}
+#coupons-panel .catalog-title-row h2,
+#coupons-panel .catalog-title-row p{
+  margin-left:0!important;
+}
+#coupons-panel .catalog-count{
+  margin-top:3px!important;
+}
+
+/* Status pills with clearer semantic color. */
+.stock-pill.stock-low{
+  background:#ffe39a!important;
+  color:#6f4d00!important;
+  border-color:#efc95b!important;
+}
+.stock-pill.stock-ok{
+  background:#ccefdc!important;
+  color:#0f6a3f!important;
+  border-color:#9ed9b9!important;
+}
+.stock-pill.stock-out{
+  background:#f8cfca!important;
+  color:#983a32!important;
+  border-color:#eaa9a1!important;
+}
+.badge.on,
+.badge.pagado{
+  background:#c8efd9!important;
+  color:#0a693d!important;
+  border-color:#97d6b4!important;
+}
+.badge.off,
+.badge.pago_rechazado,
+.badge.pago_cancelado{
+  background:#f7cbc7!important;
+  color:#99372f!important;
+  border-color:#e9a59e!important;
+}
+
+/* Dark theme versions remain readable without neon saturation. */
+html[data-admin-theme="dark"] .stock-pill.stock-low{
+  background:rgba(239,183,53,.23)!important;
+  color:#ffdc75!important;
+  border-color:rgba(239,183,53,.40)!important;
+}
+html[data-admin-theme="dark"] .stock-pill.stock-ok,
+html[data-admin-theme="dark"] .badge.on,
+html[data-admin-theme="dark"] .badge.pagado{
+  background:rgba(45,193,108,.21)!important;
+  color:#8ce8b0!important;
+  border-color:rgba(74,211,132,.36)!important;
+}
+html[data-admin-theme="dark"] .stock-pill.stock-out,
+html[data-admin-theme="dark"] .badge.off,
+html[data-admin-theme="dark"] .badge.pago_rechazado,
+html[data-admin-theme="dark"] .badge.pago_cancelado{
+  background:rgba(220,77,67,.21)!important;
+  color:#ffa39b!important;
+  border-color:rgba(230,94,84,.36)!important;
+}
+
+/* Orders: no leftover white strip; date text is always legible. */
+html[data-admin-theme="light"] #orders-panel .orders-card,
+html[data-admin-theme="light"] #orders-panel .orders-toolbar,
+html[data-admin-theme="light"] #orders-panel .orders-filterbar,
+html[data-admin-theme="light"] #orders-panel .orders-bulkbar,
+html[data-admin-theme="light"] #orders-panel .orders-table-wrap,
+html[data-admin-theme="light"] #orders-panel table,
+html[data-admin-theme="light"] #orders-panel thead,
+html[data-admin-theme="light"] #orders-panel tbody,
+html[data-admin-theme="light"] #orders-panel tr,
+html[data-admin-theme="light"] #orders-panel td{
+  background:#fff!important;
+  color:#20272c!important;
+}
+html[data-admin-theme="dark"] #orders-panel .orders-card,
+html[data-admin-theme="dark"] #orders-panel .orders-toolbar,
+html[data-admin-theme="dark"] #orders-panel .orders-filterbar,
+html[data-admin-theme="dark"] #orders-panel .orders-bulkbar,
+html[data-admin-theme="dark"] #orders-panel .orders-table-wrap,
+html[data-admin-theme="dark"] #orders-panel table,
+html[data-admin-theme="dark"] #orders-panel thead,
+html[data-admin-theme="dark"] #orders-panel tbody,
+html[data-admin-theme="dark"] #orders-panel tr,
+html[data-admin-theme="dark"] #orders-panel td{
+  background:#102531!important;
+  color:#e7edef!important;
+}
+html[data-admin-theme="dark"] #orders-panel .date-filter,
+html[data-admin-theme="dark"] #orders-panel .date-filter span,
+html[data-admin-theme="dark"] #orders-panel .date-filter input{
+  color:#dfe7e9!important;
+  -webkit-text-fill-color:#dfe7e9!important;
+}
+html[data-admin-theme="light"] #orders-panel .date-filter,
+html[data-admin-theme="light"] #orders-panel .date-filter span,
+html[data-admin-theme="light"] #orders-panel .date-filter input{
+  color:#4f5b61!important;
+  -webkit-text-fill-color:#4f5b61!important;
+}
+
+/* Product list 'more' area inherits the active theme instead of becoming a white slab. */
+html[data-admin-theme="light"] #products-panel .admin-products-more{
+  background:#fff!important;
+  border-top-color:#ece5db!important;
+}
+html[data-admin-theme="dark"] #products-panel .admin-products-more{
+  background:#102531!important;
+  border-top-color:rgba(255,255,255,.08)!important;
+}
+
+/* Subtle gold details on the three main sections. */
+#products-panel .catalog-toolbar,
+#orders-panel .orders-toolbar,
+#coupons-panel .catalog-toolbar{
+  border-bottom-color:rgba(201,149,43,.18)!important;
+}
+#products-panel .catalog-title-row h2,
+#orders-panel .orders-toolbar h2,
+#coupons-panel .catalog-title-row h2{
+  position:relative!important;
+}
+#products-panel .catalog-title-row h2::after,
+#orders-panel .orders-toolbar h2::after,
+#coupons-panel .catalog-title-row h2::after{
+  content:""!important;
+  display:block!important;
+  width:28px!important;
+  height:2px!important;
+  margin-top:7px!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,#c9952b,rgba(201,149,43,.10))!important;
+}
+
+/* Mobile/tablet parity. */
+@media(max-width:1180px){
+  #coupons-panel .coupon-admin-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+@media(max-width:700px){
+  #coupons-panel{
+    padding-inline:0!important;
+  }
+  #coupons-panel>.stats,
+  #coupons-panel .coupon-admin-grid{
+    width:100%!important;
+    margin-inline:0!important;
+  }
+  #coupons-panel .coupon-admin-grid{
+    gap:14px!important;
+  }
+  #coupons-panel .field-row{
+    gap:10px!important;
+  }
+  .stat::before{
+    left:14px!important;
+    right:14px!important;
+  }
+}

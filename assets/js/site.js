@@ -2541,7 +2541,7 @@ function actualizarVistaTodasMarcas(force=null){
         section.classList.add("brands-closing");
         brandsCollapseTimer=window.setTimeout(()=>{
             section.classList.remove("brands-expanded","brands-closing");
-        },220);
+        },260);
     }
 
     button.setAttribute("aria-expanded",String(next));
