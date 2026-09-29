@@ -1,0 +1,162 @@
+/* Dorado Admin — layout stability final pass · 2026-09-29
+   Loaded last to guarantee coupon separation and stable mobile scrolling. */
+
+/* =========================================================
+   CUPONES — separación real entre formulario y listado
+   ========================================================= */
+#coupons-panel .coupon-admin-grid{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  gap:38px!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+#coupons-panel #coupon-form,
+#coupons-panel .coupon-admin-grid > .catalog-card{
+  position:relative!important;
+  inset:auto!important;
+  float:none!important;
+  clear:both!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  transform:none!important;
+  margin:0!important;
+}
+
+#coupons-panel #coupon-form{
+  order:1!important;
+  overflow:visible!important;
+  z-index:1!important;
+}
+
+#coupons-panel .coupon-admin-grid > .catalog-card{
+  order:2!important;
+  z-index:0!important;
+}
+
+/* El botón de guardar siempre forma parte del alto del formulario. */
+#coupons-panel #coupon-form > .form-actions{
+  position:static!important;
+  inset:auto!important;
+  float:none!important;
+  width:100%!important;
+  margin-top:8px!important;
+  margin-bottom:0!important;
+  padding:0!important;
+  transform:none!important;
+}
+
+@media(min-width:1181px){
+  #coupons-panel #coupon-form{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    column-gap:16px!important;
+    row-gap:14px!important;
+    align-items:end!important;
+  }
+
+  #coupons-panel #coupon-form .card-head,
+  #coupons-panel #coupon-form > .message,
+  #coupons-panel #coupon-form > .form-actions{
+    grid-column:1 / -1!important;
+  }
+
+  #coupons-panel #coupon-form > .field-row{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:16px!important;
+    margin:0!important;
+  }
+
+  #coupons-panel #coupon-form > .field:first-of-type{
+    grid-column:span 2!important;
+  }
+}
+
+@media(min-width:900px) and (max-width:1180px){
+  #coupons-panel #coupon-form{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px 18px!important;
+  }
+
+  #coupons-panel #coupon-form .card-head,
+  #coupons-panel #coupon-form > .field,
+  #coupons-panel #coupon-form > .field-row,
+  #coupons-panel #coupon-form > .message,
+  #coupons-panel #coupon-form > .form-actions{
+    grid-column:1 / -1!important;
+  }
+}
+
+@media(max-width:899px){
+  #coupons-panel .coupon-admin-grid{
+    gap:20px!important;
+  }
+
+  #coupons-panel #coupon-form{
+    display:block!important;
+  }
+
+  #coupons-panel #coupon-form > .field-row{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:0!important;
+  }
+}
+
+/* =========================================================
+   PRODUCT EDITOR MOBILE — scroll estable
+   content-visibility en tablas puede recalcular alturas mientras
+   el usuario baja por un formulario largo; lo desactivamos en móvil.
+   ========================================================= */
+@media(max-width:700px){
+  html,
+  body{
+    scroll-behavior:auto!important;
+    overflow-anchor:auto!important;
+  }
+
+  #products-panel,
+  #products-panel .grid,
+  #products-panel #product-form{
+    overflow-anchor:auto!important;
+  }
+
+  #products-panel #product-form{
+    position:relative!important;
+    top:auto!important;
+    inset:auto!important;
+    transform:none!important;
+    scroll-margin-top:12px!important;
+    contain:none!important;
+    content-visibility:visible!important;
+  }
+
+  #products-table,
+  #orders-table,
+  #coupons-table{
+    contain:none!important;
+  }
+
+  #products-table tr,
+  #orders-table tr,
+  #coupons-table tr{
+    content-visibility:visible!important;
+    contain:none!important;
+    contain-intrinsic-size:auto!important;
+  }
+
+  /* Evita que el teclado/foco cambie de golpe la posición del editor. */
+  #products-panel #product-form input,
+  #products-panel #product-form textarea,
+  #products-panel #product-form select,
+  #products-panel #product-form button{
+    scroll-margin-block:18px!important;
+  }
+}
