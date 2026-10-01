@@ -833,12 +833,12 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,activo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         let d=await r.json().catch(()=>[]);
         if(!r.ok){
-            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo&order=id.asc",{
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
                 headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
             });
             d=await r.json().catch(()=>[]);
@@ -1500,6 +1500,10 @@ function resetProductForm(){
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
     document.getElementById("product-discount").value="0";
+    document.getElementById("product-min-stock").value="0";
+    document.getElementById("product-cost").value="";
+    document.getElementById("product-supplier").value="";
+    document.getElementById("product-barcode").value="";
     document.getElementById("product-form-title").textContent="Nuevo producto";
     document.getElementById("product-save").textContent="GUARDAR PRODUCTO";
     document.getElementById("product-cancel").classList.add("hidden");
@@ -1567,6 +1571,10 @@ function editProduct(id){
     document.getElementById("product-price").value=Number(p.precio)||0;
     document.getElementById("product-discount").value=Math.max(0,Number(p.descuento_porcentaje)||0);
     document.getElementById("product-stock").value=Number(p.stock)||0;
+    document.getElementById("product-min-stock").value=Math.max(0,Number(p.stock_minimo)||0);
+    document.getElementById("product-cost").value=p.costo===null||p.costo===undefined?"":Number(p.costo);
+    document.getElementById("product-supplier").value=p.proveedor||"";
+    document.getElementById("product-barcode").value=p.codigo_barras||"";
     document.getElementById("product-category").value=p.categoria||"";
     document.getElementById("product-brand").value=p.marca||"";
     document.getElementById("product-image").value="";
@@ -1648,6 +1656,10 @@ async function saveProduct(event){
             precio:Number(document.getElementById("product-price").value),
             descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
+            stock_minimo:Math.max(0,Math.floor(Number(document.getElementById("product-min-stock").value)||0)),
+            costo:String(document.getElementById("product-cost").value||"").trim()===""?null:Math.max(0,Number(document.getElementById("product-cost").value)||0),
+            proveedor:String(document.getElementById("product-supplier").value||"").trim().slice(0,160)||null,
+            codigo_barras:String(document.getElementById("product-barcode").value||"").trim().slice(0,120)||null,
             categoria:normalizeCategoryName(document.getElementById("product-category").value),
             marca:normalizeBrandName(document.getElementById("product-brand").value),
             imagen:imagenes[0],
@@ -2402,6 +2414,144 @@ async function deleteCoupon(id,code){
     }catch(error){showToast(error?.message||"No se pudo eliminar.","error");}
 }
 
+
+let globalStockIntegrations=[];
+
+async function globalStockAdminRequest(options={}){
+    await refreshSessionIfNeeded();
+    const response=await fetch("/api/global-stock-integrations",{
+        ...options,
+        headers:{
+            Authorization:`Bearer ${session.access_token}`,
+            Accept:"application/json",
+            ...(options.body?{"Content-Type":"application/json"}:{}),
+            ...(options.headers||{})
+        }
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data?.error||"No se pudo administrar la integración con Global Stock.");
+    return data;
+}
+
+function renderGlobalStockIntegrations(){
+    const root=document.getElementById("global-stock-integrations");
+    if(!root)return;
+
+    if(!globalStockIntegrations.length){
+        root.className="";
+        root.innerHTML='<div style="padding:20px;color:var(--muted)">No hay conexiones activas. Creá un token cuando quieras vincular Dorado con Global Stock.</div>';
+        return;
+    }
+
+    root.className="";
+    root.innerHTML=globalStockIntegrations.map(item=>{
+        const created=item.created_at?new Date(item.created_at).toLocaleString("es-AR"):"—";
+        const used=item.last_used_at?new Date(item.last_used_at).toLocaleString("es-AR"):"Todavía no usado";
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-top:1px solid var(--line)">
+            <div style="min-width:0">
+              <strong style="display:block">${esc(item.name||"Global Stock")}</strong>
+              <span style="display:block;margin-top:4px;color:var(--muted);font-size:12px">Token ${esc(item.token_prefix||"")}… · creado ${esc(created)}</span>
+              <span style="display:block;margin-top:3px;color:var(--muted);font-size:12px">Último uso: ${esc(used)}</span>
+            </div>
+            <button class="danger" type="button" data-global-stock-revoke="${esc(item.id)}">REVOCAR</button>
+          </div>
+        `;
+    }).join("");
+}
+
+async function loadGlobalStockIntegrations(){
+    const root=document.getElementById("global-stock-integrations");
+    if(root){
+        root.className="loading";
+        root.textContent="Cargando conexiones...";
+    }
+
+    try{
+        const data=await globalStockAdminRequest();
+        globalStockIntegrations=Array.isArray(data?.integrations)?data.integrations:[];
+        renderGlobalStockIntegrations();
+    }catch(error){
+        if(root){
+            root.className="";
+            root.innerHTML=`<div style="padding:20px;color:#d33">${esc(error?.message||"No se pudieron cargar las conexiones.")}</div>`;
+        }
+    }
+}
+
+async function createGlobalStockIntegration(){
+    const button=document.getElementById("global-stock-create-token");
+    if(!button)return;
+    const original=button.textContent;
+    button.disabled=true;
+    button.textContent="CREANDO…";
+    msg("global-stock-message","");
+
+    try{
+        const data=await globalStockAdminRequest({
+            method:"POST",
+            body:JSON.stringify({name:"Global Stock · Dorado"})
+        });
+
+        const token=String(data?.token||"");
+        if(!token)throw new Error("El servidor no devolvió el token.");
+
+        const panel=document.getElementById("global-stock-token-panel");
+        const input=document.getElementById("global-stock-token");
+        if(input)input.value=token;
+        if(panel)panel.hidden=false;
+
+        msg(
+            "global-stock-message",
+            "Conexión creada. Copiá el token y pegalo en Global Stock. El token completo no vuelve a mostrarse.",
+            "ok"
+        );
+        await loadGlobalStockIntegrations();
+    }catch(error){
+        msg("global-stock-message",error?.message||"No se pudo crear el token.","error");
+    }finally{
+        button.disabled=false;
+        button.textContent=original;
+    }
+}
+
+async function copyGlobalStockToken(){
+    const input=document.getElementById("global-stock-token");
+    const value=String(input?.value||"").trim();
+    if(!value)return;
+
+    try{
+        await navigator.clipboard.writeText(value);
+        showToast("Token de Global Stock copiado.");
+    }catch{
+        input?.select();
+        document.execCommand("copy");
+        showToast("Token de Global Stock copiado.");
+    }
+}
+
+async function revokeGlobalStockIntegration(id){
+    const integration=globalStockIntegrations.find(item=>String(item.id)===String(id));
+    const ok=await confirmAction({
+        title:"Revocar conexión",
+        text:`Vas a quitar el acceso de “${integration?.name||"Global Stock"}”. Global Stock dejará de poder leer o modificar stock de Dorado con ese token.`,
+        confirmText:"REVOCAR",
+        danger:true
+    });
+    if(!ok)return;
+
+    try{
+        await globalStockAdminRequest({
+            method:"DELETE",
+            body:JSON.stringify({id})
+        });
+        await loadGlobalStockIntegrations();
+        showToast("Conexión revocada.");
+    }catch(error){
+        showToast(error?.message||"No se pudo revocar la conexión.","error");
+    }
+}
+
 async function refreshAll(){
     if(refreshPromise)return refreshPromise;
 
@@ -2422,7 +2572,8 @@ async function refreshAll(){
             loadProducts(),
             loadOrders(),
             loadCoupons(),
-            loadAdminSiteThemeSetting()
+            loadAdminSiteThemeSetting(),
+            loadGlobalStockIntegrations()
         ]);
 
         const failures=results.filter(result=>result.status==="rejected");
@@ -2621,6 +2772,14 @@ document.getElementById("recovery-update-form")?.addEventListener("submit",async
     }
 });
 
+document.getElementById("global-stock-create-token")?.addEventListener("click",createGlobalStockIntegration);
+document.getElementById("global-stock-copy-token")?.addEventListener("click",copyGlobalStockToken);
+document.getElementById("global-stock-integrations")?.addEventListener("click",event=>{
+    const button=event.target.closest?.("[data-global-stock-revoke]");
+    if(!button)return;
+    void revokeGlobalStockIntegration(button.dataset.globalStockRevoke);
+});
+
 document.getElementById("product-form").addEventListener("submit",saveProduct);
 document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
 document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
@@ -2665,6 +2824,8 @@ document.querySelectorAll(".tab").forEach(button=>{
             try{await loadOrders();}catch(e){showToast(e.message||"No se pudieron cargar los pedidos.","error");}
         }else if(button.dataset.tab==="coupons"){
             try{await loadCoupons();}catch(e){showToast(e.message||"No se pudieron cargar los cupones.","error");}
+        }else if(button.dataset.tab==="global-stock"){
+            try{await loadGlobalStockIntegrations();}catch(e){showToast(e.message||"No se pudo cargar Global Stock.","error");}
         }
     });
 });
