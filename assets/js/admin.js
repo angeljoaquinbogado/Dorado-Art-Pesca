@@ -67,19 +67,27 @@ function applyAdminPanelTheme(value,{animate=false,persist=false}={}){
     const meta=document.getElementById("admin-theme-color");
     if(meta)meta.setAttribute("content",resolved==="dark"?"#0c1a24":"#f7f4ec");
 
+    syncAdminPanelThemeControls();
 }
 
+function syncAdminPanelThemeControls(){
+    const resolved=document.documentElement.dataset.adminTheme==="dark"?"dark":"light";
+    document.querySelectorAll("[data-admin-panel-theme]").forEach(button=>{
+        const active=button.dataset.adminPanelTheme===resolved;
+        button.classList.toggle("active",active);
+        button.setAttribute("aria-checked",String(active));
+    });
+    const trigger=document.getElementById("store-theme-settings-button");
+    if(trigger)trigger.textContent=`TEMA PANEL · ${resolved==="dark"?"OSCURO":"CLARO"}`;
+}
 
 function syncAdminSiteThemeControls(){
     const value=normalizeAdminSiteTheme(adminSiteThemeDefault);
-    const resolved=value==="dark"?"dark":"light";
     document.querySelectorAll("[data-site-default-theme]").forEach(button=>{
         const active=button.dataset.siteDefaultTheme===value;
         button.classList.toggle("active",active);
         button.setAttribute("aria-checked",String(active));
     });
-    const trigger=document.getElementById("store-theme-settings-button");
-    if(trigger)trigger.textContent=`TEMA WEB · ${resolved==="dark"?"OSCURO":"CLARO"}`;
 }
 
 async function loadAdminSiteThemeSetting(){
@@ -101,7 +109,6 @@ async function saveAdminSiteThemeSetting(value){
     const next=normalizeAdminSiteTheme(value);
     const previous=adminSiteThemeDefault;
     adminSiteThemeDefault=next;
-    applyAdminPanelTheme(next,{animate:true,persist:true});
     syncAdminSiteThemeControls();
 
     const response=await sb("/rest/v1/site_settings?id=eq.1",{
@@ -115,7 +122,6 @@ async function saveAdminSiteThemeSetting(value){
     const rows=await response.json().catch(()=>[]);
     if(!response.ok||!Array.isArray(rows)||!rows.length){
         adminSiteThemeDefault=previous;
-        applyAdminPanelTheme(previous,{animate:true,persist:true});
         syncAdminSiteThemeControls();
         throw new Error("No se pudo guardar el tema predeterminado de la web.");
     }
@@ -123,17 +129,14 @@ async function saveAdminSiteThemeSetting(value){
     const resolved=next==="dark"?"dark":"light";
     try{
         localStorage.setItem("doradoStoreSiteDefaultTheme",resolved);
-        // En el navegador del administrador, volver a "predeterminado"
-        // permite comprobar inmediatamente el cambio global en la tienda.
-        localStorage.setItem("doradoStoreThemePreference","default");
     }catch{}
 
     showToast(
         next==="dark"
-            ?"Tema predeterminado de la tienda: oscuro."
+            ?"Tema general de la tienda: oscuro."
             : next==="light"
-                ?"Tema predeterminado de la tienda: claro."
-                :"Tema restablecido al predeterminado claro."
+                ?"Tema general de la tienda: claro."
+                :"Tema general restablecido al predeterminado claro."
     );
 }
 
@@ -2987,6 +2990,15 @@ document.getElementById("store-theme-settings-button")?.addEventListener("click"
     event.stopPropagation();
     const wrap=document.getElementById("store-theme-admin-wrap");
     setAdminStoreThemePanel(!wrap?.classList.contains("is-open"));
+});
+document.querySelectorAll("[data-admin-panel-theme]").forEach(button=>{
+    button.addEventListener("click",event=>{
+        event.stopPropagation();
+        const value=button.dataset.adminPanelTheme==="dark"?"dark":"light";
+        applyAdminPanelTheme(value,{animate:true,persist:true});
+        syncAdminPanelThemeControls();
+        showToast(value==="dark"?"Tema del panel: oscuro.":"Tema del panel: claro.");
+    });
 });
 document.querySelectorAll("[data-site-default-theme]").forEach(button=>{
     button.addEventListener("click",async event=>{
