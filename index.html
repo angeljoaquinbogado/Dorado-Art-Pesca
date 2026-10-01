@@ -546,9 +546,9 @@
 <h2>VENÍ A <span>CONOCERNOS.</span></h2>
 <p>Estamos en Las Heras 1680, Carupá, San Fernando. Consultanos por stock, asesoramiento, retiros y entregas, o abrí la ubicación exacta en Google Maps.</p>
 <div class="contact-list">
-<a class="contact-line" href="https://maps.app.goo.gl/jWDsmRDAwD2SeWJS8" target="_blank" rel="noopener"><span class="contact-icon"><svg class="ui-icon"><use href="#i-pin"></use></svg></span><div><small>Ubicación</small><strong>Las Heras 1680 · Carupá, San Fernando</strong><span class="contact-detail">Buenos Aires · B1646</span></div></a>
-<a class="contact-line" href="tel:+5491168070039"><span class="contact-icon"><svg class="ui-icon"><use href="#i-phone"></use></svg></span><div><small>Teléfono</small><strong>+54 9 11 6807-0039</strong></div></a>
-<div class="contact-line contact-line-static"><span class="contact-icon"><svg class="ui-icon"><use href="#i-clock"></use></svg></span><div><small>Horarios</small><strong>Lun a vie · 09:00–13:00 y 16:00–20:00</strong><span class="contact-detail">Sáb · 09:00–20:00 · Dom cerrado</span><span class="store-open-status" id="store-open-status" aria-live="polite"></span></div></div>
+<a class="contact-line" href="https://maps.app.goo.gl/jWDsmRDAwD2SeWJS8" target="_blank" rel="noopener"><span class="contact-icon"><svg class="ui-icon"><use href="#i-pin"></use></svg></span><div><small>Ubicación</small><strong id="store-contact-address">Las Heras 1680 · Carupá, San Fernando</strong><span class="contact-detail" id="store-contact-region">Buenos Aires · B1646</span></div></a>
+<a class="contact-line" href="tel:+5491168070039"><span class="contact-icon"><svg class="ui-icon"><use href="#i-phone"></use></svg></span><div><small>Teléfono</small><strong id="store-contact-phone">+54 9 11 6807-0039</strong></div></a>
+<div class="contact-line contact-line-static"><span class="contact-icon"><svg class="ui-icon"><use href="#i-clock"></use></svg></span><div><small>Horarios</small><strong id="store-hours-weekdays">Lun a vie · 09:00–13:00 y 16:00–20:00</strong><span class="contact-detail" id="store-hours-weekend">Sáb · 09:00–20:00 · Dom cerrado</span><span class="store-open-status" id="store-open-status" aria-live="polite"></span></div></div>
 <div class="contact-line contact-line-static"><span class="contact-icon"><svg class="ui-icon"><use href="#i-headset"></use></svg></span><div><small>Atención</small><strong>Maxi y Dani</strong><span class="contact-detail">Dorado Artículos de Pesca</span></div></div>
 </div>
 <div class="contact-actions">
@@ -638,7 +638,7 @@
 <p>Donde empieza tu próxima pesca. Variedad, asesoramiento y una compra clara.</p>
 <div class="footer-badges">
 <span><svg class="ui-icon"><use href="#i-shield"></use></svg> Compra segura</span>
-<span><svg class="ui-icon"><use href="#i-pin"></use></svg> Las Heras 1680 · San Fernando</span>
+<span><svg class="ui-icon"><use href="#i-pin"></use></svg> <span id="footer-store-address-short">Las Heras 1680 · San Fernando</span></span>
 </div>
 </div>
 <div class="footer-column">
@@ -666,7 +666,7 @@
 </div>
 <div class="footer-column footer-contact">
 <h4>Contacto</h4>
-<a href="tel:+5491168070039"><svg class="ui-icon"><use href="#i-phone"></use></svg> +54 9 11 6807-0039</a>
+<a href="tel:+5491168070039" id="footer-store-phone-link"><svg class="ui-icon"><use href="#i-phone"></use></svg> <span id="footer-store-phone">+54 9 11 6807-0039</span></a>
 <a href="https://wa.me/5491168070039" rel="noopener" target="_blank"><svg class="ui-icon"><use href="#i-whatsapp"></use></svg> WhatsApp</a>
 
 <div class="footer-theme-control" id="footer-theme-control">
@@ -702,7 +702,7 @@
 
 <div class="footer-legal-bar" aria-label="Información legal del comercio">
 <span class="footer-rights">© <span id="copyright-year">2026</span> Dorado Artículos de Pesca · Todos los derechos reservados.</span>
-<span class="footer-address">Las Heras 1680 · San Fernando · Buenos Aires</span>
+<span class="footer-address" id="footer-store-address">Las Heras 1680 · San Fernando · Buenos Aires</span>
 </div>
 </footer>
 <!-- =========================
@@ -1178,7 +1178,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261001-ownerfix2"></script>
+<script src="assets/js/site.js?v=20261001-commercial4"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
