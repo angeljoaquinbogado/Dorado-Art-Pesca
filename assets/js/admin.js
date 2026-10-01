@@ -15,6 +15,29 @@ let recoveryAccessToken = "";
 let recoveryRefreshToken = "";
 
 let adminSiteThemeDefault="light";
+let adminBusinessSettings={
+    store_name:"Dorado Artículos de Pesca",
+    whatsapp_phone:"5491168070039",
+    phone_display:"+54 9 11 6807-0039",
+    address_line:"Las Heras 1680",
+    address_area:"Carupá, San Fernando",
+    address_province:"Buenos Aires",
+    postal_code:"B1646",
+    maps_url:"https://maps.app.goo.gl/jWDsmRDAwD2SeWJS8",
+    legal_holder:"Maximiliano Adrian Villarino",
+    tax_id:"20-25635728-4",
+    default_stock_control:false,
+    checkout_whatsapp_enabled:true,
+    checkout_transfer_enabled:true,
+    checkout_cash_enabled:true,
+    checkout_mp_enabled:true,
+    checkout_card_enabled:true,
+    business_hours:{
+        mon_fri:[["09:00","13:00"],["16:00","20:00"]],
+        sat:[["09:00","20:00"]],
+        sun:[]
+    }
+};
 const ADMIN_PANEL_THEME_KEY="doradoAdminPanelTheme";
 
 function normalizeAdminSiteTheme(value){
@@ -124,6 +147,143 @@ function setAdminStoreThemePanel(open){
     panel.setAttribute("aria-hidden",String(!open));
 }
 
+
+function commercialSettingValue(id,value=""){
+    const el=document.getElementById(id);
+    if(el)el.value=value??"";
+}
+function commercialSettingChecked(id,value=false){
+    const el=document.getElementById(id);
+    if(el)el.checked=Boolean(value);
+}
+function validTimePair(open,close){
+    return /^\d{2}:\d{2}$/.test(String(open||""))&&/^\d{2}:\d{2}$/.test(String(close||""));
+}
+function syncSundaySettings(){
+    const enabled=Boolean(document.getElementById("settings-sun-enabled")?.checked);
+    const row=document.getElementById("settings-sunday-hours");
+    if(row){
+        row.hidden=!enabled;
+        row.querySelectorAll("input").forEach(input=>input.disabled=!enabled);
+    }
+}
+function renderAdminBusinessSettings(){
+    const b=adminBusinessSettings||{};
+    commercialSettingValue("settings-store-name",b.store_name);
+    commercialSettingValue("settings-whatsapp",b.whatsapp_phone);
+    commercialSettingValue("settings-phone-display",b.phone_display);
+    commercialSettingValue("settings-address",b.address_line);
+    commercialSettingValue("settings-area",b.address_area);
+    commercialSettingValue("settings-province",b.address_province);
+    commercialSettingValue("settings-postal-code",b.postal_code);
+    commercialSettingValue("settings-maps-url",b.maps_url);
+    commercialSettingValue("settings-legal-holder",b.legal_holder);
+    commercialSettingValue("settings-tax-id",b.tax_id);
+    commercialSettingChecked("settings-default-stock-control",b.default_stock_control);
+    commercialSettingChecked("settings-checkout-whatsapp",b.checkout_whatsapp_enabled!==false);
+    commercialSettingChecked("settings-checkout-transfer",b.checkout_transfer_enabled!==false);
+    commercialSettingChecked("settings-checkout-cash",b.checkout_cash_enabled!==false);
+    commercialSettingChecked("settings-checkout-mp",b.checkout_mp_enabled!==false);
+    commercialSettingChecked("settings-checkout-card",b.checkout_card_enabled!==false);
+
+    const hours=b.business_hours&&typeof b.business_hours==="object"?b.business_hours:{};
+    const weekday=Array.isArray(hours.mon_fri)?hours.mon_fri:[];
+    const sat=Array.isArray(hours.sat)?hours.sat:[];
+    const sun=Array.isArray(hours.sun)?hours.sun:[];
+    commercialSettingValue("settings-weekday-am-open",weekday?.[0]?.[0]||"09:00");
+    commercialSettingValue("settings-weekday-am-close",weekday?.[0]?.[1]||"13:00");
+    commercialSettingValue("settings-weekday-pm-open",weekday?.[1]?.[0]||"16:00");
+    commercialSettingValue("settings-weekday-pm-close",weekday?.[1]?.[1]||"20:00");
+    commercialSettingValue("settings-sat-open",sat?.[0]?.[0]||"09:00");
+    commercialSettingValue("settings-sat-close",sat?.[0]?.[1]||"20:00");
+    commercialSettingChecked("settings-sun-enabled",sun.length>0);
+    commercialSettingValue("settings-sun-open",sun?.[0]?.[0]||"09:00");
+    commercialSettingValue("settings-sun-close",sun?.[0]?.[1]||"13:00");
+    syncSundaySettings();
+}
+async function loadAdminBusinessSettings(){
+    const select=[
+        "store_name","whatsapp_phone","phone_display","address_line","address_area",
+        "address_province","postal_code","maps_url","legal_holder","tax_id",
+        "default_stock_control","checkout_whatsapp_enabled","checkout_transfer_enabled",
+        "checkout_cash_enabled","checkout_mp_enabled","checkout_card_enabled","business_hours"
+    ].join(",");
+    const response=await sb("/rest/v1/site_settings?id=eq.1&select="+encodeURIComponent(select));
+    const rows=await response.json().catch(()=>[]);
+    if(!response.ok)throw new Error("No se pudo cargar la configuración comercial.");
+    if(rows?.[0])adminBusinessSettings={...adminBusinessSettings,...rows[0]};
+    renderAdminBusinessSettings();
+    return adminBusinessSettings;
+}
+function readAdminBusinessSettingsForm(){
+    const digits=String(document.getElementById("settings-whatsapp")?.value||"").replace(/\D/g,"").slice(0,18);
+    if(digits.length<8)throw new Error("Revisá el número de WhatsApp.");
+
+    const amOpen=document.getElementById("settings-weekday-am-open")?.value||"";
+    const amClose=document.getElementById("settings-weekday-am-close")?.value||"";
+    const pmOpen=document.getElementById("settings-weekday-pm-open")?.value||"";
+    const pmClose=document.getElementById("settings-weekday-pm-close")?.value||"";
+    const satOpen=document.getElementById("settings-sat-open")?.value||"";
+    const satClose=document.getElementById("settings-sat-close")?.value||"";
+    if(!validTimePair(amOpen,amClose)||!validTimePair(pmOpen,pmClose)||!validTimePair(satOpen,satClose)){
+        throw new Error("Completá correctamente los horarios de lunes a sábado.");
+    }
+
+    const sunEnabled=Boolean(document.getElementById("settings-sun-enabled")?.checked);
+    const sunOpen=document.getElementById("settings-sun-open")?.value||"";
+    const sunClose=document.getElementById("settings-sun-close")?.value||"";
+    if(sunEnabled&&!validTimePair(sunOpen,sunClose))throw new Error("Completá el horario del domingo.");
+
+    return {
+        store_name:String(document.getElementById("settings-store-name")?.value||"").trim().slice(0,120)||"Dorado Artículos de Pesca",
+        whatsapp_phone:digits,
+        phone_display:String(document.getElementById("settings-phone-display")?.value||"").trim().slice(0,40),
+        address_line:String(document.getElementById("settings-address")?.value||"").trim().slice(0,160),
+        address_area:String(document.getElementById("settings-area")?.value||"").trim().slice(0,120),
+        address_province:String(document.getElementById("settings-province")?.value||"").trim().slice(0,100),
+        postal_code:String(document.getElementById("settings-postal-code")?.value||"").trim().slice(0,20),
+        maps_url:String(document.getElementById("settings-maps-url")?.value||"").trim().slice(0,500),
+        legal_holder:String(document.getElementById("settings-legal-holder")?.value||"").trim().slice(0,160),
+        tax_id:String(document.getElementById("settings-tax-id")?.value||"").trim().slice(0,30),
+        default_stock_control:Boolean(document.getElementById("settings-default-stock-control")?.checked),
+        checkout_whatsapp_enabled:Boolean(document.getElementById("settings-checkout-whatsapp")?.checked),
+        checkout_transfer_enabled:Boolean(document.getElementById("settings-checkout-transfer")?.checked),
+        checkout_cash_enabled:Boolean(document.getElementById("settings-checkout-cash")?.checked),
+        checkout_mp_enabled:Boolean(document.getElementById("settings-checkout-mp")?.checked),
+        checkout_card_enabled:Boolean(document.getElementById("settings-checkout-card")?.checked),
+        business_hours:{
+            mon_fri:[[amOpen,amClose],[pmOpen,pmClose]],
+            sat:[[satOpen,satClose]],
+            sun:sunEnabled?[[sunOpen,sunClose]]:[]
+        },
+        updated_at:new Date().toISOString()
+    };
+}
+async function saveAdminBusinessSettings(event){
+    event?.preventDefault();
+    const buttons=Array.from(document.querySelectorAll('#commercial-settings-form button[type="submit"]'));
+    buttons.forEach(button=>button.disabled=true);
+    msg("commercial-settings-message","");
+    try{
+        const payload=readAdminBusinessSettingsForm();
+        const response=await sb("/rest/v1/site_settings?id=eq.1",{
+            method:"PATCH",
+            headers:{Prefer:"return=representation"},
+            body:JSON.stringify(payload)
+        });
+        const rows=await response.json().catch(()=>[]);
+        if(!response.ok||!rows?.length)throw new Error("No se pudo guardar la configuración.");
+        adminBusinessSettings={...adminBusinessSettings,...rows[0]};
+        renderAdminBusinessSettings();
+        msg("commercial-settings-message","Configuración guardada y lista para la tienda pública.","ok");
+        showToast("Configuración comercial guardada.");
+    }catch(error){
+        msg("commercial-settings-message",error.message||"No se pudo guardar la configuración.","error");
+        showToast(error.message||"No se pudo guardar la configuración.","error");
+    }finally{
+        buttons.forEach(button=>button.disabled=false);
+    }
+}
 
 const money = new Intl.NumberFormat("es-AR", {
     style:"currency",
@@ -1518,7 +1678,7 @@ function resetProductForm(){
     if(categoryNew)categoryNew.value="";
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
-    setProductStockControl(false);
+    setProductStockControl(Boolean(adminBusinessSettings?.default_stock_control));
     document.getElementById("product-discount").value="0";
     document.getElementById("product-min-stock").value="0";
     document.getElementById("product-cost").value="";
@@ -2595,6 +2755,7 @@ async function refreshAll(){
             loadOrders(),
             loadCoupons(),
             loadAdminSiteThemeSetting(),
+            loadAdminBusinessSettings(),
             loadGlobalStockIntegrations()
         ]);
 
@@ -2716,6 +2877,7 @@ document.getElementById("login-form").addEventListener("submit",async e=>{
         showApp();
         handleGoogleBusinessCallbackResult();
         try{await loadAdminSiteThemeSetting();}catch(error){console.warn(error);}
+        try{await loadAdminBusinessSettings();}catch(error){console.warn(error);}
         await loadProducts();
         await loadCategories();
     }catch(err){
@@ -2808,6 +2970,8 @@ document.getElementById("product-stock-toggle")?.addEventListener("click",()=>{
     setProductStockControl(!active);
 });
 setProductStockControl(false);
+document.getElementById("commercial-settings-form")?.addEventListener("submit",saveAdminBusinessSettings);
+document.getElementById("settings-sun-enabled")?.addEventListener("change",syncSundaySettings);
 document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
 document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
 document.getElementById("coupon-code")?.addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,"");});
@@ -2851,6 +3015,8 @@ document.querySelectorAll(".tab").forEach(button=>{
             try{await loadOrders();}catch(e){showToast(e.message||"No se pudieron cargar los pedidos.","error");}
         }else if(button.dataset.tab==="coupons"){
             try{await loadCoupons();}catch(e){showToast(e.message||"No se pudieron cargar los cupones.","error");}
+        }else if(button.dataset.tab==="settings"){
+            try{await loadAdminBusinessSettings();}catch(e){showToast(e.message||"No se pudo cargar la configuración.","error");}
         }else if(button.dataset.tab==="global-stock"){
             try{await loadGlobalStockIntegrations();}catch(e){showToast(e.message||"No se pudo cargar Global Stock.","error");}
         }
@@ -3291,6 +3457,8 @@ document.addEventListener("keydown",e=>{
         }
         showApp();
         handleGoogleBusinessCallbackResult();
+        try{await loadAdminSiteThemeSetting();}catch(error){console.warn(error);}
+        try{await loadAdminBusinessSettings();}catch(error){console.warn(error);}
         await loadProducts();
         await loadCategories();
     }catch(e){
