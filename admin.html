@@ -217,6 +217,9 @@
         <button class="tab" data-tab="coupons" type="button">
           <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M9 7v10M15 7v10M7 12h10"/></svg><span>CUPONES</span>
         </button>
+        <button class="tab" data-tab="global-stock" type="button">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M8 12h8M12 8v8"/></svg><span>GLOBAL STOCK</span>
+        </button>
       </nav>
       <div class="side-spacer"></div>
       <a class="store-link" href="/" target="_blank" rel="noopener">
@@ -318,6 +321,10 @@
                   <div class="field"><label for="product-price">PRECIO DE LISTA (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
                   <div class="field"><label for="product-discount">DESCUENTO (%)</label><input id="product-discount" type="number" min="0" max="90" step="1" value="0" placeholder="0"><div class="file-help">0 = sin descuento. Máximo 90%.</div></div>
                 </div>
+                <div class="field-row">
+                  <div class="field"><label for="product-cost">COSTO UNITARIO REAL (ARS)</label><input id="product-cost" type="number" min="0" step="0.01" placeholder="Dejalo vacío si todavía no lo conocés"><div class="file-help">Se usa para margen y rentabilidad en Global Stock. Nunca se calcula de forma ficticia.</div></div>
+                  <div class="field"><label for="product-min-stock">STOCK MÍNIMO</label><input id="product-min-stock" type="number" min="0" step="1" value="0" placeholder="0"><div class="file-help">Nivel a partir del cual Global Stock sugiere reposición.</div></div>
+                </div>
                                 <div class="field-row stock-category-row">
                   <div class="field stock-field"><label for="product-stock">STOCK</label><input id="product-stock" type="number" min="0" step="1" required placeholder="10"></div>
                   <div class="field category-admin-field">
@@ -347,6 +354,10 @@
                       <button id="category-delete-all" class="secondary category-delete-all" type="button" disabled>ELIMINAR TODAS</button>
                     </div>
                   </div>
+                </div>
+                <div class="field-row">
+                  <div class="field"><label for="product-supplier">PROVEEDOR</label><input id="product-supplier" maxlength="160" placeholder="Ej: Distribuidora Delta"></div>
+                  <div class="field"><label for="product-barcode">CÓDIGO DE BARRAS / SKU</label><input id="product-barcode" maxlength="120" inputmode="text" autocomplete="off" spellcheck="false" placeholder="779..."></div>
                 </div>
                 <div class="field brand-admin-field">
                   <label for="product-brand-select">MARCA</label>
@@ -508,6 +519,54 @@
             <div class="card catalog-card">
               <div class="catalog-toolbar"><div class="catalog-title-row"><div><h2>Cupones</h2><p>Activá, pausá o editá promociones.</p></div><span id="coupon-list-count" class="catalog-count">0 cupones</span></div></div>
               <div class="table-wrap"><table><thead><tr><th>CÓDIGO</th><th>DESCUENTO</th><th>VIGENCIA</th><th>USOS</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="coupons-table"><tr class="coupon-empty-row"><td colspan="6" class="loading coupon-empty-state">Cargando cupones...</td></tr></tbody></table></div>
+            </div>
+          </div>
+        </section>
+        <section id="global-stock-panel" class="panel">
+          <div class="grid">
+            <div class="card">
+              <div class="card-head">
+                <div>
+                  <span class="section-tag">INTEGRACIÓN SEGURA</span>
+                  <h2 style="margin-top:10px">Global Stock</h2>
+                  <p>Creá un token exclusivo para que Global Stock pueda comprobar que sos administrador de Dorado, leer el catálogo real y sincronizar stock sin compartir tu contraseña.</p>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-title">PERMISOS DE ESTA INTEGRACIÓN</div>
+                <div class="file-help">Catálogo: lectura · Stock: lectura y escritura · Pedidos: lectura. El token se guarda cifrado/hasheado del lado del servidor y puede revocarse cuando quieras.</div>
+              </div>
+
+              <div id="global-stock-token-panel" class="form-section" hidden>
+                <div class="form-section-title">TOKEN NUEVO · COPIALO AHORA</div>
+                <div class="field">
+                  <label for="global-stock-token">TOKEN DE CONEXIÓN</label>
+                  <div class="gallery-url-row">
+                    <input id="global-stock-token" readonly autocomplete="off">
+                    <button id="global-stock-copy-token" class="secondary" type="button">COPIAR</button>
+                  </div>
+                  <div class="file-help">Por seguridad este token completo se muestra una sola vez. Pegalo en Global Stock cuando te pida verificar la propiedad.</div>
+                </div>
+              </div>
+
+              <div id="global-stock-message" class="message"></div>
+
+              <div class="form-actions">
+                <button id="global-stock-create-token" class="primary" type="button">CREAR TOKEN DE CONEXIÓN</button>
+              </div>
+            </div>
+
+            <div class="card catalog-card">
+              <div class="catalog-toolbar">
+                <div class="catalog-title-row">
+                  <div>
+                    <h2>Conexiones autorizadas</h2>
+                    <p>Revocá cualquier acceso que ya no uses.</p>
+                  </div>
+                </div>
+              </div>
+              <div id="global-stock-integrations" class="loading" style="padding:20px">Cargando conexiones...</div>
             </div>
           </div>
         </section>
