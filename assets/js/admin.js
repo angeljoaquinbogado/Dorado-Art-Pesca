@@ -879,7 +879,7 @@ const DORADO_KNOWN_BRANDS=[
     "Bando ARG",
     "Fox Airguns",
     "Payo",
-    "MorGui Outdoor",
+    "MorGul Outdoor",
     "Surfish"
 ];
 
