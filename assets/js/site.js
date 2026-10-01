@@ -2722,6 +2722,8 @@ document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
 });
 
 let brandsCollapseTimer=0;
+let brandsOpeningTimer=0;
+const BRANDS_WAVE_TOTAL_MS=640;
 
 function actualizarVistaTodasMarcas(force=null){
     const section=document.getElementById("marcas");
@@ -2731,19 +2733,30 @@ function actualizarVistaTodasMarcas(force=null){
     const next=typeof force==="boolean" ? force : !marcasExpandidas;
     marcasExpandidas=next;
     window.clearTimeout(brandsCollapseTimer);
+    window.clearTimeout(brandsOpeningTimer);
 
     if(next){
         section.classList.remove("brands-closing");
         section.classList.add("brands-expanded","brands-opening");
+
+        // Commit the entry state after the expanded grid exists.
+        // This makes the opening wave visible consistently in Chrome/Safari/mobile.
+        void section.offsetWidth;
+
         requestAnimationFrame(()=>{
-            requestAnimationFrame(()=>section.classList.remove("brands-opening"));
+            section.classList.remove("brands-opening");
         });
+
+        brandsOpeningTimer=window.setTimeout(()=>{
+            section.classList.remove("brands-opening");
+        },BRANDS_WAVE_TOTAL_MS);
     }else{
         section.classList.remove("brands-opening");
         section.classList.add("brands-closing");
+
         brandsCollapseTimer=window.setTimeout(()=>{
             section.classList.remove("brands-expanded","brands-closing");
-        },1280);
+        },BRANDS_WAVE_TOTAL_MS);
     }
 
     button.setAttribute("aria-expanded",String(next));
