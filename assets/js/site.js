@@ -2698,14 +2698,12 @@ function actualizarFiltroCatalogo() {
         moreWrap.hidden = !(hasMore || canCollapse);
         moreButton.dataset.hasMore=String(hasMore);
         moreButton.setAttribute("aria-expanded",String(catalogoVisibleLimit>CATALOG_INITIAL_LIMIT));
-        moreButton.classList.toggle("expanded",catalogoVisibleLimit>CATALOG_INITIAL_LIMIT);
+        moreButton.classList.toggle("expanded",canCollapse);
 
         const label=moreButton.querySelector("span");
         if(label){
             if(hasMore){
-                const remaining=matches-shown;
-                const nextCount=Math.min(CATALOG_BATCH_SIZE,remaining);
-                label.textContent=nextCount===1?"VER 1 PRODUCTO MÁS":`VER ${nextCount} PRODUCTOS MÁS`;
+                label.textContent="VER MÁS";
             }else if(canCollapse){
                 label.textContent="MOSTRAR MENOS";
             }
@@ -2759,9 +2757,92 @@ document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
     limpiarMarcaSeleccionada();
 });
 
-let brandsCollapseTimer=0;
-let brandsOpeningTimer=0;
-const BRANDS_WAVE_TOTAL_MS=640;
+let brandMotionToken=0;
+let brandMotionAnimations=[];
+const BRAND_WAVE_DURATION_MS=240;
+const BRAND_WAVE_STAGGER_MS=34;
+
+function brandWaveCards(section){
+    return Array.from(section.querySelectorAll(".brand-marquee-set:first-child .brand-marquee-card"));
+}
+
+function cancelBrandMotion({commit=false}={}){
+    brandMotionAnimations.forEach(animation=>{
+        try{
+            if(commit && animation.playState!=="finished" && typeof animation.commitStyles==="function"){
+                animation.commitStyles();
+            }
+        }catch{}
+        try{animation.cancel();}catch{}
+    });
+    brandMotionAnimations=[];
+}
+
+function clearBrandMotionStyles(cards){
+    cards.forEach(card=>{
+        card.style.removeProperty("opacity");
+        card.style.removeProperty("transform");
+    });
+}
+
+function runBrandWave(section,{opening,interrupted=false}){
+    const cards=brandWaveCards(section);
+    if(!cards.length)return Promise.resolve();
+
+    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const duration=reduced?160:BRAND_WAVE_DURATION_MS;
+    const stagger=reduced?16:BRAND_WAVE_STAGGER_MS;
+
+    section.classList.add("brands-motion-running");
+
+    brandMotionAnimations=cards.map((card,index)=>{
+        const delay=(cards.length-1-index)*stagger;
+        const computed=getComputedStyle(card);
+        const liveOpacity=Number.parseFloat(computed.opacity);
+        const liveTransform=computed.transform && computed.transform!=="none"
+            ? computed.transform
+            : "translate3d(0,0,0) scale(1)";
+
+        let from;
+        let to;
+
+        if(opening){
+            from=interrupted
+                ? {
+                    opacity:Number.isFinite(liveOpacity)?liveOpacity:1,
+                    transform:reduced?"none":liveTransform
+                }
+                : {
+                    opacity:reduced?.55:0,
+                    transform:reduced?"none":"translate3d(44px,0,0) scale(.985)"
+                };
+            to={
+                opacity:1,
+                transform:reduced?"none":"translate3d(0,0,0) scale(1)"
+            };
+        }else{
+            from={
+                opacity:Number.isFinite(liveOpacity)?liveOpacity:1,
+                transform:reduced?"none":liveTransform
+            };
+            to={
+                // Keep a trace of the cards on the final frame so the marquee
+                // can take over immediately without a white/empty flash.
+                opacity:reduced?.35:.18,
+                transform:reduced?"none":"translate3d(-44px,0,0) scale(.985)"
+            };
+        }
+
+        return card.animate([from,to],{
+            duration,
+            delay,
+            easing:"cubic-bezier(0.23, 1, 0.32, 1)",
+            fill:"both"
+        });
+    });
+
+    return Promise.allSettled(brandMotionAnimations.map(animation=>animation.finished));
+}
 
 function actualizarVistaTodasMarcas(force=null){
     const section=document.getElementById("marcas");
@@ -2770,31 +2851,41 @@ function actualizarVistaTodasMarcas(force=null){
 
     const next=typeof force==="boolean" ? force : !marcasExpandidas;
     marcasExpandidas=next;
-    window.clearTimeout(brandsCollapseTimer);
-    window.clearTimeout(brandsOpeningTimer);
+    const token=++brandMotionToken;
+    const hadActiveMotion=brandMotionAnimations.some(animation=>
+        animation.playState==="running" || animation.playState==="pending"
+    );
+
+    if(hadActiveMotion)cancelBrandMotion({commit:true});
+    else cancelBrandMotion();
+
+    section.classList.remove("brands-opening","brands-closing");
 
     if(next){
-        section.classList.remove("brands-closing");
-        section.classList.add("brands-expanded","brands-opening");
+        section.classList.add("brands-expanded");
 
-        // Commit the entry state after the expanded grid exists.
-        // This makes the opening wave visible consistently in Chrome/Safari/mobile.
-        void section.offsetWidth;
-
-        requestAnimationFrame(()=>{
-            section.classList.remove("brands-opening");
+        runBrandWave(section,{opening:true,interrupted:hadActiveMotion}).then(()=>{
+            if(token!==brandMotionToken || !marcasExpandidas)return;
+            const cards=brandWaveCards(section);
+            cancelBrandMotion();
+            clearBrandMotionStyles(cards);
+            section.classList.remove("brands-motion-running");
         });
-
-        brandsOpeningTimer=window.setTimeout(()=>{
-            section.classList.remove("brands-opening");
-        },BRANDS_WAVE_TOTAL_MS);
     }else{
-        section.classList.remove("brands-opening");
-        section.classList.add("brands-closing");
+        // Keep the expanded layout in place while the wave leaves. Collapse
+        // exactly when the last card finishes instead of waiting on a timer.
+        section.classList.add("brands-expanded");
 
-        brandsCollapseTimer=window.setTimeout(()=>{
-            section.classList.remove("brands-expanded","brands-closing");
-        },BRANDS_WAVE_TOTAL_MS);
+        runBrandWave(section,{opening:false,interrupted:hadActiveMotion}).then(()=>{
+            if(token!==brandMotionToken || marcasExpandidas)return;
+            const cards=brandWaveCards(section);
+
+            // Switch back to the normal marquee in the same frame. Because the
+            // exit ends above zero opacity, there is no blank frame in between.
+            section.classList.remove("brands-expanded","brands-motion-running");
+            cancelBrandMotion();
+            clearBrandMotionStyles(cards);
+        });
     }
 
     button.setAttribute("aria-expanded",String(next));
