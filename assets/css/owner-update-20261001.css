@@ -198,3 +198,21 @@
   .site-footer .footer-main{grid-template-columns:1fr!important;gap:24px!important}
   .site-footer .footer-brand-box{grid-column:auto}
 }
+
+
+/* Progressive catalog reveal: only the next batch appears, never the full catalog at once. */
+#products-grid .product.catalog-batch-enter{
+  animation:catalogBatchIn 380ms cubic-bezier(.22,.61,.36,1) both;
+  animation-delay:calc(var(--catalog-batch-order,0) * 28ms);
+  will-change:transform,opacity;
+}
+@keyframes catalogBatchIn{
+  from{opacity:0;transform:translate3d(0,14px,0) scale(.992)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+  #products-grid .product.catalog-batch-enter{
+    animation:none!important;
+    will-change:auto!important;
+  }
+}
