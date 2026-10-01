@@ -82,3 +82,26 @@
   .stock-control-switch,
   .stock-control-switch i{transition:none!important}
 }
+
+
+/* External Global Stock authorization gate.
+   The integration is not part of Dorado's normal navigation. It is shown
+   only when Global Stock opens the dedicated authorization deep-link. */
+.tab[data-tab="global-stock"]{
+  display:none!important;
+}
+#global-stock-panel{
+  display:none!important;
+}
+#global-stock-panel:target{
+  display:block!important;
+}
+body:has(#global-stock-panel:target) .panel.active:not(#global-stock-panel){
+  display:none!important;
+}
+body:has(#global-stock-panel:target) .hero-head{
+  display:none!important;
+}
+body:has(#global-stock-panel:target) #global-stock-panel{
+  margin-top:18px;
+}
