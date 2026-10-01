@@ -127,6 +127,7 @@
 <link rel="stylesheet" href="assets/css/admin-layout-hotfix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-stock-control-20261001.css?v=20261001a"/>
 <link rel="stylesheet" href="assets/css/admin-commercial-settings-20261001.css?v=20261001c"/>
+<link rel="stylesheet" href="assets/css/admin-table-sort-20261001.css?v=20261001a"/>
 </head>
 <body>
 
@@ -438,7 +439,13 @@
                 </div>
                 <div class="admin-brand-tabs" id="admin-brand-tabs" aria-label="Secciones por marca"></div>
               </div>
-              <div class="table-wrap product-table-wrap"><table><thead><tr><th>PRODUCTO</th><th>PRECIO</th><th>STOCK</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="products-table"><tr><td colspan="5" class="loading">Cargando productos...</td></tr></tbody></table></div>
+              <div class="table-wrap product-table-wrap"><table><thead><tr>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="products" data-sort-key="product" data-sort-default="asc"><span>PRODUCTO</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="products" data-sort-key="price" data-sort-default="asc"><span>PRECIO</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="products" data-sort-key="stock" data-sort-default="asc"><span>STOCK</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="products" data-sort-key="status" data-sort-default="asc"><span>ESTADO</span><i aria-hidden="true"></i></button></th>
+  <th>ACCIONES</th>
+</tr></thead><tbody id="products-table"><tr><td colspan="5" class="loading">Cargando productos...</td></tr></tbody></table></div>
               <div class="admin-products-more" id="admin-products-more" hidden>
                 <button class="secondary admin-products-more-button" id="admin-products-more-button" type="button" aria-expanded="false">
                   <span>VER TODOS LOS PRODUCTOS</span>
@@ -498,7 +505,15 @@
               </div>
             </div>
 
-            <div class="table-wrap orders-table-wrap"><table><thead><tr><th class="order-check-head"><input id="orders-select-all-head" type="checkbox" aria-label="Seleccionar todos los pedidos"></th><th>PEDIDO / FECHA</th><th>CLIENTE / CONTACTO</th><th>TOTAL</th><th>PAGO</th><th>PREPARACIÓN</th><th>ACCIONES</th></tr></thead><tbody id="orders-table"><tr><td colspan="7" class="loading">Cargando pedidos...</td></tr></tbody></table></div>
+            <div class="table-wrap orders-table-wrap"><table><thead><tr>
+  <th class="order-check-head"><input id="orders-select-all-head" type="checkbox" aria-label="Seleccionar todos los pedidos"></th>
+  <th aria-sort="descending"><button class="table-sort-button" type="button" data-sort-table="orders" data-sort-key="date" data-sort-default="desc"><span>PEDIDO / FECHA</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="orders" data-sort-key="customer" data-sort-default="asc"><span>CLIENTE / CONTACTO</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="orders" data-sort-key="total" data-sort-default="desc"><span>TOTAL</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="orders" data-sort-key="payment" data-sort-default="asc"><span>PAGO</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="orders" data-sort-key="preparation" data-sort-default="asc"><span>PREPARACIÓN</span><i aria-hidden="true"></i></button></th>
+  <th>ACCIONES</th>
+</tr></thead><tbody id="orders-table"><tr><td colspan="7" class="loading">Cargando pedidos...</td></tr></tbody></table></div>
           </div>
         </section>
 
@@ -531,7 +546,14 @@
             </form>
             <div class="card catalog-card">
               <div class="catalog-toolbar"><div class="catalog-title-row"><div><h2>Cupones</h2><p>Activá, pausá o editá promociones.</p></div><span id="coupon-list-count" class="catalog-count">0 cupones</span></div></div>
-              <div class="table-wrap"><table><thead><tr><th>CÓDIGO</th><th>DESCUENTO</th><th>VIGENCIA</th><th>USOS</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="coupons-table"><tr class="coupon-empty-row"><td colspan="6" class="loading coupon-empty-state">Cargando cupones...</td></tr></tbody></table></div>
+              <div class="table-wrap coupons-table-wrap"><table><thead><tr>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="coupons" data-sort-key="code" data-sort-default="asc"><span>CÓDIGO</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="coupons" data-sort-key="discount" data-sort-default="desc"><span>DESCUENTO</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="coupons" data-sort-key="validity" data-sort-default="asc"><span>VIGENCIA</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="coupons" data-sort-key="uses" data-sort-default="desc"><span>USOS</span><i aria-hidden="true"></i></button></th>
+  <th aria-sort="none"><button class="table-sort-button" type="button" data-sort-table="coupons" data-sort-key="status" data-sort-default="asc"><span>ESTADO</span><i aria-hidden="true"></i></button></th>
+  <th>ACCIONES</th>
+</tr></thead><tbody id="coupons-table"><tr class="coupon-empty-row"><td colspan="6" class="loading coupon-empty-state">Cargando cupones...</td></tr></tbody></table></div>
             </div>
           </div>
         </section>
@@ -762,6 +784,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261001-commercial2"></script>
+<script src="assets/js/admin.js?v=20261001-sorttables1"></script>
 </body>
 </html>
