@@ -21,7 +21,7 @@ function ejecutarCuandoHayaTiempo(callback,timeout=1400){
 
 const DORADO_CART_KEY = "doradoCarrito";
 const DORADO_ORDERS_KEY = "doradoMisPedidos";
-const DORADO_WHATSAPP = "5491168070039";
+let DORADO_WHATSAPP = "5491168070039";
 
 const catalogoProductos = new Map();
 let productoModalActual = null;
@@ -67,6 +67,66 @@ function obtenerConfigPublica(){
         });
     }
     return doradoPublicConfigPromise;
+}
+
+
+function minutosHora(value){
+    const match=String(value||"").match(/^(\d{2}):(\d{2})$/);
+    if(!match)return null;
+    return Number(match[1])*60+Number(match[2]);
+}
+function rangoHorarioTexto(ranges=[]){
+    return (Array.isArray(ranges)?ranges:[])
+        .filter(pair=>Array.isArray(pair)&&pair.length===2)
+        .map(pair=>String(pair[0])+"–"+String(pair[1]))
+        .join(" y ");
+}
+function aplicarConfiguracionComercialPublica(config){
+    const b=config?.business||{};
+    const whatsapp=String(b.whatsapp||DORADO_WHATSAPP).replace(/\D/g,"");
+    if(whatsapp)DORADO_WHATSAPP=whatsapp;
+
+    const phoneDisplay=String(b.phoneDisplay||"+54 9 11 6807-0039");
+    const telHref="tel:+"+String(DORADO_WHATSAPP).replace(/^\+/,"");
+    const address=String(b.address||"Las Heras 1680");
+    const area=String(b.area||"Carupá, San Fernando");
+    const province=String(b.province||"Buenos Aires");
+    const postal=String(b.postalCode||"B1646");
+    const mapsUrl=String(b.mapsUrl||"").trim();
+
+    document.querySelectorAll('a[href*="wa.me/"]').forEach(link=>{
+        try{
+            const url=new URL(link.href,location.href);
+            const text=url.searchParams.get("text");
+            link.href="https://wa.me/"+DORADO_WHATSAPP+(text?"?text="+encodeURIComponent(text):"");
+        }catch{}
+    });
+    document.querySelectorAll('a[href^="tel:"]').forEach(link=>{link.href=telHref;});
+    if(mapsUrl)document.querySelectorAll('a[href*="maps.app.goo.gl"]').forEach(link=>{link.href=mapsUrl;});
+
+    const setText=(id,value)=>{
+        const el=document.getElementById(id);
+        if(el&&value)el.textContent=value;
+    };
+    setText("store-contact-address",address+" · "+area);
+    setText("store-contact-region",[province,postal].filter(Boolean).join(" · "));
+    setText("store-contact-phone",phoneDisplay);
+    setText("footer-store-phone",phoneDisplay);
+    setText("footer-store-address-short",address+" · "+(area.split(",")[1]?.trim()||area));
+    setText("footer-store-address",[address,area,province].filter(Boolean).join(" · "));
+
+    const hours=b.hours&&typeof b.hours==="object"?b.hours:{};
+    const weekday=Array.isArray(hours.mon_fri)?hours.mon_fri:[];
+    const sat=Array.isArray(hours.sat)?hours.sat:[];
+    const sun=Array.isArray(hours.sun)?hours.sun:[];
+    const weekdayText=rangoHorarioTexto(weekday);
+    const satText=rangoHorarioTexto(sat);
+    const sunText=rangoHorarioTexto(sun);
+    setText("store-hours-weekdays","Lun a vie · "+(weekdayText||"Consultar"));
+    setText("store-hours-weekend","Sáb · "+(satText||"cerrado")+" · Dom "+(sunText?("· "+sunText):"cerrado"));
+
+    const footerPhone=document.getElementById("footer-store-phone-link");
+    if(footerPhone)footerPhone.href=telHref;
 }
 
 const DORADO_THEME_KEY="doradoStoreThemePreference";
@@ -135,6 +195,7 @@ async function configureStoreTheme(){
     try{
         const config=await obtenerConfigPublica();
         doradoSiteDefaultTheme=normalizeStoreTheme(config?.siteThemeDefault||"light");
+        aplicarConfiguracionComercialPublica(config);
     }catch{
         doradoSiteDefaultTheme="light";
     }
@@ -3926,18 +3987,24 @@ comprobarRetornoPago();
     };
 
     const availabilityFor=value=>{
-        if(value==="efectivo") return delivery?.value==="retiro" ? {enabled:true,label:"Disponible"} : {enabled:false,label:"Solo retiro"};
-        if(value==="whatsapp"||value==="transferencia") return {enabled:true,label:"Disponible"};
-        const availability=window.doradoPaymentAvailability;
+        const availability=window.doradoPaymentAvailability||{};
+        const visibility=window.doradoPaymentVisibility||{};
+        if(visibility[value]===false)return {enabled:false,hidden:true,label:"Desactivado"};
+        if(value==="efectivo"){
+            const enabled=Boolean(availability.cash)&&delivery?.value==="retiro";
+            return {enabled,hidden:false,label:enabled?"Disponible":"Solo retiro"};
+        }
+        if(value==="whatsapp")return {enabled:Boolean(availability.whatsapp),hidden:false,label:availability.whatsapp?"Disponible":"Desactivado"};
+        if(value==="transferencia")return {enabled:Boolean(availability.transfer),hidden:false,label:availability.transfer?"Disponible":"Desactivado"};
         if(value==="mercadopago"){
-            const enabled=Boolean(availability?.mercadoPago);
-            return {enabled,label:enabled?"Disponible":"A activar"};
+            const enabled=Boolean(availability.mercadoPago);
+            return {enabled,hidden:false,label:enabled?"Disponible":"A activar"};
         }
         if(value==="tarjeta"){
-            const enabled=Boolean(availability?.card);
-            return {enabled,label:enabled?"Disponible":"A activar"};
+            const enabled=Boolean(availability.card);
+            return {enabled,hidden:false,label:enabled?"Disponible":"A activar"};
         }
-        return {enabled:true,label:"Disponible"};
+        return {enabled:true,hidden:false,label:"Disponible"};
     };
 
     const sync=()=>{
@@ -3951,6 +4018,7 @@ comprobarRetornoPago();
             const availability=availabilityFor(value);
             const status=option.querySelector(".payment-picker-status");
 
+            option.hidden=Boolean(availability.hidden);
             option.classList.toggle("is-selected",selectedOption);
             option.classList.toggle("is-unavailable",!availability.enabled);
             option.setAttribute("aria-selected",selectedOption?"true":"false");
@@ -4194,14 +4262,31 @@ comprobarRetornoPago();
     if(payment){
       try{
         const data=await obtenerConfigPublica();
-        const mpEnabled=Boolean(data?.mercadoPagoEnabled);
-        const cardEnabled=Boolean(data?.cardPaymentsEnabled);
-        window.doradoPaymentAvailability={mercadoPago:mpEnabled,card:cardEnabled};
+        aplicarConfiguracionComercialPublica(data);
+        const visibility=data?.checkoutVisibility||{};
+        const availability=data?.checkoutAvailability||{};
+        const mpEnabled=Boolean(availability.mercadoPago ?? data?.mercadoPagoEnabled);
+        const cardEnabled=Boolean(availability.card ?? data?.cardPaymentsEnabled);
+        window.doradoPaymentVisibility={
+          whatsapp:visibility.whatsapp!==false,
+          transfer:visibility.transfer!==false,
+          efectivo:visibility.cash!==false,
+          mercadopago:visibility.mercadoPago!==false,
+          tarjeta:visibility.card!==false
+        };
+        window.doradoPaymentAvailability={
+          whatsapp:Boolean(availability.whatsapp ?? (visibility.whatsapp!==false)),
+          transfer:Boolean(availability.transfer ?? (visibility.transfer!==false)),
+          cash:Boolean(availability.cash ?? (visibility.cash!==false)),
+          mercadoPago:mpEnabled,
+          card:cardEnabled
+        };
         if(mpOption)mpOption.textContent=mpEnabled?"Mercado Pago":"Mercado Pago — a activar";
         if(cardOption)cardOption.textContent=cardEnabled?"Tarjeta de débito / crédito":"Tarjeta de débito / crédito — falta Public Key";
         payment.dispatchEvent(new Event("change",{bubbles:true}));
       }catch{
-        window.doradoPaymentAvailability={mercadoPago:false,card:false};
+        window.doradoPaymentVisibility={whatsapp:true,transfer:true,efectivo:true,mercadopago:true,tarjeta:true};
+        window.doradoPaymentAvailability={whatsapp:true,transfer:true,cash:true,mercadoPago:false,card:false};
         if(mpOption)mpOption.textContent="Mercado Pago — a activar";
         if(cardOption)cardOption.textContent="Tarjeta de débito / crédito — a activar";
       }
@@ -4218,16 +4303,17 @@ comprobarRetornoPago();
         const dayMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
         const day=dayMap[get("weekday")];
         const minutes=(Number(get("hour"))||0)*60+(Number(get("minute"))||0);
-        const ranges={
-          0:[],
-          1:[[540,780],[960,1200]],
-          2:[[540,780],[960,1200]],
-          3:[[540,780],[960,1200]],
-          4:[[540,780],[960,1200]],
-          5:[[540,780],[960,1200]],
-          6:[[540,1200]]
+        const config=await obtenerConfigPublica().catch(()=>null);
+        const hours=config?.business?.hours||{
+          mon_fri:[["09:00","13:00"],["16:00","20:00"]],
+          sat:[["09:00","20:00"]],
+          sun:[]
         };
-        const open=(ranges[day]||[]).some(([from,to])=>minutes>=from&&minutes<to);
+        const pairs=day===0?(hours.sun||[]):day===6?(hours.sat||[]):(hours.mon_fri||[]);
+        const ranges=pairs
+          .map(pair=>[minutosHora(pair?.[0]),minutosHora(pair?.[1])])
+          .filter(([from,to])=>Number.isFinite(from)&&Number.isFinite(to)&&to>from);
+        const open=ranges.some(([from,to])=>minutes>=from&&minutes<to);
         status.textContent=open?"Local abierto":"Local cerrado";
         status.classList.toggle("is-open",open);
         status.classList.toggle("is-closed",!open);
