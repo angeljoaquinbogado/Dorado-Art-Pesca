@@ -126,6 +126,10 @@
       "destination": "/api/products?mode=global-stock-connector"
     },
     {
+      "source": "/api/global-stock-authorize",
+      "destination": "/api/products?mode=global-stock-authorize"
+    },
+    {
       "source": "/api/google-business-oauth/start",
       "destination": "/api/reviews?action=google_oauth_start"
     },
