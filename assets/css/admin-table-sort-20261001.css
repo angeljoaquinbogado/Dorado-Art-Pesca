@@ -1,0 +1,126 @@
+/* Dorado Admin · sortable tables · 2026-10-01 */
+.table-sort-button{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  min-height:38px;
+  margin:-8px -10px;
+  padding:8px 10px;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  font-weight:inherit;
+  letter-spacing:inherit;
+  text-align:left;
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:7px;
+  white-space:nowrap;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.table-sort-button>span{
+  min-width:0;
+}
+
+.table-sort-button>i{
+  position:relative;
+  width:13px;
+  height:18px;
+  flex:0 0 13px;
+  display:grid;
+  place-items:center;
+  color:currentColor;
+  opacity:.38;
+  font-size:11px;
+  font-style:normal;
+  line-height:1;
+  transition:
+    opacity 150ms ease,
+    transform 180ms cubic-bezier(.23,1,.32,1);
+}
+
+.table-sort-button>i::before{
+  content:"↕";
+}
+
+.table-sort-button.is-active{
+  color:#d7a336;
+}
+
+.table-sort-button.is-active>i{
+  opacity:1;
+}
+
+.table-sort-button.is-asc>i::before{
+  content:"↑";
+}
+
+.table-sort-button.is-desc>i::before{
+  content:"↓";
+}
+
+.table-sort-button:focus{
+  outline:none;
+}
+
+.table-sort-button:focus-visible{
+  outline:2px solid rgba(214,161,54,.58);
+  outline-offset:-2px;
+}
+
+@media(hover:hover) and (pointer:fine){
+  .table-sort-button:hover{
+    background:rgba(210,162,55,.075);
+  }
+
+  .table-sort-button:hover>i{
+    opacity:.8;
+  }
+}
+
+html[data-admin-theme="light"] .table-sort-button{
+  color:#4d6572;
+}
+
+html[data-admin-theme="light"] .table-sort-button.is-active{
+  color:#a97011;
+}
+
+html[data-admin-theme="light"] .table-sort-button:hover{
+  color:#263b46;
+}
+
+html[data-admin-theme="dark"] .table-sort-button{
+  color:#8eb7cd;
+}
+
+html[data-admin-theme="dark"] .table-sort-button.is-active{
+  color:#f0bc51;
+}
+
+html[data-admin-theme="dark"] .table-sort-button:hover{
+  color:#dceaf0;
+}
+
+@media(max-width:700px){
+  .table-sort-button{
+    min-height:42px;
+    gap:6px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .table-sort-button,
+  .table-sort-button>i{
+    transition:none;
+  }
+}
