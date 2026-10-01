@@ -188,12 +188,6 @@ html[data-store-theme="light"] #productos .catalog-shell-dark::after{
   animation-timing-function:var(--theme-polish-ease-out)!important;
 }
 
-#marcas.brands-expanded .brand-marquee-card:nth-child(1){animation-delay:0ms!important}
-#marcas.brands-expanded .brand-marquee-card:nth-child(2){animation-delay:20ms!important}
-#marcas.brands-expanded .brand-marquee-card:nth-child(3){animation-delay:40ms!important}
-#marcas.brands-expanded .brand-marquee-card:nth-child(4){animation-delay:60ms!important}
-#marcas.brands-expanded .brand-marquee-card:nth-child(5){animation-delay:80ms!important}
-#marcas.brands-expanded .brand-marquee-card:nth-child(n+6){animation-delay:80ms!important}
 
 /* =========================================================
    PROCESS CARDS — subtle white→warm gradient, never solid orange
@@ -583,26 +577,7 @@ html[data-store-theme="light"] .catalog-more-button{
   }
 }
 
-/* Expanded brand grid gets the same spatial cue in reverse when closing. */
-#marcas.brands-expanded .brand-marquee-card{
-  opacity:1!important;
-  transform:translate3d(0,0,0) scale(1)!important;
-  transition:
-    transform 220ms var(--theme-polish-ease-in-out),
-    opacity 180ms var(--theme-polish-ease-out),
-    border-color 180ms ease,
-    background-color 180ms ease!important;
-}
-
-#marcas.brands-expanded.brands-opening .brand-marquee-card{
-  opacity:0!important;
-  transform:translate3d(28px,0,0) scale(.97)!important;
-}
-
-#marcas.brands-expanded.brands-closing .brand-marquee-card{
-  opacity:0!important;
-  transform:translate3d(28px,0,0) scale(.97)!important;
-}
+/* Brand entry/exit motion is owned by site.js WAAPI. */
 
 /* Maps: force the real iframe to stay visible and interactive in both themes. */
 #contacto .dorado-map-live{
