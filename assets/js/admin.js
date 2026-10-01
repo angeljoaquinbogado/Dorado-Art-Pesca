@@ -9,6 +9,142 @@ let cupones = [];
 let categorias = [];
 let selectedCategories = new Set();
 let selectedOrders = new Set();
+
+const adminTableSort={
+    products:{key:null,direction:"asc"},
+    orders:{key:"date",direction:"desc"},
+    coupons:{key:null,direction:"asc"}
+};
+
+const ADMIN_PREPARATION_SORT_ORDER={
+    nuevo:0,
+    preparando:1,
+    enviado:2,
+    entregado:3,
+    cancelado:4
+};
+
+function adminSortText(value){
+    return String(value??"").trim().toLocaleLowerCase("es");
+}
+
+function adminCompareText(a,b){
+    return adminSortText(a).localeCompare(adminSortText(b),"es",{
+        sensitivity:"base",
+        numeric:true
+    });
+}
+
+function adminSortValue(table,key,item){
+    if(table==="products"){
+        if(key==="product")return adminSortText(item.nombre);
+        if(key==="price"){
+            const base=Math.max(0,Number(item.precio)||0);
+            const discount=Math.min(90,Math.max(0,Number(item.descuento_porcentaje)||0));
+            return base*(1-discount/100);
+        }
+        if(key==="stock"){
+            if(item.control_stock!==true)return Number.POSITIVE_INFINITY;
+            return Math.max(0,Number(item.stock)||0);
+        }
+        if(key==="status")return item.activo?"activo":"oculto";
+    }
+
+    if(table==="orders"){
+        if(key==="date"){
+            const ts=new Date(item.created_at).getTime();
+            return Number.isFinite(ts)?ts:0;
+        }
+        if(key==="customer")return adminSortText(item.cliente_nombre);
+        if(key==="total")return Math.max(0,Number(item.total)||0);
+        if(key==="payment")return adminSortText(orderStatusLabel(item.estado));
+        if(key==="preparation"){
+            const value=String(item.preparacion_estado||"nuevo").toLowerCase();
+            return ADMIN_PREPARATION_SORT_ORDER[value]??99;
+        }
+    }
+
+    if(table==="coupons"){
+        if(key==="code")return adminSortText(item.codigo);
+        if(key==="discount")return Math.max(0,Number(item.valor)||0);
+        if(key==="validity"){
+            const end=item.vigente_hasta?new Date(item.vigente_hasta).getTime():Number.POSITIVE_INFINITY;
+            if(Number.isFinite(end))return end;
+            const start=item.vigente_desde?new Date(item.vigente_desde).getTime():0;
+            return Number.isFinite(start)?start:Number.POSITIVE_INFINITY;
+        }
+        if(key==="uses")return Math.max(0,Number(item.usos)||0);
+        if(key==="status")return item.activo?"activo":"inactivo";
+    }
+
+    return "";
+}
+
+function sortAdminRows(rows,table){
+    const state=adminTableSort[table];
+    if(!state?.key)return [...rows];
+
+    const factor=state.direction==="desc"?-1:1;
+
+    return rows
+        .map((item,index)=>({item,index,value:adminSortValue(table,state.key,item)}))
+        .sort((a,b)=>{
+            let result=0;
+
+            if(typeof a.value==="number"&&typeof b.value==="number"){
+                if(a.value===b.value)result=0;
+                else result=a.value<b.value?-1:1;
+            }else{
+                result=adminCompareText(a.value,b.value);
+            }
+
+            return result===0?a.index-b.index:result*factor;
+        })
+        .map(entry=>entry.item);
+}
+
+function syncAdminTableSortUI(table){
+    const state=adminTableSort[table]||{};
+    document.querySelectorAll(`[data-sort-table="${table}"]`).forEach(button=>{
+        const th=button.closest("th");
+        const active=button.dataset.sortKey===state.key;
+        const direction=active?state.direction:null;
+
+        button.classList.toggle("is-active",active);
+        button.classList.toggle("is-asc",direction==="asc");
+        button.classList.toggle("is-desc",direction==="desc");
+        button.setAttribute("aria-label",
+            active
+                ? `${button.querySelector("span")?.textContent||"Columna"}, orden ${direction==="asc"?"ascendente":"descendente"}. Presioná para invertir.`
+                : `${button.querySelector("span")?.textContent||"Columna"}. Presioná para ordenar.`
+        );
+
+        if(th){
+            th.setAttribute("aria-sort",
+                !active?"none":direction==="asc"?"ascending":"descending"
+            );
+        }
+    });
+}
+
+function applyAdminTableSort(table,key,defaultDirection="asc"){
+    const state=adminTableSort[table];
+    if(!state)return;
+
+    if(state.key===key){
+        state.direction=state.direction==="asc"?"desc":"asc";
+    }else{
+        state.key=key;
+        state.direction=defaultDirection==="desc"?"desc":"asc";
+    }
+
+    syncAdminTableSortUI(table);
+
+    if(table==="products")renderProducts();
+    else if(table==="orders")renderOrders();
+    else if(table==="coupons")renderCoupons();
+}
+
 let productGalleryDraft = [];
 let refreshPromise = null;
 let recoveryAccessToken = "";
@@ -1253,7 +1389,7 @@ function renderProducts(){
     const categoryFilter=normalizeCategoryName(document.getElementById("product-category-filter")?.value||"all");
     const brandFilter=normalizeBrandName(document.getElementById("product-brand-filter")?.value||"all");
 
-    const filtered=productos.filter(p=>{
+    let filtered=productos.filter(p=>{
         const haystack=`${p.nombre||""} ${p.categoria||""} ${p.marca||""}`.toLowerCase();
         const matchesSearch=!search||haystack.includes(search);
         const stock=Math.max(0,Number(p.stock)||0);
@@ -1269,6 +1405,9 @@ function renderProducts(){
             normalizeBrandName(p.marca).toLocaleLowerCase("es")===brandFilter.toLocaleLowerCase("es");
         return matchesSearch&&matchesFilter&&matchesCategory&&matchesBrand;
     });
+
+    filtered=sortAdminRows(filtered,"products");
+    syncAdminTableSortUI("products");
 
     const hasActiveFilter=Boolean(search)||
         filter!=="all"||
@@ -1999,7 +2138,7 @@ function filteredOrders(){
     const fromTs=dateFrom?new Date(`${dateFrom}T00:00:00`).getTime():null;
     const toTs=dateTo?new Date(`${dateTo}T23:59:59.999`).getTime():null;
 
-    return pedidos.filter(order=>{
+    const filtered=pedidos.filter(order=>{
         const haystack=[
             orderCode(order.id),
             order.id,
@@ -2018,6 +2157,8 @@ function filteredOrders(){
         const matchesTo=toTs===null||(!Number.isNaN(createdTs)&&createdTs<=toTs);
         return matchesSearch&&matchesPayment&&matchesPrep&&matchesFrom&&matchesTo;
     });
+
+    return sortAdminRows(filtered,"orders");
 }
 
 function csvCell(value){
@@ -2071,6 +2212,7 @@ function renderOrders(){
     const tbody=document.getElementById("orders-table");
     if(!tbody)return;
 
+    syncAdminTableSortUI("orders");
     const visible=filteredOrders();
     const visibleIds=new Set(visible.map(o=>String(o.id)));
 
@@ -2489,6 +2631,8 @@ async function loadCoupons(){
 function renderCoupons(){
     const tbody=document.getElementById("coupons-table");
     if(!tbody)return;
+    syncAdminTableSortUI("coupons");
+    const sortedCoupons=sortAdminRows(cupones,"coupons");
     const count=document.getElementById("coupon-list-count");
     if(count)count.textContent=`${cupones.length} ${cupones.length===1?"cupón":"cupones"}`;
     tbody.innerHTML="";
@@ -2496,7 +2640,7 @@ function renderCoupons(){
         tbody.innerHTML='<tr class="coupon-empty-row"><td colspan="6" class="loading coupon-empty-state">Todavía no hay cupones creados.</td></tr>';
         return;
     }
-    cupones.forEach(c=>{
+    sortedCoupons.forEach(c=>{
         const tr=document.createElement("tr");
         const uses=Math.max(0,Number(c.usos)||0);
         const limit=c.limite_usos==null?"∞":Math.max(0,Number(c.limite_usos)||0);
@@ -3139,6 +3283,19 @@ document.getElementById("category-delete-selected")?.addEventListener("click",()
 });
 
 document.getElementById("category-delete-all")?.addEventListener("click",deleteAllCategories);
+
+document.querySelectorAll(".table-sort-button[data-sort-table][data-sort-key]").forEach(button=>{
+    button.addEventListener("click",()=>{
+        applyAdminTableSort(
+            button.dataset.sortTable,
+            button.dataset.sortKey,
+            button.dataset.sortDefault||"asc"
+        );
+    });
+});
+syncAdminTableSortUI("products");
+syncAdminTableSortUI("orders");
+syncAdminTableSortUI("coupons");
 
 document.getElementById("product-search")?.addEventListener("input",()=>{adminProductsExpanded=false;renderProducts();});
 document.getElementById("product-filter")?.addEventListener("change",()=>{adminProductsExpanded=false;renderProducts();});
