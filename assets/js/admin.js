@@ -1121,6 +1121,9 @@ function showApp(){
     document.getElementById("admin-email").textContent=session.user.email||"Administrador";
     const dot=document.getElementById("connection-state");
     if(dot)dot.textContent="CONECTADO";
+    if(GLOBAL_STOCK_AUTH_FLOW){
+        openGlobalStockAuthorizationPanel();
+    }
 }
 
 async function loadProducts(){
@@ -2745,6 +2748,150 @@ async function deleteCoupon(id,code){
 
 
 let globalStockIntegrations=[];
+let globalStockOtpChallengeId="";
+
+function globalStockAuthorizationFlow(){
+    const params=new URLSearchParams(location.search);
+    if(
+        params.get("source")!=="global-stock" ||
+        params.get("intent")!=="authorize"
+    ){
+        return null;
+    }
+
+    const returnOrigin=String(params.get("return_to")||"").trim();
+    return {returnOrigin};
+}
+
+const GLOBAL_STOCK_AUTH_FLOW=globalStockAuthorizationFlow();
+
+function openGlobalStockAuthorizationPanel(){
+    if(!GLOBAL_STOCK_AUTH_FLOW)return;
+
+    document.querySelectorAll(".tab").forEach(button=>button.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(panel=>panel.classList.remove("active"));
+    document.getElementById("global-stock-panel")?.classList.add("active");
+
+    const email=String(session?.user?.email||"").trim();
+    msg(
+        "global-stock-message",
+        email
+            ? `Sesión administradora validada: ${email}. Enviá el código para confirmar la conexión.`
+            : "Sesión administradora validada. Enviá el código para confirmar la conexión.",
+        "ok"
+    );
+
+    void loadGlobalStockIntegrations();
+}
+
+async function globalStockAuthorizationRequest(payload){
+    await refreshSessionIfNeeded();
+
+    const response=await fetch("/api/global-stock-authorize",{
+        method:"POST",
+        headers:{
+            Authorization:`Bearer ${session.access_token}`,
+            Accept:"application/json",
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(payload)
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok){
+        throw new Error(data?.error||"No se pudo completar la verificación.");
+    }
+    return data;
+}
+
+async function sendGlobalStockVerificationCode(){
+    const button=document.getElementById("global-stock-send-code");
+    if(!button)return;
+
+    const original=button.textContent;
+    button.disabled=true;
+    button.textContent="ENVIANDO…";
+    msg("global-stock-message","");
+
+    try{
+        const data=await globalStockAuthorizationRequest({
+            action:"send",
+            returnOrigin:GLOBAL_STOCK_AUTH_FLOW?.returnOrigin||""
+        });
+
+        globalStockOtpChallengeId=String(data?.challengeId||"");
+        if(!globalStockOtpChallengeId){
+            throw new Error("No se pudo iniciar la verificación.");
+        }
+
+        document.getElementById("global-stock-otp-panel").hidden=false;
+        document.getElementById("global-stock-verify-code").hidden=false;
+        const help=document.getElementById("global-stock-otp-help");
+        if(help&&data?.maskedEmail){
+            help.textContent=`Enviamos el código a ${data.maskedEmail}. Vence en 10 minutos y solo puede usarse una vez.`;
+        }
+
+        msg(
+            "global-stock-message",
+            "Código enviado. Revisá el correo de la cuenta administradora.",
+            "ok"
+        );
+        document.getElementById("global-stock-otp")?.focus();
+    }catch(error){
+        msg("global-stock-message",error?.message||"No se pudo enviar el código.","error");
+    }finally{
+        button.disabled=false;
+        button.textContent=original;
+    }
+}
+
+async function verifyGlobalStockCode(){
+    const button=document.getElementById("global-stock-verify-code");
+    const input=document.getElementById("global-stock-otp");
+    if(!button||!input)return;
+
+    const code=String(input.value||"").replace(/\D/g,"").slice(0,6);
+    if(!/^\d{6}$/.test(code)){
+        msg("global-stock-message","Ingresá los 6 dígitos del código.","error");
+        input.focus();
+        return;
+    }
+
+    if(!globalStockOtpChallengeId){
+        msg("global-stock-message","Solicitá un código nuevo antes de continuar.","error");
+        return;
+    }
+
+    const original=button.textContent;
+    button.disabled=true;
+    button.textContent="VERIFICANDO…";
+    msg("global-stock-message","");
+
+    try{
+        const data=await globalStockAuthorizationRequest({
+            action:"verify",
+            challengeId:globalStockOtpChallengeId,
+            code,
+            returnOrigin:GLOBAL_STOCK_AUTH_FLOW?.returnOrigin||""
+        });
+
+        if(!data?.callbackUrl){
+            throw new Error("La autorización se verificó, pero falta la URL de retorno.");
+        }
+
+        msg(
+            "global-stock-message",
+            "Propiedad verificada. Volviendo a Global Stock…",
+            "ok"
+        );
+        location.assign(String(data.callbackUrl));
+    }catch(error){
+        msg("global-stock-message",error?.message||"El código no pudo validarse.","error");
+        input.select();
+    }finally{
+        button.disabled=false;
+        button.textContent=original;
+    }
+}
 
 async function globalStockAdminRequest(options={}){
     await refreshSessionIfNeeded();
@@ -2805,57 +2952,6 @@ async function loadGlobalStockIntegrations(){
             root.className="";
             root.innerHTML=`<div style="padding:20px;color:#d33">${esc(error?.message||"No se pudieron cargar las conexiones.")}</div>`;
         }
-    }
-}
-
-async function createGlobalStockIntegration(){
-    const button=document.getElementById("global-stock-create-token");
-    if(!button)return;
-    const original=button.textContent;
-    button.disabled=true;
-    button.textContent="CREANDO…";
-    msg("global-stock-message","");
-
-    try{
-        const data=await globalStockAdminRequest({
-            method:"POST",
-            body:JSON.stringify({name:"Global Stock · Dorado"})
-        });
-
-        const token=String(data?.token||"");
-        if(!token)throw new Error("El servidor no devolvió el token.");
-
-        const panel=document.getElementById("global-stock-token-panel");
-        const input=document.getElementById("global-stock-token");
-        if(input)input.value=token;
-        if(panel)panel.hidden=false;
-
-        msg(
-            "global-stock-message",
-            "Conexión creada. Copiá el token y pegalo en Global Stock. El token completo no vuelve a mostrarse.",
-            "ok"
-        );
-        await loadGlobalStockIntegrations();
-    }catch(error){
-        msg("global-stock-message",error?.message||"No se pudo crear el token.","error");
-    }finally{
-        button.disabled=false;
-        button.textContent=original;
-    }
-}
-
-async function copyGlobalStockToken(){
-    const input=document.getElementById("global-stock-token");
-    const value=String(input?.value||"").trim();
-    if(!value)return;
-
-    try{
-        await navigator.clipboard.writeText(value);
-        showToast("Token de Global Stock copiado.");
-    }catch{
-        input?.select();
-        document.execCommand("copy");
-        showToast("Token de Global Stock copiado.");
     }
 }
 
@@ -3103,8 +3199,17 @@ document.getElementById("recovery-update-form")?.addEventListener("submit",async
     }
 });
 
-document.getElementById("global-stock-create-token")?.addEventListener("click",createGlobalStockIntegration);
-document.getElementById("global-stock-copy-token")?.addEventListener("click",copyGlobalStockToken);
+document.getElementById("global-stock-send-code")?.addEventListener("click",sendGlobalStockVerificationCode);
+document.getElementById("global-stock-verify-code")?.addEventListener("click",verifyGlobalStockCode);
+document.getElementById("global-stock-otp")?.addEventListener("input",event=>{
+    event.target.value=String(event.target.value||"").replace(/\D/g,"").slice(0,6);
+});
+document.getElementById("global-stock-otp")?.addEventListener("keydown",event=>{
+    if(event.key==="Enter"){
+        event.preventDefault();
+        void verifyGlobalStockCode();
+    }
+});
 document.getElementById("global-stock-integrations")?.addEventListener("click",event=>{
     const button=event.target.closest?.("[data-global-stock-revoke]");
     if(!button)return;
@@ -3619,6 +3724,10 @@ document.addEventListener("keydown",e=>{
         if(await handleRecoveryCallback())return;
 
         session=readSession();
+        if(GLOBAL_STOCK_AUTH_FLOW&&session){
+            await logout(false);
+            session=null;
+        }
         if(!session)return;
         if(!await verifyAdmin()){
             logout(false);

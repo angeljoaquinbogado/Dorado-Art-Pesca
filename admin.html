@@ -224,9 +224,6 @@
         <button class="tab" data-tab="settings" type="button">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A8 8 0 0 0 7.5 7L5.1 6l-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .7.1 1.1l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a8 8 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1z"/></svg><span>CONFIGURACIÓN</span>
         </button>
-        <button class="tab" data-tab="global-stock" type="button">
-          <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M8 12h8M12 8v8"/></svg><span>GLOBAL STOCK</span>
-        </button>
       </nav>
       <div class="side-spacer"></div>
       <a class="store-link" href="/" target="_blank" rel="noopener">
@@ -731,33 +728,39 @@
             <div class="card">
               <div class="card-head">
                 <div>
-                  <span class="section-tag">INTEGRACIÓN SEGURA</span>
-                  <h2 style="margin-top:10px">Global Stock</h2>
-                  <p>Creá un token exclusivo para que Global Stock pueda comprobar que sos administrador de Dorado, leer el catálogo real y sincronizar stock sin compartir tu contraseña.</p>
+                  <span class="section-tag">VERIFICACIÓN DEL DUEÑO</span>
+                  <h2 style="margin-top:10px">Autorizar Global Stock</h2>
+                  <p>La contraseña se valida únicamente en Dorado. Para confirmar que sos el dueño o administrador, enviaremos además un código de 6 dígitos al correo de la cuenta administradora.</p>
                 </div>
               </div>
 
               <div class="form-section">
-                <div class="form-section-title">PERMISOS DE ESTA INTEGRACIÓN</div>
-                <div class="file-help">Catálogo: lectura · Stock: lectura y escritura · Pedidos: lectura. El token se guarda cifrado/hasheado del lado del servidor y puede revocarse cuando quieras.</div>
+                <div class="form-section-title">PERMISOS SOLICITADOS</div>
+                <div class="file-help">Catálogo: lectura · Stock: lectura y escritura · Pedidos: lectura. Global Stock nunca recibe tu contraseña de Dorado.</div>
               </div>
 
-              <div id="global-stock-token-panel" class="form-section" hidden>
-                <div class="form-section-title">TOKEN NUEVO · COPIALO AHORA</div>
+              <div id="global-stock-otp-panel" class="form-section" hidden>
+                <div class="form-section-title">CÓDIGO DE VERIFICACIÓN</div>
                 <div class="field">
-                  <label for="global-stock-token">TOKEN DE CONEXIÓN</label>
-                  <div class="gallery-url-row">
-                    <input id="global-stock-token" readonly autocomplete="off">
-                    <button id="global-stock-copy-token" class="secondary" type="button">COPIAR</button>
-                  </div>
-                  <div class="file-help">Por seguridad este token completo se muestra una sola vez. Pegalo en Global Stock cuando te pida verificar la propiedad.</div>
+                  <label for="global-stock-otp">CÓDIGO DE 6 DÍGITOS</label>
+                  <input
+                    id="global-stock-otp"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    placeholder="000000"
+                    style="letter-spacing:.34em;font-size:22px;font-weight:800;text-align:center"
+                  >
+                  <div id="global-stock-otp-help" class="file-help">El código vence en 10 minutos y solo puede usarse una vez.</div>
                 </div>
               </div>
 
-              <div id="global-stock-message" class="message"></div>
+              <div id="global-stock-message" class="message" aria-live="polite"></div>
 
               <div class="form-actions">
-                <button id="global-stock-create-token" class="primary" type="button">CREAR TOKEN DE CONEXIÓN</button>
+                <button id="global-stock-send-code" class="primary" type="button">ENVIAR CÓDIGO DE 6 DÍGITOS</button>
+                <button id="global-stock-verify-code" class="primary" type="button" hidden>VERIFICAR Y CONECTAR</button>
               </div>
             </div>
 
@@ -766,7 +769,7 @@
                 <div class="catalog-title-row">
                   <div>
                     <h2>Conexiones autorizadas</h2>
-                    <p>Revocá cualquier acceso que ya no uses.</p>
+                    <p>Los accesos son revocables. Una conexión nueva solo se crea después de validar sesión y código por email.</p>
                   </div>
                 </div>
               </div>
@@ -785,6 +788,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261001-sorttables2"></script>
+<script src="assets/js/admin.js?v=20261001-global-stock-otp"></script>
 </body>
 </html>
