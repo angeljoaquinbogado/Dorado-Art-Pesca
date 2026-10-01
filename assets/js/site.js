@@ -2759,20 +2759,20 @@ document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
 
 let brandMotionToken=0;
 let brandMotionAnimations=[];
-const BRAND_WAVE_DURATION_MS=240;
-const BRAND_WAVE_STAGGER_MS=34;
+const BRAND_WAVE_DURATION_MS=220;
+const BRAND_WAVE_STAGGER_MS=32;
+const BRAND_WAVE_OFFSET_PX=40;
 
 function brandWaveCards(section){
     return Array.from(section.querySelectorAll(".brand-marquee-set:first-child .brand-marquee-card"));
 }
 
-function cancelBrandMotion({commit=false}={}){
+function brandReducedMotion(){
+    return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+}
+
+function cancelBrandMotion(){
     brandMotionAnimations.forEach(animation=>{
-        try{
-            if(commit && animation.playState!=="finished" && typeof animation.commitStyles==="function"){
-                animation.commitStyles();
-            }
-        }catch{}
         try{animation.cancel();}catch{}
     });
     brandMotionAnimations=[];
@@ -2782,60 +2782,87 @@ function clearBrandMotionStyles(cards){
     cards.forEach(card=>{
         card.style.removeProperty("opacity");
         card.style.removeProperty("transform");
+        card.style.removeProperty("will-change");
     });
 }
 
-function runBrandWave(section,{opening,interrupted=false}){
+function snapshotBrandPresentation(cards){
+    return cards.map(card=>{
+        const style=getComputedStyle(card);
+        return {
+            opacity:Number.isFinite(Number.parseFloat(style.opacity))
+                ? Number.parseFloat(style.opacity)
+                : 1,
+            transform:style.transform && style.transform!=="none"
+                ? style.transform
+                : "translate3d(0,0,0) scale(1)"
+        };
+    });
+}
+
+function freezeBrandPresentation(cards,snapshot){
+    cards.forEach((card,index)=>{
+        const state=snapshot[index];
+        card.style.opacity=String(state?.opacity ?? 1);
+        card.style.transform=state?.transform || "translate3d(0,0,0) scale(1)";
+    });
+}
+
+function brandSpatialDelays(cards,stagger){
+    const ordered=cards
+        .map(card=>({card,rect:card.getBoundingClientRect()}))
+        .sort((a,b)=>(b.rect.right-a.rect.right)||(a.rect.top-b.rect.top));
+    const map=new Map();
+    ordered.forEach((entry,index)=>map.set(entry.card,index*stagger));
+    return map;
+}
+
+function animateBrandWave(section,{opening,fromSnapshot=null}){
     const cards=brandWaveCards(section);
     if(!cards.length)return Promise.resolve();
 
-    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const reduced=brandReducedMotion();
     const duration=reduced?160:BRAND_WAVE_DURATION_MS;
-    const stagger=reduced?16:BRAND_WAVE_STAGGER_MS;
-
+    const stagger=reduced?14:BRAND_WAVE_STAGGER_MS;
+    const delays=brandSpatialDelays(cards,stagger);
     section.classList.add("brands-motion-running");
 
     brandMotionAnimations=cards.map((card,index)=>{
-        const delay=(cards.length-1-index)*stagger;
-        const computed=getComputedStyle(card);
-        const liveOpacity=Number.parseFloat(computed.opacity);
-        const liveTransform=computed.transform && computed.transform!=="none"
-            ? computed.transform
-            : "translate3d(0,0,0) scale(1)";
-
-        let from;
-        let to;
-
-        if(opening){
-            from=interrupted
+        const live=fromSnapshot?.[index];
+        const from=live
+            ? {
+                opacity:live.opacity,
+                transform:reduced?"none":live.transform
+            }
+            : opening
                 ? {
-                    opacity:Number.isFinite(liveOpacity)?liveOpacity:1,
-                    transform:reduced?"none":liveTransform
+                    opacity:0,
+                    transform:reduced
+                        ?"none"
+                        : `translate3d(${BRAND_WAVE_OFFSET_PX}px,0,0) scale(.985)`
                 }
                 : {
-                    opacity:reduced?.55:0,
-                    transform:reduced?"none":"translate3d(44px,0,0) scale(.985)"
+                    opacity:1,
+                    transform:reduced?"none":"translate3d(0,0,0) scale(1)"
                 };
-            to={
+
+        const to=opening
+            ? {
                 opacity:1,
                 transform:reduced?"none":"translate3d(0,0,0) scale(1)"
+            }
+            : {
+                opacity:0,
+                transform:reduced
+                    ?"none"
+                    : `translate3d(-${BRAND_WAVE_OFFSET_PX}px,0,0) scale(.985)`
             };
-        }else{
-            from={
-                opacity:Number.isFinite(liveOpacity)?liveOpacity:1,
-                transform:reduced?"none":liveTransform
-            };
-            to={
-                // Keep a trace of the cards on the final frame so the marquee
-                // can take over immediately without a white/empty flash.
-                opacity:reduced?.35:.18,
-                transform:reduced?"none":"translate3d(-44px,0,0) scale(.985)"
-            };
-        }
+
+        card.style.willChange=reduced?"opacity":"transform, opacity";
 
         return card.animate([from,to],{
             duration,
-            delay,
+            delay:delays.get(card)||0,
             easing:"cubic-bezier(0.23, 1, 0.32, 1)",
             fill:"both"
         });
@@ -2850,40 +2877,63 @@ function actualizarVistaTodasMarcas(force=null){
     if(!section||!button)return;
 
     const next=typeof force==="boolean" ? force : !marcasExpandidas;
-    marcasExpandidas=next;
-    const token=++brandMotionToken;
+    const cards=brandWaveCards(section);
     const hadActiveMotion=brandMotionAnimations.some(animation=>
         animation.playState==="running" || animation.playState==="pending"
     );
+    const liveSnapshot=hadActiveMotion ? snapshotBrandPresentation(cards) : null;
 
-    if(hadActiveMotion)cancelBrandMotion({commit:true});
-    else cancelBrandMotion();
+    brandMotionToken+=1;
+    const token=brandMotionToken;
+    marcasExpandidas=next;
 
-    section.classList.remove("brands-opening","brands-closing");
+    if(hadActiveMotion){
+        freezeBrandPresentation(cards,liveSnapshot);
+    }
+
+    cancelBrandMotion();
+    section.classList.remove("brands-opening","brands-closing","brands-motion-running");
 
     if(next){
-        section.classList.add("brands-expanded");
+        // Hide/move the cards BEFORE the expanded layout becomes visible.
+        // This avoids the one-frame "everything appeared at once" flash.
+        if(!liveSnapshot){
+            cards.forEach(card=>{
+                card.style.opacity="0";
+                card.style.transform=brandReducedMotion()
+                    ?"none"
+                    : `translate3d(${BRAND_WAVE_OFFSET_PX}px,0,0) scale(.985)`;
+            });
+        }
 
-        runBrandWave(section,{opening:true,interrupted:hadActiveMotion}).then(()=>{
+        section.classList.add("brands-expanded");
+        void section.offsetWidth;
+
+        const openingSnapshot=liveSnapshot || cards.map(()=>({
+            opacity:0,
+            transform:brandReducedMotion()
+                ?"none"
+                : `translate3d(${BRAND_WAVE_OFFSET_PX}px,0,0) scale(.985)`
+        }));
+
+        animateBrandWave(section,{opening:true,fromSnapshot:openingSnapshot}).then(()=>{
             if(token!==brandMotionToken || !marcasExpandidas)return;
-            const cards=brandWaveCards(section);
             cancelBrandMotion();
             clearBrandMotionStyles(cards);
             section.classList.remove("brands-motion-running");
         });
     }else{
-        // Keep the expanded layout in place while the wave leaves. Collapse
-        // exactly when the last card finishes instead of waiting on a timer.
+        // Keep the expanded grid mounted until the final card has left.
         section.classList.add("brands-expanded");
+        const closingSnapshot=liveSnapshot || snapshotBrandPresentation(cards);
 
-        runBrandWave(section,{opening:false,interrupted:hadActiveMotion}).then(()=>{
+        animateBrandWave(section,{opening:false,fromSnapshot:closingSnapshot}).then(()=>{
             if(token!==brandMotionToken || marcasExpandidas)return;
-            const cards=brandWaveCards(section);
 
-            // Switch back to the normal marquee in the same frame. Because the
-            // exit ends above zero opacity, there is no blank frame in between.
-            section.classList.remove("brands-expanded","brands-motion-running");
+            // Collapse + cleanup synchronously before the browser paints again:
+            // the marquee replaces the grid without a blank frame.
             cancelBrandMotion();
+            section.classList.remove("brands-expanded","brands-motion-running");
             clearBrandMotionStyles(cards);
         });
     }
