@@ -28,9 +28,11 @@ let productoModalActual = null;
 let checkoutCoupon = null;
 let doradoPublicConfigPromise = null;
 let marcaActiva = "todas";
-let catalogoExpandido = false;
+let catalogoVisibleLimit = 12;
+let catalogoRevealFrom = 0;
 let marcasExpandidas = false;
 const CATALOG_INITIAL_LIMIT = 12;
+const CATALOG_BATCH_SIZE = 12;
 
 const DORADO_BRANDS = [
     { name:"Shimano", key:"shimano", sprite:0 },
@@ -2475,7 +2477,7 @@ function seleccionarMarca(key,{scroll=false}={}){
 
     marcaActiva=brand.key;
     categoriaActiva="todos";
-    catalogoExpandido=true;
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
     const search=document.getElementById("product-search");
     if(search)search.value="";
@@ -2496,7 +2498,7 @@ function seleccionarMarca(key,{scroll=false}={}){
 function limpiarMarcaSeleccionada({scroll=false}={}){
     marcaActiva="todas";
     categoriaActiva="todos";
-    catalogoExpandido=false;
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
     const search=document.getElementById("product-search");
     if(search)search.value="";
@@ -2590,6 +2592,9 @@ function construirFiltrosCategorias(productos = []) {
             categoriaActiva=key;
         }
 
+        catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+        catalogoRevealFrom=0;
+
         wrap.querySelectorAll(".category-chip").forEach(b=>{
             const active=(b.dataset.category||"todos")===categoriaActiva;
             b.classList.toggle("active",active);
@@ -2624,6 +2629,7 @@ function actualizarFiltroCatalogo() {
 
     let matches = 0;
     let shown = 0;
+    let newlyShownOrder = 0;
 
     cards.forEach(card => {
         const coincideTexto = !query || normalizarTextoBusqueda(card.dataset.search || card.textContent || "").includes(query);
@@ -2633,14 +2639,29 @@ function actualizarFiltroCatalogo() {
 
         if(coincide)matches += 1;
 
-        const overInitialLimit = coincide &&
-            !hasActiveFilter &&
-            !catalogoExpandido &&
-            matches > CATALOG_INITIAL_LIMIT;
+        const visible = coincide && matches <= catalogoVisibleLimit;
+        card.hidden = !visible;
 
-        card.hidden = !coincide || overInitialLimit;
-        if(coincide&&!overInitialLimit)shown += 1;
+        if(visible){
+            shown += 1;
+
+            const isNewBatch = catalogoRevealFrom > 0 &&
+                matches > catalogoRevealFrom &&
+                matches <= catalogoVisibleLimit;
+
+            if(isNewBatch){
+                card.classList.remove("catalog-batch-enter");
+                card.style.setProperty("--catalog-batch-order",String(newlyShownOrder++));
+                void card.offsetWidth;
+                card.classList.add("catalog-batch-enter");
+                window.setTimeout(()=>card.classList.remove("catalog-batch-enter"),900);
+            }
+        }else{
+            card.classList.remove("catalog-batch-enter");
+        }
     });
+
+    catalogoRevealFrom=0;
 
     if (clear) clear.hidden = !query;
 
@@ -2666,22 +2687,29 @@ function actualizarFiltroCatalogo() {
 
     if (contador) {
         if (!cards.length) contador.textContent = "Sin productos disponibles";
-        else if (hasActiveFilter) contador.textContent = `${matches} ${matches === 1 ? "resultado" : "resultados"}`;
-        else if(!catalogoExpandido && matches>CATALOG_INITIAL_LIMIT) contador.textContent = `Mostrando ${shown} de ${matches} productos`;
-        else contador.textContent = `${matches} ${matches === 1 ? "producto" : "productos"} disponibles`;
+        else if(matches===0) contador.textContent = "Sin resultados";
+        else if(matches>shown) contador.textContent = `Mostrando ${shown} de ${matches} ${hasActiveFilter?"resultados":"productos"}`;
+        else contador.textContent = `${matches} ${hasActiveFilter?(matches===1?"resultado":"resultados"):(matches===1?"producto":"productos disponibles")}`;
     }
 
     if(moreWrap&&moreButton){
-        const shouldOfferMore=!hasActiveFilter&&matches>CATALOG_INITIAL_LIMIT;
-        moreWrap.hidden=!shouldOfferMore;
-        moreButton.setAttribute("aria-expanded",String(catalogoExpandido));
+        const hasMore = shown < matches;
+        const canCollapse = !hasMore && matches > CATALOG_INITIAL_LIMIT && catalogoVisibleLimit > CATALOG_INITIAL_LIMIT;
+        moreWrap.hidden = !(hasMore || canCollapse);
+        moreButton.dataset.hasMore=String(hasMore);
+        moreButton.setAttribute("aria-expanded",String(catalogoVisibleLimit>CATALOG_INITIAL_LIMIT));
+        moreButton.classList.toggle("expanded",catalogoVisibleLimit>CATALOG_INITIAL_LIMIT);
+
         const label=moreButton.querySelector("span");
         if(label){
-            label.textContent=catalogoExpandido
-                ? "MOSTRAR MENOS"
-                : `VER TODOS LOS ${matches} PRODUCTOS`;
+            if(hasMore){
+                const remaining=matches-shown;
+                const nextCount=Math.min(CATALOG_BATCH_SIZE,remaining);
+                label.textContent=nextCount===1?"VER 1 PRODUCTO MÁS":`VER ${nextCount} PRODUCTOS MÁS`;
+            }else if(canCollapse){
+                label.textContent="MOSTRAR MENOS";
+            }
         }
-        moreButton.classList.toggle("expanded",catalogoExpandido);
     }
 }
 
@@ -2698,23 +2726,33 @@ productSearch?.addEventListener("input",()=>{
         construirMarcas([...catalogoProductos.values()]);
     }
 
-    catalogoExpandido=Boolean(query);
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
     actualizarFiltroCatalogo();
 });
 document.getElementById("product-search-clear")?.addEventListener("click",()=>{
     if(!productSearch) return;
     productSearch.value="";
     productSearch.focus();
-    catalogoExpandido=false;
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
     actualizarFiltroCatalogo();
 });
 
 document.getElementById("catalog-more-button")?.addEventListener("click",()=>{
-    catalogoExpandido=!catalogoExpandido;
-    actualizarFiltroCatalogo();
-    if(!catalogoExpandido){
-        document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
+    const button=document.getElementById("catalog-more-button");
+    const hasMore=button?.dataset.hasMore==="true";
+
+    if(hasMore){
+        catalogoRevealFrom=catalogoVisibleLimit;
+        catalogoVisibleLimit+=CATALOG_BATCH_SIZE;
+        actualizarFiltroCatalogo();
+        return;
     }
+
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    actualizarFiltroCatalogo();
+    document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
 });
 
 document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
@@ -2978,7 +3016,7 @@ comprobarRetornoPago();
         const key=String(button.dataset.mobileCategory||"todos");
         marcaActiva="todas";
         categoriaActiva=key;
-        catalogoExpandido=true;
+        catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
         const search=document.getElementById("product-search");
         if(search)search.value="";
@@ -3055,7 +3093,7 @@ comprobarRetornoPago();
     const query=String(searchInput?.value||"").trim();
     marcaActiva="todas";
     categoriaActiva="todos";
-    catalogoExpandido=true;
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
     const search=document.getElementById("product-search");
     if(search){
