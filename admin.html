@@ -126,7 +126,7 @@
 <link rel="stylesheet" href="assets/css/admin-stability-final-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-layout-hotfix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-stock-control-20261001.css?v=20261001a"/>
-<link rel="stylesheet" href="assets/css/admin-commercial-settings-20261001.css?v=20261001b"/>
+<link rel="stylesheet" href="assets/css/admin-commercial-settings-20261001.css?v=20261001c"/>
 </head>
 <body>
 
@@ -574,54 +574,101 @@
               <section class="card commercial-settings-card">
                 <div class="settings-card-head"><span>03</span><div><h3>Horarios</h3><p>También controlan “Local abierto / cerrado”.</p></div></div>
                 <div class="settings-hours">
-                  <div class="settings-hours-row settings-hours-double">
-                    <strong>Lunes a viernes</strong>
-                    <div class="settings-time-group">
-                      <small>Mañana</small>
-                      <div class="settings-time-range">
-                        <input id="settings-weekday-am-open" type="time" aria-label="Apertura de mañana de lunes a viernes">
-                        <span>—</span>
-                        <input id="settings-weekday-am-close" type="time" aria-label="Cierre de mañana de lunes a viernes">
+                  <section class="settings-hours-day" aria-labelledby="settings-hours-weekdays-label">
+                    <div class="settings-hours-day-head">
+                      <div>
+                        <strong id="settings-hours-weekdays-label">Lunes a viernes</strong>
+                        <small>Dos turnos</small>
                       </div>
                     </div>
-                    <div class="settings-time-group">
-                      <small>Tarde</small>
-                      <div class="settings-time-range">
-                        <input id="settings-weekday-pm-open" type="time" aria-label="Apertura de tarde de lunes a viernes">
-                        <span>—</span>
-                        <input id="settings-weekday-pm-close" type="time" aria-label="Cierre de tarde de lunes a viernes">
-                      </div>
-                    </div>
-                  </div>
 
-                  <div class="settings-hours-row settings-hours-single">
-                    <strong>Sábado</strong>
-                    <div class="settings-time-group settings-time-group-full">
-                      <small>Horario</small>
-                      <div class="settings-time-range">
-                        <input id="settings-sat-open" type="time" aria-label="Apertura del sábado">
-                        <span>—</span>
-                        <input id="settings-sat-close" type="time" aria-label="Cierre del sábado">
+                    <div class="settings-hours-periods">
+                      <div class="settings-time-group">
+                        <div class="settings-time-group-head"><span>Mañana</span><small>Primer turno</small></div>
+                        <div class="settings-time-range">
+                          <label>
+                            <span>Abre</span>
+                            <input id="settings-weekday-am-open" type="time" aria-label="Apertura de mañana de lunes a viernes">
+                          </label>
+                          <i aria-hidden="true">→</i>
+                          <label>
+                            <span>Cierra</span>
+                            <input id="settings-weekday-am-close" type="time" aria-label="Cierre de mañana de lunes a viernes">
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="settings-time-group">
+                        <div class="settings-time-group-head"><span>Tarde</span><small>Segundo turno</small></div>
+                        <div class="settings-time-range">
+                          <label>
+                            <span>Abre</span>
+                            <input id="settings-weekday-pm-open" type="time" aria-label="Apertura de tarde de lunes a viernes">
+                          </label>
+                          <i aria-hidden="true">→</i>
+                          <label>
+                            <span>Cierra</span>
+                            <input id="settings-weekday-pm-close" type="time" aria-label="Cierre de tarde de lunes a viernes">
+                          </label>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </section>
+
+                  <section class="settings-hours-day" aria-labelledby="settings-hours-saturday-label">
+                    <div class="settings-hours-day-head">
+                      <div>
+                        <strong id="settings-hours-saturday-label">Sábado</strong>
+                        <small>Un turno</small>
+                      </div>
+                    </div>
+                    <div class="settings-hours-periods is-single">
+                      <div class="settings-time-group">
+                        <div class="settings-time-group-head"><span>Horario</span><small>Jornada del sábado</small></div>
+                        <div class="settings-time-range">
+                          <label>
+                            <span>Abre</span>
+                            <input id="settings-sat-open" type="time" aria-label="Apertura del sábado">
+                          </label>
+                          <i aria-hidden="true">→</i>
+                          <label>
+                            <span>Cierra</span>
+                            <input id="settings-sat-close" type="time" aria-label="Cierre del sábado">
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
 
                   <label class="settings-toggle-row settings-sunday-toggle">
                     <input id="settings-sun-enabled" type="checkbox">
                     <span><strong>Abrir los domingos</strong><small>Si está desactivado, en la tienda figurará como cerrado.</small></span>
                   </label>
 
-                  <div class="settings-hours-row settings-hours-single" id="settings-sunday-hours">
-                    <strong>Domingo</strong>
-                    <div class="settings-time-group settings-time-group-full">
-                      <small>Horario</small>
-                      <div class="settings-time-range">
-                        <input id="settings-sun-open" type="time" aria-label="Apertura del domingo">
-                        <span>—</span>
-                        <input id="settings-sun-close" type="time" aria-label="Cierre del domingo">
+                  <section class="settings-hours-day settings-sunday-hours" id="settings-sunday-hours" aria-labelledby="settings-hours-sunday-label">
+                    <div class="settings-hours-day-head">
+                      <div>
+                        <strong id="settings-hours-sunday-label">Domingo</strong>
+                        <small>Horario opcional</small>
                       </div>
                     </div>
-                  </div>
+                    <div class="settings-hours-periods is-single">
+                      <div class="settings-time-group">
+                        <div class="settings-time-group-head"><span>Horario</span><small>Jornada del domingo</small></div>
+                        <div class="settings-time-range">
+                          <label>
+                            <span>Abre</span>
+                            <input id="settings-sun-open" type="time" aria-label="Apertura del domingo">
+                          </label>
+                          <i aria-hidden="true">→</i>
+                          <label>
+                            <span>Cierra</span>
+                            <input id="settings-sun-close" type="time" aria-label="Cierre del domingo">
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
                 </div>
               </section>
 
