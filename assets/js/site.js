@@ -311,17 +311,24 @@ function cantidadTotal(carrito = leerCarrito()) {
     );
 }
 
-function obtenerCantidad(input, maximo) {
-    const max = Math.max(1, Number(maximo) || 1);
+function productoControlaStock(producto) {
+    return producto?.control_stock === true;
+}
+
+function obtenerCantidad(input, maximo = null) {
+    const limitado = maximo !== null && maximo !== undefined && Number.isFinite(Number(maximo));
+    const max = limitado ? Math.max(1, Math.floor(Number(maximo) || 1)) : null;
     const valor = Math.floor(Number(input?.value) || 1);
-    const cantidad = Math.min(max, Math.max(1, valor));
+    const cantidad = max === null
+        ? Math.max(1, valor)
+        : Math.min(max, Math.max(1, valor));
 
     if (input) input.value = cantidad;
 
     return cantidad;
 }
 
-function actualizarBotonesCantidad(contenedor, maximo) {
+function actualizarBotonesCantidad(contenedor, maximo = null) {
     if (!contenedor) return;
 
     const input = contenedor.querySelector(".qty-input");
@@ -330,14 +337,15 @@ function actualizarBotonesCantidad(contenedor, maximo) {
 
     if (!input) return;
 
-    const max = Math.max(1, Number(maximo) || 1);
+    const limitado = maximo !== null && maximo !== undefined && Number.isFinite(Number(maximo));
+    const max = limitado ? Math.max(1, Math.floor(Number(maximo) || 1)) : null;
     const cantidad = obtenerCantidad(input, max);
 
     if (menos) menos.disabled = cantidad <= 1;
-    if (mas) mas.disabled = cantidad >= max;
+    if (mas) mas.disabled = max !== null && cantidad >= max;
 }
 
-function configurarSelectorCantidad(contenedor, maximo, alCambiar = null) {
+function configurarSelectorCantidad(contenedor, maximo = null, alCambiar = null) {
     if (!contenedor) return;
 
     const input = contenedor.querySelector(".qty-input");
@@ -346,12 +354,16 @@ function configurarSelectorCantidad(contenedor, maximo, alCambiar = null) {
 
     if (!input) return;
 
-    const max = Math.max(1, Number(maximo) || 1);
+    const limitado = maximo !== null && maximo !== undefined && Number.isFinite(Number(maximo));
+    const max = limitado ? Math.max(1, Math.floor(Number(maximo) || 1)) : null;
+
     input.min = "1";
-    input.max = String(max);
+    if (max === null) input.removeAttribute("max");
+    else input.max = String(max);
 
     const aplicar = (nuevaCantidad) => {
-        input.value = Math.min(max, Math.max(1, Math.floor(nuevaCantidad || 1)));
+        const normalizada = Math.max(1, Math.floor(Number(nuevaCantidad) || 1));
+        input.value = max === null ? normalizada : Math.min(max, normalizada);
         actualizarBotonesCantidad(contenedor, max);
         if (typeof alCambiar === "function") {
             alCambiar(Number(input.value));
@@ -381,7 +393,7 @@ async function cargarMasElegidos(){
         const response=await fetch("/api/best-sellers",{headers:{Accept:"application/json"},cache:"default"});
         const data=await response.json().catch(()=>({}));
         if(!response.ok||!Array.isArray(data.ids))return;
-        const products=data.ids.map(id=>catalogoProductos.get(String(id))).filter(Boolean).filter(product=>Math.max(0,Number(product.stock)||0)>0).slice(0,6);
+        const products=data.ids.map(id=>catalogoProductos.get(String(id))).filter(Boolean).filter(product=>!productoControlaStock(product)||Math.max(0,Number(product.stock)||0)>0).slice(0,6);
         if(!products.length)return;
         grid.innerHTML="";
         products.forEach(product=>{
@@ -506,8 +518,9 @@ async function cargarProductosDesdeSupabase() {
                 producto.caracteristicas || ""
             ].join(" "));
 
+            const controlaStock = productoControlaStock(producto);
             const stock = Math.max(0, Number(producto.stock) || 0);
-            const sinStock = stock <= 0;
+            const sinStock = controlaStock && stock <= 0;
             const imagen = imagenSegura(producto.imagen);
 
             tarjeta.innerHTML = `
@@ -536,9 +549,9 @@ async function cargarProductosDesdeSupabase() {
                             : `<span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span>`}
                     </div>
 
-                    <div class="product-stock">
+                    <div class="product-stock" ${controlaStock ? "" : "hidden"}>
    
-                    ${sinStock
+                    ${!controlaStock ? "" : sinStock
        
                         ? "SIN STOCK"
         
@@ -580,7 +593,7 @@ async function cargarProductosDesdeSupabase() {
                                     class="qty-input"
                                     type="number"
                                     min="1"
-                                    max="${Math.max(1, stock)}"
+                                    ${controlaStock ? `max="${Math.max(1, stock)}"` : ""}
                                     value="1"
                                     inputmode="numeric"
                                     aria-label="Cantidad de unidades"
@@ -642,13 +655,14 @@ async function cargarProductosDesdeSupabase() {
             });
 
             if (!sinStock && selector && input) {
-                configurarSelectorCantidad(selector, stock);
+                const maximoCantidad = controlaStock ? stock : null;
+                configurarSelectorCantidad(selector, maximoCantidad);
 
                 botonAgregar?.addEventListener("click", () => {
-                    const cantidad = obtenerCantidad(input, stock);
+                    const cantidad = obtenerCantidad(input, maximoCantidad);
                     agregarAlCarrito(producto, cantidad);
                     input.value = "1";
-                    actualizarBotonesCantidad(selector, stock);
+                    actualizarBotonesCantidad(selector, maximoCantidad);
                 });
             }
 
@@ -700,15 +714,16 @@ function sincronizarCarritoConCatalogo() {
                 return null;
             }
 
+            const controlaStock = productoControlaStock(producto);
             const stock = Math.max(0, Number(producto.stock) || 0);
 
-            if (stock <= 0) {
+            if (controlaStock && stock <= 0) {
                 cambio = true;
                 return null;
             }
 
             const cantidadActual = Math.max(1, Number(item.cantidad) || 1);
-            const cantidad = Math.min(cantidadActual, stock);
+            const cantidad = controlaStock ? Math.min(cantidadActual, stock) : cantidadActual;
 
             const nuevo = {
                 id: producto.id,
@@ -717,6 +732,7 @@ function sincronizarCarritoConCatalogo() {
                 imagen: imagenSegura(producto.imagen),
                 categoria: producto.categoria || "Producto",
                 stock,
+                control_stock: controlaStock,
                 cantidad
             };
 
@@ -725,6 +741,7 @@ function sincronizarCarritoConCatalogo() {
                 Number(item.precio) !== nuevo.precio ||
                 String(item.imagen) !== String(nuevo.imagen) ||
                 Number(item.stock) !== nuevo.stock ||
+                Boolean(item.control_stock) !== nuevo.control_stock ||
                 Number(item.cantidad) !== nuevo.cantidad ||
                 String(item.categoria || "") !== String(nuevo.categoria)
             ) {
@@ -807,7 +824,7 @@ function renderProductosRelacionados(modal, producto){
     const categoria=String(producto?.categoria||"").trim().toLowerCase();
     const relacionados=[...catalogoProductos.values()]
         .filter(item=>String(item.id)!==String(producto?.id))
-        .filter(item=>Math.max(0,Number(item.stock)||0)>0)
+        .filter(item=>!productoControlaStock(item)||Math.max(0,Number(item.stock)||0)>0)
         .filter(item=>!categoria||String(item.categoria||"").trim().toLowerCase()===categoria)
         .slice(0,3);
     wrap.hidden=relacionados.length===0;
@@ -830,7 +847,10 @@ function verProducto(producto) {
     productoModalActual = producto;
     renderProductosRelacionados(modal, producto);
 
+    const controlaStock = productoControlaStock(producto);
     const stock = Math.max(0, Number(producto.stock) || 0);
+    const disponible = !controlaStock || stock > 0;
+    const maximoCantidad = controlaStock ? stock : null;
     renderGaleriaProducto(modal, producto);
 
     const categoria = modal.querySelector(".dynamic-product-category");
@@ -869,17 +889,20 @@ function verProducto(producto) {
 
     const stockElemento = modal.querySelector(".dynamic-product-stock");
 
-if (stockElemento) {
-    if (stock <= 0) {
-        stockElemento.textContent = "SIN STOCK";
-    } else if (stock === 1) {
-        stockElemento.textContent = "🔥 ¡Última unidad!";
-    } else if (stock <= 3) {
-        stockElemento.textContent = `🔥 ¡Últimas ${stock} unidades!`;
-    } else {
-        stockElemento.textContent = `${stock} disponibles`;
+    if (stockElemento) {
+        stockElemento.hidden = !controlaStock;
+        if (controlaStock) {
+            if (stock <= 0) {
+                stockElemento.textContent = "SIN STOCK";
+            } else if (stock === 1) {
+                stockElemento.textContent = "🔥 ¡Última unidad!";
+            } else if (stock <= 3) {
+                stockElemento.textContent = `🔥 ¡Últimas ${stock} unidades!`;
+            } else {
+                stockElemento.textContent = `${stock} disponibles`;
+            }
+        }
     }
-}
 
     const bloqueCantidad = modal.querySelector(".quantity-block");
     const selector = modal.querySelector(".quantity-selector");
@@ -889,38 +912,39 @@ if (stockElemento) {
 
     if (input) {
         input.value = "1";
-        input.disabled = stock <= 0;
+        input.disabled = !disponible;
     }
 
     if (bloqueCantidad) {
-        bloqueCantidad.style.opacity = stock > 0 ? "1" : ".45";
+        bloqueCantidad.style.opacity = disponible ? "1" : ".45";
     }
 
     if (ayuda) {
-        ayuda.textContent =
-            stock > 0
-                ? `Podés elegir entre 1 y ${stock}.`
-                : "Este producto no tiene stock.";
+        ayuda.hidden = !controlaStock;
+        ayuda.textContent = controlaStock
+            ? (stock > 0 ? `Podés elegir entre 1 y ${stock}.` : "Este producto no tiene stock.")
+            : "";
     }
 
-    if (selector && stock > 0) {
-        configurarSelectorCantidad(selector, stock);
+    if (selector && disponible) {
+        selector.querySelectorAll("button").forEach(btn => btn.disabled = false);
+        configurarSelectorCantidad(selector, maximoCantidad);
     }
 
-    if (selector && stock <= 0) {
+    if (selector && !disponible) {
         selector.querySelectorAll("button").forEach(btn => btn.disabled = true);
     }
 
     if (boton) {
-        boton.disabled = stock <= 0;
-        boton.innerHTML = stock > 0
+        boton.disabled = !disponible;
+        boton.innerHTML = disponible
             ? '<svg class="ui-icon" aria-hidden="true"><use href="#i-cart"></use></svg><span>Agregar al carrito</span>'
             : "<span>SIN STOCK</span>";
 
         boton.onclick = () => {
-            if (stock <= 0) return;
+            if (!disponible) return;
 
-            const cantidad = obtenerCantidad(input, stock);
+            const cantidad = obtenerCantidad(input, maximoCantidad);
             agregarAlCarrito(producto, cantidad);
             cerrarProductoDinamico();
         };
@@ -928,8 +952,8 @@ if (stockElemento) {
 
     const botonMobile = modal.querySelector(".dynamic-add-cart-mobile");
     if (botonMobile) {
-        botonMobile.disabled = stock <= 0;
-        botonMobile.innerHTML = stock > 0
+        botonMobile.disabled = !disponible;
+        botonMobile.innerHTML = disponible
             ? '<svg class="ui-icon" aria-hidden="true"><use href="#i-cart"></use></svg><span>Agregar</span>'
             : "<span>SIN STOCK</span>";
         botonMobile.onclick = () => boton?.click();
@@ -1005,9 +1029,10 @@ function mostrarToastCarrito(
 
 function agregarAlCarrito(producto, cantidadSolicitada = 1) {
     const carrito = leerCarrito();
+    const controlaStock = productoControlaStock(producto);
     const stock = Math.max(0, Number(producto.stock) || 0);
 
-    if (stock <= 0) {
+    if (controlaStock && stock <= 0) {
         mostrarToastCarrito(
             "Producto sin stock",
             "Este producto no está disponible en este momento."
@@ -1020,10 +1045,10 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
     );
 
     const actual = existente ? Math.max(0, Number(existente.cantidad) || 0) : 0;
-    const disponible = Math.max(0, stock - actual);
+    const disponible = controlaStock ? Math.max(0, stock - actual) : Number.POSITIVE_INFINITY;
     const solicitada = Math.max(1, Math.floor(Number(cantidadSolicitada) || 1));
 
-    if (disponible <= 0) {
+    if (controlaStock && disponible <= 0) {
         mostrarToastCarrito(
             "Stock máximo alcanzado",
             "Ya agregaste todas las unidades disponibles."
@@ -1031,7 +1056,7 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
         return;
     }
 
-    const agregar = Math.min(solicitada, disponible);
+    const agregar = controlaStock ? Math.min(solicitada, disponible) : solicitada;
 
     if (existente) {
         existente.cantidad = actual + agregar;
@@ -1040,6 +1065,7 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
         existente.imagen = imagenSegura(producto.imagen);
         existente.categoria = producto.categoria || existente.categoria || "Producto";
         existente.stock = stock;
+        existente.control_stock = controlaStock;
     } else {
         carrito.push({
             id: producto.id,
@@ -1048,13 +1074,14 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
             imagen: imagenSegura(producto.imagen),
             categoria: producto.categoria || "Producto",
             stock,
+            control_stock: controlaStock,
             cantidad: agregar
         });
     }
 
     guardarCarrito(carrito);
 
-    if (agregar < solicitada) {
+    if (controlaStock && agregar < solicitada) {
         mostrarToastCarrito(
             "Stock limitado",
             `Se agregaron ${agregar} de ${solicitada} unidades solicitadas.`
@@ -1077,11 +1104,10 @@ function cambiarCantidadCarrito(id, nuevaCantidad) {
 
     if (!item) return;
 
+    const controlaStock = item.control_stock === true;
     const stock = Math.max(1, Number(item.stock) || 1);
-    const cantidad = Math.min(
-        stock,
-        Math.max(1, Math.floor(Number(nuevaCantidad) || 1))
-    );
+    const normalizada = Math.max(1, Math.floor(Number(nuevaCantidad) || 1));
+    const cantidad = controlaStock ? Math.min(stock, normalizada) : normalizada;
 
     item.cantidad = cantidad;
     guardarCarrito(carrito);
@@ -1194,11 +1220,10 @@ function renderCarrito() {
     }
 
     carrito.forEach(item => {
+        const controlaStock = item.control_stock === true;
         const stock = Math.max(1, Number(item.stock) || 1);
-        const cantidad = Math.min(
-            stock,
-            Math.max(1, Number(item.cantidad) || 1)
-        );
+        const cantidadBase = Math.max(1, Number(item.cantidad) || 1);
+        const cantidad = controlaStock ? Math.min(stock, cantidadBase) : cantidadBase;
         const precio = Number(item.precio) || 0;
 
         const elemento = document.createElement("article");
@@ -1246,7 +1271,7 @@ function renderCarrito() {
                             class="qty-input"
                             type="number"
                             min="1"
-                            max="${stock}"
+                            ${controlaStock ? `max="${stock}"` : ""}
                             value="${cantidad}"
                             inputmode="numeric"
                             aria-label="Cantidad de ${textoSeguro(item.nombre || "producto")}"
@@ -1278,7 +1303,7 @@ function renderCarrito() {
         if (selector && input) {
             configurarSelectorCantidad(
                 selector,
-                stock,
+                controlaStock ? stock : null,
                 nuevaCantidad => cambiarCantidadCarrito(item.id, nuevaCantidad)
             );
         }
@@ -2657,7 +2682,7 @@ function actualizarVistaTodasMarcas(force=null){
         section.classList.add("brands-closing");
         brandsCollapseTimer=window.setTimeout(()=>{
             section.classList.remove("brands-expanded","brands-closing");
-        },300);
+        },520);
     }
 
     button.setAttribute("aria-expanded",String(next));

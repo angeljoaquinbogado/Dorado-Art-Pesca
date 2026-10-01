@@ -1,0 +1,140 @@
+/* Dorado owner update · 2026-10-01
+   Stock UX, legal footer and fluid right-to-left brand wave. */
+
+.product-stock[hidden],
+.dynamic-product-stock[hidden],
+.dynamic-qty-help[hidden]{
+  display:none!important;
+}
+
+/* "Ver todas las marcas": one centered set, no duplicate marquee copy. */
+#marcas.brands-expanded .brand-marquee-shell{
+  overflow:hidden!important;
+}
+#marcas.brands-expanded .brand-marquee-track{
+  display:block!important;
+  width:100%!important;
+  transform:none!important;
+  animation:none!important;
+}
+#marcas.brands-expanded .brand-marquee-set:first-child{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  align-items:stretch!important;
+  width:100%!important;
+  gap:10px!important;
+  padding:10px!important;
+}
+#marcas.brands-expanded .brand-marquee-set[aria-hidden="true"]{
+  display:none!important;
+}
+
+#marcas.brands-expanded .brand-marquee-card{
+  --brand-wave-delay:0ms;
+  animation:none!important;
+  opacity:1!important;
+  transform:translate3d(0,0,0) scale(1)!important;
+  transform-origin:center center!important;
+  transition:
+    transform 280ms cubic-bezier(.32,.72,0,1) var(--brand-wave-delay),
+    opacity 220ms cubic-bezier(.23,1,.32,1) var(--brand-wave-delay),
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease!important;
+  will-change:transform,opacity!important;
+}
+
+/* Rightmost card moves first, so the wave travels right → left. */
+#marcas.brands-expanded .brand-marquee-card:nth-child(1){--brand-wave-delay:192ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(2){--brand-wave-delay:168ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(3){--brand-wave-delay:144ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(4){--brand-wave-delay:120ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(5){--brand-wave-delay:96ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(6){--brand-wave-delay:72ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(7){--brand-wave-delay:48ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(8){--brand-wave-delay:24ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(9){--brand-wave-delay:0ms!important}
+
+#marcas.brands-expanded.brands-opening .brand-marquee-card{
+  opacity:0!important;
+  transform:translate3d(58px,0,0) scale(.985)!important;
+}
+#marcas.brands-expanded.brands-closing .brand-marquee-card{
+  opacity:0!important;
+  transform:translate3d(-58px,0,0) scale(.985)!important;
+}
+
+/* Legal area inspired by the clear, compact footer patterns in major stores. */
+.footer-legal-panel{
+  width:min(1240px,calc(100% - 32px));
+  margin:0 auto;
+  padding:6px 0 28px;
+}
+.footer-legal-details{
+  border-top:1px solid rgba(255,255,255,.12);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.footer-legal-details summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:62px;
+  color:#f4f5f6;
+  font:750 15px/1.2 "Manrope",system-ui,sans-serif;
+  letter-spacing:.01em;
+  user-select:none;
+}
+.footer-legal-details summary::-webkit-details-marker{display:none}
+.footer-legal-details summary::after{
+  content:"+";
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:999px;
+  font-size:20px;
+  font-weight:400;
+  transition:transform 220ms cubic-bezier(.32,.72,0,1);
+}
+.footer-legal-details[open] summary::after{transform:rotate(45deg)}
+.footer-legal-links{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px 18px;
+  padding:0 0 24px;
+}
+.footer-legal-links a{
+  color:rgba(235,239,241,.76);
+  font:500 13px/1.45 "Manrope",system-ui,sans-serif;
+  text-decoration:none;
+  transition:color 160ms ease,transform 160ms ease;
+}
+.footer-legal-links a:hover,
+.footer-legal-links a:focus-visible{
+  color:#fff;
+  transform:translate3d(2px,0,0);
+  outline:none;
+}
+
+@media(max-width:760px){
+  .footer-legal-panel{width:calc(100% - 28px);padding-bottom:20px}
+  .footer-legal-links{grid-template-columns:1fr;gap:13px;padding-bottom:22px}
+  .footer-legal-details summary{min-height:58px;font-size:14px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #marcas.brands-expanded .brand-marquee-card,
+  #marcas.brands-expanded.brands-opening .brand-marquee-card,
+  #marcas.brands-expanded.brands-closing .brand-marquee-card{
+    transform:none!important;
+    transition:opacity 150ms ease!important;
+    transition-delay:0ms!important;
+    will-change:auto!important;
+  }
+  .footer-legal-details summary::after,
+  .footer-legal-links a{transition:none!important}
+}

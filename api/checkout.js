@@ -11,7 +11,7 @@ import { productPrice, normalizeCouponCode, couponStatus, roundMoney } from "../
 import { sendOrderStatusEmail } from "../lib/order-email.js";
 
 const MAX_ITEMS = 40;
-const MAX_QTY = 99;
+const MAX_QTY = 100000;
 const DELIVERY_METHODS = new Set(["retiro", "local", "nacional", "coordinar"]);
 const ONLINE_PAYMENT_METHODS = new Set(["mercadopago", "tarjeta"]);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -176,13 +176,13 @@ export default async function handler(req, res) {
         }
 
         let catalogResponse = await supabaseFetch(
-            "/rest/v1/productos?select=id,nombre,precio,descuento_porcentaje,stock,activo&activo=eq.true"
+            "/rest/v1/productos?select=id,nombre,precio,descuento_porcentaje,stock,control_stock,activo&activo=eq.true"
         );
         let catalog = await catalogResponse.json().catch(() => []);
 
         if (!catalogResponse.ok) {
             catalogResponse = await supabaseFetch(
-                "/rest/v1/productos?select=id,nombre,precio,stock,activo&activo=eq.true"
+                "/rest/v1/productos?select=id,nombre,precio,stock,control_stock,activo&activo=eq.true"
             );
             catalog = await catalogResponse.json().catch(() => []);
         }
@@ -203,10 +203,11 @@ export default async function handler(req, res) {
                 return res.status(409).json({ error: "Uno de los productos ya no está disponible." });
             }
 
+            const controlaStock = producto.control_stock === true;
             const stock = Math.max(0, Number(producto.stock) || 0);
             const precio = productPrice(producto).final;
 
-            if (cantidad > stock) {
+            if (controlaStock && cantidad > stock) {
                 return res.status(409).json({
                     error: `${clean(producto.nombre, 100)} ya no tiene el stock solicitado.`
                 });
@@ -220,7 +221,8 @@ export default async function handler(req, res) {
                 producto_id: producto.id,
                 nombre: clean(producto.nombre, 160),
                 cantidad,
-                precio_unitario: precio
+                precio_unitario: precio,
+                control_stock: controlaStock
             });
 
             total += precio * cantidad;

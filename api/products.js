@@ -276,6 +276,7 @@ async function loadConnectorProducts(supabaseUrl, serviceKey) {
         "categoria",
         "marca",
         "stock",
+        "control_stock",
         "activo",
         "costo",
         "proveedor",
@@ -371,6 +372,7 @@ async function loadConnectorProducts(supabaseUrl, serviceKey) {
             ),
             discountPercent: pricing.percent,
             stock: Math.max(0, Number(product.stock) || 0),
+            controlStock: Boolean(product.control_stock),
             minStock: Math.max(
                 0,
                 Number(product.stock_minimo) || 0
@@ -708,8 +710,8 @@ async function handlePublicProducts(req, res) {
             const from = page * pageSize;
             const to = from + pageSize - 1;
             const select = includeDiscount
-                ? "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,activo"
-                : "id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo";
+                ? "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,activo"
+                : "id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,activo";
 
             let response = await fetchWithTimeout(
                 `${url}/rest/v1/productos?select=${select}&activo=eq.true&order=id.asc`,
@@ -735,7 +737,7 @@ async function handlePublicProducts(req, res) {
             ) {
                 includeDiscount = false;
                 response = await fetchWithTimeout(
-                    `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo&activo=eq.true&order=id.asc`,
+                    `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,activo&activo=eq.true&order=id.asc`,
                     {
                         headers: {
                             apikey: key,
@@ -801,6 +803,7 @@ async function handlePublicProducts(req, res) {
                 0,
                 Number(product.stock) || 0
             ),
+            control_stock: Boolean(product.control_stock),
             activo: Boolean(product.activo)
         }));
 

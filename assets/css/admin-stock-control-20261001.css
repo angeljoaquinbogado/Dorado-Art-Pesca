@@ -1,0 +1,84 @@
+/* Dorado admin · optional storefront stock control · 2026-10-01 */
+.stock-control-field{
+  grid-column:1/-1;
+}
+.stock-control-toggle{
+  width:100%;
+  min-height:82px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  border:1px solid rgba(127,140,148,.28);
+  border-radius:16px;
+  background:rgba(127,140,148,.07);
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+  transition:transform 120ms ease,border-color 180ms ease,background-color 180ms ease,box-shadow 180ms ease;
+}
+.stock-control-toggle:active{transform:scale(.995)}
+.stock-control-toggle:focus-visible{
+  outline:2px solid rgba(222,170,58,.85);
+  outline-offset:3px;
+}
+.stock-control-switch{
+  width:48px;
+  height:28px;
+  flex:0 0 48px;
+  padding:3px;
+  display:flex;
+  align-items:center;
+  border-radius:999px;
+  background:rgba(110,120,128,.42);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  transition:background-color 200ms cubic-bezier(.32,.72,0,1);
+}
+.stock-control-switch i{
+  width:22px;
+  height:22px;
+  display:block;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 7px rgba(0,0,0,.20);
+  transform:translate3d(0,0,0);
+  transition:transform 240ms cubic-bezier(.32,.72,0,1);
+}
+.stock-control-copy{
+  min-width:0;
+  display:grid;
+  gap:4px;
+}
+.stock-control-title{
+  font-size:12px;
+  letter-spacing:.045em;
+}
+.stock-control-detail{
+  color:var(--muted,#7c878e);
+  font-size:11px;
+  line-height:1.45;
+}
+.stock-control-toggle.is-active{
+  border-color:rgba(222,170,58,.52);
+  background:rgba(222,170,58,.09);
+  box-shadow:0 10px 28px rgba(173,117,18,.07);
+}
+.stock-control-toggle.is-active .stock-control-switch{
+  background:#d9a938;
+}
+.stock-control-toggle.is-active .stock-control-switch i{
+  transform:translate3d(20px,0,0);
+}
+.stock-pill.stock-free{
+  color:#6f7e86!important;
+  background:rgba(118,131,139,.11)!important;
+  border-color:rgba(118,131,139,.20)!important;
+}
+@media(max-width:700px){
+  .stock-control-toggle{min-height:88px;padding:13px 14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .stock-control-toggle,
+  .stock-control-switch,
+  .stock-control-switch i{transition:none!important}
+}

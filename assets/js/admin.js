@@ -833,12 +833,12 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         let d=await r.json().catch(()=>[]);
         if(!r.ok){
-            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
                 headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
             });
             d=await r.json().catch(()=>[]);
@@ -856,7 +856,7 @@ async function loadProducts(){
 
     const stockAlert=document.getElementById("product-stock-alert");
     if(stockAlert){
-        const critical=productos.filter(p=>p.activo&&Math.max(0,Number(p.stock)||0)<=3).length;
+        const critical=productos.filter(p=>p.activo&&p.control_stock===true&&Math.max(0,Number(p.stock)||0)<=3).length;
         stockAlert.hidden=critical===0;
         stockAlert.textContent=critical===1?"1 producto requiere stock":`${critical} productos requieren stock`;
     }
@@ -1094,11 +1094,12 @@ function renderProducts(){
         const haystack=`${p.nombre||""} ${p.categoria||""} ${p.marca||""}`.toLowerCase();
         const matchesSearch=!search||haystack.includes(search);
         const stock=Math.max(0,Number(p.stock)||0);
+        const controlStock=p.control_stock===true;
         const matchesFilter=filter==="all" ||
             (filter==="active"&&p.activo) ||
             (filter==="hidden"&&!p.activo) ||
-            (filter==="low"&&stock>0&&stock<=3) ||
-            (filter==="out"&&stock===0);
+            (filter==="low"&&controlStock&&stock>0&&stock<=3) ||
+            (filter==="out"&&controlStock&&stock===0);
         const matchesCategory=categoryFilter==="all" ||
             normalizeCategoryName(p.categoria).toLocaleLowerCase("es")===categoryFilter.toLocaleLowerCase("es");
         const matchesBrand=brandFilter==="all" ||
@@ -1148,8 +1149,9 @@ function renderProducts(){
     visibleProducts.forEach(p=>{
         const tr=document.createElement("tr");
         const stock=Math.max(0,Number(p.stock)||0);
-        const stockClass=stock===0?"stock-out":stock<=3?"stock-low":"stock-ok";
-        const stockText=stock===0?"SIN STOCK":stock<=3?`${stock} · BAJO`:`${stock}`;
+        const controlStock=p.control_stock===true;
+        const stockClass=!controlStock?"stock-free":stock===0?"stock-out":stock<=3?"stock-low":"stock-ok";
+        const stockText=!controlStock?"SIN LÍMITE":stock===0?"SIN STOCK":stock<=3?`${stock} · BAJO`:`${stock}`;
         const category=normalizeCategoryName(p.categoria)||"Sin categoría";
         const brand=normalizeBrandName(p.marca)||"Sin marca";
 
@@ -1491,6 +1493,23 @@ async function deleteAllCategories(){
     }
 }
 
+function setProductStockControl(enabled){
+    const active=Boolean(enabled);
+    const hidden=document.getElementById("product-stock-control");
+    const button=document.getElementById("product-stock-toggle");
+    if(hidden)hidden.value=String(active);
+    if(button){
+        button.setAttribute("aria-pressed",String(active));
+        button.classList.toggle("is-active",active);
+        const title=button.querySelector(".stock-control-title");
+        const detail=button.querySelector(".stock-control-detail");
+        if(title)title.textContent=active?"STOCK ACTIVADO":"STOCK DESACTIVADO";
+        if(detail)detail.textContent=active
+            ?"El cliente verá disponibilidad y la cantidad quedará limitada al stock cargado."
+            :"El producto se puede comprar sin límite de stock y no se muestran alertas de unidades.";
+    }
+}
+
 function resetProductForm(){
     document.getElementById("product-form").reset();
     const categoryCreatePanel=document.getElementById("category-create-panel");
@@ -1499,6 +1518,7 @@ function resetProductForm(){
     if(categoryNew)categoryNew.value="";
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
+    setProductStockControl(false);
     document.getElementById("product-discount").value="0";
     document.getElementById("product-min-stock").value="0";
     document.getElementById("product-cost").value="";
@@ -1571,6 +1591,7 @@ function editProduct(id){
     document.getElementById("product-price").value=Number(p.precio)||0;
     document.getElementById("product-discount").value=Math.max(0,Number(p.descuento_porcentaje)||0);
     document.getElementById("product-stock").value=Number(p.stock)||0;
+    setProductStockControl(p.control_stock===true);
     document.getElementById("product-min-stock").value=Math.max(0,Number(p.stock_minimo)||0);
     document.getElementById("product-cost").value=p.costo===null||p.costo===undefined?"":Number(p.costo);
     document.getElementById("product-supplier").value=p.proveedor||"";
@@ -1656,6 +1677,7 @@ async function saveProduct(event){
             precio:Number(document.getElementById("product-price").value),
             descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
+            control_stock:document.getElementById("product-stock-control").value==="true",
             stock_minimo:Math.max(0,Math.floor(Number(document.getElementById("product-min-stock").value)||0)),
             costo:String(document.getElementById("product-cost").value||"").trim()===""?null:Math.max(0,Number(document.getElementById("product-cost").value)||0),
             proveedor:String(document.getElementById("product-supplier").value||"").trim().slice(0,160)||null,
@@ -2781,6 +2803,11 @@ document.getElementById("global-stock-integrations")?.addEventListener("click",e
 });
 
 document.getElementById("product-form").addEventListener("submit",saveProduct);
+document.getElementById("product-stock-toggle")?.addEventListener("click",()=>{
+    const active=document.getElementById("product-stock-control")?.value==="true";
+    setProductStockControl(!active);
+});
+setProductStockControl(false);
 document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
 document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
 document.getElementById("coupon-code")?.addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,"");});
