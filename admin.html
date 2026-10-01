@@ -126,7 +126,7 @@
 <link rel="stylesheet" href="assets/css/admin-stability-final-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-layout-hotfix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-stock-control-20261001.css?v=20261001a"/>
-<link rel="stylesheet" href="assets/css/admin-commercial-settings-20261001.css?v=20261001a"/>
+<link rel="stylesheet" href="assets/css/admin-commercial-settings-20261001.css?v=20261001b"/>
 </head>
 <body>
 
@@ -250,21 +250,18 @@
           </button>
           <div class="store-theme-admin-wrap" id="store-theme-admin-wrap">
             <button class="secondary" type="button" id="store-theme-settings-button" aria-expanded="false" aria-controls="store-theme-settings-panel">
-              TEMA WEB
+              TEMA PANEL · CLARO
             </button>
             <div class="store-theme-admin-panel" id="store-theme-settings-panel" aria-hidden="true">
-              <span class="store-theme-admin-kicker">APARIENCIA PÚBLICA</span>
-              <strong>Elegí el color de tema de la web</strong>
-              <p>Cambia la tienda pública y este panel para que puedas previsualizar el resultado.</p>
-              <div class="store-theme-admin-options" role="radiogroup" aria-label="Tema predeterminado de la tienda">
-                <button type="button" data-site-default-theme="default" role="radio" aria-checked="false">
-                  <span>Predeterminado (claro)</span><small>Restablece el tema base claro de Dorado.</small>
+              <span class="store-theme-admin-kicker">APARIENCIA DEL PANEL</span>
+              <strong>Tema de administración</strong>
+              <p>Solo cambia este panel en este dispositivo. No modifica la tienda pública.</p>
+              <div class="store-theme-admin-options" role="radiogroup" aria-label="Tema del panel de administración">
+                <button type="button" data-admin-panel-theme="light" role="radio" aria-checked="false">
+                  <span>Claro</span><small>Más luminosidad para trabajar de día.</small>
                 </button>
-                <button type="button" data-site-default-theme="light" role="radio" aria-checked="false">
-                  <span>Claro</span><small>Fondo claro y contraste suave.</small>
-                </button>
-                <button type="button" data-site-default-theme="dark" role="radio" aria-checked="false">
-                  <span>Oscuro</span><small>Menos luminosidad para ambientes oscuros.</small>
+                <button type="button" data-admin-panel-theme="dark" role="radio" aria-checked="false">
+                  <span>Oscuro</span><small>Menor luminosidad para trabajar de noche.</small>
                 </button>
               </div>
             </div>
@@ -552,7 +549,7 @@
 
             <div class="commercial-settings-grid">
               <section class="card commercial-settings-card">
-                <div class="settings-card-head"><span>01</span><div><h3>Apariencia pública</h3><p>El tema elegido también se previsualiza en este panel.</p></div></div>
+                <div class="settings-card-head"><span>01</span><div><h3>Apariencia pública</h3><p>Define el tema predeterminado de la tienda para todos los clientes. No cambia el tema de este panel.</p></div></div>
                 <div class="settings-theme-options" role="radiogroup" aria-label="Tema predeterminado de la tienda">
                   <button type="button" data-site-default-theme="default" role="radio" aria-checked="false"><strong>Predeterminado</strong><small>Claro como base</small></button>
                   <button type="button" data-site-default-theme="light" role="radio" aria-checked="false"><strong>Claro</strong><small>Máxima luminosidad</small></button>
@@ -577,10 +574,54 @@
               <section class="card commercial-settings-card">
                 <div class="settings-card-head"><span>03</span><div><h3>Horarios</h3><p>También controlan “Local abierto / cerrado”.</p></div></div>
                 <div class="settings-hours">
-                  <div class="settings-hours-row"><strong>Lunes a viernes</strong><div><input id="settings-weekday-am-open" type="time"><span>–</span><input id="settings-weekday-am-close" type="time"></div><div><input id="settings-weekday-pm-open" type="time"><span>–</span><input id="settings-weekday-pm-close" type="time"></div></div>
-                  <div class="settings-hours-row"><strong>Sábado</strong><div><input id="settings-sat-open" type="time"><span>–</span><input id="settings-sat-close" type="time"></div></div>
-                  <label class="settings-toggle-row"><input id="settings-sun-enabled" type="checkbox"><span><strong>Abrir los domingos</strong><small>Si está apagado, se mostrará “Dom cerrado”.</small></span></label>
-                  <div class="settings-hours-row" id="settings-sunday-hours"><strong>Domingo</strong><div><input id="settings-sun-open" type="time"><span>–</span><input id="settings-sun-close" type="time"></div></div>
+                  <div class="settings-hours-row settings-hours-double">
+                    <strong>Lunes a viernes</strong>
+                    <div class="settings-time-group">
+                      <small>Mañana</small>
+                      <div class="settings-time-range">
+                        <input id="settings-weekday-am-open" type="time" aria-label="Apertura de mañana de lunes a viernes">
+                        <span>—</span>
+                        <input id="settings-weekday-am-close" type="time" aria-label="Cierre de mañana de lunes a viernes">
+                      </div>
+                    </div>
+                    <div class="settings-time-group">
+                      <small>Tarde</small>
+                      <div class="settings-time-range">
+                        <input id="settings-weekday-pm-open" type="time" aria-label="Apertura de tarde de lunes a viernes">
+                        <span>—</span>
+                        <input id="settings-weekday-pm-close" type="time" aria-label="Cierre de tarde de lunes a viernes">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-hours-row settings-hours-single">
+                    <strong>Sábado</strong>
+                    <div class="settings-time-group settings-time-group-full">
+                      <small>Horario</small>
+                      <div class="settings-time-range">
+                        <input id="settings-sat-open" type="time" aria-label="Apertura del sábado">
+                        <span>—</span>
+                        <input id="settings-sat-close" type="time" aria-label="Cierre del sábado">
+                      </div>
+                    </div>
+                  </div>
+
+                  <label class="settings-toggle-row settings-sunday-toggle">
+                    <input id="settings-sun-enabled" type="checkbox">
+                    <span><strong>Abrir los domingos</strong><small>Si está desactivado, en la tienda figurará como cerrado.</small></span>
+                  </label>
+
+                  <div class="settings-hours-row settings-hours-single" id="settings-sunday-hours">
+                    <strong>Domingo</strong>
+                    <div class="settings-time-group settings-time-group-full">
+                      <small>Horario</small>
+                      <div class="settings-time-range">
+                        <input id="settings-sun-open" type="time" aria-label="Apertura del domingo">
+                        <span>—</span>
+                        <input id="settings-sun-close" type="time" aria-label="Cierre del domingo">
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
 
@@ -674,6 +715,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261001-commercial1"></script>
+<script src="assets/js/admin.js?v=20261001-commercial2"></script>
 </body>
 </html>
