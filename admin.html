@@ -126,6 +126,7 @@
 <link rel="stylesheet" href="assets/css/admin-stability-final-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-layout-hotfix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/admin-stock-control-20261001.css?v=20261001a"/>
+<link rel="stylesheet" href="assets/css/admin-commercial-settings-20261001.css?v=20261001a"/>
 </head>
 <body>
 
@@ -217,6 +218,9 @@
         </button>
         <button class="tab" data-tab="coupons" type="button">
           <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M9 7v10M15 7v10M7 12h10"/></svg><span>CUPONES</span>
+        </button>
+        <button class="tab" data-tab="settings" type="button">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A8 8 0 0 0 7.5 7L5.1 6l-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .7.1 1.1l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a8 8 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1z"/></svg><span>CONFIGURACIÓN</span>
         </button>
         <button class="tab" data-tab="global-stock" type="button">
           <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M8 12h8M12 8v8"/></svg><span>GLOBAL STOCK</span>
@@ -534,6 +538,83 @@
             </div>
           </div>
         </section>
+
+        <section id="settings-panel" class="panel">
+          <form id="commercial-settings-form" class="commercial-settings-shell">
+            <div class="commercial-settings-head">
+              <div>
+                <span class="section-tag">CONFIGURACIÓN COMERCIAL</span>
+                <h2>Datos y comportamiento de la tienda</h2>
+                <p>Administrá contacto, horarios, checkout, stock predeterminado, apariencia y datos legales desde un único lugar.</p>
+              </div>
+              <button class="primary commercial-settings-save" type="submit">GUARDAR CONFIGURACIÓN</button>
+            </div>
+
+            <div class="commercial-settings-grid">
+              <section class="card commercial-settings-card">
+                <div class="settings-card-head"><span>01</span><div><h3>Apariencia pública</h3><p>El tema elegido también se previsualiza en este panel.</p></div></div>
+                <div class="settings-theme-options" role="radiogroup" aria-label="Tema predeterminado de la tienda">
+                  <button type="button" data-site-default-theme="default" role="radio" aria-checked="false"><strong>Predeterminado</strong><small>Claro como base</small></button>
+                  <button type="button" data-site-default-theme="light" role="radio" aria-checked="false"><strong>Claro</strong><small>Máxima luminosidad</small></button>
+                  <button type="button" data-site-default-theme="dark" role="radio" aria-checked="false"><strong>Oscuro</strong><small>Menor luminosidad</small></button>
+                </div>
+              </section>
+
+              <section class="card commercial-settings-card">
+                <div class="settings-card-head"><span>02</span><div><h3>Contacto y ubicación</h3><p>Estos datos alimentan la tienda pública.</p></div></div>
+                <div class="settings-fields">
+                  <div class="field full"><label for="settings-store-name">NOMBRE COMERCIAL</label><input id="settings-store-name" maxlength="120"></div>
+                  <div class="field"><label for="settings-whatsapp">WHATSAPP · SOLO NÚMEROS</label><input id="settings-whatsapp" inputmode="numeric" maxlength="18"></div>
+                  <div class="field"><label for="settings-phone-display">TELÉFONO VISIBLE</label><input id="settings-phone-display" maxlength="40"></div>
+                  <div class="field"><label for="settings-address">DIRECCIÓN</label><input id="settings-address" maxlength="160"></div>
+                  <div class="field"><label for="settings-area">LOCALIDAD / PARTIDO</label><input id="settings-area" maxlength="120"></div>
+                  <div class="field"><label for="settings-province">PROVINCIA</label><input id="settings-province" maxlength="100"></div>
+                  <div class="field"><label for="settings-postal-code">CÓDIGO POSTAL</label><input id="settings-postal-code" maxlength="20"></div>
+                  <div class="field full"><label for="settings-maps-url">ENLACE GOOGLE MAPS</label><input id="settings-maps-url" type="url" maxlength="500"></div>
+                </div>
+              </section>
+
+              <section class="card commercial-settings-card">
+                <div class="settings-card-head"><span>03</span><div><h3>Horarios</h3><p>También controlan “Local abierto / cerrado”.</p></div></div>
+                <div class="settings-hours">
+                  <div class="settings-hours-row"><strong>Lunes a viernes</strong><div><input id="settings-weekday-am-open" type="time"><span>–</span><input id="settings-weekday-am-close" type="time"></div><div><input id="settings-weekday-pm-open" type="time"><span>–</span><input id="settings-weekday-pm-close" type="time"></div></div>
+                  <div class="settings-hours-row"><strong>Sábado</strong><div><input id="settings-sat-open" type="time"><span>–</span><input id="settings-sat-close" type="time"></div></div>
+                  <label class="settings-toggle-row"><input id="settings-sun-enabled" type="checkbox"><span><strong>Abrir los domingos</strong><small>Si está apagado, se mostrará “Dom cerrado”.</small></span></label>
+                  <div class="settings-hours-row" id="settings-sunday-hours"><strong>Domingo</strong><div><input id="settings-sun-open" type="time"><span>–</span><input id="settings-sun-close" type="time"></div></div>
+                </div>
+              </section>
+
+              <section class="card commercial-settings-card">
+                <div class="settings-card-head"><span>04</span><div><h3>Checkout</h3><p>Ocultá los medios que no quieras ofrecer.</p></div></div>
+                <div class="settings-toggle-list">
+                  <label class="settings-toggle-row"><input id="settings-checkout-whatsapp" type="checkbox"><span><strong>Coordinar por WhatsApp</strong><small>Continuar el pedido por chat.</small></span></label>
+                  <label class="settings-toggle-row"><input id="settings-checkout-transfer" type="checkbox"><span><strong>Transferencia bancaria</strong><small>Muestra los datos bancarios configurados.</small></span></label>
+                  <label class="settings-toggle-row"><input id="settings-checkout-cash" type="checkbox"><span><strong>Efectivo al retirar</strong><small>Disponible con retiro en el local.</small></span></label>
+                  <label class="settings-toggle-row"><input id="settings-checkout-mp" type="checkbox"><span><strong>Mercado Pago</strong><small>Requiere la integración activa.</small></span></label>
+                  <label class="settings-toggle-row"><input id="settings-checkout-card" type="checkbox"><span><strong>Tarjeta débito / crédito</strong><small>Se tokeniza mediante Mercado Pago.</small></span></label>
+                </div>
+              </section>
+
+              <section class="card commercial-settings-card">
+                <div class="settings-card-head"><span>05</span><div><h3>Stock predeterminado</h3><p>Define cómo nace cada producto nuevo.</p></div></div>
+                <label class="settings-toggle-row"><input id="settings-default-stock-control" type="checkbox"><span><strong>Activar stock en productos nuevos</strong><small>Apagado = compra sin límite hasta que la dueña lo active en ese producto.</small></span></label>
+              </section>
+
+              <section class="card commercial-settings-card">
+                <div class="settings-card-head"><span>06</span><div><h3>Datos legales</h3><p>Se muestran en la página de políticas.</p></div></div>
+                <div class="settings-fields">
+                  <div class="field"><label for="settings-legal-holder">TITULAR / RESPONSABLE</label><input id="settings-legal-holder" maxlength="160"></div>
+                  <div class="field"><label for="settings-tax-id">CUIT / CUIL</label><input id="settings-tax-id" maxlength="30"></div>
+                </div>
+                <a class="secondary settings-policy-link" href="/politicas.html" target="_blank" rel="noopener">VER PÁGINA LEGAL</a>
+              </section>
+            </div>
+
+            <div id="commercial-settings-message" class="message" aria-live="polite"></div>
+            <div class="commercial-settings-mobile-save"><button class="primary" type="submit">GUARDAR CONFIGURACIÓN</button></div>
+          </form>
+        </section>
+
         <section id="global-stock-panel" class="panel">
           <div class="grid">
             <div class="card">
@@ -593,6 +674,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261001-stock-control1"></script>
+<script src="assets/js/admin.js?v=20261001-commercial1"></script>
 </body>
 </html>
