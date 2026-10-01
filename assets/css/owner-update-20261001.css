@@ -138,3 +138,62 @@
   .footer-legal-details summary::after,
   .footer-legal-links a{transition:none!important}
 }
+
+
+/* Owner feedback · 2026-10-01
+   Open and close use the same duration, easing and right-to-left wave rhythm. */
+#marcas.brands-expanded .brand-marquee-card{
+  transition:
+    transform 620ms cubic-bezier(.22,.61,.36,1) var(--brand-wave-delay)!important,
+    opacity 620ms cubic-bezier(.22,.61,.36,1) var(--brand-wave-delay)!important,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease!important;
+}
+#marcas.brands-expanded .brand-marquee-card:nth-child(1){--brand-wave-delay:560ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(2){--brand-wave-delay:490ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(3){--brand-wave-delay:420ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(4){--brand-wave-delay:350ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(5){--brand-wave-delay:280ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(6){--brand-wave-delay:210ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(7){--brand-wave-delay:140ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(8){--brand-wave-delay:70ms!important}
+#marcas.brands-expanded .brand-marquee-card:nth-child(9){--brand-wave-delay:0ms!important}
+#marcas.brands-expanded.brands-opening .brand-marquee-card{
+  opacity:0!important;
+  transform:translate3d(72px,0,0) scale(.985)!important;
+}
+#marcas.brands-expanded.brands-closing .brand-marquee-card{
+  opacity:0!important;
+  transform:translate3d(-72px,0,0) scale(.985)!important;
+}
+
+/* Legal is a normal footer column, aligned with Tienda / Ayuda / Contacto. */
+.site-footer .footer-main{
+  grid-template-columns:minmax(250px,1.45fr) repeat(4,minmax(0,1fr))!important;
+  gap:32px!important;
+}
+.site-footer .footer-legal-column{min-width:0}
+.site-footer .footer-legal-column a{
+  white-space:normal!important;
+  line-height:1.45!important;
+}
+.footer-legal-panel{display:none!important}
+@media(max-width:1120px){
+  .site-footer .footer-main{
+    grid-template-columns:minmax(250px,1.2fr) repeat(2,minmax(0,1fr))!important;
+    gap:34px 28px!important;
+  }
+  .site-footer .footer-contact{grid-column:auto!important}
+}
+@media(max-width:760px){
+  .site-footer .footer-main{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:28px 20px!important;
+  }
+  .site-footer .footer-brand-box{grid-column:1/-1}
+}
+@media(max-width:520px){
+  .site-footer .footer-main{grid-template-columns:1fr!important;gap:24px!important}
+  .site-footer .footer-brand-box{grid-column:auto}
+}
