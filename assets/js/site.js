@@ -40,7 +40,7 @@ const DORADO_BRANDS = [
     { name:"Bando ARG", key:"bando-arg", sprite:4 },
     { name:"Fox Airguns", key:"fox-airguns", sprite:5 },
     { name:"Payo", key:"payo", sprite:6 },
-    { name:"MorGui Outdoor", key:"morgui-outdoor", sprite:7 },
+    { name:"MorGul Outdoor", key:"morgul-outdoor", sprite:7 },
     { name:"Surfish", key:"surfish", sprite:8 }
 ];
 
