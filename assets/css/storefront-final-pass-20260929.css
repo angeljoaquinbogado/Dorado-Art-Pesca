@@ -155,22 +155,7 @@ html[data-store-theme="light"] .catalog-more-button{
   }
 }
 
-/* Brands: opening and closing are the same motion in opposite directions. */
-#marcas.brands-expanded .brand-marquee-card{
-  transition:
-    transform 240ms var(--d-final-ease-in-out),
-    opacity 180ms var(--d-final-ease-out),
-    border-color 180ms ease,
-    background-color 180ms ease!important;
-}
-#marcas.brands-expanded.brands-opening .brand-marquee-card{
-  opacity:0!important;
-  transform:translate3d(30px,0,0) scale(.97)!important;
-}
-#marcas.brands-expanded.brands-closing .brand-marquee-card{
-  opacity:0!important;
-  transform:translate3d(30px,0,0) scale(.97)!important;
-}
+/* Brand entry/exit motion is owned by site.js WAAPI. */
 
 /* Footer socials: optical alignment; Facebook no longer appears clipped. */
 .footer-social-links{
