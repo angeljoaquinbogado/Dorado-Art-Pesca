@@ -80,40 +80,10 @@ html[data-store-theme="dark"] #producto-dinamico .quantity-selector .qty-input{
   }
 }
 
-/* 3) "Ver todas" brands — fluid right-to-left stream on open AND close.
-   Transform + opacity only, no layout animation. */
-#marcas.brands-expanded .brand-marquee-card{
-  --brand-flow-delay:0ms;
+/* 3) "Ver todas" brands: layout stays stable; motion is owned by site.js WAAPI. */
+#marcas.brands-expanded .brand-marquee-track,
+#marcas.brands-expanded .brand-marquee-set{
   animation:none!important;
-  opacity:1!important;
-  transform:translate3d(0,0,0) scale(1)!important;
-  transition:
-    transform 210ms cubic-bezier(0.77,0,0.175,1) var(--brand-flow-delay),
-    opacity 170ms cubic-bezier(0.23,1,0.32,1) var(--brand-flow-delay),
-    border-color 170ms ease,
-    box-shadow 170ms ease!important;
-  will-change:transform,opacity!important;
-}
-
-/* Last card starts first: visual wave travels from the right toward the left. */
-#marcas.brands-expanded .brand-marquee-card:nth-child(1){--brand-flow-delay:72ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(2){--brand-flow-delay:63ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(3){--brand-flow-delay:54ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(4){--brand-flow-delay:45ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(5){--brand-flow-delay:36ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(6){--brand-flow-delay:27ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(7){--brand-flow-delay:18ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(8){--brand-flow-delay:9ms}
-#marcas.brands-expanded .brand-marquee-card:nth-child(n+9){--brand-flow-delay:0ms}
-
-#marcas.brands-expanded.brands-opening .brand-marquee-card{
-  opacity:0!important;
-  transform:translate3d(38px,0,0) scale(.975)!important;
-}
-
-#marcas.brands-expanded.brands-closing .brand-marquee-card{
-  opacity:0!important;
-  transform:translate3d(-38px,0,0) scale(.975)!important;
 }
 
 /* Keep the expanded shell stable while the stream is running. */
