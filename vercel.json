@@ -118,6 +118,14 @@
   ],
   "rewrites": [
     {
+      "source": "/api/global-stock-integrations",
+      "destination": "/api/products?mode=global-stock-integrations"
+    },
+    {
+      "source": "/api/global-stock-connector",
+      "destination": "/api/products?mode=global-stock-connector"
+    },
+    {
       "source": "/api/google-business-oauth/start",
       "destination": "/api/reviews?action=google_oauth_start"
     },
