@@ -144,7 +144,7 @@
 <link rel="stylesheet" href="assets/css/product-modal-final-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/best-sellers-theme-fix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/payment-result-polish-20260929.css?v=20260929b"/>
-<link rel="stylesheet" href="assets/css/owner-update-20261001.css?v=20261001a"/>
+<link rel="stylesheet" href="assets/css/owner-update-20261001.css?v=20261001c"/>
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -611,9 +611,9 @@
 <span class="dynamic-qty-help">Elegí cuántas unidades querés.</span>
 </div>
 <div class="quantity-selector">
-<button aria-label="Restar una unidad" class="qty-btn dynamic-qty-minus" type="button"><svg class="ui-icon"><use href="#i-minus"></use></svg></button>
+<button aria-label="Restar una unidad" class="qty-btn dynamic-qty-minus" data-qty-action="minus" type="button"><svg class="ui-icon"><use href="#i-minus"></use></svg></button>
 <input aria-label="Cantidad de unidades" class="qty-input dynamic-qty-input" id="dynamic-product-qty" inputmode="numeric" min="1" type="number" value="1"/>
-<button aria-label="Sumar una unidad" class="qty-btn dynamic-qty-plus" type="button"><svg class="ui-icon"><use href="#i-plus"></use></svg></button>
+<button aria-label="Sumar una unidad" class="qty-btn dynamic-qty-plus" data-qty-action="plus" type="button"><svg class="ui-icon"><use href="#i-plus"></use></svg></button>
 </div>
 </div>
 <button class="gold-btn dynamic-add-cart" type="button">
@@ -655,7 +655,14 @@
 <a href="#contacto">Envíos y entrega</a>
 <a href="#productos">Stock disponible</a>
 <a href="#contacto">Ubicación</a>
-<a href="/politicas.html">Políticas de compra y privacidad</a>
+</div>
+<div class="footer-column footer-legal-column">
+<h4>Legales</h4>
+<a href="/politicas.html#arrepentimiento">Política de arrepentimiento</a>
+<a href="/politicas.html#terminos">Términos y condiciones</a>
+<a href="/politicas.html#privacidad">Privacidad de datos</a>
+<a href="/politicas.html#garantias">Garantías de fabricantes</a>
+<a href="/politicas.html#defensa-consumidor">Defensa de las y los consumidores</a>
 </div>
 <div class="footer-column footer-contact">
 <h4>Contacto</h4>
@@ -674,19 +681,6 @@
   <span class="footer-theme-status" id="store-theme-status" aria-live="polite">Tema actual: claro</span>
 </div>
 </div>
-</div>
-
-<div class="footer-legal-panel">
-  <details class="footer-legal-details" open>
-    <summary>Legales</summary>
-    <div class="footer-legal-links">
-      <a href="/politicas.html#arrepentimiento">Política de arrepentimiento</a>
-      <a href="/politicas.html#terminos">Términos y condiciones Dorado Artículos de Pesca</a>
-      <a href="/politicas.html#privacidad">Política de privacidad de datos</a>
-      <a href="/politicas.html#garantias">Garantías de fabricantes</a>
-      <a href="/politicas.html#defensa-consumidor">Defensa de las y los consumidores</a>
-    </div>
-  </details>
 </div>
 
 <div class="footer-wordmark" aria-hidden="true"><span class="footer-wordmark-name">Dorado</span><span class="footer-wordmark-desc">Artículos de Pesca</span></div>
@@ -1184,7 +1178,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261001-stock-control1"></script>
+<script src="assets/js/site.js?v=20261001-ownerfix2"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
