@@ -216,3 +216,62 @@
     will-change:auto!important;
   }
 }
+
+
+/* =========================================================
+   FINAL INTERACTION PASS · 2026-10-01
+   Catalog CTA: one clean contour.
+   Brand grid: WAAPI owns transform/opacity so CSS cannot fight the motion.
+   ========================================================= */
+.catalog-more-button{
+  outline:none!important;
+  box-shadow:none!important;
+}
+.catalog-more-button:hover,
+.catalog-more-button:active{
+  box-shadow:none!important;
+}
+@media (hover:hover) and (pointer:fine){
+  html[data-store-theme="light"] .catalog-more-button:hover{
+    background:rgba(202,145,33,.075)!important;
+    border-color:rgba(202,145,33,.62)!important;
+    box-shadow:none!important;
+    transform:translate3d(0,-1px,0)!important;
+  }
+}
+.catalog-more-button:focus{
+  outline:none!important;
+}
+.catalog-more-button:focus-visible{
+  outline:2px solid rgba(202,145,33,.72)!important;
+  outline-offset:3px!important;
+  box-shadow:none!important;
+}
+.catalog-more-button:not(.expanded) .ui-icon{
+  transform:none!important;
+}
+
+/* Programmatic brand motion. WAAPI handles only transform + opacity. */
+#marcas.brands-expanded .brand-marquee-card{
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease!important;
+  will-change:auto!important;
+}
+#marcas.brands-expanded.brands-motion-running .brand-marquee-card{
+  will-change:transform,opacity!important;
+}
+
+/* Legacy state classes are neutralized; JS/WAAPI is now authoritative. */
+#marcas.brands-expanded.brands-opening .brand-marquee-card,
+#marcas.brands-expanded.brands-closing .brand-marquee-card{
+  opacity:1!important;
+  transform:none!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  #marcas.brands-expanded.brands-motion-running .brand-marquee-card{
+    will-change:opacity!important;
+  }
+}
