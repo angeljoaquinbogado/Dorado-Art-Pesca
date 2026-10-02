@@ -2973,27 +2973,45 @@ function renderGlobalStockIntegrations(){
     const root=document.getElementById("global-stock-integrations");
     if(!root)return;
 
+    root.className="global-stock-integrations";
+
     if(!globalStockIntegrations.length){
-        root.className="";
-        root.innerHTML='<div style="padding:20px;color:var(--muted)">No hay conexiones activas. Creá un token cuando quieras vincular Dorado con Global Stock.</div>';
+        root.innerHTML=`
+          <div class="global-stock-empty">
+            <span class="global-stock-empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 11V8a4 4 0 0 1 8 0v3"/><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M12 15v2"/></svg>
+            </span>
+            <strong>Sin conexiones activas</strong>
+            <p>Cuando autorices Global Stock, la conexión va a aparecer acá para que puedas revisarla o revocarla.</p>
+          </div>
+        `;
         return;
     }
 
-    root.className="";
-    root.innerHTML=globalStockIntegrations.map(item=>{
-        const created=item.created_at?new Date(item.created_at).toLocaleString("es-AR"):"—";
-        const used=item.last_used_at?new Date(item.last_used_at).toLocaleString("es-AR"):"Todavía no usado";
-        return `
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-top:1px solid var(--line)">
-            <div style="min-width:0">
-              <strong style="display:block">${esc(item.name||"Global Stock")}</strong>
-              <span style="display:block;margin-top:4px;color:var(--muted);font-size:12px">Token ${esc(item.token_prefix||"")}… · creado ${esc(created)}</span>
-              <span style="display:block;margin-top:3px;color:var(--muted);font-size:12px">Último uso: ${esc(used)}</span>
-            </div>
-            <button class="danger" type="button" data-global-stock-revoke="${esc(item.id)}">REVOCAR</button>
-          </div>
-        `;
-    }).join("");
+    root.innerHTML=`
+      <div class="global-stock-connection-list">
+        ${globalStockIntegrations.map(item=>{
+            const created=item.created_at?new Date(item.created_at).toLocaleString("es-AR"):"—";
+            const used=item.last_used_at?new Date(item.last_used_at).toLocaleString("es-AR"):"Todavía no usado";
+            return `
+              <article class="global-stock-connection-item">
+                <div class="global-stock-connection-main">
+                  <span class="global-stock-connection-dot" aria-hidden="true"></span>
+                  <div>
+                    <strong>${esc(item.name||"Global Stock")}</strong>
+                    <small>Token ${esc(item.token_prefix||"")}…</small>
+                  </div>
+                </div>
+                <dl class="global-stock-connection-meta">
+                  <div><dt>Creada</dt><dd>${esc(created)}</dd></div>
+                  <div><dt>Último uso</dt><dd>${esc(used)}</dd></div>
+                </dl>
+                <button class="danger global-stock-revoke" type="button" data-global-stock-revoke="${esc(item.id)}">REVOCAR ACCESO</button>
+              </article>
+            `;
+        }).join("")}
+      </div>
+    `;
 }
 
 async function loadGlobalStockIntegrations(){
