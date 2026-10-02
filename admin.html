@@ -130,6 +130,7 @@
 <link rel="stylesheet" href="assets/css/admin-table-sort-20261001.css?v=20261001b"/>
 <link rel="stylesheet" href="assets/css/admin-confirm-modal-fix-20261001.css?v=20261001a"/>
 <link rel="stylesheet" href="assets/css/admin-mobile-authority-20261002.css?v=20261002a"/>
+<link rel="stylesheet" href="assets/css/admin-global-stock-20261002.css?v=20261002a"/>
 </head>
 <body>
 
@@ -763,56 +764,86 @@
         </section>
 
         <section id="global-stock-panel" class="panel global-stock-panel">
-          <div class="grid global-stock-grid">
-            <div class="card">
-              <div class="card-head">
-                <div>
-                  <span class="section-tag">VERIFICACIÓN DEL DUEÑO</span>
-                  <h2 style="margin-top:10px">Autorizar Global Stock</h2>
-                  <p>La contraseña se valida únicamente en Dorado. Para confirmar que sos el dueño o administrador, enviaremos además un código de 6 dígitos al correo de la cuenta administradora.</p>
-                </div>
+          <div class="global-stock-shell">
+            <header class="global-stock-hero">
+              <div class="global-stock-hero-copy">
+                <span class="global-stock-eyebrow">INTEGRACIÓN SEGURA</span>
+                <h2>Conectá Dorado con Global Stock</h2>
+                <p>Autorizá el acceso sin compartir tu contraseña. La conexión se confirma con un código temporal enviado al correo administrador.</p>
               </div>
-
-              <div class="form-section">
-                <div class="form-section-title">PERMISOS SOLICITADOS</div>
-                <div class="file-help">Catálogo: lectura · Stock: lectura y escritura · Pedidos: lectura. Global Stock nunca recibe tu contraseña de Dorado.</div>
+              <div class="global-stock-security">
+                <span class="global-stock-security-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M6 10V7a6 6 0 0 1 12 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M12 14v3"/></svg>
+                </span>
+                <div><strong>Acceso controlado</strong><small>Podés revocarlo cuando quieras.</small></div>
               </div>
+            </header>
 
-              <div id="global-stock-otp-panel" class="form-section" hidden>
-                <div class="form-section-title">CÓDIGO DE VERIFICACIÓN</div>
-                <div class="field">
-                  <label for="global-stock-otp">CÓDIGO DE 6 DÍGITOS</label>
-                  <input
-                    id="global-stock-otp"
-                    inputmode="numeric"
-                    autocomplete="one-time-code"
-                    maxlength="6"
-                    pattern="[0-9]{6}"
-                    placeholder="000000"
-                    style="letter-spacing:.34em;font-size:22px;font-weight:800;text-align:center"
-                  >
-                  <div id="global-stock-otp-help" class="file-help">El código vence en 10 minutos y solo puede usarse una vez.</div>
-                </div>
-              </div>
-
-              <div id="global-stock-message" class="message" aria-live="polite"></div>
-
-              <div class="form-actions">
-                <button id="global-stock-send-code" class="primary" type="button">ENVIAR CÓDIGO DE 6 DÍGITOS</button>
-                <button id="global-stock-verify-code" class="primary" type="button" hidden>VERIFICAR Y CONECTAR</button>
-              </div>
-            </div>
-
-            <div class="card catalog-card">
-              <div class="catalog-toolbar">
-                <div class="catalog-title-row">
+            <div class="global-stock-grid">
+              <article class="card global-stock-authorize-card">
+                <div class="global-stock-card-head">
+                  <div class="global-stock-step">01</div>
                   <div>
-                    <h2>Conexiones autorizadas</h2>
-                    <p>Los accesos son revocables. Una conexión nueva solo se crea después de validar sesión y código por email.</p>
+                    <span class="global-stock-kicker">VERIFICACIÓN DEL DUEÑO</span>
+                    <h3>Autorizar Global Stock</h3>
+                    <p>Primero validamos tu sesión administradora y después confirmamos la conexión con un código de 6 dígitos.</p>
                   </div>
                 </div>
-              </div>
-              <div id="global-stock-integrations" class="loading" style="padding:20px">Cargando conexiones...</div>
+
+                <div class="global-stock-permissions">
+                  <span class="global-stock-permissions-label">PERMISOS SOLICITADOS</span>
+                  <div class="global-stock-permission-list">
+                    <span><i aria-hidden="true">✓</i><b>Catálogo</b><small>Lectura</small></span>
+                    <span><i aria-hidden="true">✓</i><b>Stock</b><small>Lectura y escritura</small></span>
+                    <span><i aria-hidden="true">✓</i><b>Pedidos</b><small>Lectura</small></span>
+                  </div>
+                  <p class="global-stock-privacy-note">Global Stock nunca recibe ni almacena tu contraseña de Dorado.</p>
+                </div>
+
+                <div id="global-stock-otp-panel" class="global-stock-otp-panel" hidden>
+                  <div class="global-stock-otp-copy">
+                    <span>CÓDIGO DE VERIFICACIÓN</span>
+                    <small>Ingresá el código recibido por email.</small>
+                  </div>
+                  <div class="field global-stock-otp-field">
+                    <label for="global-stock-otp">CÓDIGO DE 6 DÍGITOS</label>
+                    <input
+                      id="global-stock-otp"
+                      inputmode="numeric"
+                      autocomplete="one-time-code"
+                      maxlength="6"
+                      pattern="[0-9]{6}"
+                      placeholder="000000"
+                    >
+                    <div id="global-stock-otp-help" class="file-help">El código vence en 10 minutos y solo puede usarse una vez.</div>
+                  </div>
+                </div>
+
+                <div id="global-stock-message" class="message global-stock-message" aria-live="polite"></div>
+
+                <div class="global-stock-actions">
+                  <button id="global-stock-send-code" class="primary" type="button">
+                    <span>ENVIAR CÓDIGO</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </button>
+                  <button id="global-stock-verify-code" class="primary" type="button" hidden>
+                    <span>VERIFICAR Y CONECTAR</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 12 3 3 7-7"/></svg>
+                  </button>
+                </div>
+              </article>
+
+              <article class="card global-stock-connections-card">
+                <div class="global-stock-card-head global-stock-connections-head">
+                  <div class="global-stock-step">02</div>
+                  <div>
+                    <span class="global-stock-kicker">ACCESOS ACTIVOS</span>
+                    <h3>Conexiones autorizadas</h3>
+                    <p>Revisá qué conexiones tienen acceso y revocalas inmediatamente cuando lo necesites.</p>
+                  </div>
+                </div>
+                <div id="global-stock-integrations" class="global-stock-integrations loading">Cargando conexiones...</div>
+              </article>
             </div>
           </div>
         </section>
@@ -827,6 +858,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261002-mobileadmin1"></script>
+<script src="assets/js/admin.js?v=20261002-globalstock2"></script>
 </body>
 </html>
