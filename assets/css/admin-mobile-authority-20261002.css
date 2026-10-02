@@ -1,0 +1,486 @@
+/* Dorado Admin · authoritative responsive pass · 2026-10-02
+   Fixes mobile utilities, table cards/sorting and Global Stock authorization layout. */
+
+/* ---------- Global Stock authorization ---------- */
+#global-stock-panel.global-stock-panel{
+  width:100%;
+}
+#global-stock-panel .global-stock-grid{
+  display:grid!important;
+  grid-template-columns:minmax(360px,.92fr) minmax(460px,1.28fr)!important;
+  gap:18px!important;
+  align-items:start!important;
+}
+#global-stock-panel .global-stock-grid>.card{
+  min-width:0;
+  border-radius:22px!important;
+}
+#global-stock-panel .form-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+#global-stock-panel #global-stock-message{
+  margin-top:14px!important;
+}
+#global-stock-panel #global-stock-integrations{
+  min-height:120px;
+}
+
+/* ---------- Mobile sort controls ---------- */
+.mobile-sort-bar{
+  display:none;
+}
+
+/* ---------- Tablet / small desktop ---------- */
+@media(max-width:1100px){
+  #global-stock-panel .global-stock-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* ---------- Mobile admin shell ---------- */
+@media(max-width:900px){
+  /* Old styles hide the desktop utility bar entirely. Keep it available on mobile. */
+  .workspace-top{
+    display:flex!important;
+    position:relative!important;
+    top:auto!important;
+    z-index:35!important;
+    height:auto!important;
+    min-height:58px!important;
+    padding:9px 12px!important;
+    background:rgba(9,21,29,.96)!important;
+    border-bottom:1px solid rgba(255,255,255,.08)!important;
+    -webkit-backdrop-filter:blur(16px)!important;
+    backdrop-filter:blur(16px)!important;
+    overflow:visible!important;
+  }
+
+  html[data-admin-theme="light"] .workspace-top{
+    background:rgba(248,245,238,.96)!important;
+    border-bottom-color:#e7e0d4!important;
+  }
+
+  .workspace-top .crumb{
+    display:none!important;
+  }
+
+  .workspace-top .top-actions{
+    display:flex!important;
+    width:100%!important;
+    min-width:0!important;
+    gap:8px!important;
+    align-items:center!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    padding:1px 1px 4px!important;
+    scrollbar-width:none!important;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .workspace-top .top-actions::-webkit-scrollbar{
+    display:none!important;
+  }
+
+  .workspace-top .top-actions>*{
+    flex:0 0 auto!important;
+  }
+
+  .workspace-top .secondary,
+  .workspace-top .connection-pill{
+    min-height:40px!important;
+    height:40px!important;
+    padding:0 12px!important;
+    border-radius:12px!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+  }
+
+  .workspace-top #refresh-button svg{
+    width:15px!important;
+    height:15px!important;
+  }
+
+  .store-theme-admin-wrap{
+    position:static!important;
+  }
+
+  /* Global Stock layout becomes one clean vertical flow. */
+  #global-stock-panel .global-stock-grid{
+    grid-template-columns:1fr!important;
+    gap:14px!important;
+  }
+
+  #global-stock-panel .global-stock-grid>.card{
+    border-radius:18px!important;
+  }
+}
+
+/* ---------- Phone ---------- */
+@media(max-width:700px){
+  /* Keep all four main destinations visible in the mobile nav. */
+  .sidebar{
+    grid-template-columns:1fr auto!important;
+  }
+
+  .tabs{
+    grid-column:1/-1!important;
+    grid-row:2!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+
+  .tab{
+    min-width:0!important;
+    min-height:42px!important;
+    padding:8px 5px!important;
+    justify-content:center!important;
+    gap:5px!important;
+    font-size:8px!important;
+  }
+
+  .tab svg{
+    width:14px!important;
+    height:14px!important;
+  }
+
+  .tab span{
+    display:block!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  /* Utility buttons visible below navigation instead of being desktop-only. */
+  .workspace-top{
+    margin:0!important;
+    padding:9px 10px!important;
+  }
+
+  .workspace-top .top-actions{
+    gap:7px!important;
+  }
+
+  .workspace-top .secondary,
+  .workspace-top .connection-pill{
+    min-height:38px!important;
+    height:38px!important;
+    padding-inline:10px!important;
+    font-size:8px!important;
+  }
+
+  /* Theme popover must not be clipped by the horizontally scrollable utility row. */
+  .store-theme-admin-panel{
+    position:fixed!important;
+    top:128px!important;
+    left:10px!important;
+    right:10px!important;
+    width:auto!important;
+    max-height:calc(100dvh - 142px)!important;
+    overflow:auto!important;
+    z-index:220!important;
+  }
+
+  /* Sorting remains available because the table head is intentionally hidden on phones. */
+  .mobile-sort-bar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.45fr)!important;
+    align-items:center!important;
+    gap:12px!important;
+    margin:12px 12px 10px!important;
+    padding:12px!important;
+    border:1px solid rgba(255,255,255,.09)!important;
+    border-radius:15px!important;
+    background:rgba(15,34,45,.72)!important;
+  }
+
+  html[data-admin-theme="light"] .mobile-sort-bar{
+    background:#fffdf9!important;
+    border-color:#e7dfd3!important;
+  }
+
+  .mobile-sort-copy{
+    min-width:0;
+    display:grid;
+    gap:3px;
+  }
+
+  .mobile-sort-copy>span{
+    color:#e5edf0;
+    font:800 8px/1.2 "Manrope",sans-serif;
+    letter-spacing:.09em;
+  }
+
+  html[data-admin-theme="light"] .mobile-sort-copy>span{
+    color:#30414a;
+  }
+
+  .mobile-sort-copy>small{
+    color:#7f98a5;
+    font:500 8.5px/1.35 "Manrope",sans-serif;
+  }
+
+  html[data-admin-theme="light"] .mobile-sort-copy>small{
+    color:#879198;
+  }
+
+  .mobile-sort-controls{
+    min-width:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 42px;
+    gap:7px;
+  }
+
+  .mobile-sort-controls select{
+    min-width:0;
+    width:100%;
+    height:42px;
+    padding:0 30px 0 11px;
+    border:1px solid rgba(255,255,255,.11);
+    border-radius:11px;
+    background:#102632;
+    color:#edf3f5;
+    font:700 10px/1 "Manrope",sans-serif;
+    outline:none;
+  }
+
+  html[data-admin-theme="light"] .mobile-sort-controls select{
+    background:#fff;
+    color:#24343c;
+    border-color:#ddd4c7;
+  }
+
+  .mobile-sort-direction{
+    width:42px!important;
+    min-width:42px!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0!important;
+    border-radius:11px!important;
+    font-size:16px!important;
+    line-height:1!important;
+  }
+
+  /* Cards: the old labels were based on a six/eight-column table and were shifted.
+     These are the real current columns. */
+  #products-table tr,
+  #orders-table tr,
+  #coupons-table tr{
+    padding:13px!important;
+    border:1px solid rgba(255,255,255,.08)!important;
+    border-radius:17px!important;
+    background:#0f2734!important;
+    box-shadow:none!important;
+  }
+
+  html[data-admin-theme="light"] #products-table tr,
+  html[data-admin-theme="light"] #orders-table tr,
+  html[data-admin-theme="light"] #coupons-table tr{
+    background:#fffdf9!important;
+    border-color:#e7dfd4!important;
+  }
+
+  #products-table td,
+  #orders-table td,
+  #coupons-table td{
+    display:grid!important;
+    grid-template-columns:86px minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:center!important;
+    min-height:38px;
+    padding:8px 0!important;
+    border-bottom:1px solid rgba(255,255,255,.06)!important;
+  }
+
+  html[data-admin-theme="light"] #products-table td,
+  html[data-admin-theme="light"] #orders-table td,
+  html[data-admin-theme="light"] #coupons-table td{
+    border-bottom-color:#eee7dc!important;
+  }
+
+  #products-table td:last-child,
+  #orders-table td:last-child,
+  #coupons-table td:last-child{
+    border-bottom:0!important;
+  }
+
+  #products-table td::before,
+  #orders-table td::before,
+  #coupons-table td::before{
+    color:#728c99!important;
+    font:800 7px/1.25 "Manrope",sans-serif!important;
+    letter-spacing:.10em!important;
+  }
+
+  html[data-admin-theme="light"] #products-table td::before,
+  html[data-admin-theme="light"] #orders-table td::before,
+  html[data-admin-theme="light"] #coupons-table td::before{
+    color:#8b959b!important;
+  }
+
+  /* PRODUCTS — 5 columns */
+  #products-table td:nth-child(1)::before{content:"PRODUCTO"!important}
+  #products-table td:nth-child(2)::before{content:"PRECIO"!important}
+  #products-table td:nth-child(3)::before{content:"STOCK"!important}
+  #products-table td:nth-child(4)::before{content:"ESTADO"!important}
+  #products-table td:nth-child(5)::before{content:"ACCIONES"!important}
+
+  /* ORDERS — 7 columns */
+  #orders-table td:nth-child(1)::before{content:"SELECCIÓN"!important}
+  #orders-table td:nth-child(2)::before{content:"PEDIDO / FECHA"!important}
+  #orders-table td:nth-child(3)::before{content:"CLIENTE"!important}
+  #orders-table td:nth-child(4)::before{content:"TOTAL"!important}
+  #orders-table td:nth-child(5)::before{content:"PAGO"!important}
+  #orders-table td:nth-child(6)::before{content:"PREPARACIÓN"!important}
+  #orders-table td:nth-child(7)::before{content:"ACCIONES"!important}
+
+  /* COUPONS — 6 columns */
+  #coupons-table td:nth-child(1)::before{content:"CÓDIGO"!important}
+  #coupons-table td:nth-child(2)::before{content:"DESCUENTO"!important}
+  #coupons-table td:nth-child(3)::before{content:"VIGENCIA"!important}
+  #coupons-table td:nth-child(4)::before{content:"USOS"!important}
+  #coupons-table td:nth-child(5)::before{content:"ESTADO"!important}
+  #coupons-table td:nth-child(6)::before{content:"ACCIONES"!important}
+
+  /* Product identity stays together instead of image/name being split into wrong rows. */
+  #products-table .admin-product-main{
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:58px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:10px!important;
+  }
+
+  #products-table .thumb-shell{
+    width:58px!important;
+    height:58px!important;
+    margin:0!important;
+  }
+
+  #products-table .product-thumb{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+  }
+
+  #products-table .admin-product-copy{
+    min-width:0!important;
+  }
+
+  #products-table .product-name-cell{
+    display:block!important;
+    white-space:normal!important;
+    line-height:1.35!important;
+  }
+
+  /* Actions occupy their own row and no longer sit under the wrong "Estado" label. */
+  #products-table td:last-child,
+  #orders-table td:last-child,
+  #coupons-table td:last-child{
+    grid-template-columns:86px minmax(0,1fr)!important;
+    padding-top:10px!important;
+  }
+
+  #products-table .row-actions,
+  #coupons-table .row-actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    width:100%!important;
+  }
+
+  #orders-table .order-view{
+    width:100%!important;
+  }
+
+  .icon-btn{
+    min-width:0!important;
+    min-height:40px!important;
+  }
+
+  /* Make stock/status pills use the available width cleanly. */
+  #products-table .stock-pill,
+  #products-table .badge,
+  #orders-table .badge,
+  #coupons-table .badge{
+    width:fit-content!important;
+    max-width:100%!important;
+  }
+
+  #orders-table .fulfillment-select{
+    width:100%!important;
+  }
+
+  /* Global Stock authorization on phone */
+  #global-stock-panel .global-stock-grid{
+    gap:12px!important;
+  }
+
+  #global-stock-panel .global-stock-grid>.card{
+    border-radius:17px!important;
+  }
+
+  #global-stock-panel .card-head,
+  #global-stock-panel .catalog-toolbar{
+    padding:16px!important;
+  }
+
+  #global-stock-panel .form-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+
+  #global-stock-panel .form-actions .primary{
+    width:100%!important;
+    min-height:48px!important;
+  }
+
+  #global-stock-panel #global-stock-integrations{
+    min-height:100px;
+    padding:16px!important;
+  }
+}
+
+@media(max-width:420px){
+  .mobile-sort-bar{
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+  }
+
+  .mobile-sort-copy{
+    grid-template-columns:auto 1fr;
+    align-items:baseline;
+    gap:7px;
+  }
+
+  #products-table td,
+  #orders-table td,
+  #coupons-table td{
+    grid-template-columns:74px minmax(0,1fr)!important;
+  }
+
+  #products-table td:last-child,
+  #orders-table td:last-child,
+  #coupons-table td:last-child{
+    grid-template-columns:74px minmax(0,1fr)!important;
+  }
+
+  #products-table .row-actions,
+  #coupons-table .row-actions{
+    grid-template-columns:1fr!important;
+  }
+
+  .store-theme-admin-panel{
+    top:120px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .mobile-sort-direction,
+  .workspace-top .secondary{
+    transition:none!important;
+  }
+}
