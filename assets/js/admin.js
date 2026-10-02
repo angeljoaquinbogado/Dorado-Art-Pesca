@@ -125,6 +125,66 @@ function syncAdminTableSortUI(table){
             );
         }
     });
+
+    syncMobileSortUI(table);
+}
+
+function syncMobileSortUI(table){
+    const state=adminTableSort[table]||{};
+    const root=document.querySelector(`[data-mobile-sort-table="${table}"]`);
+    if(!root)return;
+
+    const select=root.querySelector("[data-mobile-sort-key]");
+    const direction=root.querySelector("[data-mobile-sort-direction]");
+
+    if(select){
+        const fallback=select.options?.[0]?.value||"";
+        const next=state.key||fallback;
+        if(next&&select.value!==next)select.value=next;
+    }
+
+    if(direction){
+        const isDesc=state.direction==="desc";
+        direction.textContent=isDesc?"↓":"↑";
+        direction.classList.toggle("is-desc",isDesc);
+        direction.setAttribute(
+            "aria-label",
+            isDesc
+                ? "Orden descendente. Tocar para cambiar a ascendente."
+                : "Orden ascendente. Tocar para cambiar a descendente."
+        );
+        direction.title=isDesc?"Descendente":"Ascendente";
+    }
+}
+
+function bindMobileSortControls(){
+    document.querySelectorAll("[data-mobile-sort-table]").forEach(root=>{
+        const table=root.dataset.mobileSortTable;
+        const select=root.querySelector("[data-mobile-sort-key]");
+        const direction=root.querySelector("[data-mobile-sort-direction]");
+        const state=adminTableSort[table];
+        if(!table||!state||!select||!direction)return;
+
+        select.addEventListener("change",()=>{
+            state.key=select.value;
+            if(!state.direction)state.direction="asc";
+            syncAdminTableSortUI(table);
+            if(table==="products")renderProducts();
+            else if(table==="orders")renderOrders();
+            else if(table==="coupons")renderCoupons();
+        });
+
+        direction.addEventListener("click",()=>{
+            if(!state.key)state.key=select.value||select.options?.[0]?.value||null;
+            state.direction=state.direction==="desc"?"asc":"desc";
+            syncAdminTableSortUI(table);
+            if(table==="products")renderProducts();
+            else if(table==="orders")renderOrders();
+            else if(table==="coupons")renderCoupons();
+        });
+
+        syncMobileSortUI(table);
+    });
 }
 
 function applyAdminTableSort(table,key,defaultDirection="asc"){
@@ -3398,6 +3458,7 @@ document.querySelectorAll(".table-sort-button[data-sort-table][data-sort-key]").
         );
     });
 });
+bindMobileSortControls();
 syncAdminTableSortUI("products");
 syncAdminTableSortUI("orders");
 syncAdminTableSortUI("coupons");
