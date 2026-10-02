@@ -416,8 +416,8 @@ async function handleConnector(req, res) {
     res.setHeader("Vercel-CDN-Cache-Control", "no-store");
     res.setHeader("Vary", "Authorization");
 
-    if (!["GET", "PATCH"].includes(req.method)) {
-        res.setHeader("Allow", "GET, PATCH");
+    if (!["GET", "PATCH", "DELETE"].includes(req.method)) {
+        res.setHeader("Allow", "GET, PATCH, DELETE");
         return res
             .status(405)
             .json({ error: "METHOD_NOT_ALLOWED" });
@@ -445,6 +445,38 @@ async function handleConnector(req, res) {
         return res
             .status(401)
             .json({ error: "INVALID_INTEGRATION_TOKEN" });
+    }
+
+    if (req.method === "DELETE") {
+        const headers = serviceHeaders(serviceKey);
+        const response = await fetchWithTimeout(
+            `${supabaseUrl}/rest/v1/global_stock_integrations?id=eq.${encodeURIComponent(
+                integration.id
+            )}`,
+            {
+                method: "PATCH",
+                headers: {
+                    ...headers,
+                    Prefer: "return=representation"
+                },
+                body: JSON.stringify({
+                    revoked_at: new Date().toISOString()
+                })
+            },
+            8000
+        );
+
+        const rows = await parseJson(response, []);
+        if (!response.ok || !Array.isArray(rows) || !rows[0]) {
+            return res
+                .status(502)
+                .json({ error: "INTEGRATION_REVOKE_FAILED" });
+        }
+
+        return res.status(200).json({
+            ok: true,
+            revoked: true
+        });
     }
 
     if (req.method === "GET") {
