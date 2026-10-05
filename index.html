@@ -145,7 +145,7 @@
 <link rel="stylesheet" href="assets/css/best-sellers-theme-fix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/payment-result-polish-20260929.css?v=20260929b"/>
 <link rel="stylesheet" href="assets/css/owner-update-20261001.css?v=20261001g"/>
-<link rel="stylesheet" href="assets/css/catalog-refine-20261005.css?v=20261005b"/>
+<link rel="stylesheet" href="assets/css/catalog-refine-20261005.css?v=20261005c"/>
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -412,15 +412,11 @@
   <button class="catalog-brand-clear" id="catalog-brand-clear" type="button">VER TODOS LOS PRODUCTOS</button>
 </div>
 
-<div class="catalog-step-head catalog-category-head">
-  <div class="catalog-step-label"><strong>CATEGORÍAS</strong></div>
-</div>
-<div class="category-chips" id="categorias" aria-label="Filtrar por categoría"></div>
-
 <div class="catalog-step-head catalog-products-head">
   <div class="catalog-step-label"><strong>PRODUCTOS</strong></div>
 </div>
 
+<div class="catalog-refine-shell">
 <div class="catalog-refine-bar" aria-label="Filtrar y ordenar productos">
   <div class="catalog-refine-left">
     <button class="catalog-filter-toggle" id="catalog-filter-toggle" type="button" aria-expanded="false" aria-controls="catalog-filter-panel">
@@ -451,6 +447,14 @@
       <button type="button" role="option" data-catalog-sort="featured" aria-selected="true">Destacado</button>
     </div>
   </div>
+</div>
+
+<div class="catalog-category-filter-row" aria-label="Categorías del catálogo">
+  <div class="catalog-category-filter-title">
+    <span>CATEGORÍA</span>
+  </div>
+  <div class="category-chips" id="categorias" aria-label="Filtrar por categoría"></div>
+</div>
 </div>
 
 <div class="catalog-filter-panel" id="catalog-filter-panel" hidden>
