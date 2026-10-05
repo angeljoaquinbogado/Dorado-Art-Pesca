@@ -30,6 +30,14 @@ let doradoPublicConfigPromise = null;
 let marcaActiva = "todas";
 let catalogoVisibleLimit = 12;
 let catalogoRevealFrom = 0;
+let catalogSortMode = "recommended";
+let catalogFilterState = {
+    priceMin: null,
+    priceMax: null,
+    offersOnly: false,
+    hideOutOfStock: false
+};
+let catalogFilterCloseTimer = 0;
 let marcasExpandidas = false;
 const CATALOG_INITIAL_LIMIT = 12;
 const CATALOG_BATCH_SIZE = 12;
@@ -566,9 +574,17 @@ async function cargarProductosDesdeSupabase() {
             return;
         }
 
-        productos.forEach(producto => {
+        productos.forEach((producto, productIndex) => {
             const tarjeta = document.createElement("article");
             tarjeta.className = "product";
+            tarjeta.dataset.productId = String(producto.id || "");
+            tarjeta.dataset.originalIndex = String(productIndex);
+            tarjeta.dataset.productName = String(producto.nombre || "").trim();
+            tarjeta.dataset.price = String(Math.max(0, Number(producto.precio) || 0));
+            tarjeta.dataset.discount = String(Math.max(0, Number(producto.descuento_porcentaje) || 0));
+            tarjeta.dataset.createdAt = String(producto.created_at || "");
+            tarjeta.dataset.stock = String(Math.max(0, Number(producto.stock) || 0));
+            tarjeta.dataset.controlStock = productoControlaStock(producto) ? "true" : "false";
             tarjeta.dataset.category = String(producto.categoria || "").trim();
             tarjeta.dataset.categoryKey = normalizarClaveCategoria(producto.categoria);
             tarjeta.dataset.brand = String(producto.marca || "").trim();
@@ -2616,6 +2632,161 @@ function normalizarTextoBusqueda(value){
         .trim();
 }
 
+function catalogNumber(value){
+    const parsed=Number(value);
+    return Number.isFinite(parsed)?parsed:null;
+}
+
+function catalogFilterCount(){
+    let count=0;
+    if(catalogFilterState.priceMin!==null || catalogFilterState.priceMax!==null)count+=1;
+    if(catalogFilterState.offersOnly)count+=1;
+    if(catalogFilterState.hideOutOfStock)count+=1;
+    return count;
+}
+
+function syncCatalogFilterUI(){
+    const count=catalogFilterCount();
+    const badge=document.getElementById("catalog-filter-count");
+    const clearInline=document.getElementById("catalog-filter-clear-inline");
+    const toggle=document.getElementById("catalog-filter-toggle");
+
+    if(badge){
+        badge.hidden=count===0;
+        badge.textContent=String(count);
+    }
+    if(clearInline)clearInline.hidden=count===0;
+    if(toggle)toggle.classList.toggle("has-active-filters",count>0);
+}
+
+function setCatalogFilterPanel(open){
+    const panel=document.getElementById("catalog-filter-panel");
+    const toggle=document.getElementById("catalog-filter-toggle");
+    if(!panel||!toggle)return;
+
+    window.clearTimeout(catalogFilterCloseTimer);
+    toggle.setAttribute("aria-expanded",String(open));
+
+    if(open){
+        panel.hidden=false;
+        requestAnimationFrame(()=>panel.classList.add("is-open"));
+        return;
+    }
+
+    panel.classList.remove("is-open");
+    catalogFilterCloseTimer=window.setTimeout(()=>{
+        if(!panel.classList.contains("is-open"))panel.hidden=true;
+    },190);
+}
+
+function resetCatalogAdvancedFilters({render=true,close=false}={}){
+    catalogFilterState={
+        priceMin:null,
+        priceMax:null,
+        offersOnly:false,
+        hideOutOfStock:false
+    };
+
+    const min=document.getElementById("catalog-price-min");
+    const max=document.getElementById("catalog-price-max");
+    const offers=document.getElementById("catalog-filter-offers");
+    const available=document.getElementById("catalog-filter-available");
+
+    if(min)min.value="";
+    if(max)max.value="";
+    if(offers)offers.checked=false;
+    if(available)available.checked=false;
+
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    syncCatalogFilterUI();
+
+    if(render)actualizarFiltroCatalogo();
+    if(close)setCatalogFilterPanel(false);
+}
+
+function applyCatalogAdvancedFilters(){
+    const minInput=document.getElementById("catalog-price-min");
+    const maxInput=document.getElementById("catalog-price-max");
+    let min=catalogNumber(minInput?.value);
+    let max=catalogNumber(maxInput?.value);
+
+    if(min!==null)min=Math.max(0,min);
+    if(max!==null)max=Math.max(0,max);
+
+    if(min!==null && max!==null && min>max){
+        [min,max]=[max,min];
+        if(minInput)minInput.value=String(min);
+        if(maxInput)maxInput.value=String(max);
+    }
+
+    catalogFilterState={
+        priceMin:min,
+        priceMax:max,
+        offersOnly:Boolean(document.getElementById("catalog-filter-offers")?.checked),
+        hideOutOfStock:Boolean(document.getElementById("catalog-filter-available")?.checked)
+    };
+
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    syncCatalogFilterUI();
+    actualizarFiltroCatalogo();
+    setCatalogFilterPanel(false);
+}
+
+function catalogSortCompare(a,b){
+    const originalA=Number(a.dataset.originalIndex)||0;
+    const originalB=Number(b.dataset.originalIndex)||0;
+    const priceA=Number(a.dataset.price)||0;
+    const priceB=Number(b.dataset.price)||0;
+    const discountA=Number(a.dataset.discount)||0;
+    const discountB=Number(b.dataset.discount)||0;
+    const nameA=String(a.dataset.productName||"");
+    const nameB=String(b.dataset.productName||"");
+    const timeA=Date.parse(a.dataset.createdAt||"");
+    const timeB=Date.parse(b.dataset.createdAt||"");
+    let result=0;
+
+    switch(catalogSortMode){
+        case "newest":
+            result=(Number.isFinite(timeB)?timeB:0)-(Number.isFinite(timeA)?timeA:0);
+            break;
+        case "oldest":
+            result=(Number.isFinite(timeA)?timeA:Number.MAX_SAFE_INTEGER)-(Number.isFinite(timeB)?timeB:Number.MAX_SAFE_INTEGER);
+            break;
+        case "price-asc":
+            result=priceA-priceB;
+            break;
+        case "price-desc":
+            result=priceB-priceA;
+            break;
+        case "discount":
+            result=discountB-discountA;
+            break;
+        case "name-asc":
+            result=nameA.localeCompare(nameB,"es",{sensitivity:"base",numeric:true});
+            break;
+        case "name-desc":
+            result=nameB.localeCompare(nameA,"es",{sensitivity:"base",numeric:true});
+            break;
+        default:
+            result=originalA-originalB;
+    }
+
+    return result===0?originalA-originalB:result;
+}
+
+function ordenarTarjetasCatalogo(cards,grid){
+    const ordered=[...cards].sort(catalogSortCompare);
+    const empty=grid?.querySelector(".catalog-empty-filter")||null;
+
+    if(grid){
+        ordered.forEach(card=>grid.insertBefore(card,empty));
+    }
+
+    return ordered;
+}
+
 function actualizarFiltroCatalogo() {
     const input = document.getElementById("product-search");
     const contador = document.getElementById("product-result-count");
@@ -2624,18 +2795,29 @@ function actualizarFiltroCatalogo() {
     const moreWrap = document.getElementById("catalog-more-wrap");
     const moreButton = document.getElementById("catalog-more-button");
     const query = normalizarTextoBusqueda(input?.value || "");
-    const cards = Array.from(document.querySelectorAll("#products-grid .product"));
-    const hasActiveFilter = Boolean(query) || categoriaActiva !== "todos" || marcaActiva !== "todas";
+    const rawCards = Array.from(document.querySelectorAll("#products-grid .product"));
+    const cards = ordenarTarjetasCatalogo(rawCards,grid);
+    const advancedCount=catalogFilterCount();
+    const hasActiveFilter = Boolean(query) || categoriaActiva !== "todos" || marcaActiva !== "todas" || advancedCount>0;
 
     let matches = 0;
     let shown = 0;
     let newlyShownOrder = 0;
 
     cards.forEach(card => {
+        const price=Number(card.dataset.price)||0;
+        const discount=Number(card.dataset.discount)||0;
+        const stock=Number(card.dataset.stock)||0;
+        const controlled=card.dataset.controlStock==="true";
+
         const coincideTexto = !query || normalizarTextoBusqueda(card.dataset.search || card.textContent || "").includes(query);
         const coincideCategoria = categoriaActiva === "todos" || String(card.dataset.categoryKey || "sin-categoria") === categoriaActiva;
         const coincideMarca = marcaActiva === "todas" || String(card.dataset.brandKey || "sin-marca") === marcaActiva;
-        const coincide = coincideTexto && coincideCategoria && coincideMarca;
+        const coincideMin = catalogFilterState.priceMin===null || price>=catalogFilterState.priceMin;
+        const coincideMax = catalogFilterState.priceMax===null || price<=catalogFilterState.priceMax;
+        const coincideOferta = !catalogFilterState.offersOnly || discount>0;
+        const coincideDisponible = !catalogFilterState.hideOutOfStock || !controlled || stock>0;
+        const coincide = coincideTexto && coincideCategoria && coincideMarca && coincideMin && coincideMax && coincideOferta && coincideDisponible;
 
         if(coincide)matches += 1;
 
@@ -2676,10 +2858,8 @@ function actualizarFiltroCatalogo() {
         if (empty) {
             empty.hidden = false;
             empty.textContent = query
-                ? `No encontramos productos que coincidan con “${input.value.trim()}”. Probá otra búsqueda, categoría o marca.`
-                : marcaActiva !== "todas"
-                    ? "No hay productos disponibles de esta marca con los filtros elegidos."
-                    : "No hay productos disponibles en esta categoría por el momento.";
+                ? `No encontramos productos que coincidan con “${input.value.trim()}”. Probá otra búsqueda o ajustá los filtros.`
+                : "No hay productos que coincidan con los filtros elegidos. Probá cambiar el rango de precio o restablecer los filtros.";
         }
     } else if (empty) {
         empty.hidden = true;
@@ -2709,6 +2889,8 @@ function actualizarFiltroCatalogo() {
             }
         }
     }
+
+    syncCatalogFilterUI();
 }
 
 const productSearch=document.getElementById("product-search");
@@ -2751,6 +2933,53 @@ document.getElementById("catalog-more-button")?.addEventListener("click",()=>{
     catalogoRevealFrom=0;
     actualizarFiltroCatalogo();
     document.getElementById("productos")?.scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+document.getElementById("catalog-filter-toggle")?.addEventListener("click",()=>{
+    const panel=document.getElementById("catalog-filter-panel");
+    setCatalogFilterPanel(Boolean(panel?.hidden));
+});
+
+document.getElementById("catalog-filter-close")?.addEventListener("click",()=>{
+    setCatalogFilterPanel(false);
+});
+
+document.getElementById("catalog-filter-apply")?.addEventListener("click",()=>{
+    applyCatalogAdvancedFilters();
+});
+
+document.getElementById("catalog-filter-reset")?.addEventListener("click",()=>{
+    resetCatalogAdvancedFilters({render:true,close:false});
+});
+
+document.getElementById("catalog-filter-clear-inline")?.addEventListener("click",()=>{
+    resetCatalogAdvancedFilters({render:true,close:true});
+});
+
+document.getElementById("catalog-sort-select")?.addEventListener("change",event=>{
+    catalogSortMode=String(event.target.value||"recommended");
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    actualizarFiltroCatalogo();
+});
+
+document.getElementById("catalog-filter-panel")?.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){
+        event.preventDefault();
+        setCatalogFilterPanel(false);
+        document.getElementById("catalog-filter-toggle")?.focus();
+    }
+    if(event.key==="Enter" && event.target?.matches?.('input[type="number"]')){
+        event.preventDefault();
+        applyCatalogAdvancedFilters();
+    }
+});
+
+document.addEventListener("click",event=>{
+    const panel=document.getElementById("catalog-filter-panel");
+    const toggle=document.getElementById("catalog-filter-toggle");
+    if(!panel||panel.hidden||panel.contains(event.target)||toggle?.contains(event.target))return;
+    setCatalogFilterPanel(false);
 });
 
 document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
