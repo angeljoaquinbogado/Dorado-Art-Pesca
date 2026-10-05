@@ -30,14 +30,16 @@ let doradoPublicConfigPromise = null;
 let marcaActiva = "todas";
 let catalogoVisibleLimit = 12;
 let catalogoRevealFrom = 0;
-let catalogSortMode = "recommended";
+let catalogSortMode = "featured";
 let catalogFilterState = {
     priceMin: null,
-    priceMax: null,
-    offersOnly: false,
-    hideOutOfStock: false
+    priceMax: null
 };
+let catalogMaxPrice = 0;
 let catalogFilterCloseTimer = 0;
+let catalogSortCloseTimer = 0;
+let catalogBestSellerRanks = new Map();
+let catalogBestSellerLoadPromise = null;
 let marcasExpandidas = false;
 const CATALOG_INITIAL_LIMIT = 12;
 const CATALOG_BATCH_SIZE = 12;
@@ -583,6 +585,7 @@ async function cargarProductosDesdeSupabase() {
             tarjeta.dataset.price = String(Math.max(0, Number(producto.precio) || 0));
             tarjeta.dataset.discount = String(Math.max(0, Number(producto.descuento_porcentaje) || 0));
             tarjeta.dataset.createdAt = String(producto.created_at || "");
+            tarjeta.dataset.featured = producto.destacado === true ? "true" : "false";
             tarjeta.dataset.stock = String(Math.max(0, Number(producto.stock) || 0));
             tarjeta.dataset.controlStock = productoControlaStock(producto) ? "true" : "false";
             tarjeta.dataset.category = String(producto.categoria || "").trim();
@@ -753,7 +756,12 @@ async function cargarProductosDesdeSupabase() {
         try { construirFiltrosCategorias(productos); } catch (error) { console.warn("Filtros de catálogo:", error); }
         try { construirMarcas(productos); } catch (error) { console.warn("Marcas del catálogo:", error); }
         try { actualizarFiltroCatalogo(); } catch (error) { console.warn("Filtro activo:", error); }
-        ejecutarCuandoHayaTiempo(()=>{ try { cargarMasElegidos(); } catch (error) { console.warn("Más elegidos:", error); } },DORADO_DEVICE_PROFILE.low?1800:700);
+        ejecutarCuandoHayaTiempo(()=>{
+            loadCatalogBestSellerRanks().then(()=>{
+                if(catalogSortMode==="best-selling")actualizarFiltroCatalogo();
+            }).catch(()=>{});
+            try { cargarMasElegidos(); } catch (error) { console.warn("Más elegidos:", error); }
+        },DORADO_DEVICE_PROFILE.low?1800:700);
 
     } catch (error) {
         // Si la respuesta llegó pero una mejora visual falla, no vaciamos el
@@ -2633,16 +2641,51 @@ function normalizarTextoBusqueda(value){
 }
 
 function catalogNumber(value){
-    const parsed=Number(value);
+    const text=String(value??"").trim();
+    if(!text)return null;
+    const parsed=Number(text);
     return Number.isFinite(parsed)?parsed:null;
 }
 
+function formatCatalogPrice(value){
+    return new Intl.NumberFormat("es-AR",{maximumFractionDigits:0}).format(Math.max(0,Number(value)||0));
+}
+
+function updateCatalogPriceBounds(cards){
+    const prices=(Array.isArray(cards)?cards:[])
+        .map(card=>Math.max(0,Number(card.dataset.price)||0))
+        .filter(Number.isFinite);
+
+    catalogMaxPrice=prices.length?Math.max(...prices):0;
+
+    const min=document.getElementById("catalog-price-min");
+    const max=document.getElementById("catalog-price-max");
+    const hint=document.getElementById("catalog-price-max-hint");
+
+    if(min){
+        min.max=String(catalogMaxPrice||0);
+        if(Number(min.value)>catalogMaxPrice)min.value=String(catalogMaxPrice||0);
+    }
+
+    if(max){
+        max.max=String(catalogMaxPrice||0);
+        max.placeholder=catalogMaxPrice?formatCatalogPrice(catalogMaxPrice):"0";
+        if(Number(max.value)>catalogMaxPrice)max.value=String(catalogMaxPrice||0);
+    }
+
+    if(hint){
+        hint.textContent=catalogMaxPrice
+            ? `Máximo del catálogo: $${formatCatalogPrice(catalogMaxPrice)}`
+            : "Máximo del catálogo: $0";
+    }
+}
+
 function catalogFilterCount(){
-    let count=0;
-    if(catalogFilterState.priceMin!==null || catalogFilterState.priceMax!==null)count+=1;
-    if(catalogFilterState.offersOnly)count+=1;
-    if(catalogFilterState.hideOutOfStock)count+=1;
-    return count;
+    const minActive=catalogFilterState.priceMin!==null && catalogFilterState.priceMin>0;
+    const maxActive=catalogFilterState.priceMax!==null &&
+        catalogMaxPrice>0 &&
+        catalogFilterState.priceMax<catalogMaxPrice;
+    return minActive||maxActive?1:0;
 }
 
 function syncCatalogFilterUI(){
@@ -2668,6 +2711,7 @@ function setCatalogFilterPanel(open){
     toggle.setAttribute("aria-expanded",String(open));
 
     if(open){
+        setCatalogSortMenu(false);
         panel.hidden=false;
         requestAnimationFrame(()=>panel.classList.add("is-open"));
         return;
@@ -2682,20 +2726,14 @@ function setCatalogFilterPanel(open){
 function resetCatalogAdvancedFilters({render=true,close=false}={}){
     catalogFilterState={
         priceMin:null,
-        priceMax:null,
-        offersOnly:false,
-        hideOutOfStock:false
+        priceMax:null
     };
 
     const min=document.getElementById("catalog-price-min");
     const max=document.getElementById("catalog-price-max");
-    const offers=document.getElementById("catalog-filter-offers");
-    const available=document.getElementById("catalog-filter-available");
 
     if(min)min.value="";
     if(max)max.value="";
-    if(offers)offers.checked=false;
-    if(available)available.checked=false;
 
     catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
     catalogoRevealFrom=0;
@@ -2711,20 +2749,22 @@ function applyCatalogAdvancedFilters(){
     let min=catalogNumber(minInput?.value);
     let max=catalogNumber(maxInput?.value);
 
-    if(min!==null)min=Math.max(0,min);
-    if(max!==null)max=Math.max(0,max);
+    if(min!==null)min=Math.min(catalogMaxPrice,Math.max(0,min));
+    if(max!==null)max=Math.min(catalogMaxPrice,Math.max(0,max));
 
     if(min!==null && max!==null && min>max){
         [min,max]=[max,min];
-        if(minInput)minInput.value=String(min);
-        if(maxInput)maxInput.value=String(max);
     }
+
+    if(min!==null && min<=0)min=null;
+    if(max!==null && catalogMaxPrice>0 && max>=catalogMaxPrice)max=null;
+
+    if(minInput)minInput.value=min===null?"":String(min);
+    if(maxInput)maxInput.value=max===null?"":String(max);
 
     catalogFilterState={
         priceMin:min,
-        priceMax:max,
-        offersOnly:Boolean(document.getElementById("catalog-filter-offers")?.checked),
-        hideOutOfStock:Boolean(document.getElementById("catalog-filter-available")?.checked)
+        priceMax:max
     };
 
     catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
@@ -2734,13 +2774,93 @@ function applyCatalogAdvancedFilters(){
     setCatalogFilterPanel(false);
 }
 
+async function loadCatalogBestSellerRanks(){
+    if(catalogBestSellerLoadPromise)return catalogBestSellerLoadPromise;
+
+    catalogBestSellerLoadPromise=(async()=>{
+        try{
+            const response=await fetch("/api/best-sellers",{
+                headers:{Accept:"application/json"},
+                cache:"default"
+            });
+            const data=await response.json().catch(()=>({ids:[]}));
+            if(!response.ok||!Array.isArray(data.ids))return catalogBestSellerRanks;
+
+            catalogBestSellerRanks=new Map(
+                data.ids.map((id,index)=>[String(id),index])
+            );
+            return catalogBestSellerRanks;
+        }catch{
+            return catalogBestSellerRanks;
+        }
+    })();
+
+    return catalogBestSellerLoadPromise;
+}
+
+const CATALOG_SORT_LABELS={
+    "price-asc":"Precio: menor a mayor",
+    "price-desc":"Precio: mayor a menor",
+    "name-asc":"A - Z",
+    "name-desc":"Z - A",
+    "newest":"Más nuevo al más viejo",
+    "oldest":"Más viejo al más nuevo",
+    "best-selling":"Más vendidos",
+    "featured":"Destacado"
+};
+
+function syncCatalogSortUI(){
+    const label=document.getElementById("catalog-sort-label");
+    if(label)label.textContent=CATALOG_SORT_LABELS[catalogSortMode]||"Destacado";
+
+    document.querySelectorAll("[data-catalog-sort]").forEach(button=>{
+        const active=button.dataset.catalogSort===catalogSortMode;
+        button.classList.toggle("is-active",active);
+        button.setAttribute("aria-selected",String(active));
+    });
+}
+
+function setCatalogSortMenu(open){
+    const menu=document.getElementById("catalog-sort-menu");
+    const trigger=document.getElementById("catalog-sort-trigger");
+    if(!menu||!trigger)return;
+
+    window.clearTimeout(catalogSortCloseTimer);
+    trigger.setAttribute("aria-expanded",String(open));
+
+    if(open){
+        setCatalogFilterPanel(false);
+        menu.hidden=false;
+        requestAnimationFrame(()=>menu.classList.add("is-open"));
+        return;
+    }
+
+    menu.classList.remove("is-open");
+    catalogSortCloseTimer=window.setTimeout(()=>{
+        if(!menu.classList.contains("is-open"))menu.hidden=true;
+    },150);
+}
+
+async function selectCatalogSort(mode){
+    if(!CATALOG_SORT_LABELS[mode])mode="featured";
+    catalogSortMode=mode;
+
+    if(mode==="best-selling"){
+        await loadCatalogBestSellerRanks();
+    }
+
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    syncCatalogSortUI();
+    actualizarFiltroCatalogo();
+    setCatalogSortMenu(false);
+}
+
 function catalogSortCompare(a,b){
     const originalA=Number(a.dataset.originalIndex)||0;
     const originalB=Number(b.dataset.originalIndex)||0;
     const priceA=Number(a.dataset.price)||0;
     const priceB=Number(b.dataset.price)||0;
-    const discountA=Number(a.dataset.discount)||0;
-    const discountB=Number(b.dataset.discount)||0;
     const nameA=String(a.dataset.productName||"");
     const nameB=String(b.dataset.productName||"");
     const timeA=Date.parse(a.dataset.createdAt||"");
@@ -2760,15 +2880,28 @@ function catalogSortCompare(a,b){
         case "price-desc":
             result=priceB-priceA;
             break;
-        case "discount":
-            result=discountB-discountA;
-            break;
         case "name-asc":
             result=nameA.localeCompare(nameB,"es",{sensitivity:"base",numeric:true});
             break;
         case "name-desc":
             result=nameB.localeCompare(nameA,"es",{sensitivity:"base",numeric:true});
             break;
+        case "best-selling":{
+            const rankA=catalogBestSellerRanks.has(String(a.dataset.productId))
+                ? catalogBestSellerRanks.get(String(a.dataset.productId))
+                : Number.MAX_SAFE_INTEGER;
+            const rankB=catalogBestSellerRanks.has(String(b.dataset.productId))
+                ? catalogBestSellerRanks.get(String(b.dataset.productId))
+                : Number.MAX_SAFE_INTEGER;
+            result=rankA-rankB;
+            break;
+        }
+        case "featured":{
+            const featuredA=a.dataset.featured==="true"?1:0;
+            const featuredB=b.dataset.featured==="true"?1:0;
+            result=featuredB-featuredA;
+            break;
+        }
         default:
             result=originalA-originalB;
     }
@@ -2796,6 +2929,7 @@ function actualizarFiltroCatalogo() {
     const moreButton = document.getElementById("catalog-more-button");
     const query = normalizarTextoBusqueda(input?.value || "");
     const rawCards = Array.from(document.querySelectorAll("#products-grid .product"));
+    updateCatalogPriceBounds(rawCards);
     const cards = ordenarTarjetasCatalogo(rawCards,grid);
     const advancedCount=catalogFilterCount();
     const hasActiveFilter = Boolean(query) || categoriaActiva !== "todos" || marcaActiva !== "todas" || advancedCount>0;
@@ -2806,18 +2940,13 @@ function actualizarFiltroCatalogo() {
 
     cards.forEach(card => {
         const price=Number(card.dataset.price)||0;
-        const discount=Number(card.dataset.discount)||0;
-        const stock=Number(card.dataset.stock)||0;
-        const controlled=card.dataset.controlStock==="true";
 
         const coincideTexto = !query || normalizarTextoBusqueda(card.dataset.search || card.textContent || "").includes(query);
         const coincideCategoria = categoriaActiva === "todos" || String(card.dataset.categoryKey || "sin-categoria") === categoriaActiva;
         const coincideMarca = marcaActiva === "todas" || String(card.dataset.brandKey || "sin-marca") === marcaActiva;
         const coincideMin = catalogFilterState.priceMin===null || price>=catalogFilterState.priceMin;
         const coincideMax = catalogFilterState.priceMax===null || price<=catalogFilterState.priceMax;
-        const coincideOferta = !catalogFilterState.offersOnly || discount>0;
-        const coincideDisponible = !catalogFilterState.hideOutOfStock || !controlled || stock>0;
-        const coincide = coincideTexto && coincideCategoria && coincideMarca && coincideMin && coincideMax && coincideOferta && coincideDisponible;
+        const coincide = coincideTexto && coincideCategoria && coincideMarca && coincideMin && coincideMax;
 
         if(coincide)matches += 1;
 
@@ -2956,11 +3085,41 @@ document.getElementById("catalog-filter-clear-inline")?.addEventListener("click"
     resetCatalogAdvancedFilters({render:true,close:true});
 });
 
-document.getElementById("catalog-sort-select")?.addEventListener("change",event=>{
-    catalogSortMode=String(event.target.value||"recommended");
-    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
-    catalogoRevealFrom=0;
-    actualizarFiltroCatalogo();
+document.getElementById("catalog-sort-trigger")?.addEventListener("click",event=>{
+    event.stopPropagation();
+    const menu=document.getElementById("catalog-sort-menu");
+    setCatalogSortMenu(Boolean(menu?.hidden));
+});
+
+document.getElementById("catalog-sort-menu")?.addEventListener("click",event=>{
+    const option=event.target.closest?.("[data-catalog-sort]");
+    if(!option)return;
+    void selectCatalogSort(String(option.dataset.catalogSort||"featured"));
+});
+
+document.getElementById("catalog-sort-trigger")?.addEventListener("keydown",event=>{
+    if(event.key==="ArrowDown"||event.key==="Enter"||event.key===" "){
+        event.preventDefault();
+        setCatalogSortMenu(true);
+        requestAnimationFrame(()=>document.querySelector("#catalog-sort-menu [data-catalog-sort].is-active")?.focus());
+    }
+    if(event.key==="Escape")setCatalogSortMenu(false);
+});
+
+document.getElementById("catalog-sort-menu")?.addEventListener("keydown",event=>{
+    const options=[...document.querySelectorAll("#catalog-sort-menu [data-catalog-sort]")];
+    const index=options.indexOf(document.activeElement);
+    if(event.key==="Escape"){
+        event.preventDefault();
+        setCatalogSortMenu(false);
+        document.getElementById("catalog-sort-trigger")?.focus();
+    }else if(event.key==="ArrowDown"){
+        event.preventDefault();
+        options[(index+1+options.length)%options.length]?.focus();
+    }else if(event.key==="ArrowUp"){
+        event.preventDefault();
+        options[(index-1+options.length)%options.length]?.focus();
+    }
 });
 
 document.getElementById("catalog-filter-panel")?.addEventListener("keydown",event=>{
@@ -2977,10 +3136,19 @@ document.getElementById("catalog-filter-panel")?.addEventListener("keydown",even
 
 document.addEventListener("click",event=>{
     const panel=document.getElementById("catalog-filter-panel");
-    const toggle=document.getElementById("catalog-filter-toggle");
-    if(!panel||panel.hidden||panel.contains(event.target)||toggle?.contains(event.target))return;
-    setCatalogFilterPanel(false);
+    const filterToggle=document.getElementById("catalog-filter-toggle");
+    if(panel&&!panel.hidden&&!panel.contains(event.target)&&!filterToggle?.contains(event.target)){
+        setCatalogFilterPanel(false);
+    }
+
+    const sortControl=document.getElementById("catalog-sort-control");
+    const sortMenu=document.getElementById("catalog-sort-menu");
+    if(sortMenu&&!sortMenu.hidden&&!sortControl?.contains(event.target)){
+        setCatalogSortMenu(false);
+    }
 });
+
+syncCatalogSortUI();
 
 document.getElementById("catalog-brand-clear")?.addEventListener("click",()=>{
     limpiarMarcaSeleccionada();
