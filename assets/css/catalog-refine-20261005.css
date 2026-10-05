@@ -956,3 +956,143 @@ html[data-store-theme="dark"] .catalog-sort-menu button:focus-visible{
     transition:none!important;
   }
 }
+
+
+/* =========================================================
+   CATEGORY ROW + PRODUCT TITLE VISIBILITY · 2026-10-05
+   ========================================================= */
+
+.catalog-refine-shell{
+  display:grid;
+  gap:0;
+  margin-bottom:18px;
+}
+
+.catalog-refine-shell .catalog-refine-bar{
+  margin-bottom:0;
+  border-bottom:0;
+}
+
+.catalog-category-filter-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:16px;
+  padding:11px 0 13px;
+  border-bottom:1px solid rgba(35,45,52,.10);
+}
+
+.catalog-category-filter-title{
+  display:flex;
+  align-items:center;
+  min-height:42px;
+}
+
+.catalog-category-filter-title span{
+  color:#68757b;
+  font-family:"Montserrat","Manrope",sans-serif;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.11em;
+  white-space:nowrap;
+}
+
+.dorado-catalog .catalog-category-filter-row .category-chips{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:9px!important;
+  min-width:0;
+  width:100%;
+  margin:0!important;
+  padding:0 2px 2px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+
+.dorado-catalog .catalog-category-filter-row .category-chips::-webkit-scrollbar{
+  display:none;
+}
+
+.dorado-catalog .catalog-category-filter-row .category-chip{
+  flex:0 0 auto!important;
+}
+
+/* Product heading must stay visible on the light storefront. */
+html[data-store-theme="light"] .catalog-products-head .catalog-step-label,
+html[data-store-theme="light"] .catalog-products-head .catalog-step-label strong{
+  color:#1f2d34!important;
+}
+
+html[data-store-theme="dark"] .catalog-products-head .catalog-step-label,
+html[data-store-theme="dark"] .catalog-products-head .catalog-step-label strong{
+  color:#f3f5f5!important;
+}
+
+/* Same fix for the inline category label. */
+html[data-store-theme="light"] .catalog-category-filter-title span{
+  color:#657278!important;
+}
+
+html[data-store-theme="dark"] .catalog-category-filter-title span{
+  color:#8ea0a8!important;
+}
+
+.catalog-products-head{
+  margin:20px 0 9px!important;
+}
+
+.catalog-products-head .catalog-step-label{
+  position:relative;
+  padding-left:13px;
+}
+
+.catalog-products-head .catalog-step-label::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  width:4px;
+  height:18px;
+  border-radius:999px;
+  background:#d7a438;
+  transform:translateY(-50%);
+}
+
+@media(max-width:700px){
+  .catalog-category-filter-row{
+    grid-template-columns:1fr;
+    gap:8px;
+    padding:10px 0 12px;
+  }
+
+  .catalog-category-filter-title{
+    min-height:auto;
+  }
+
+  .catalog-category-filter-title span{
+    font-size:7.5px;
+  }
+
+  .dorado-catalog .catalog-category-filter-row .category-chips{
+    gap:8px!important;
+    padding-bottom:3px!important;
+  }
+
+  .catalog-products-head{
+    margin-top:17px!important;
+  }
+}
+
+@media(max-width:420px){
+  .catalog-products-head .catalog-step-label{
+    padding-left:11px;
+  }
+
+  .catalog-products-head .catalog-step-label::before{
+    width:3px;
+    height:16px;
+  }
+}
