@@ -1195,12 +1195,12 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         let d=await r.json().catch(()=>[]);
         if(!r.ok){
-            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,activo,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
                 headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
             });
             d=await r.json().catch(()=>[]);
@@ -1883,6 +1883,7 @@ function resetProductForm(){
     if(categoryNew)categoryNew.value="";
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
+    document.getElementById("product-featured").value="false";
     setProductStockControl(Boolean(adminBusinessSettings?.default_stock_control));
     document.getElementById("product-discount").value="0";
     document.getElementById("product-min-stock").value="0";
@@ -1965,6 +1966,7 @@ function editProduct(id){
     document.getElementById("product-brand").value=p.marca||"";
     document.getElementById("product-image").value="";
     document.getElementById("product-active").value=String(Boolean(p.activo));
+    document.getElementById("product-featured").value=String(Boolean(p.destacado));
     document.getElementById("product-form-title").textContent="Editar producto";
     document.getElementById("product-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("product-cancel").classList.remove("hidden");
@@ -2051,7 +2053,8 @@ async function saveProduct(event){
             marca:normalizeBrandName(document.getElementById("product-brand").value),
             imagen:imagenes[0],
             imagenes,
-            activo:document.getElementById("product-active").value==="true"
+            activo:document.getElementById("product-active").value==="true",
+            destacado:document.getElementById("product-featured").value==="true"
         };
 
         if(!payload.nombre||!Number.isFinite(payload.precio)||payload.precio<0){
