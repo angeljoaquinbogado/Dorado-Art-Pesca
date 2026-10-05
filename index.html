@@ -145,6 +145,7 @@
 <link rel="stylesheet" href="assets/css/best-sellers-theme-fix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/payment-result-polish-20260929.css?v=20260929b"/>
 <link rel="stylesheet" href="assets/css/owner-update-20261001.css?v=20261001g"/>
+<link rel="stylesheet" href="assets/css/catalog-refine-20261005.css?v=20261005a"/>
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -418,6 +419,82 @@
 <div class="catalog-step-head catalog-products-head">
   <div class="catalog-step-label"><strong>PRODUCTOS</strong></div>
 </div>
+
+<div class="catalog-refine-bar" aria-label="Filtrar y ordenar productos">
+  <div class="catalog-refine-left">
+    <button class="catalog-filter-toggle" id="catalog-filter-toggle" type="button" aria-expanded="false" aria-controls="catalog-filter-panel">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-sliders"></use></svg>
+      <span>FILTRAR</span>
+      <b id="catalog-filter-count" hidden>0</b>
+    </button>
+
+    <button class="catalog-filter-clear-inline" id="catalog-filter-clear-inline" type="button" hidden>
+      LIMPIAR FILTROS
+    </button>
+  </div>
+
+  <label class="catalog-sort-control" for="catalog-sort-select">
+    <span>ORDENAR POR</span>
+    <select id="catalog-sort-select" aria-label="Ordenar productos">
+      <option value="recommended">Recomendados</option>
+      <option value="newest">Más nuevos</option>
+      <option value="oldest">Más antiguos</option>
+      <option value="price-asc">Menor precio</option>
+      <option value="price-desc">Mayor precio</option>
+      <option value="discount">Mayor descuento</option>
+      <option value="name-asc">Nombre A–Z</option>
+      <option value="name-desc">Nombre Z–A</option>
+    </select>
+    <svg class="ui-icon" aria-hidden="true"><use href="#i-chevron"></use></svg>
+  </label>
+</div>
+
+<div class="catalog-filter-panel" id="catalog-filter-panel" hidden>
+  <div class="catalog-filter-panel-head">
+    <div>
+      <small>FILTRAR PRODUCTOS</small>
+      <strong>Encontrá exactamente lo que buscás</strong>
+    </div>
+    <button class="catalog-filter-close" id="catalog-filter-close" type="button" aria-label="Cerrar filtros">
+      <svg class="ui-icon" aria-hidden="true"><use href="#i-close"></use></svg>
+    </button>
+  </div>
+
+  <div class="catalog-filter-grid">
+    <div class="catalog-filter-group">
+      <span class="catalog-filter-label">PRECIO</span>
+      <div class="catalog-price-range">
+        <label>
+          <span>DESDE</span>
+          <div><b>$</b><input id="catalog-price-min" type="number" min="0" step="100" inputmode="numeric" placeholder="0"></div>
+        </label>
+        <i aria-hidden="true">—</i>
+        <label>
+          <span>HASTA</span>
+          <div><b>$</b><input id="catalog-price-max" type="number" min="0" step="100" inputmode="numeric" placeholder="Sin límite"></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="catalog-filter-group catalog-filter-options">
+      <span class="catalog-filter-label">OPCIONES</span>
+      <label class="catalog-filter-check">
+        <input id="catalog-filter-offers" type="checkbox">
+        <span><strong>Solo ofertas</strong><small>Productos con descuento activo</small></span>
+      </label>
+      <label class="catalog-filter-check">
+        <input id="catalog-filter-available" type="checkbox">
+        <span><strong>Ocultar sin stock</strong><small>No muestra productos agotados con control de stock</small></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="catalog-filter-actions">
+    <button class="catalog-filter-reset" id="catalog-filter-reset" type="button">RESTABLECER</button>
+    <button class="catalog-filter-apply" id="catalog-filter-apply" type="button">APLICAR FILTROS</button>
+  </div>
+</div>
+
 <div class="products" id="products-grid">
 <div class="products-loading">
 <span class="catalog-loader-dot" aria-hidden="true"></span>
@@ -1178,7 +1255,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261001-brandwave3"></script>
+<script src="assets/js/site.js?v=20261005-catalogrefine1"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
