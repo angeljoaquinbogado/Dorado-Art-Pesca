@@ -145,7 +145,7 @@
 <link rel="stylesheet" href="assets/css/best-sellers-theme-fix-20260929.css?v=20260929a"/>
 <link rel="stylesheet" href="assets/css/payment-result-polish-20260929.css?v=20260929b"/>
 <link rel="stylesheet" href="assets/css/owner-update-20261001.css?v=20261001g"/>
-<link rel="stylesheet" href="assets/css/catalog-refine-20261005.css?v=20261005c"/>
+<link rel="stylesheet" href="assets/css/catalog-refine-20261005.css?v=20261005d"/>
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -449,12 +449,6 @@
   </div>
 </div>
 
-<div class="catalog-category-filter-row" aria-label="Categorías del catálogo">
-  <div class="catalog-category-filter-title">
-    <span>CATEGORÍA</span>
-  </div>
-  <div class="category-chips" id="categorias" aria-label="Filtrar por categoría"></div>
-</div>
 </div>
 
 <div class="catalog-filter-panel" id="catalog-filter-panel" hidden>
@@ -469,6 +463,25 @@
   </div>
 
   <div class="catalog-filter-grid">
+    <section class="catalog-filter-group catalog-category-filter-group" aria-labelledby="catalog-category-filter-label">
+      <div class="catalog-filter-label-row">
+        <span class="catalog-filter-label" id="catalog-category-filter-label">CATEGORÍA</span>
+        <small>Elegí una categoría para filtrar el catálogo</small>
+      </div>
+
+      <div class="catalog-category-scroll-shell">
+        <button class="catalog-category-scroll-button is-prev" id="catalog-category-scroll-prev" type="button" aria-label="Ver categorías anteriores" disabled>
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-chevron"></use></svg>
+        </button>
+
+        <div class="category-chips" id="categorias" aria-label="Filtrar por categoría" tabindex="0"></div>
+
+        <button class="catalog-category-scroll-button is-next" id="catalog-category-scroll-next" type="button" aria-label="Ver más categorías">
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-chevron"></use></svg>
+        </button>
+      </div>
+    </section>
+
     <div class="catalog-filter-group catalog-price-filter-group">
       <div class="catalog-filter-label-row">
         <span class="catalog-filter-label">PRECIO</span>
@@ -1254,7 +1267,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261005-catalogrefine2"></script>
+<script src="assets/js/site.js?v=20261005-categoryfilter1"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
