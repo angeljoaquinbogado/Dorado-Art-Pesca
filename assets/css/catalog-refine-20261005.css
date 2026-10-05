@@ -621,3 +621,338 @@ html[data-store-theme="dark"] .catalog-price-range>label>span{
     transition:none!important;
   }
 }
+
+
+/* =========================================================
+   REFINEMENT PASS · 2026-10-05
+   Custom sort menu + clean price inputs + automatic catalog max.
+   ========================================================= */
+
+.catalog-filter-grid{
+  grid-template-columns:minmax(0,760px)!important;
+  justify-content:start;
+}
+
+.catalog-price-filter-group{
+  width:100%;
+}
+
+.catalog-filter-label-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.catalog-filter-label-row>small{
+  color:#8d9599;
+  font-size:8px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+
+/* Price inputs: remove native Windows focus rectangle/chrome. */
+.catalog-price-range>label>div{
+  outline:0!important;
+  box-shadow:none!important;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.catalog-price-range>label>div:focus-within{
+  border-color:#d6a23a!important;
+  background:#fffdf8!important;
+  box-shadow:none!important;
+  outline:0!important;
+}
+
+.catalog-price-range input,
+.catalog-price-range input:hover,
+.catalog-price-range input:focus,
+.catalog-price-range input:focus-visible,
+.catalog-price-range input:active{
+  appearance:textfield!important;
+  -webkit-appearance:none!important;
+  -moz-appearance:textfield!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+
+.catalog-price-range input::-webkit-outer-spin-button,
+.catalog-price-range input::-webkit-inner-spin-button{
+  -webkit-appearance:none!important;
+  margin:0!important;
+}
+
+/* Fully custom sort control. No native <select> dropdown is used anymore. */
+.catalog-sort-control{
+  position:relative;
+  min-width:268px;
+  height:44px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  padding:0 7px 0 14px;
+  border:1px solid rgba(120,108,84,.26);
+  border-radius:999px;
+  background:rgba(255,255,255,.58);
+  color:#334249;
+  isolation:isolate;
+}
+
+.catalog-sort-control>span{
+  color:#8c9396;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:.09em;
+  white-space:nowrap;
+}
+
+.catalog-sort-trigger{
+  appearance:none;
+  -webkit-appearance:none;
+  min-width:0;
+  width:100%;
+  height:34px;
+  padding:0 9px 0 11px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:#26353c;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 14px;
+  align-items:center;
+  gap:8px;
+  text-align:left;
+  cursor:pointer;
+  outline:0!important;
+  box-shadow:none!important;
+  font-family:"Manrope",system-ui,sans-serif;
+}
+
+.catalog-sort-trigger strong{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:10px;
+  font-weight:750;
+  line-height:1;
+}
+
+.catalog-sort-trigger .ui-icon{
+  width:13px;
+  height:13px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  transition:transform 160ms cubic-bezier(.23,1,.32,1);
+}
+
+.catalog-sort-trigger[aria-expanded="true"] .ui-icon{
+  transform:rotate(180deg);
+}
+
+.catalog-sort-trigger:focus,
+.catalog-sort-trigger:focus-visible{
+  outline:0!important;
+  box-shadow:none!important;
+}
+
+.catalog-sort-control:focus-within{
+  border-color:rgba(207,155,47,.70)!important;
+  box-shadow:none!important;
+}
+
+.catalog-sort-menu{
+  position:absolute;
+  z-index:80;
+  top:calc(100% + 8px);
+  right:0;
+  width:min(292px,calc(100vw - 24px));
+  padding:7px;
+  border:1px solid rgba(120,108,84,.20);
+  border-radius:15px;
+  background:#fffdf9;
+  box-shadow:0 18px 48px rgba(37,31,20,.16);
+  opacity:0;
+  transform:translate3d(0,-6px,0) scale(.985);
+  transform-origin:top right;
+  transition:
+    opacity 150ms cubic-bezier(.23,1,.32,1),
+    transform 150ms cubic-bezier(.23,1,.32,1);
+}
+
+.catalog-sort-menu[hidden]{
+  display:none!important;
+}
+
+.catalog-sort-menu.is-open{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+}
+
+.catalog-sort-menu button{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  min-height:38px;
+  padding:8px 11px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#334249;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  text-align:left;
+  cursor:pointer;
+  outline:0!important;
+  box-shadow:none!important;
+  font:650 10px/1.3 "Manrope",system-ui,sans-serif;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.catalog-sort-menu button::after{
+  content:"";
+  width:6px;
+  height:6px;
+  flex:0 0 6px;
+  border-radius:999px;
+  background:#d7a438;
+  opacity:0;
+}
+
+.catalog-sort-menu button.is-active{
+  background:#fff4d9;
+  color:#815b10;
+  font-weight:800;
+}
+
+.catalog-sort-menu button.is-active::after{
+  opacity:1;
+}
+
+.catalog-sort-menu button:hover,
+.catalog-sort-menu button:focus-visible{
+  background:#f7f2e8;
+  color:#26353c;
+}
+
+/* Dark theme */
+html[data-store-theme="dark"] .catalog-filter-label-row>small{
+  color:#7f959f;
+}
+
+html[data-store-theme="dark"] .catalog-price-range>label>div:focus-within{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(217,165,54,.62)!important;
+}
+
+html[data-store-theme="dark"] .catalog-sort-control{
+  background:rgba(255,255,255,.035);
+  border-color:rgba(255,255,255,.12);
+  color:#e8eef0;
+}
+
+html[data-store-theme="dark"] .catalog-sort-trigger{
+  color:#edf2f3;
+}
+
+html[data-store-theme="dark"] .catalog-sort-menu{
+  background:#10242e;
+  border-color:rgba(255,255,255,.11);
+  box-shadow:0 22px 54px rgba(0,0,0,.34);
+}
+
+html[data-store-theme="dark"] .catalog-sort-menu button{
+  color:#dfe8eb;
+}
+
+html[data-store-theme="dark"] .catalog-sort-menu button.is-active{
+  background:rgba(217,165,54,.12);
+  color:#e8bb5e;
+}
+
+html[data-store-theme="dark"] .catalog-sort-menu button:hover,
+html[data-store-theme="dark"] .catalog-sort-menu button:focus-visible{
+  background:rgba(255,255,255,.055);
+  color:#fff;
+}
+
+@media(max-width:620px){
+  .catalog-sort-control{
+    flex:1 1 auto;
+    min-width:0;
+    width:100%;
+    height:42px;
+    grid-template-columns:minmax(0,1fr);
+    padding:0 7px;
+  }
+
+  .catalog-sort-control>span{
+    display:none;
+  }
+
+  .catalog-sort-trigger{
+    height:40px;
+    padding-inline:10px;
+  }
+
+  .catalog-sort-trigger strong{
+    font-size:9.5px;
+  }
+
+  .catalog-sort-menu{
+    position:fixed;
+    z-index:180;
+    right:12px;
+    bottom:calc(12px + env(safe-area-inset-bottom));
+    top:auto;
+    left:12px;
+    width:auto;
+    max-height:min(62dvh,520px);
+    overflow:auto;
+    padding:8px;
+    border-radius:18px;
+    transform:translate3d(0,16px,0) scale(.99);
+    transform-origin:bottom center;
+    box-shadow:
+      0 18px 54px rgba(0,0,0,.22),
+      0 0 0 100vmax rgba(5,12,16,.34);
+  }
+
+  .catalog-sort-menu.is-open{
+    transform:translate3d(0,0,0) scale(1);
+  }
+
+  .catalog-sort-menu button{
+    min-height:44px;
+    font-size:10.5px;
+  }
+
+  .catalog-filter-label-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .catalog-filter-label-row>small{
+    white-space:normal;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .catalog-sort-menu,
+  .catalog-sort-trigger .ui-icon,
+  .catalog-price-range>label>div{
+    transition:none!important;
+  }
+}
