@@ -35,8 +35,8 @@ export default async function handler(req, res) {
             if (!id) continue;
             totals.set(id, (totals.get(id) || 0) + Math.max(0, Number(item.cantidad) || 0));
         }
-        const top = [...totals.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6).map(([id])=>id);
-        return res.status(200).json({ ids: top });
+        const ranked = [...totals.entries()].sort((a,b)=>b[1]-a[1]).map(([id])=>id);
+        return res.status(200).json({ ids: ranked });
     } catch (error) {
         console.error("Best sellers error:", error?.message || error);
         return res.status(200).json({ ids: [] });
