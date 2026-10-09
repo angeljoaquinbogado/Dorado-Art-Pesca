@@ -24,6 +24,54 @@ const DORADO_ORDERS_KEY = "doradoMisPedidos";
 let DORADO_WHATSAPP = "5491168070039";
 
 const catalogoProductos = new Map();
+// Una promoción única por pedido. Nunca se multiplica por cantidad de productos.
+function estadoCuotasCarrito(carrito=leerCarrito()){
+    const items=Array.isArray(carrito)?carrito:[];
+    const conPromo=items.filter(item=>item.cuotas_sin_interes_3===true).length;
+    return {hayPromo:conPromo>0,soloPromo:conPromo>0&&conPromo===items.length,mixto:conPromo>0&&conPromo<items.length};
+}
+function planCuotasCheckout(){
+    return estadoCuotasCarrito().soloPromo && document.getElementById("checkout-installments-3")?.checked
+        ? "3_sin_interes" : "un_pago";
+}
+function cuotasProductoMarkup(producto){
+    if(producto?.cuotas_sin_interes_3!==true || !(Number(producto.precio)>0))return "";
+    const cuota=Math.round((Number(producto.precio)/3)*100)/100;
+    return `<div class="dorado-installments-label"><span class="dorado-installments-title">3 cuotas sin interés</span> de <strong>${textoSeguro(formatearPrecio(cuota))}</strong></div>`;
+}
+function actualizarCheckoutCuotas(){
+    const carrito=leerCarrito();
+    const estado=estadoCuotasCarrito(carrito);
+    const box=document.getElementById("checkout-installments-box");
+    const label=box?.querySelector(".dorado-installments-checkout-choice");
+    const note=document.getElementById("checkout-installments-note");
+    const checkbox=document.getElementById("checkout-installments-3");
+    const amount=document.getElementById("checkout-installments-amount");
+    if(box){box.hidden=!estado.hayPromo;box.classList.toggle("is-mixed",estado.mixto);}
+    if(label)label.hidden=!estado.soloPromo;
+    if(note)note.textContent=estado.mixto
+        ?"Este carrito mezcla productos con y sin financiación. Para usar 3 cuotas sin interés, comprá únicamente productos habilitados en un pedido separado."
+        :"Con tarjeta de crédito o Mercado Pago. No acumulable con cupones; el plan se aplica una sola vez a todo el pedido.";
+    const subtotal=carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+    if(amount)amount.textContent=`3 pagos de ${formatearPrecio(Math.round((subtotal/3)*100)/100)} · total ${formatearPrecio(subtotal)}`;
+    const noCupon=estado.soloPromo&&checkbox?.checked;
+    const input=document.getElementById("checkout-coupon-code");
+    const btn=document.getElementById("checkout-coupon-apply");
+    const couponMsg=document.getElementById("checkout-coupon-message");
+    if(noCupon&&checkoutCoupon){
+        checkoutCoupon=null;
+        if(input)input.value="";
+        if(couponMsg){couponMsg.textContent="Las 3 cuotas sin interés no se acumulan con cupones.";couponMsg.className="checkout-coupon-message";}
+    }
+    if(input)input.disabled=Boolean(noCupon);
+    if(btn)btn.disabled=Boolean(noCupon);
+    const payment=document.getElementById("checkout-payment-method");
+    if(payment){
+        if(estado.hayPromo && !["","mercadopago","tarjeta"].includes(payment.value))payment.value="";
+        payment.dispatchEvent(new Event("change",{bubbles:true}));
+    }
+    window.__doradoSyncCardInstallments?.();
+}
 let productoModalActual = null;
 let checkoutCoupon = null;
 let doradoPublicConfigPromise = null;
@@ -634,6 +682,8 @@ async function cargarProductosDesdeSupabase() {
                             : `<span class="product-price-current">${textoSeguro(formatearPrecio(producto.precio))}</span>`}
                     </div>
 
+                    ${cuotasProductoMarkup(producto)}
+
                     <div class="product-stock" ${controlaStock ? "" : "hidden"}>
    
                     ${!controlaStock ? "" : sinStock
@@ -823,6 +873,7 @@ function sincronizarCarritoConCatalogo() {
                 categoria: producto.categoria || "Producto",
                 stock,
                 control_stock: controlaStock,
+                cuotas_sin_interes_3: producto.cuotas_sin_interes_3===true,
                 cantidad
             };
 
@@ -832,6 +883,7 @@ function sincronizarCarritoConCatalogo() {
                 String(item.imagen) !== String(nuevo.imagen) ||
                 Number(item.stock) !== nuevo.stock ||
                 Boolean(item.control_stock) !== nuevo.control_stock ||
+                Boolean(item.cuotas_sin_interes_3) !== nuevo.cuotas_sin_interes_3 ||
                 Number(item.cantidad) !== nuevo.cantidad ||
                 String(item.categoria || "") !== String(nuevo.categoria)
             ) {
@@ -976,6 +1028,13 @@ function verProducto(producto) {
         precioMobile.classList.toggle("has-discount", discount > 0);
         precioMobile.innerHTML = priceMarkup;
     }
+
+    [precio,precioMobile].forEach(priceNode=>{
+        if(!priceNode)return;
+        if(priceNode.nextElementSibling?.classList.contains("dorado-installments-label"))priceNode.nextElementSibling.remove();
+        const markup=cuotasProductoMarkup(producto);
+        if(markup)priceNode.insertAdjacentHTML("afterend",markup);
+    });
 
     const stockElemento = modal.querySelector(".dynamic-product-stock");
 
@@ -1156,6 +1215,7 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
         existente.categoria = producto.categoria || existente.categoria || "Producto";
         existente.stock = stock;
         existente.control_stock = controlaStock;
+        existente.cuotas_sin_interes_3 = producto.cuotas_sin_interes_3===true;
     } else {
         carrito.push({
             id: producto.id,
@@ -1165,6 +1225,7 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
             categoria: producto.categoria || "Producto",
             stock,
             control_stock: controlaStock,
+            cuotas_sin_interes_3: producto.cuotas_sin_interes_3===true,
             cantidad: agregar
         });
     }
@@ -1496,6 +1557,7 @@ function consultarCompraMayorista() {
 
 
 function renderCheckoutResumen() {
+    actualizarCheckoutCuotas();
     const carrito = leerCarrito();
     const lista = document.getElementById("checkout-summary-list");
     const totalEl = document.getElementById("checkout-summary-total");
@@ -1554,6 +1616,11 @@ function renderCheckoutResumen() {
 }
 
 async function aplicarCuponCheckout() {
+    if(planCuotasCheckout()==="3_sin_interes"){
+        const msg=document.getElementById("checkout-coupon-message");
+        if(msg){msg.textContent="Las 3 cuotas sin interés no se acumulan con cupones.";msg.className="checkout-coupon-message error";}
+        return;
+    }
     const input = document.getElementById("checkout-coupon-code");
     const message = document.getElementById("checkout-coupon-message");
     const button = document.getElementById("checkout-coupon-apply");
@@ -1702,6 +1769,9 @@ async function iniciarPagoMercadoPago(evento) {
     const metodoPago=String(datos.get("metodo_pago")||"").trim();
     const entrega=String(datos.get("entrega")||"retiro").trim();
     if(!metodoPago){mostrarErrorCheckout("Elegí un medio de pago para continuar.");return;}
+    if(estadoCuotasCarrito(carrito).hayPromo && !["mercadopago","tarjeta"].includes(metodoPago)){
+        mostrarErrorCheckout("Los productos con la promoción solo se pagan con Mercado Pago o tarjeta de crédito.");return;
+    }
 
     if(metodoPago==="efectivo" && entrega!=="retiro"){
         mostrarErrorCheckout("El pago en efectivo está disponible únicamente para retiro en el local.");
@@ -1795,6 +1865,7 @@ async function iniciarPagoMercadoPago(evento) {
                 cliente,
                 items,
                 payment_method:metodoPago,
+                payment_plan:planCuotasCheckout(),
                 cupon:String(document.getElementById("checkout-coupon-code")?.value||"").trim().toUpperCase()
             })
         });
@@ -4713,6 +4784,10 @@ comprobarRetornoPago();
     const updateCheckout=()=>{
         const method=String(payment?.value||"");
         const retiro=delivery?.value==="retiro";
+        const promo=estadoCuotasCarrito().hayPromo;
+        const promoPlan=planCuotasCheckout()==="3_sin_interes";
+        const cardLabel=document.querySelector('[data-payment-value="tarjeta"] .payment-picker-copy strong');
+        if(cardLabel)cardLabel.textContent=promo?"Tarjeta de crédito":"Tarjeta de débito / crédito";
         addressFields.forEach(el=>{el.required=!retiro;el.closest?.(".checkout-field")?.classList.toggle("optional-for-pickup",retiro);});
 
         if(detail)detail.hidden=!method;
@@ -4722,10 +4797,11 @@ comprobarRetornoPago();
         const span=payButton.querySelector("span");
         if(method==="mercadopago"){
             if(span)span.textContent="Continuar con Mercado Pago";
+            if(promoPlan&&help)help.textContent="3 cuotas sin interés con tarjeta de crédito. Mercado Pago confirmará las condiciones antes del pago.";
             if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
         }else if(method==="tarjeta"){
-            if(span)span.textContent="Pagar con tarjeta";
-            if(help)help.textContent="🔒 Número, vencimiento y CVV se tokenizan con Mercado Pago y no se guardan en Dorado.";
+            if(span)span.textContent=promoPlan?"Pagar en 3 cuotas sin interés":"Pagar con tarjeta";
+            if(help)help.textContent=promoPlan?"3 cuotas sin interés solo con tarjetas de crédito habilitadas. Los datos de tu tarjeta permanecen seguros.":"🔒 Número, vencimiento y CVV se tokenizan con Mercado Pago y no se guardan en Dorado.";
             window.__doradoInitCardPayment?.();
         }else if(method==="transferencia"){
             if(span)span.textContent="Confirmar transferencia por WhatsApp";
@@ -4820,6 +4896,7 @@ comprobarRetornoPago();
     const availabilityFor=value=>{
         const availability=window.doradoPaymentAvailability||{};
         const visibility=window.doradoPaymentVisibility||{};
+        if(estadoCuotasCarrito().hayPromo && !["mercadopago","tarjeta"].includes(value))return {enabled:false,hidden:true,label:"Solo pago online"};
         if(visibility[value]===false)return {enabled:false,hidden:true,label:"Desactivado"};
         if(value==="efectivo"){
             const enabled=Boolean(availability.cash)&&delivery?.value==="retiro";
@@ -4840,7 +4917,7 @@ comprobarRetornoPago();
 
     const sync=()=>{
         const selected=String(payment.value||"");
-        label.textContent=labels[selected]||"Elegí cómo pagar";
+        label.textContent=selected==="tarjeta"&&estadoCuotasCarrito().hayPromo?"Tarjeta de crédito":labels[selected]||"Elegí cómo pagar";
         trigger.classList.toggle("has-value",Boolean(selected));
 
         options.forEach(option=>{
@@ -4914,6 +4991,7 @@ comprobarRetornoPago();
     document.getElementById("cart-overlay")?.addEventListener("click", cerrarCarrito);
     document.querySelector(".cart-close")?.addEventListener("click", cerrarCarrito);
     document.getElementById("cart-checkout")?.addEventListener("click", abrirCheckout);
+    document.getElementById("checkout-installments-3")?.addEventListener("change",renderCheckoutResumen);
     document.getElementById("checkout-coupon-apply")?.addEventListener("click", aplicarCuponCheckout);
     document.getElementById("checkout-coupon-code")?.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); aplicarCuponCheckout(); } });
     document.getElementById("cart-continue")?.addEventListener("click", cerrarCarrito);
@@ -5168,6 +5246,31 @@ comprobarRetornoPago();
     let cardForm=null;
     let initializing=false;
 
+    // CardForm carga planes por banco; dejamos solo 1 pago o el plan de 3 elegido.
+    const syncCardInstallments=()=>{
+        const select=document.getElementById("mp-installments");
+        if(!select)return;
+        const expected=planCuotasCheckout()==="3_sin_interes"?3:1;
+        const choices=Array.from(select.options);
+        choices.forEach(option=>{
+            const value=Number(option.value);
+            const eligible=!String(option.value||"").trim()||value===expected;
+            if(!eligible&&!option.disabled){option.disabled=true;option.dataset.doradoFiltered="1";}
+            else if(eligible&&option.dataset.doradoFiltered==="1"){option.disabled=false;delete option.dataset.doradoFiltered;}
+        });
+        const selected=choices.find(option=>Number(option.value)===expected&&!option.disabled);
+        if(selected&&select.value!==selected.value){
+            select.value=selected.value;
+            select.dispatchEvent(new Event("change",{bubbles:true}));
+        }
+        window.__doradoRefreshMpSelects?.();
+    };
+    window.__doradoSyncCardInstallments=syncCardInstallments;
+    const mpInstallmentsSelect=document.getElementById("mp-installments");
+    if(mpInstallmentsSelect){
+        const observer=new MutationObserver(()=>syncCardInstallments());
+        observer.observe(mpInstallmentsSelect,{childList:true,subtree:true});
+    }
     const statusEl=()=>document.getElementById("mp-card-status");
     const setStatus=(text,type="")=>{
         const el=statusEl();
@@ -5272,6 +5375,9 @@ comprobarRetornoPago();
         const identificationType=String(formData?.identificationType||"").trim();
         const identificationNumber=String(formData?.identificationNumber||"").trim();
 
+        if(Number(formData?.installments)!==(planCuotasCheckout()==="3_sin_interes"?3:1)){
+            throw new Error("Seleccioná las cuotas disponibles para este pedido. Si tu tarjeta no ofrece 3 cuotas, probá otra o elegí un pago.");
+        }
         if(!token||!paymentMethodId||!identificationType||!identificationNumber){
             throw new Error("Revisá los datos de la tarjeta y del titular.");
         }
@@ -5306,13 +5412,14 @@ comprobarRetornoPago();
                     cliente,
                     items,
                     payment_method:"tarjeta",
+                    payment_plan:planCuotasCheckout(),
                     payment_attempt_id:uuid(),
                     cupon:String(document.getElementById("checkout-coupon-code")?.value||"").trim().toUpperCase(),
                     card_payment:{
                         token,
                         payment_method_id:paymentMethodId,
                         issuer_id:String(formData?.issuerId||""),
-                        installments:Math.max(1,Number(formData?.installments)||1),
+                        installments:Number(formData?.installments)||1,
                         identification_type:identificationType,
                         identification_number:identificationNumber
                     }
@@ -5425,6 +5532,7 @@ comprobarRetornoPago();
                             }
 
                             window.__doradoCardFormReady=true;
+                            window.__doradoSyncCardInstallments?.();
                             window.__doradoRefreshMpSelects?.();
                             setStatus("Campos seguros listos para pagar.","ok");
                         },250);
