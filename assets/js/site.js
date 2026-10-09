@@ -5250,15 +5250,16 @@ comprobarRetornoPago();
     const syncCardInstallments=()=>{
         const select=document.getElementById("mp-installments");
         if(!select)return;
-        const expected=planCuotasCheckout()==="3_sin_interes"?3:1;
+        const expected=estadoCuotasCarrito().hayPromo
+            ? (planCuotasCheckout()==="3_sin_interes"?3:1) : null;
         const choices=Array.from(select.options);
         choices.forEach(option=>{
             const value=Number(option.value);
-            const eligible=!String(option.value||"").trim()||value===expected;
+            const eligible=expected===null||!String(option.value||"").trim()||value===expected;
             if(!eligible&&!option.disabled){option.disabled=true;option.dataset.doradoFiltered="1";}
             else if(eligible&&option.dataset.doradoFiltered==="1"){option.disabled=false;delete option.dataset.doradoFiltered;}
         });
-        const selected=choices.find(option=>Number(option.value)===expected&&!option.disabled);
+        const selected=expected===null?null:choices.find(option=>Number(option.value)===expected&&!option.disabled);
         if(selected&&select.value!==selected.value){
             select.value=selected.value;
             select.dispatchEvent(new Event("change",{bubbles:true}));
@@ -5375,7 +5376,7 @@ comprobarRetornoPago();
         const identificationType=String(formData?.identificationType||"").trim();
         const identificationNumber=String(formData?.identificationNumber||"").trim();
 
-        if(Number(formData?.installments)!==(planCuotasCheckout()==="3_sin_interes"?3:1)){
+        if(estadoCuotasCarrito().hayPromo && Number(formData?.installments)!==(planCuotasCheckout()==="3_sin_interes"?3:1)){
             throw new Error("Seleccioná las cuotas disponibles para este pedido. Si tu tarjeta no ofrece 3 cuotas, probá otra o elegí un pago.");
         }
         if(!token||!paymentMethodId||!identificationType||!identificationNumber){

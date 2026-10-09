@@ -249,8 +249,15 @@ export default async function handler(req, res) {
             (!hasInstallmentProducts || !allInstallmentProducts || Boolean(couponCode))) {
             return res.status(409).json({ error: "Las 3 cuotas sin interés requieren un carrito compuesto solo por productos habilitados y sin cupón." });
         }
-        const expectedInstallments = paymentPlan === "3_sin_interes" ? 3 : 1;
-        if (paymentMethod === "tarjeta" && Number(body.card_payment?.installments) !== expectedInstallments) {
+        const requestedCardInstallments = Number(body.card_payment?.installments);
+        // Fuera de promociones mantenemos las cuotas habituales de la tienda.
+        const expectedInstallments = paymentPlan === "3_sin_interes" ? 3
+            : paymentMethod === "tarjeta" && !hasInstallmentProducts ? requestedCardInstallments : 1;
+        if (paymentMethod === "tarjeta" && (
+            !Number.isInteger(expectedInstallments) ||
+            expectedInstallments < 1 || expectedInstallments > 24 ||
+            requestedCardInstallments !== expectedInstallments
+        )) {
             return res.status(400).json({ error: "La cantidad de cuotas seleccionada no coincide con el plan de este pedido." });
         }
 
@@ -534,19 +541,20 @@ export default async function handler(req, res) {
                 failure: `${origin}/?checkout=failure&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`
             },
             auto_return: "approved",
-            payment_methods: {
-                // Nunca se permiten más de 3 cuotas. Fuera de promoción: un pago.
-                installments: expectedInstallments,
-                ...(paymentPlan === "3_sin_interes" ? {
-                    // Las cuotas sin interés se financian mediante tarjeta de crédito.
-                    excluded_payment_types: [
-                        { id: "debit_card" },
-                        { id: "prepaid_card" },
-                        { id: "ticket" },
-                        { id: "bank_transfer" }
-                    ]
-                } : {})
-            },
+            ...(hasInstallmentProducts ? {
+                // La restricción solo afecta a pedidos con productos de promoción.
+                payment_methods: {
+                    installments: expectedInstallments,
+                    ...(paymentPlan === "3_sin_interes" ? {
+                        excluded_payment_types: [
+                            { id: "debit_card" },
+                            { id: "prepaid_card" },
+                            { id: "ticket" },
+                            { id: "bank_transfer" }
+                        ]
+                    } : {})
+                }
+            } : {}),
             expires: true,
             expiration_date_from: paymentStartsAt.toISOString(),
             expiration_date_to: paymentExpiresAt.toISOString(),

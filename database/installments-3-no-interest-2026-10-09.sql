@@ -7,4 +7,14 @@ comment on column public.productos.cuotas_sin_interes_3 is
 -- Auditar el plan realmente elegido al crear el pedido.
 alter table public.pedidos
   add column if not exists cuotas_elegidas smallint not null default 1
-    check (cuotas_elegidas in (1, 3));
+    check (cuotas_elegidas between 1 and 24);
+-- Un checkout normal conserva los planes existentes; el límite de 3 solo aplica a promociones.
+do $
+begin
+  if exists (select 1 from pg_constraint where conname = 'pedidos_cuotas_elegidas_check'
+    and conrelid = 'public.pedidos'::regclass) then
+    alter table public.pedidos drop constraint pedidos_cuotas_elegidas_check;
+  end if;
+  alter table public.pedidos add constraint pedidos_cuotas_elegidas_check
+    check (cuotas_elegidas between 1 and 24);
+end $;
