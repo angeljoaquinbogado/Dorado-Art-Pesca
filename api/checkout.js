@@ -116,6 +116,10 @@ export default async function handler(req, res) {
         const clienteRaw = body.cliente || {};
         const itemsRaw = Array.isArray(body.items) ? body.items : [];
         const couponCode = normalizeCouponCode(body.cupon || body.coupon || "");
+        const paymentPlan = clean(body.payment_plan || "un_pago", 30).toLowerCase();
+        if (!["un_pago", "3_sin_interes"].includes(paymentPlan)) {
+            return res.status(400).json({ error: "Plan de cuotas inválido." });
+        }
 
         if (!ONLINE_PAYMENT_METHODS.has(paymentMethod)) {
             return res.status(400).json({ error: "El método de pago online no es válido." });
@@ -176,13 +180,13 @@ export default async function handler(req, res) {
         }
 
         let catalogResponse = await supabaseFetch(
-            "/rest/v1/productos?select=id,nombre,precio,descuento_porcentaje,stock,control_stock,activo&activo=eq.true"
+            "/rest/v1/productos?select=id,nombre,precio,descuento_porcentaje,stock,control_stock,cuotas_sin_interes_3,activo&activo=eq.true"
         );
         let catalog = await catalogResponse.json().catch(() => []);
 
         if (!catalogResponse.ok) {
             catalogResponse = await supabaseFetch(
-                "/rest/v1/productos?select=id,nombre,precio,stock,control_stock,activo&activo=eq.true"
+                "/rest/v1/productos?select=id,nombre,precio,stock,control_stock,cuotas_sin_interes_3,activo&activo=eq.true"
             );
             catalog = await catalogResponse.json().catch(() => []);
         }
@@ -195,6 +199,8 @@ export default async function handler(req, res) {
         const catalogMap = new Map(catalog.map(p => [String(p.id), p]));
         const orderItems = [];
         let total = 0;
+        let hasInstallmentProducts = false;
+        let allInstallmentProducts = true;
 
         for (const [id, cantidad] of cantidades) {
             const producto = catalogMap.get(id);
@@ -206,6 +212,9 @@ export default async function handler(req, res) {
             const controlaStock = producto.control_stock === true;
             const stock = Math.max(0, Number(producto.stock) || 0);
             const precio = productPrice(producto).final;
+            const installmentEnabled = producto.cuotas_sin_interes_3 === true;
+            hasInstallmentProducts = hasInstallmentProducts || installmentEnabled;
+            allInstallmentProducts = allInstallmentProducts && installmentEnabled;
 
             if (controlaStock && cantidad > stock) {
                 return res.status(409).json({
@@ -232,6 +241,24 @@ export default async function handler(req, res) {
 
         if (total <= 0) {
             return res.status(400).json({ error: "El total del pedido no es válido." });
+        }
+
+        // La financiación es única para TODO el pedido, no se multiplica por cantidad.
+        // Los carritos mixtos nunca reciben financiación subsidiada por productos no elegibles.
+        if (paymentPlan === "3_sin_interes" &&
+            (!hasInstallmentProducts || !allInstallmentProducts || Boolean(couponCode))) {
+            return res.status(409).json({ error: "Las 3 cuotas sin interés requieren un carrito compuesto solo por productos habilitados y sin cupón." });
+        }
+        const requestedCardInstallments = Number(body.card_payment?.installments);
+        // Fuera de promociones mantenemos las cuotas habituales de la tienda.
+        const expectedInstallments = paymentPlan === "3_sin_interes" ? 3
+            : paymentMethod === "tarjeta" && !hasInstallmentProducts ? requestedCardInstallments : 1;
+        if (paymentMethod === "tarjeta" && (
+            !Number.isInteger(expectedInstallments) ||
+            expectedInstallments < 1 || expectedInstallments > 24 ||
+            requestedCardInstallments !== expectedInstallments
+        )) {
+            return res.status(400).json({ error: "La cantidad de cuotas seleccionada no coincide con el plan de este pedido." });
         }
 
         const subtotal = total;
@@ -271,6 +298,7 @@ export default async function handler(req, res) {
                     metodo_entrega: cliente.entrega || "retiro",
                     notas: cliente.notas || null,
                     subtotal,
+                    cuotas_elegidas: expectedInstallments,
                     descuento_total: descuentoTotal,
                     cupon_id: coupon?.id || null,
                     cupon_codigo: coupon?.codigo || null,
@@ -332,7 +360,7 @@ export default async function handler(req, res) {
             const cardToken = clean(card.token, 320);
             const paymentMethodId = clean(card.payment_method_id, 50).toLowerCase();
             const issuerIdRaw = clean(card.issuer_id, 30);
-            const installments = Math.max(1, Math.min(24, Math.floor(Number(card.installments) || 1)));
+            const installments = expectedInstallments;
             const identificationType = clean(card.identification_type, 20).toUpperCase();
             const identificationNumber = clean(card.identification_number, 40).replace(/[^0-9A-Za-z]/g, "");
             const paymentAttemptId = clean(body.payment_attempt_id, 80);
@@ -513,6 +541,20 @@ export default async function handler(req, res) {
                 failure: `${origin}/?checkout=failure&order=${encodeURIComponent(orderId)}&tracking=${encodeURIComponent(trackingToken)}`
             },
             auto_return: "approved",
+            ...(hasInstallmentProducts ? {
+                // La restricción solo afecta a pedidos con productos de promoción.
+                payment_methods: {
+                    installments: expectedInstallments,
+                    ...(paymentPlan === "3_sin_interes" ? {
+                        excluded_payment_types: [
+                            { id: "debit_card" },
+                            { id: "prepaid_card" },
+                            { id: "ticket" },
+                            { id: "bank_transfer" }
+                        ]
+                    } : {})
+                }
+            } : {}),
             expires: true,
             expiration_date_from: paymentStartsAt.toISOString(),
             expiration_date_to: paymentExpiresAt.toISOString(),
