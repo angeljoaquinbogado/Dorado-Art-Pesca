@@ -1195,12 +1195,12 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         let d=await r.json().catch(()=>[]);
         if(!r.ok){
-            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
                 headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
             });
             d=await r.json().catch(()=>[]);
@@ -1885,6 +1885,7 @@ function resetProductForm(){
     document.getElementById("product-active").value="true";
     document.getElementById("product-featured").value="false";
     setProductStockControl(Boolean(adminBusinessSettings?.default_stock_control));
+    document.getElementById("product-installments-3").checked=false;
     document.getElementById("product-discount").value="0";
     document.getElementById("product-min-stock").value="0";
     document.getElementById("product-cost").value="";
@@ -1958,6 +1959,7 @@ function editProduct(id){
     document.getElementById("product-discount").value=Math.max(0,Number(p.descuento_porcentaje)||0);
     document.getElementById("product-stock").value=Number(p.stock)||0;
     setProductStockControl(p.control_stock===true);
+    document.getElementById("product-installments-3").checked=p.cuotas_sin_interes_3===true;
     document.getElementById("product-min-stock").value=Math.max(0,Number(p.stock_minimo)||0);
     document.getElementById("product-cost").value=p.costo===null||p.costo===undefined?"":Number(p.costo);
     document.getElementById("product-supplier").value=p.proveedor||"";
@@ -2045,6 +2047,7 @@ async function saveProduct(event){
             descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
             control_stock:document.getElementById("product-stock-control").value==="true",
+            cuotas_sin_interes_3:document.getElementById("product-installments-3").checked,
             stock_minimo:Math.max(0,Math.floor(Number(document.getElementById("product-min-stock").value)||0)),
             costo:String(document.getElementById("product-cost").value||"").trim()===""?null:Math.max(0,Number(document.getElementById("product-cost").value)||0),
             proveedor:String(document.getElementById("product-supplier").value||"").trim().slice(0,160)||null,

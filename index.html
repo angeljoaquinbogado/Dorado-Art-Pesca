@@ -147,6 +147,7 @@
 <link rel="stylesheet" href="assets/css/owner-update-20261001.css?v=20261001g"/>
 <link rel="stylesheet" href="assets/css/catalog-refine-20261005.css?v=20261005d"/>
 <link rel="stylesheet" href="assets/css/catalog-mobile-controls-20261005.css?v=20261005a"/>
+<link rel="stylesheet" href="assets/css/installments-20261009.css?v=1">
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -902,6 +903,13 @@
 <option value="coordinar">Coordinar por WhatsApp</option>
 </select>
 </div>
+<div id="checkout-installments-box" class="dorado-installments-checkout" hidden>
+  <label for="checkout-installments-3" class="dorado-installments-checkout-choice">
+    <input type="checkbox" id="checkout-installments-3" checked>
+    <span><strong>3 cuotas sin interés</strong><small id="checkout-installments-amount">Pagá en 3 cuotas iguales, sin recargo.</small></span>
+  </label>
+  <p id="checkout-installments-note">Válido con tarjeta de crédito y Mercado Pago. No acumulable con cupones.</p>
+</div>
 <div class="checkout-field full payment-method-field">
 <label for="payment-picker-trigger">FORMA DE PAGO</label>
 <select id="checkout-payment-method" name="metodo_pago" class="payment-native-select" aria-hidden="true" tabindex="-1">
@@ -1268,7 +1276,7 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261005-mobilefiltersort2"></script>
+<script src="assets/js/site.js?v=20261009-installments1"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
