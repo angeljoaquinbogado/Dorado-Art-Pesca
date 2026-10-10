@@ -65,7 +65,7 @@ export default async function handler(req, res) {
             quantities.set(id, totalQty);
         }
 
-        const catalogResponse = await supabaseFetch("/rest/v1/productos?select=id,precio,descuento_porcentaje,activo&activo=eq.true");
+        const catalogResponse = await supabaseFetch("/rest/v1/productos?select=id,precio,descuento_porcentaje,cuotas_sin_interes_3,activo&activo=eq.true");
         const catalog = await catalogResponse.json().catch(() => []);
         if (!catalogResponse.ok || !Array.isArray(catalog)) {
             return res.status(502).json({ error: "No pudimos validar el catálogo." });
@@ -76,6 +76,7 @@ export default async function handler(req, res) {
         for (const [id, qty] of quantities) {
             const product = map.get(id);
             if (!product) return res.status(409).json({ error: "Uno de los productos ya no está disponible." });
+            if (product.cuotas_sin_interes_3 === true) return res.status(409).json({ error: "Los productos con 3 cuotas sin interés no permiten acumular cupones." });
             subtotal += productPrice(product).final * qty;
         }
         subtotal = roundMoney(subtotal);
