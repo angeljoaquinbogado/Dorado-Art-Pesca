@@ -322,8 +322,8 @@
               <div class="form-section">
                 <div class="form-section-title">PRECIO Y DISPONIBILIDAD</div>
                 <div class="field-row">
-                  <div class="field"><label for="product-price">PRECIO DE LISTA (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
-                  <div class="field"><label for="product-discount">DESCUENTO (%)</label><input id="product-discount" type="number" min="0" max="90" step="1" value="0" placeholder="0"><div class="file-help">0 = sin descuento. Máximo 90%.</div></div>
+                  <div class="field"><label for="product-price" id="product-price-label">PRECIO DE LISTA (ARS)</label><input id="product-price" type="number" min="0" step="0.01" required placeholder="34990"></div>
+                  <div class="field"><label for="product-discount" id="product-discount-label">DESCUENTO (%)</label><input id="product-discount" type="number" min="0" max="90" step="1" value="0" placeholder="0"><div class="file-help">0 = sin descuento. Máximo 90%.</div></div>
                 </div>
                 <div class="field dorado-installments-control">
                   <label class="dorado-installments-control-label" for="product-installments-3">
@@ -331,6 +331,21 @@
                     <span class="dorado-installments-switch" aria-hidden="true"></span>
                     <span class="dorado-installments-control-copy"><strong>3 CUOTAS SIN INTERÉS</strong><small>Activá esta financiación solo para este producto. Se mostrará el valor de cada cuota en la tienda. No se acumula con cupones ni con otros productos no habilitados.</small></span>
                   </label>
+                </div>
+                <div id="product-installments-quote" class="dorado-installments-quote" hidden aria-live="polite">
+                  <div class="dorado-installments-quote-heading"><strong>SIMULADOR DE PRECIOS</strong><span>3 cuotas sin interés · Mercado Pago Checkout</span></div>
+                  <div class="dorado-installments-quote-pair"><span>Precio de lista financiado</span><strong id="quote-financed-price">$0</strong></div>
+                  <div class="dorado-installments-quote-pair"><span>Cada cuota (3 pagos)</span><strong id="quote-monthly">$0</strong></div>
+                  <div class="dorado-installments-quote-pair"><span>Descuento al contado (20%)</span><strong id="quote-cash-discount">-$0</strong></div>
+                  <div class="dorado-installments-quote-pair"><span>Total al contado</span><strong id="quote-cash-total">$0</strong></div>
+                  <hr>
+                  <div class="dorado-installments-quote-pair"><span>Comisión Checkout (6,60% + IVA)</span><strong id="quote-collection-fee">-$0</strong></div>
+                  <div class="dorado-installments-quote-pair"><span>Financiar 3 cuotas (10,49% + IVA)</span><strong id="quote-installment-fee">-$0</strong></div>
+                  <div class="dorado-installments-quote-pair"><span>Mercado Pago total estimado</span><strong id="quote-mp-cost">-$0</strong></div>
+                  <div class="dorado-installments-quote-pair dorado-installments-quote-net"><span>Recibís estimado</span><strong id="quote-net">$0</strong></div>
+                  <div class="dorado-installments-quote-pair"><span>Diferencia contra precio al contado</span><strong id="quote-difference">$0</strong></div>
+                  <div id="quote-margin-row" class="dorado-installments-quote-pair" hidden><span>Margen antes de otros gastos (recibido menos costo real)</span><strong id="quote-margin">$0</strong></div>
+                  <p>Estimación: tarifas de Checkout 6,60% + 10,49%, con IVA 21%. No son las tarifas de Tap. No incluye retenciones ni impuestos adicionales. Verificá que Mercado Pago permita ofrecer 3 cuotas sin interés antes de anunciar la promoción.</p>
                 </div>
                 <div class="field-row">
                   <div class="field"><label for="product-cost">COSTO UNITARIO REAL (ARS)</label><input id="product-cost" type="number" min="0" step="0.01" placeholder="Dejalo vacío si todavía no lo conocés"><div class="file-help">Se usa para margen y rentabilidad en Global Stock. Nunca se calcula de forma ficticia.</div></div>
@@ -869,6 +884,6 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261009-installments1"></script>
+<script src="assets/js/admin.js?v=20261009-cashpricing2"></script>
 </body>
 </html>
