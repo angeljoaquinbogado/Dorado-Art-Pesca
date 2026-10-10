@@ -1587,9 +1587,9 @@ function renderCheckoutResumen(recalcularCuotas=true) {
     let ahorroContado=0;
     carrito.forEach(item => {
         const cantidad = Math.max(1, Number(item.cantidad) || 1);
-        const precio = precioCarritoPorMetodo(item,metodo);
+        const precio = Math.max(0,Number(item.precio)||0);
         const subtotal = precio * cantidad;
-        ahorroContado+=(Math.max(0,Number(item.precio)||0)-precio)*cantidad;
+        ahorroContado+=(precio-precioCarritoPorMetodo(item,metodo))*cantidad;
         total += subtotal;
         unidades += cantidad;
 
@@ -1620,7 +1620,7 @@ function renderCheckoutResumen(recalcularCuotas=true) {
     const discountEl = document.getElementById("checkout-summary-discount");
     const couponCodeEl = document.getElementById("checkout-summary-coupon-code");
     const discount = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.discount) || 0) : Math.round(ahorroContado*100)/100;
-    const finalTotal = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.total) || roundedSubtotal) : roundedSubtotal;
+    const finalTotal = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.total) || roundedSubtotal) : Math.max(0,Math.round((roundedSubtotal-ahorroContado)*100)/100);
 
     if (discountRow) discountRow.hidden = discount <= 0;
     if (discountEl) discountEl.textContent = `-${formatearPrecio(discount)}`;
