@@ -813,6 +813,10 @@ async function handlePublicProducts(req, res) {
             if (data.length < pageSize) break;
         }
 
+        // El producto conserva el ajuste en administración, pero no anunciamos
+        // sin interés ni incrementamos el precio mientras la promoción no esté verificada.
+        const interestFreeVerified = process.env.MERCADOPAGO_3_CUOTAS_VERIFICADAS === "true";
+        const priceForStore = (product) => installmentPricing(product, { promotionEnabled: interestFreeVerified });
         const safe = rows.map((product) => ({
             id: product.id,
             nombre: String(product.nombre || ""),
@@ -822,14 +826,14 @@ async function handlePublicProducts(req, res) {
             caracteristicas: String(
                 product.caracteristicas || ""
             ),
-            precio: installmentPricing(product).list,
-            precio_contado: installmentPricing(product).cash,
+            precio: priceForStore(product).list,
+            precio_contado: priceForStore(product).cash,
             precio_original: Math.max(
                 0,
                 Number(product.precio) || 0
             ),
             descuento_porcentaje:
-                product.cuotas_sin_interes_3 === true ? 0 : productPrice(product).percent,
+                priceForStore(product).promo ? 0 : productPrice(product).percent,
             imagen: String(product.imagen || ""),
             imagenes: Array.isArray(product.imagenes)
                 ? product.imagenes
@@ -847,7 +851,7 @@ async function handlePublicProducts(req, res) {
                 Number(product.stock) || 0
             ),
             control_stock: Boolean(product.control_stock),
-            cuotas_sin_interes_3: product.cuotas_sin_interes_3 === true,
+            cuotas_sin_interes_3: interestFreeVerified && product.cuotas_sin_interes_3 === true,
             activo: Boolean(product.activo)
         }));
 

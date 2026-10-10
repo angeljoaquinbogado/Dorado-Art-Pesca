@@ -96,6 +96,7 @@ export default async function handler(req, res) {
         mercadoPagoEnabled: checkoutAvailability.mercadoPago,
         mercadoPagoPublicKey,
         cardPaymentsEnabled: checkoutAvailability.card,
+        interestFreeThreeInstallmentsVerified: process.env.MERCADOPAGO_3_CUOTAS_VERIFICADAS === "true",
         checkoutVisibility,
         checkoutAvailability,
         defaultStockControl: Boolean(settings.default_stock_control),

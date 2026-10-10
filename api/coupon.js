@@ -76,7 +76,7 @@ export default async function handler(req, res) {
         for (const [id, qty] of quantities) {
             const product = map.get(id);
             if (!product) return res.status(409).json({ error: "Uno de los productos ya no está disponible." });
-            if (product.cuotas_sin_interes_3 === true) return res.status(409).json({ error: "Los productos con 3 cuotas sin interés no permiten acumular cupones." });
+            if (process.env.MERCADOPAGO_3_CUOTAS_VERIFICADAS === "true" && product.cuotas_sin_interes_3 === true) return res.status(409).json({ error: "Los productos con 3 cuotas sin interés no permiten acumular cupones." });
             subtotal += productPrice(product).final * qty;
         }
         subtotal = roundMoney(subtotal);
