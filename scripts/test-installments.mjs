@@ -7,8 +7,8 @@ assert.equal(example.list,375000,"Precio final financiado: 20% menos da exactame
 assert.equal(example.monthly,125000,"3 cuotas de 125.000");
 assert.equal(example.cashDiscount,75000,"Descuento contado 20%");
 assert.equal(example.collectionFee,29947.5,"Costo Checkout 6,60% más IVA");
-assert.equal(example.installmentsFee,47599.88,"Costo 3 cuotas 10,49% más IVA");
-assert.equal(example.estimatedNet,297452.62,"Dinero recibido antes de retenciones");
+assert.equal(example.installmentsFee,47598.38,"Costo 3 cuotas 10,49% más IVA");
+assert.equal(example.estimatedNet,297454.12,"Dinero recibido antes de retenciones");
 
 const noStack = installmentPricing({ precio:300000, descuento_porcentaje:30, cuotas_sin_interes_3:true });
 assert.equal(noStack.list,375000,"No acumular descuento por producto con la promoción de cuotas");
