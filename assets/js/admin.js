@@ -1875,6 +1875,41 @@ function setProductStockControl(enabled){
     }
 }
 
+function renderInstallmentQuote(){
+    const enabled=document.getElementById("product-installments-3")?.checked===true;
+    const box=document.getElementById("product-installments-quote");
+    if(box)box.hidden=!enabled;
+    const label=document.getElementById("product-price-label");
+    if(label)label.textContent=enabled?"PRECIO DE CONTADO (ARS)":"PRECIO DE LISTA (ARS)";
+    const percent=document.getElementById("product-discount");
+    if(percent){
+        percent.disabled=enabled;
+        if(enabled)percent.value="0";
+    }
+    const details=percent?.parentElement?.querySelector(".file-help");
+    if(details)details.textContent=enabled?"Las cuotas y el descuento al contado no se acumulan con otros descuentos del producto.":"0 = sin descuento. Máximo 90%.";
+    const base=Math.max(0,Number(document.getElementById("product-price")?.value)||0);
+    const gross=Math.round((base/0.8)*100)/100;
+    const fee=Math.round(gross*0.066*1.21*100)/100;
+    const finance=Math.round(gross*0.1049*1.21*100)/100;
+    const net=Math.round((gross-fee-finance)*100)/100;
+    const money=value=>"$"+Number(value||0).toLocaleString("es-AR",{minimumFractionDigits:2,maximumFractionDigits:2});
+    const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+    put("quote-financed-price",money(gross));
+    put("quote-monthly",money(Math.round(gross/3*100)/100));
+    put("quote-cash-discount","-"+money(gross-base));
+    put("quote-cash-total",money(base));
+    put("quote-collection-fee","-"+money(fee));
+    put("quote-installment-fee","-"+money(finance));
+    put("quote-mp-cost","-"+money(fee+finance));
+    put("quote-net",money(net));
+    const delta=Math.round((net-base)*100)/100;
+    put("quote-difference",(delta>=0?"+":"-")+money(Math.abs(delta)));
+    const costValue=String(document.getElementById("product-cost")?.value||"").trim();
+    const row=document.getElementById("quote-margin-row");
+    if(row)row.hidden=!enabled||costValue==="";
+    if(costValue!=="")put("quote-margin",money(net-Math.max(0,Number(costValue)||0)));
+}
 function resetProductForm(){
     document.getElementById("product-form").reset();
     const categoryCreatePanel=document.getElementById("category-create-panel");
@@ -1886,6 +1921,7 @@ function resetProductForm(){
     document.getElementById("product-featured").value="false";
     setProductStockControl(Boolean(adminBusinessSettings?.default_stock_control));
     document.getElementById("product-installments-3").checked=false;
+    renderInstallmentQuote();
     document.getElementById("product-discount").value="0";
     document.getElementById("product-min-stock").value="0";
     document.getElementById("product-cost").value="";
@@ -1960,6 +1996,7 @@ function editProduct(id){
     document.getElementById("product-stock").value=Number(p.stock)||0;
     setProductStockControl(p.control_stock===true);
     document.getElementById("product-installments-3").checked=p.cuotas_sin_interes_3===true;
+    renderInstallmentQuote();
     document.getElementById("product-min-stock").value=Math.max(0,Number(p.stock_minimo)||0);
     document.getElementById("product-cost").value=p.costo===null||p.costo===undefined?"":Number(p.costo);
     document.getElementById("product-supplier").value=p.proveedor||"";
@@ -1973,6 +2010,7 @@ function editProduct(id){
     document.getElementById("product-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("product-cancel").classList.remove("hidden");
     resetProductGallery(p);
+    renderInstallmentQuote();
     renderProductFormTaxonomyPickers();
     requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
     scrollProductEditorIntoView({focusName:false});
@@ -2044,7 +2082,7 @@ async function saveProduct(event){
             descripcion:document.getElementById("product-description").value.trim(),
             caracteristicas:document.getElementById("product-features").value.trim(),
             precio:Number(document.getElementById("product-price").value),
-            descuento_porcentaje:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
+            descuento_porcentaje:document.getElementById("product-installments-3").checked?0:Math.min(90,Math.max(0,Number(document.getElementById("product-discount").value)||0)),
             stock:Math.max(0,Math.floor(Number(document.getElementById("product-stock").value)||0)),
             control_stock:document.getElementById("product-stock-control").value==="true",
             cuotas_sin_interes_3:document.getElementById("product-installments-3").checked,
@@ -3301,6 +3339,12 @@ document.getElementById("global-stock-integrations")?.addEventListener("click",e
 });
 
 document.getElementById("product-form").addEventListener("submit",saveProduct);
+["product-installments-3","product-price","product-cost"].forEach(id=>{
+    const el=document.getElementById(id);
+    el?.addEventListener("input",renderInstallmentQuote);
+    el?.addEventListener("change",renderInstallmentQuote);
+});
+renderInstallmentQuote();
 document.getElementById("product-stock-toggle")?.addEventListener("click",()=>{
     const active=document.getElementById("product-stock-control")?.value==="true";
     setProductStockControl(!active);

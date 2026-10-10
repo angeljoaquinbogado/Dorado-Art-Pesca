@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import nodemailer from "nodemailer";
 
 import { requireAdmin } from "../lib/admin-auth.js";
-import { productPrice } from "../lib/pricing.js";
+import { productPrice, installmentPricing } from "../lib/pricing.js";
 import {
     bodyTooLarge,
     consumeRateLimit,
@@ -822,13 +822,14 @@ async function handlePublicProducts(req, res) {
             caracteristicas: String(
                 product.caracteristicas || ""
             ),
-            precio: productPrice(product).final,
+            precio: installmentPricing(product).list,
+            precio_contado: installmentPricing(product).cash,
             precio_original: Math.max(
                 0,
                 Number(product.precio) || 0
             ),
             descuento_porcentaje:
-                productPrice(product).percent,
+                product.cuotas_sin_interes_3 === true ? 0 : productPrice(product).percent,
             imagen: String(product.imagen || ""),
             imagenes: Array.isArray(product.imagenes)
                 ? product.imagenes

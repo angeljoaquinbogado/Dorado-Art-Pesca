@@ -8,7 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "node scripts/check-project.mjs"
+    "check": "node scripts/check-project.mjs && node scripts/test-installments.mjs"
   },
   "dependencies": {
     "nodemailer": "10.0.10"

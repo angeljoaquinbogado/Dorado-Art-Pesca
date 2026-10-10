@@ -7,7 +7,7 @@ import {
     isSameOriginRequest,
     requireJsonRequest
 } from "../lib/security.js";
-import { productPrice, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
+import { installmentPricing, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
 import { sendOrderStatusEmail } from "../lib/order-email.js";
 
 const MAX_ITEMS = 40;
@@ -211,7 +211,7 @@ export default async function handler(req, res) {
 
             const controlaStock = producto.control_stock === true;
             const stock = Math.max(0, Number(producto.stock) || 0);
-            const precio = productPrice(producto).final;
+            const precio = installmentPricing(producto).list;
             const installmentEnabled = producto.cuotas_sin_interes_3 === true;
             hasInstallmentProducts = hasInstallmentProducts || installmentEnabled;
             allInstallmentProducts = allInstallmentProducts && installmentEnabled;
@@ -265,6 +265,9 @@ export default async function handler(req, res) {
         let descuentoTotal = 0;
         let coupon = null;
 
+        if (couponCode && hasInstallmentProducts) {
+            return res.status(409).json({ error: "Los productos con precio de contado promocional no admiten cupones acumulados." });
+        }
         if (couponCode) {
             const couponResponse = await supabaseFetch(
                 `/rest/v1/cupones?codigo=eq.${encodeURIComponent(couponCode)}&select=id,codigo,tipo,valor,minimo_compra,activo,vigente_desde,vigente_hasta,limite_usos,usos&limit=1`

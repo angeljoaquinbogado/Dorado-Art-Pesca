@@ -34,10 +34,19 @@ function planCuotasCheckout(){
     return estadoCuotasCarrito().soloPromo && document.getElementById("checkout-installments-3")?.checked
         ? "3_sin_interes" : "un_pago";
 }
+function precioCarritoPorMetodo(item,metodo){
+    return item.cuotas_sin_interes_3===true&&["efectivo","transferencia"].includes(metodo)
+        ? Math.max(0,Number(item.precio_contado)||0)
+        : Math.max(0,Number(item.precio)||0);
+}
 function cuotasProductoMarkup(producto){
     if(producto?.cuotas_sin_interes_3!==true || !(Number(producto.precio)>0))return "";
     const cuota=Math.round((Number(producto.precio)/3)*100)/100;
-    return `<div class="dorado-installments-label"><span class="dorado-installments-title">3 cuotas sin interés</span> de <strong>${textoSeguro(formatearPrecio(cuota))}</strong></div>`;
+    const cash=Math.max(0,Number(producto.precio_contado)||0);
+    return `<div class="dorado-installments-prices">
+      <div class="dorado-installments-label"><span class="dorado-installments-title">3 cuotas sin interés</span> de <strong>${textoSeguro(formatearPrecio(cuota))}</strong></div>
+      <div class="dorado-installments-cash">Al contado, <strong>20% de descuento: ${textoSeguro(formatearPrecio(cash))}</strong></div>
+    </div>`;
 }
 function actualizarCheckoutCuotas(){
     const carrito=leerCarrito();
@@ -50,24 +59,23 @@ function actualizarCheckoutCuotas(){
     if(box){box.hidden=!estado.hayPromo;box.classList.toggle("is-mixed",estado.mixto);}
     if(label)label.hidden=!estado.soloPromo;
     if(note)note.textContent=estado.mixto
-        ?"Este carrito mezcla productos con y sin financiación. Para usar 3 cuotas sin interés, comprá únicamente productos habilitados en un pedido separado."
-        :"Con tarjeta de crédito o Mercado Pago. No acumulable con cupones; el plan se aplica una sola vez a todo el pedido.";
+        ?"El carrito combina productos promocionales y comunes. Las 3 cuotas sin interés requieren comprar solo productos habilitados; el descuento al contado sí está disponible para los promocionales."
+        :"Elegí 3 cuotas con Mercado Pago o tarjeta de crédito habilitada, o desmarcá para pagar al contado con 20% de descuento (efectivo o transferencia). WhatsApp permite coordinar otros medios al precio de lista. No acumulable con cupones.";
     const subtotal=carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
     if(amount)amount.textContent=`3 pagos de ${formatearPrecio(Math.round((subtotal/3)*100)/100)} · total ${formatearPrecio(subtotal)}`;
-    const noCupon=estado.soloPromo&&checkbox?.checked;
+    const noCupon=estado.hayPromo;
     const input=document.getElementById("checkout-coupon-code");
     const btn=document.getElementById("checkout-coupon-apply");
     const couponMsg=document.getElementById("checkout-coupon-message");
     if(noCupon&&checkoutCoupon){
         checkoutCoupon=null;
-        if(input)input.value="";
         if(couponMsg){couponMsg.textContent="Las 3 cuotas sin interés no se acumulan con cupones.";couponMsg.className="checkout-coupon-message";}
     }
-    if(input)input.disabled=Boolean(noCupon);
+    if(input){input.disabled=Boolean(noCupon);if(noCupon)input.value="";}
     if(btn)btn.disabled=Boolean(noCupon);
     const payment=document.getElementById("checkout-payment-method");
     if(payment){
-        if(estado.hayPromo && !["","mercadopago","tarjeta"].includes(payment.value))payment.value="";
+        if(planCuotasCheckout()==="3_sin_interes" && !["","mercadopago","tarjeta"].includes(payment.value))payment.value="";
         payment.dispatchEvent(new Event("change",{bubbles:true}));
     }
     window.__doradoSyncCardInstallments?.();
@@ -869,6 +877,7 @@ function sincronizarCarritoConCatalogo() {
                 id: producto.id,
                 nombre: producto.nombre || "Producto",
                 precio: Number(producto.precio) || 0,
+                precio_contado: Number(producto.precio_contado)||Number(producto.precio)||0,
                 imagen: imagenSegura(producto.imagen),
                 categoria: producto.categoria || "Producto",
                 stock,
@@ -880,6 +889,7 @@ function sincronizarCarritoConCatalogo() {
             if (
                 String(item.nombre) !== String(nuevo.nombre) ||
                 Number(item.precio) !== nuevo.precio ||
+                Number(item.precio_contado) !== nuevo.precio_contado ||
                 String(item.imagen) !== String(nuevo.imagen) ||
                 Number(item.stock) !== nuevo.stock ||
                 Boolean(item.control_stock) !== nuevo.control_stock ||
@@ -1031,7 +1041,7 @@ function verProducto(producto) {
 
     [precio,precioMobile].forEach(priceNode=>{
         if(!priceNode)return;
-        if(priceNode.nextElementSibling?.classList.contains("dorado-installments-label"))priceNode.nextElementSibling.remove();
+        if(priceNode.nextElementSibling?.classList.contains("dorado-installments-prices"))priceNode.nextElementSibling.remove();
         const markup=cuotasProductoMarkup(producto);
         if(markup)priceNode.insertAdjacentHTML("afterend",markup);
     });
@@ -1211,6 +1221,7 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
         existente.cantidad = actual + agregar;
         existente.nombre = producto.nombre || existente.nombre;
         existente.precio = Number(producto.precio) || 0;
+        existente.precio_contado=Number(producto.precio_contado)||Number(producto.precio)||0;
         existente.imagen = imagenSegura(producto.imagen);
         existente.categoria = producto.categoria || existente.categoria || "Producto";
         existente.stock = stock;
@@ -1221,6 +1232,7 @@ function agregarAlCarrito(producto, cantidadSolicitada = 1) {
             id: producto.id,
             nombre: producto.nombre || "Producto",
             precio: Number(producto.precio) || 0,
+            precio_contado: Number(producto.precio_contado)||Number(producto.precio)||0,
             imagen: imagenSegura(producto.imagen),
             categoria: producto.categoria || "Producto",
             stock,
@@ -1556,8 +1568,8 @@ function consultarCompraMayorista() {
 }
 
 
-function renderCheckoutResumen() {
-    actualizarCheckoutCuotas();
+function renderCheckoutResumen(recalcularCuotas=true) {
+    if(recalcularCuotas)actualizarCheckoutCuotas();
     const carrito = leerCarrito();
     const lista = document.getElementById("checkout-summary-list");
     const totalEl = document.getElementById("checkout-summary-total");
@@ -1570,10 +1582,14 @@ function renderCheckoutResumen() {
     let total = 0;
     let unidades = 0;
 
+    const metodo=String(document.getElementById("checkout-payment-method")?.value||"");
+    const promo=estadoCuotasCarrito(carrito).hayPromo;
+    let ahorroContado=0;
     carrito.forEach(item => {
         const cantidad = Math.max(1, Number(item.cantidad) || 1);
-        const precio = Number(item.precio) || 0;
+        const precio = Math.max(0,Number(item.precio)||0);
         const subtotal = precio * cantidad;
+        ahorroContado+=(precio-precioCarritoPorMetodo(item,metodo))*cantidad;
         total += subtotal;
         unidades += cantidad;
 
@@ -1603,12 +1619,12 @@ function renderCheckoutResumen() {
     const discountRow = document.getElementById("checkout-summary-discount-row");
     const discountEl = document.getElementById("checkout-summary-discount");
     const couponCodeEl = document.getElementById("checkout-summary-coupon-code");
-    const discount = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.discount) || 0) : 0;
-    const finalTotal = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.total) || roundedSubtotal) : roundedSubtotal;
+    const discount = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.discount) || 0) : Math.round(ahorroContado*100)/100;
+    const finalTotal = checkoutCoupon ? Math.max(0, Number(checkoutCoupon.total) || roundedSubtotal) : Math.max(0,Math.round((roundedSubtotal-ahorroContado)*100)/100);
 
     if (discountRow) discountRow.hidden = discount <= 0;
     if (discountEl) discountEl.textContent = `-${formatearPrecio(discount)}`;
-    if (couponCodeEl) couponCodeEl.textContent = checkoutCoupon?.code ? `· ${checkoutCoupon.code}` : "";
+    if (couponCodeEl) couponCodeEl.textContent = checkoutCoupon?.code ? `· ${checkoutCoupon.code}` : ahorroContado>0?"· 20% al contado":"";
     if (totalEl) totalEl.textContent = formatearPrecio(finalTotal);
     if (unidadesEl) {
         unidadesEl.textContent = `${unidades} ${unidades === 1 ? "unidad" : "unidades"}`;
@@ -1616,7 +1632,7 @@ function renderCheckoutResumen() {
 }
 
 async function aplicarCuponCheckout() {
-    if(planCuotasCheckout()==="3_sin_interes"){
+    if(estadoCuotasCarrito().hayPromo){
         const msg=document.getElementById("checkout-coupon-message");
         if(msg){msg.textContent="Las 3 cuotas sin interés no se acumulan con cupones.";msg.className="checkout-coupon-message error";}
         return;
@@ -1769,8 +1785,8 @@ async function iniciarPagoMercadoPago(evento) {
     const metodoPago=String(datos.get("metodo_pago")||"").trim();
     const entrega=String(datos.get("entrega")||"retiro").trim();
     if(!metodoPago){mostrarErrorCheckout("Elegí un medio de pago para continuar.");return;}
-    if(estadoCuotasCarrito(carrito).hayPromo && !["mercadopago","tarjeta"].includes(metodoPago)){
-        mostrarErrorCheckout("Los productos con la promoción solo se pagan con Mercado Pago o tarjeta de crédito.");return;
+    if(planCuotasCheckout()==="3_sin_interes" && !["mercadopago","tarjeta"].includes(metodoPago)){
+        mostrarErrorCheckout("Las 3 cuotas sin interés solo se pagan con Mercado Pago o tarjeta de crédito.");return;
     }
 
     if(metodoPago==="efectivo" && entrega!=="retiro"){
@@ -1790,13 +1806,13 @@ async function iniciarPagoMercadoPago(evento) {
         notas:String(datos.get("notas")||"").trim()
     };
     if(["whatsapp","transferencia","efectivo"].includes(metodoPago)){
-        const subtotal=carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
+        const subtotal=carrito.reduce((sum,item)=>sum+precioCarritoPorMetodo(item,metodoPago)*Math.max(1,Number(item.cantidad)||1),0);
         const total=checkoutCoupon && Math.abs(Number(checkoutCoupon.subtotal||0)-subtotal)<0.01
             ? Number(checkoutCoupon.total)||subtotal
             : subtotal;
         const detalle=carrito.map((item,i)=>{
             const cantidad=Math.max(1,Number(item.cantidad)||1);
-            return `${i+1}. ${item.nombre} · ${cantidad} u. · ${formatearPrecio((Number(item.precio)||0)*cantidad)}`;
+            return `${i+1}. ${item.nombre} · ${cantidad} u. · ${formatearPrecio(precioCarritoPorMetodo(item,metodoPago)*cantidad)}`;
         }).join("\n");
         const pagos={
             whatsapp:"A coordinar por WhatsApp",
@@ -1813,6 +1829,7 @@ async function iniciarPagoMercadoPago(evento) {
             "Hola Dorado Artículos de Pesca 👋",
             "Quiero confirmar este pedido desde la web:","",detalle,"",
             checkoutCoupon?`Cupón: ${checkoutCoupon.code} · Descuento: -${formatearPrecio(checkoutCoupon.discount)}`:"",
+            estadoCuotasCarrito(carrito).hayPromo && ["efectivo","transferencia"].includes(metodoPago)?"El 20% de descuento se aplica únicamente a productos habilitados por pago en efectivo o transferencia.":"",
             `TOTAL PRODUCTOS: ${formatearPrecio(total)}`,
             `Pago: ${pagos[metodoPago]||"A coordinar"}`,
             `Entrega: ${entregas[entrega]||entrega}`,
@@ -4787,7 +4804,7 @@ comprobarRetornoPago();
         const promo=estadoCuotasCarrito().hayPromo;
         const promoPlan=planCuotasCheckout()==="3_sin_interes";
         const cardLabel=document.querySelector('[data-payment-value="tarjeta"] .payment-picker-copy strong');
-        if(cardLabel)cardLabel.textContent=promo?"Tarjeta de crédito":"Tarjeta de débito / crédito";
+        if(cardLabel)cardLabel.textContent=promoPlan?"Tarjeta de crédito":"Tarjeta de débito / crédito";
         addressFields.forEach(el=>{el.required=!retiro;el.closest?.(".checkout-field")?.classList.toggle("optional-for-pickup",retiro);});
 
         if(detail)detail.hidden=!method;
@@ -4797,8 +4814,7 @@ comprobarRetornoPago();
         const span=payButton.querySelector("span");
         if(method==="mercadopago"){
             if(span)span.textContent="Continuar con Mercado Pago";
-            if(promoPlan&&help)help.textContent="3 cuotas sin interés con tarjeta de crédito. Mercado Pago confirmará las condiciones antes del pago.";
-            if(help)help.textContent="Antes de salir de Dorado te vamos a pedir confirmación.";
+            if(help)help.textContent=promoPlan?"3 cuotas sin interés con tarjeta de crédito habilitada, sujeto a confirmación de Mercado Pago.":"Antes de salir de Dorado te vamos a pedir confirmación.";
         }else if(method==="tarjeta"){
             if(span)span.textContent=promoPlan?"Pagar en 3 cuotas sin interés":"Pagar con tarjeta";
             if(help)help.textContent=promoPlan?"3 cuotas sin interés solo con tarjetas de crédito habilitadas. Los datos de tu tarjeta permanecen seguros.":"🔒 Número, vencimiento y CVV se tokenizan con Mercado Pago y no se guardan en Dorado.";
@@ -4819,6 +4835,7 @@ comprobarRetornoPago();
     };
 
     payment?.addEventListener("change",updateCheckout);
+    payment?.addEventListener("change",()=>renderCheckoutResumen(false));
     delivery?.addEventListener("change",updateCheckout);
 
     document.querySelectorAll(".copy-bank-data").forEach(button=>{
@@ -4896,7 +4913,7 @@ comprobarRetornoPago();
     const availabilityFor=value=>{
         const availability=window.doradoPaymentAvailability||{};
         const visibility=window.doradoPaymentVisibility||{};
-        if(estadoCuotasCarrito().hayPromo && !["mercadopago","tarjeta"].includes(value))return {enabled:false,hidden:true,label:"Solo pago online"};
+        if(planCuotasCheckout()==="3_sin_interes" && !["mercadopago","tarjeta"].includes(value))return {enabled:false,hidden:true,label:"Solo pago online"};
         if(visibility[value]===false)return {enabled:false,hidden:true,label:"Desactivado"};
         if(value==="efectivo"){
             const enabled=Boolean(availability.cash)&&delivery?.value==="retiro";
@@ -4917,7 +4934,7 @@ comprobarRetornoPago();
 
     const sync=()=>{
         const selected=String(payment.value||"");
-        label.textContent=selected==="tarjeta"&&estadoCuotasCarrito().hayPromo?"Tarjeta de crédito":labels[selected]||"Elegí cómo pagar";
+        label.textContent=selected==="tarjeta"&&planCuotasCheckout()==="3_sin_interes"?"Tarjeta de crédito":labels[selected]||"Elegí cómo pagar";
         trigger.classList.toggle("has-value",Boolean(selected));
 
         options.forEach(option=>{

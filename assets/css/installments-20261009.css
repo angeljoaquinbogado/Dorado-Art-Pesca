@@ -26,3 +26,19 @@
 .dorado-installments-checkout.is-mixed p { margin-top:0; }
 .dorado-installments-checkout[hidden], .dorado-installments-checkout-choice[hidden], .dorado-installments-label[hidden] { display:none !important; }
 @media (max-width:600px){ .dorado-installments-control-label { padding:13px; } .dorado-installments-control-copy small { font-size:11px; } }
+/* Precio financiado, descuento genuino al contado y simulación para administradores. */
+.dorado-installments-quote{border:1px solid rgba(143,0,0,.2);border-radius:14px;padding:17px;margin:10px 0 20px;background:rgba(143,0,0,.025);display:grid;gap:11px;}
+.dorado-installments-quote[hidden]{display:none!important;}
+.dorado-installments-quote-heading{display:flex;gap:5px;flex-direction:column;margin-bottom:5px;}
+.dorado-installments-quote-heading strong{font-size:13px;letter-spacing:.1em;color:#8f0000;}
+.dorado-installments-quote-heading span{opacity:.75;font-size:12px;}
+.dorado-installments-quote-pair{display:flex;gap:12px;align-items:baseline;justify-content:space-between;font-size:13px;line-height:1.4;}
+.dorado-installments-quote-pair strong{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.dorado-installments-quote-net{padding:12px 0;border-top:1px solid rgba(143,0,0,.14);font-weight:750;}
+.dorado-installments-quote hr{width:100%;border:0;border-top:1px solid rgba(143,0,0,.13);margin:0;}
+.dorado-installments-quote p{margin:6px 0 0;font-size:11px;line-height:1.6;opacity:.75;}
+.dorado-installments-cash{font-size:12px;line-height:1.6;color:#26744c;font-weight:600;margin:1px 0 12px;}
+.dorado-installments-cash strong{color:inherit;font-weight:800;}
+.dorado-installments-label{margin-bottom:2px;}
+.dorado-installments-checkout-total-note{font-size:12px;line-height:1.6;margin-top:6px;color:#26744c;}
+@media(max-width:600px){.dorado-installments-quote-pair{font-size:12px;}.dorado-installments-quote{padding:13px;}}
