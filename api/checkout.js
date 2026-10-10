@@ -117,6 +117,10 @@ export default async function handler(req, res) {
         const itemsRaw = Array.isArray(body.items) ? body.items : [];
         const couponCode = normalizeCouponCode(body.cupon || body.coupon || "");
         const paymentPlan = clean(body.payment_plan || "un_pago", 30).toLowerCase();
+        const interestFreeVerified = process.env.MERCADOPAGO_3_CUOTAS_VERIFICADAS === "true";
+        if (paymentPlan === "3_sin_interes" && !interestFreeVerified) {
+            return res.status(409).json({ error: "Las cuotas sin interés están pendientes de habilitación en Mercado Pago. Elegí un medio de pago normal." });
+        }
         if (!["un_pago", "3_sin_interes"].includes(paymentPlan)) {
             return res.status(400).json({ error: "Plan de cuotas inválido." });
         }
@@ -211,8 +215,8 @@ export default async function handler(req, res) {
 
             const controlaStock = producto.control_stock === true;
             const stock = Math.max(0, Number(producto.stock) || 0);
-            const precio = installmentPricing(producto).list;
-            const installmentEnabled = producto.cuotas_sin_interes_3 === true;
+            const precio = installmentPricing(producto, { promotionEnabled: interestFreeVerified }).list;
+            const installmentEnabled = interestFreeVerified && producto.cuotas_sin_interes_3 === true;
             hasInstallmentProducts = hasInstallmentProducts || installmentEnabled;
             allInstallmentProducts = allInstallmentProducts && installmentEnabled;
 
