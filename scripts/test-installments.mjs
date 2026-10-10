@@ -23,3 +23,10 @@ assert.equal(common.collectionFee,0);
 const disabled = installmentPricing({ precio:300000 });
 assert.equal(disabled.list,300000,"Productos existentes no deben aumentar de precio");
 console.log("Installments and cash pricing tests passed.");
+// Las cuotas NO se anuncian si la promoción aún no está validada por el comercio.
+const pending = installmentPricing({ precio: 300000, cuotas_sin_interes_3: true }, { promotionEnabled: false });
+assert.equal(pending.promo, false, "La promoción debe permanecer inactiva");
+assert.equal(pending.list, 300000, "No cobrar un precio financiado si la promo no está verificada");
+assert.equal(pending.cash, 300000, "No mostrar descuentos ficticios antes de activar la promo");
+assert.equal(pending.installmentsFee, 0, "No simular cargos de cuotas deshabilitadas");
+console.log("Pending interest-free promotion safety tests passed.");
