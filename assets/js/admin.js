@@ -2010,6 +2010,7 @@ function editProduct(id){
     document.getElementById("product-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("product-cancel").classList.remove("hidden");
     resetProductGallery(p);
+    renderInstallmentQuote();
     renderProductFormTaxonomyPickers();
     requestAnimationFrame(()=>window.__doradoRefreshAdminSelects?.());
     scrollProductEditorIntoView({focusName:false});

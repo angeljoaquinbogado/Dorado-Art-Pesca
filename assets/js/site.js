@@ -35,7 +35,7 @@ function planCuotasCheckout(){
         ? "3_sin_interes" : "un_pago";
 }
 function precioCarritoPorMetodo(item,metodo){
-    return item.cuotas_sin_interes_3===true&&["efectivo","transferencia","whatsapp"].includes(metodo)
+    return item.cuotas_sin_interes_3===true&&["efectivo","transferencia"].includes(metodo)
         ? Math.max(0,Number(item.precio_contado)||0)
         : Math.max(0,Number(item.precio)||0);
 }
@@ -60,7 +60,7 @@ function actualizarCheckoutCuotas(){
     if(label)label.hidden=!estado.soloPromo;
     if(note)note.textContent=estado.mixto
         ?"El carrito combina productos promocionales y comunes. Las 3 cuotas sin interés requieren comprar solo productos habilitados; el descuento al contado sí está disponible para los promocionales."
-        :"Elegí 3 cuotas con Mercado Pago o tarjeta de crédito habilitada, o desmarcá para pagar al contado con 20% de descuento (efectivo o transferencia). No acumulable con cupones.";
+        :"Elegí 3 cuotas con Mercado Pago o tarjeta de crédito habilitada, o desmarcá para pagar al contado con 20% de descuento (efectivo o transferencia). WhatsApp permite coordinar otros medios al precio de lista. No acumulable con cupones.";
     const subtotal=carrito.reduce((sum,item)=>sum+(Number(item.precio)||0)*Math.max(1,Number(item.cantidad)||1),0);
     if(amount)amount.textContent=`3 pagos de ${formatearPrecio(Math.round((subtotal/3)*100)/100)} · total ${formatearPrecio(subtotal)}`;
     const noCupon=estado.hayPromo;
@@ -69,10 +69,9 @@ function actualizarCheckoutCuotas(){
     const couponMsg=document.getElementById("checkout-coupon-message");
     if(noCupon&&checkoutCoupon){
         checkoutCoupon=null;
-        if(input)input.value="";
         if(couponMsg){couponMsg.textContent="Las 3 cuotas sin interés no se acumulan con cupones.";couponMsg.className="checkout-coupon-message";}
     }
-    if(input)input.disabled=Boolean(noCupon);
+    if(input){input.disabled=Boolean(noCupon);if(noCupon)input.value="";}
     if(btn)btn.disabled=Boolean(noCupon);
     const payment=document.getElementById("checkout-payment-method");
     if(payment){
@@ -1830,7 +1829,7 @@ async function iniciarPagoMercadoPago(evento) {
             "Hola Dorado Artículos de Pesca 👋",
             "Quiero confirmar este pedido desde la web:","",detalle,"",
             checkoutCoupon?`Cupón: ${checkoutCoupon.code} · Descuento: -${formatearPrecio(checkoutCoupon.discount)}`:"",
-            estadoCuotasCarrito(carrito).hayPromo?"Precio al contado aplicado a productos promocionales. Confirmar importe al coordinar el pedido.":"",
+            estadoCuotasCarrito(carrito).hayPromo && ["efectivo","transferencia"].includes(metodoPago)?"El 20% de descuento se aplica únicamente a productos habilitados por pago en efectivo o transferencia.":"",
             `TOTAL PRODUCTOS: ${formatearPrecio(total)}`,
             `Pago: ${pagos[metodoPago]||"A coordinar"}`,
             `Entrega: ${entregas[entrega]||entrega}`,
