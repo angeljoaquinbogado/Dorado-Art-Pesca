@@ -5,6 +5,11 @@
 .dorado-catalog .products {
   align-items: stretch !important;
 }
+/* La paginación y los filtros usan el atributo hidden; nunca mostrar esos nodos.
+   Especificidad mayor que display:flex!important para preservar "Ver más". */
+.dorado-catalog .products > .product[hidden] {
+  display: none !important;
+}
 .dorado-catalog .products > .product {
   display: flex !important;
   flex-direction: column !important;
