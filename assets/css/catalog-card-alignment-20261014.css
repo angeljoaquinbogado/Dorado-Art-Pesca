@@ -1,0 +1,24 @@
+/* DORADO · Acciones alineadas en todas las tarjetas del catálogo.
+   Los avisos de stock, cuotas y pago al contado conservan su altura natural.
+   Grid iguala la altura de tarjetas en cada fila; flex empuja los controles al fondo.
+   Esta hoja carga al final para prevalecer sobre los márgenes fijos históricos. */
+.dorado-catalog .products {
+  align-items: stretch !important;
+}
+.dorado-catalog .products > .product {
+  display: flex !important;
+  flex-direction: column !important;
+  align-self: stretch !important;
+  height: 100% !important;
+}
+.dorado-catalog .products > .product > .product-info {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-width: 0;
+}
+.dorado-catalog .products > .product > .product-info > .product-actions {
+  margin-top: auto !important;
+  flex-shrink: 0;
+  width: 100%;
+}
