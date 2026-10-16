@@ -1,0 +1,29 @@
+/* Promociones — panel de administración */
+.promo-admin-card{grid-column:1/-1;min-width:0}
+.promo-admin-actions,.promo-admin-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.promo-admin-actions{margin:12px 0 16px}
+.promo-admin-actions>span,.promo-admin-empty{font-size:12px;line-height:1.5;opacity:.75}
+.promo-admin-list{display:grid;gap:12px;min-width:0}
+.promo-admin-empty{padding:14px 0}
+.promo-admin-row{min-width:0;padding:16px;border:1px solid var(--line,rgba(100,100,100,.2));border-radius:16px;background:rgba(100,100,100,.035);display:grid;gap:13px}
+.promo-admin-row-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.promo-admin-row-header strong{font-size:13px}
+.promo-admin-row-buttons{display:flex;gap:6px}
+.promo-admin-row-buttons button{min-height:34px;padding:6px 11px;font-size:10px}
+.promo-admin-row-buttons button:disabled{opacity:.35;cursor:not-allowed}
+.promo-admin-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.promo-admin-fields label{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:10px;font-weight:750;letter-spacing:.03em}
+.promo-admin-fields label.promo-wide{grid-column:1/-1}
+.promo-admin-fields input{width:100%;min-width:0;min-height:42px;padding:10px 12px;border:1px solid rgba(120,120,120,.3);border-radius:10px;font:inherit;font-size:13px;letter-spacing:0;background:var(--input-bg,transparent);color:inherit}
+.promo-admin-fields input:focus-visible{outline:2px solid #b48a24;outline-offset:1px}
+.promo-enable{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:650;cursor:pointer}
+.promo-enable input{width:16px;height:16px;accent-color:#a97c17}
+.promo-admin-footer{margin-top:18px}
+#promo-admin-message{font-size:12px;line-height:1.5}
+#promo-admin-message.is-error{color:#c74848}
+@media(max-width:650px){
+ .promo-admin-fields{grid-template-columns:minmax(0,1fr)}
+ .promo-admin-row{padding:12px}
+ .promo-admin-row-buttons{flex-wrap:wrap;justify-content:flex-end}
+ .promo-admin-footer .primary{width:100%}
+}
