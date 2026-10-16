@@ -4,13 +4,10 @@
   "private": true,
   "description": "E-commerce full stack para Dorado Artículos de Pesca.",
   "type": "module",
-  "engines": {
-    "node": ">=20"
-  },
-  "scripts": {
-    "check": "node scripts/check-project.mjs && node scripts/test-installments.mjs"
-  },
+  "engines": {"node": ">=20"},
+  "scripts": {"check": "node scripts/check-project.mjs && node scripts/test-installments.mjs"},
   "dependencies": {
-    "nodemailer": "10.0.10"
+    "nodemailer": "10.0.10",
+    "web-push": "3.6.7"
   }
 }

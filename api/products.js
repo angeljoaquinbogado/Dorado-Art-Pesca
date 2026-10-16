@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import adminPushHandler from "../lib/admin-push-handler.js";
 import nodemailer from "nodemailer";
 
 import { requireAdmin } from "../lib/admin-auth.js";
@@ -1295,6 +1296,7 @@ export default async function handler(req, res) {
     res.setHeader("X-Content-Type-Options", "nosniff");
 
     const mode = String(req.query?.mode || "").toLowerCase();
+    if (mode === "admin-push") return adminPushHandler(req, res);
 
     if (mode === "global-stock-integrations") {
         return handleIntegrationAdmin(req, res);

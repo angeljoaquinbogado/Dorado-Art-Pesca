@@ -9,6 +9,7 @@ import {
 } from "../lib/security.js";
 import { installmentPricing, normalizeCouponCode, couponStatus, roundMoney } from "../lib/pricing.js";
 import { sendOrderStatusEmail } from "../lib/order-email.js";
+import { sendAdminOrderPush } from "../lib/admin-push.js";
 
 const MAX_ITEMS = 40;
 const MAX_QTY = 100000;
@@ -472,6 +473,9 @@ export default async function handler(req, res) {
                     });
                 }
 
+                try{await sendAdminOrderPush(orderId);}catch(error){
+                    console.error("Push de pedido confirmado pendiente:",String(error?.message||error).slice(0,120));
+                }
                 const finalStatus = confirmResult?.ok ? "approved" : "review";
 
                 return res.status(200).json({

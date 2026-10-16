@@ -117,6 +117,7 @@
     }
   ],
   "rewrites": [
+    {"source":"/api/admin-push","destination":"/api/products?mode=admin-push"},
     {
       "source": "/api/global-stock-integrations",
       "destination": "/api/products?mode=global-stock-integrations"
