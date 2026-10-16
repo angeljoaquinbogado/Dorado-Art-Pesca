@@ -1,0 +1,51 @@
+/* DORADO — cartel editorial de promociones y restauración de animaciones PC.
+   Animaciones continuas por transform, sin timers ni bloqueos al pasar el cursor. */
+.dorado-promo-strip[hidden]{display:none!important}
+.dorado-promo-strip{
+  position:relative;z-index:48;overflow:hidden;width:100%;
+  background:#12212a;color:#faf4e6;border-block:1px solid rgba(240,196,79,.21);
+  min-height:42px;display:flex;align-items:center;
+}
+.dorado-promo-strip::before,.dorado-promo-strip::after{
+  content:"";position:absolute;top:0;bottom:0;width:45px;z-index:1;pointer-events:none;
+}
+.dorado-promo-strip::before{left:0;background:linear-gradient(90deg,#12212a,transparent)}
+.dorado-promo-strip::after{right:0;background:linear-gradient(270deg,#12212a,transparent)}
+.dorado-promo-track{display:flex;width:max-content;min-width:100%;animation:doradoPromoFlow 34s linear infinite;align-items:center}
+.dorado-promo-set{display:flex;min-width:100vw;flex:0 0 auto;align-items:center;justify-content:space-around;gap:25px;padding:7px 20px}
+.dorado-promo-item{display:inline-flex;gap:8px;align-items:center;justify-content:center;white-space:nowrap;
+  font:650 11px/1.45 "Manrope",sans-serif;letter-spacing:.01em;color:inherit;text-decoration:none;max-width:100%}
+.dorado-promo-item .promo-spark{color:#e7b33b;font-size:10px}
+.dorado-promo-item strong{font-weight:800;color:#f5d079}
+.dorado-promo-item .promo-detail{color:#e4e0d5;font-weight:500}
+.dorado-promo-item .promo-arrow{color:#e7b33b;font-size:13px;margin-inline-start:2px}
+a.dorado-promo-item:hover strong,a.dorado-promo-item:focus-visible strong{color:#fff}
+a.dorado-promo-item:focus-visible{outline:2px solid #f5d079;outline-offset:2px;border-radius:3px}
+@keyframes doradoPromoFlow{to{transform:translate3d(-50%,0,0)}}
+@media(max-width:650px){
+  .dorado-promo-strip{min-height:38px}
+  .dorado-promo-item{font-size:10px;gap:5px}
+  .dorado-promo-set{gap:18px}
+  .dorado-promo-track{animation-duration:26s}
+}
+/* La regla antigua dejaba el carrusel congelado cuando el mouse o el foco
+   quedaban encima de las marcas. El movimiento continúa también en PC. */
+@media(prefers-reduced-motion:no-preference){
+  #productos.perf-active #marcas:not(.brands-expanded) .brand-marquee-shell .brand-marquee-track{
+    animation:doradoBrandMarquee 35s linear infinite!important;
+    animation-play-state:running!important;
+  }
+  /* Performance V3 ocultaba por completo la capa con la animación del hero PC.
+     Usar la misma imagen en su capa animada, sin un segundo fondo duplicado. */
+  @media(min-width:821px){
+    .hero-combined-scene{background:#08090a!important}
+    .hero-combined-scene .hero-bg{display:block!important}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .dorado-promo-strip{overflow-x:auto}
+  .dorado-promo-strip::before,.dorado-promo-strip::after{display:none}
+  .dorado-promo-track{width:100%;animation:none!important}
+  .dorado-promo-set{min-width:0;flex-wrap:wrap;justify-content:center}
+  .dorado-promo-set[aria-hidden="true"]{display:none}
+}

@@ -51,7 +51,7 @@ export default async function handler(req, res) {
             "default_theme","store_name","whatsapp_phone","phone_display","address_line",
             "address_area","address_province","postal_code","maps_url","legal_holder","tax_id",
             "default_stock_control","checkout_whatsapp_enabled","checkout_transfer_enabled",
-            "checkout_cash_enabled","checkout_mp_enabled","checkout_card_enabled","business_hours"
+            "checkout_cash_enabled","checkout_mp_enabled","checkout_card_enabled","business_hours","promotions"
         ].join(",");
 
         const response = await fetch(
@@ -99,6 +99,19 @@ export default async function handler(req, res) {
         interestFreeThreeInstallmentsVerified: process.env.MERCADOPAGO_3_CUOTAS_VERIFICADAS === "true",
         checkoutVisibility,
         checkoutAvailability,
+        promotions: Array.isArray(settings.promotions)
+            ? settings.promotions.slice(0,8).filter(item=>item && typeof item==="object" && item.enabled===true)
+                .map(item=>({
+                    title:String(item.title||"").trim().slice(0,90),
+                    detail:String(item.detail||"").trim().slice(0,125),
+                    href:String(item.href||"").trim().slice(0,350)
+                })).filter(item=>item.title.length>0)
+                .map(item=>({
+                    ...item,
+                    href: /^https:\/\/[a-z0-9]/i.test(item.href) || (/^\/(?!\/)/.test(item.href)) || /^#[a-z0-9_-]+$/i.test(item.href)
+                        ? item.href : ""
+                }))
+            : [],
         defaultStockControl: Boolean(settings.default_stock_control),
         business: {
             name: String(settings.store_name || defaults.store_name),
