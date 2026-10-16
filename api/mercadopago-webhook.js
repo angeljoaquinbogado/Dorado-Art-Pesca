@@ -1,4 +1,5 @@
 import { sendOrderConfirmationEmail, sendOrderStatusEmail } from "../lib/order-email.js";
+import { sendAdminOrderPush } from "../lib/admin-push.js";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 import {
@@ -258,6 +259,9 @@ if (topic === "merchant_order") {
             // El envío se reclama de forma atómica para evitar emails duplicados
             // cuando Mercado Pago entrega dos webhooks casi al mismo tiempo.
             if (rpcData?.ok) {
+                try{await sendAdminOrderPush(orderId);}catch(error){
+                    console.error("Push de nuevo pedido:",String(error?.message||error).slice(0,120));
+                }
                 const claimResponse = await supabaseFetch(
                     "/rest/v1/rpc/claim_email_confirmacion",
                     {

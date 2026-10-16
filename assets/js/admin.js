@@ -1258,6 +1258,7 @@ async function updateRecoveredPassword(password){
 }
 
 async function logout(reload=true){
+    if(session?.access_token && reload)await window.doradoDeactivatePush?.();
     const previous=session;
     session=null;
     sessionStorage.removeItem(SESSION_KEY);
@@ -1287,6 +1288,7 @@ function showApp(){
     if(GLOBAL_STOCK_AUTH_FLOW){
         openGlobalStockAuthorizationPanel();
     }
+    window.dispatchEvent(new Event("dorado:admin-ready"));
 }
 
 async function loadProducts(){

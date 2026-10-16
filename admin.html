@@ -96,6 +96,7 @@
 <meta name="description" content="Panel privado de DORADO ARTÍCULOS DE PESCA para gestionar productos, stock y pedidos. Acceso exclusivo para administradores autorizados.">
 <link rel="canonical" href="https://www.doradoarticulosdepesca.com.ar/admin.html">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
+<link rel="manifest" href="/manifest-admin.webmanifest">
 <title>Dorado Artículos de Pesca | Panel privado de administración</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,6 +138,7 @@
 <link rel="stylesheet" href="assets/css/promotions-catalog-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/admin-universal-contrast-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/admin-hours-override-20261016.css?v=1">
+<link rel="stylesheet" href="assets/css/admin-order-notifications-20261016.css?v=1">
 </head>
 <body>
 
@@ -224,7 +226,7 @@
           <svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3M8 12h8"/></svg><span>PRODUCTOS</span>
         </button>
         <button class="tab" data-tab="orders" type="button">
-          <svg viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>PEDIDOS</span>
+          <svg viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>PEDIDOS</span><span class="admin-order-badge" id="admin-order-badge" aria-live="polite" hidden>0</span>
         </button>
         <button class="tab" data-tab="coupons" type="button">
           <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M9 7v10M15 7v10M7 12h10"/></svg><span>CUPONES</span>
@@ -515,7 +517,19 @@
             <div class="stat"><div class="stat-top"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M3 6h13v10H3z"/><path d="M16 10h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg></div></div><span class="stat-label">POR DESPACHAR</span><strong id="order-stat-to-ship">0</strong><small>PAGADOS</small></div>
           </div>
           <div class="card orders-card">
-            <div class="orders-toolbar"><div><h2>Pedidos</h2><p>Seguimiento de compras y preparación.</p></div><span class="privacy-chip"><svg viewBox="0 0 24 24"><path d="M6 10V7a6 6 0 0 1 12 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/></svg> Datos privados solo para administradores</span></div>
+            <div class="admin-order-settings" id="admin-order-settings">
+  <div class="admin-order-settings-copy">
+    <strong>Notificaciones de pedidos</strong>
+    <span>Instalá DORADO Admin en tu celular para recibir compras confirmadas con el logo de la tienda, número, importe y estado del pago.</span>
+  </div>
+  <div class="admin-order-settings-actions">
+    <button type="button" id="admin-pwa-install">INSTALAR PANEL</button>
+    <button type="button" id="admin-push-enable">ACTIVAR NOTIFICACIONES</button>
+    <button type="button" id="admin-push-disable" hidden>DESACTIVAR</button>
+  </div>
+  <span class="admin-order-notice" id="admin-push-status" role="status" aria-live="polite">Cargando estado de notificaciones…</span>
+</div>
+<div class="orders-toolbar"><div><h2>Pedidos</h2><p>Seguimiento de compras y preparación.</p></div><span class="privacy-chip"><svg viewBox="0 0 24 24"><path d="M6 10V7a6 6 0 0 1 12 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/></svg> Datos privados solo para administradores</span></div>
 
             <div class="orders-filterbar">
               <label class="search-wrap orders-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="order-search" type="search" placeholder="Buscar pedido, cliente, email o teléfono"></label>
@@ -943,7 +957,8 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261016-hours1"></script>
+<script src="assets/js/admin.js?v=20261016-push1"></script>
+<script src="assets/js/admin-notifications-20261016.js?v=1"></script>
 <script src="assets/js/admin-promotions-20261016.js?v=4"></script>
 </body>
 </html>
