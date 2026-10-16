@@ -2,7 +2,20 @@
 import {isSameOriginRequest} from "../lib/security.js";
 const MAX_BODY=6000;
 const allowedMethods=new Set(["GET","POST","DELETE"]);
-const endpointValid=value=>typeof value==="string" && /^https:\/\//i.test(value) && value.length>=20 && value.length<=2048;
+const endpointValid=value=>{
+  if(typeof value!=="string"||value.length<20||value.length>2048)return false;
+  try{
+    const u=new URL(value);
+    const h=u.hostname.toLowerCase();
+    if(u.protocol!=="https:"||u.username||u.password||u.port)return false;
+    // Impide destinos internos/arbitrarios en peticiones push salientes.
+    return h==="fcm.googleapis.com" ||
+      h==="updates.push.services.mozilla.com" ||
+      h.endsWith(".push.services.mozilla.com") ||
+      h==="web.push.apple.com" || h.endsWith(".push.apple.com") ||
+      h.endsWith(".notify.windows.com");
+  }catch{return false;}
+};
 const keyValid=value=>typeof value==="string" && /^[a-zA-Z0-9_\-+/=]{8,400}$/.test(value);
 const json=(res,status,body)=>res.status(status).json(body);
 export default async function handler(req,res){
