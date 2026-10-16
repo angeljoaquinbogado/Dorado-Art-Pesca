@@ -1,0 +1,47 @@
+/* Pedidos recientes y Web Push — panel completo, escritorio y móvil. */
+.tab[data-tab="orders"]{position:relative}
+.admin-order-badge{
+  margin-left:auto;display:inline-grid;place-items:center;
+  min-width:19px;height:19px;padding:0 5px;border-radius:20px;
+  background:#d92830;color:#fff;line-height:1;
+  font:850 10px/1 "Manrope",sans-serif;
+  box-shadow:0 1px 3px rgba(127,18,18,.2)
+}
+.admin-order-badge[hidden]{display:none!important}
+.admin-order-settings{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:15px;margin-bottom:16px;padding:16px 18px;
+  border:1px solid #d9ccbb;border-radius:15px;
+  background:#fffdf8;color:#22313a
+}
+.admin-order-settings-copy{display:grid;gap:4px;min-width:180px;flex:1}
+.admin-order-settings-copy strong{font-size:13px;font-weight:850;letter-spacing:-.015em}
+.admin-order-settings-copy span{color:#506069;font-size:11.5px;line-height:1.5}
+.admin-order-settings-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.admin-order-settings-actions button{
+  border:1px solid #c8b898;border-radius:12px;min-height:39px;
+  padding:9px 13px;cursor:pointer;
+  background:#fff;color:#273640;font:750 11px/1.2 "Manrope",sans-serif
+}
+.admin-order-settings-actions button:first-child{
+  background:#f4e6bb;border-color:#ddbd6c;color:#362c18
+}
+.admin-order-settings-actions button:disabled{cursor:wait;opacity:.55}
+.admin-order-notice{width:100%;font-size:11px;line-height:1.5;color:#5b6970}
+.admin-order-notice[data-tone="error"]{color:#a52d30}
+.admin-order-notice[data-tone="success"]{color:#276b48}
+html[data-admin-theme="dark"] .admin-order-settings{
+  background:#142a37;color:#f3f6f7;border-color:#45606d
+}
+html[data-admin-theme="dark"] .admin-order-settings-copy span,
+html[data-admin-theme="dark"] .admin-order-notice{color:#c0cdd5}
+html[data-admin-theme="dark"] .admin-order-settings-actions button{
+  background:#183847;color:#f1f5f7;border-color:#536c7a
+}
+html[data-admin-theme="dark"] .admin-order-settings-actions button:first-child{
+  background:#6c501b;color:#fff2ca;border-color:#c49d47
+}
+@media(max-width:650px){
+  .admin-order-settings{padding:14px}
+  .admin-order-settings-actions,.admin-order-settings-actions button{width:100%}
+}
