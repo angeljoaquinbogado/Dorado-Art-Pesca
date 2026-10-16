@@ -63,9 +63,12 @@
    loaded=true;notice("");
   }catch(error){notice(error.message||"Error cargando promociones.",true);}
  }
- add.addEventListener("click",()=>{
+ add.addEventListener("click",async()=>{
   if(list.querySelectorAll(".promo-admin-row").length>=8)return;
-  if(!loaded){notice("Esperá a que carguen las promociones.",true);return;}
+  // El botón también funciona si todavía no se abrió la sección:
+  // cargar los títulos existentes antes de crear uno nuevo.
+  if(!loaded)await load();
+  if(!loaded)return;
   const empty=list.querySelector(".promo-admin-empty");if(empty)empty.remove();
   const item=row({href:"#promociones"});list.append(item);sync();item.querySelector(".promo-title").focus();notice("Cambios pendientes de guardar.");
  });
