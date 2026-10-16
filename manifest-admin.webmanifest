@@ -2,7 +2,7 @@
   "id": "/admin.html",
   "name": "DORADO · Administrador",
   "short_name": "DORADO Admin",
-  "description": "Panel privado de pedidos, stock y ventas de DORADO Artículos de Pesca.",
+  "description": "Panel privado de pedidos, stock y ventas de DORADO Artículos de Pesca. Íconos oficiales de DORADO.",
   "start_url": "/admin.html",
   "scope": "/admin.html",
   "display": "standalone",
