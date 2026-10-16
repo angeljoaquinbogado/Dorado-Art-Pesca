@@ -44,8 +44,9 @@
      // artificial de 300 compras pendientes.
      if(!saved){writeSeen(latest);renderCount(0);return;}
      const unseen=orders.filter(o=>String(o.created_at||"")>saved);
+     const previousCount=lastCount;
      renderCount(unseen.length);
-     if(!silent&&unseen.length>0&&unseen.length>lastCount)showToast(
+     if(!silent&&unseen.length>0&&unseen.length>previousCount)showToast(
        unseen.length===1?"Entró un pedido nuevo":unseen.length+" pedidos nuevos");
    }catch(error){
      if(!silent)console.warn("Pedidos nuevos:",error?.message||error);
@@ -158,9 +159,9 @@
      ?"iPhone: abrí Safari → Compartir → Añadir a pantalla de inicio. Después abrí DORADO Admin desde el ícono."
      :"Chrome Android: menú ⋮ → Instalar aplicación o Agregar a pantalla principal. Luego abrí DORADO Admin desde el ícono.");
  });
- tab.addEventListener("click",()=>{
-   // La sección Pedidos carga su lista de forma asíncrona.
-   window.setTimeout(async()=>{await poll({silent:true});acknowledge();},700);
+ window.addEventListener("dorado:orders-loaded",()=>{
+   acknowledge();
+   void poll({silent:true});
  });
  async function openDeepLink(){
    const query=new URLSearchParams(location.search);
