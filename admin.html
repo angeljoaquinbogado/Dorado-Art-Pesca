@@ -134,6 +134,7 @@
 <link rel="stylesheet" href="assets/css/installments-20261009.css?v=1">
 <link rel="stylesheet" href="assets/css/admin-promotions-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/admin-readable-20261016.css?v=1">
+<link rel="stylesheet" href="assets/css/promotions-catalog-20261016.css?v=1">
 </head>
 <body>
 
@@ -413,6 +414,12 @@
                 <div class="field-row">
   <div class="field"><label for="product-active">VISIBILIDAD</label><select id="product-active"><option value="true">Activo / visible</option><option value="false">Oculto</option></select></div>
   <div class="field"><label for="product-featured">DESTACADO EN LA TIENDA</label><select id="product-featured"><option value="false">No destacado</option><option value="true">Destacado</option></select><div class="file-help">Los productos destacados aparecen primero al ordenar por “Destacado”.</div></div>
+<div class="field product-promotion-control">
+  <label class="product-promotion-toggle" for="product-en-promocion">
+    <input id="product-en-promocion" type="checkbox">
+    <span><strong>INCLUIR EN PROMOCIONES</strong><small>Este producto aparecerá al entrar a «Promociones» en la tienda. No cambia los precios ni las cuotas.</small></span>
+  </label>
+</div>
 </div>
               </div>
 
@@ -787,7 +794,7 @@
               <section class="card commercial-settings-card promo-admin-card" aria-labelledby="promo-settings-title">
                 <div class="settings-card-head"><span>07</span><div>
                   <h3 id="promo-settings-title">Promociones animadas</h3>
-                  <p>Administrá los mensajes que se desplazan por la franja superior de la tienda. Podés crear, cambiar, pausar o eliminar promociones sin modificar los productos.</p>
+                  <p>Administrá los mensajes debajo del menú, en la portada. Usá «#promociones» para enlazar directamente todos los productos marcados en promoción.</p>
                 </div></div>
                 <div class="promo-admin-actions">
                   <button class="secondary" id="promo-add" type="button">+ AGREGAR PROMOCIÓN</button>
@@ -904,7 +911,7 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261016-refresh1"></script>
-<script src="assets/js/admin-promotions-20261016.js?v=1"></script>
+<script src="assets/js/admin.js?v=20261016-promotions1"></script>
+<script src="assets/js/admin-promotions-20261016.js?v=2"></script>
 </body>
 </html>
