@@ -136,6 +136,7 @@
 <link rel="stylesheet" href="assets/css/admin-readable-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/promotions-catalog-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/admin-universal-contrast-20261016.css?v=1">
+<link rel="stylesheet" href="assets/css/admin-hours-override-20261016.css?v=1">
 </head>
 <body>
 
@@ -668,8 +669,25 @@
               </section>
 
               <section class="card commercial-settings-card">
-                <div class="settings-card-head"><span>03</span><div><h3>Horarios</h3><p>También controlan “Local abierto / cerrado”.</p></div></div>
+                <div class="settings-card-head"><span>03</span><div><h3>Horarios</h3><p>Controlá si el local figura abierto o cerrado, los turnos, domingos y feriados.</p></div></div>
                 <div class="settings-hours">
+                  <section class="settings-hours-day settings-manual-status" aria-labelledby="settings-manual-status-title">
+                    <div class="settings-hours-day-head">
+                      <div>
+                        <strong id="settings-manual-status-title">Estado del local</strong>
+                        <small>Elegí si se calcula automáticamente o lo decidís vos</small>
+                      </div>
+                    </div>
+                    <label class="settings-local-status-field" for="settings-local-status-mode">
+                      <span>Estado publicado en la tienda</span>
+                      <select id="settings-local-status-mode">
+                        <option value="auto">Automático · según horarios y feriados</option>
+                        <option value="open">Local abierto · manual</option>
+                        <option value="closed">Local cerrado · manual</option>
+                      </select>
+                    </label>
+                    <p class="settings-local-status-help" id="settings-local-status-help" role="status" aria-live="polite">En automático se respetan los horarios habituales y las fechas especiales.</p>
+                  </section>
                   <section class="settings-hours-day" aria-labelledby="settings-hours-weekdays-label">
                     <div class="settings-hours-day-head">
                       <div>
@@ -764,6 +782,19 @@
                         </div>
                       </div>
                     </div>
+                  </section>
+                  <section class="settings-hours-day settings-holidays" aria-labelledby="settings-holiday-title">
+                    <div class="settings-hours-day-head settings-holidays-header">
+                      <div>
+                        <strong id="settings-holiday-title">Feriados y fechas especiales</strong>
+                        <small>Definí qué días especiales abrís o cerrás, y en qué horario</small>
+                      </div>
+                      <button class="secondary settings-holiday-add" id="settings-holiday-add" type="button">+ AGREGAR FERIADO</button>
+                    </div>
+                    <div class="settings-holidays-list" id="settings-holiday-list">
+                      <p class="settings-holidays-empty">No hay feriados configurados. Agregá uno para definir si el local abre o cierra ese día.</p>
+                    </div>
+                    <p class="settings-holidays-hint">Las fechas se cargan manualmente. Podés editar o eliminar cada feriado; prevalecen sobre el horario semanal cuando el estado es automático.</p>
                   </section>
                 </div>
               </section>
@@ -912,7 +943,7 @@
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 
-<script src="assets/js/admin.js?v=20261016-promotions1"></script>
+<script src="assets/js/admin.js?v=20261016-hours1"></script>
 <script src="assets/js/admin-promotions-20261016.js?v=4"></script>
 </body>
 </html>

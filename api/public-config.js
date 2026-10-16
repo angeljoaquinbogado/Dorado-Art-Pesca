@@ -40,7 +40,9 @@ export default async function handler(req, res) {
         business_hours:{
             mon_fri:[["09:00","13:00"],["16:00","20:00"]],
             sat:[["09:00","20:00"]],
-            sun:[]
+            sun:[],
+            manual_status:"auto",
+            holidays:[]
         }
     };
 
