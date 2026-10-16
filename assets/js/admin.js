@@ -2515,6 +2515,9 @@ async function loadOrders(){
     if(toShipEl)toShipEl.textContent=toShip;
 
     renderOrders();
+    if(document.getElementById("orders-panel")?.classList.contains("active")){
+        window.dispatchEvent(new Event("dorado:orders-loaded"));
+    }
 }
 
 
