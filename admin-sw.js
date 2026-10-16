@@ -5,7 +5,7 @@ self.addEventListener("push",event=>{
   const url=typeof data.url==="string"&&data.url.startsWith("/admin.html")?data.url:"/admin.html?tab=orders";
   event.waitUntil(self.registration.showNotification(String(data.title||"DORADO · Nuevo pedido").slice(0,90),{
     body:String(data.body||"Entró un nuevo pedido. Abrí el panel para revisarlo.").slice(0,220),
-    icon:"/assets/images/brand/icon-192.png",
+    icon:"/assets/images/brand/logo-dorado.png",
     badge:"/assets/images/brand/favicon-32.png",
     tag:String(data.tag||"dorado-new-order").slice(0,150),
     data:{url},
