@@ -23,7 +23,7 @@
 .navlinks .nav-promotions-link:hover,.navlinks .nav-promotions-link.active{color:#a36c08!important}
 @media(min-width:901px){
  .navlinks{gap:clamp(9px,1.3vw,24px)!important}
- .navlinks a{font-size:clamp(9px,.8vw,11px)!important;letter-spacing:.035em!important}
+ .navlinks a{font-size:11.5px!important;letter-spacing:.035em!important}
 }
 .catalog-products-head{scroll-margin-top:130px;flex-wrap:wrap}
 .catalog-promo-clear{
