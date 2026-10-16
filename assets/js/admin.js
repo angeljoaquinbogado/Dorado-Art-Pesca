@@ -231,7 +231,9 @@ let adminBusinessSettings={
     business_hours:{
         mon_fri:[["09:00","13:00"],["16:00","20:00"]],
         sat:[["09:00","20:00"]],
-        sun:[]
+        sun:[],
+        manual_status:"auto",
+        holidays:[]
     }
 };
 const ADMIN_PANEL_THEME_KEY="doradoAdminPanelTheme";
@@ -366,6 +368,104 @@ function syncSundaySettings(){
         row.querySelectorAll("input").forEach(input=>input.disabled=!enabled);
     }
 }
+function normalizeHolidayRows(hours){
+    return Array.isArray(hours?.holidays)?hours.holidays.slice(0,40).filter(item=>item && typeof item==="object"):[];
+}
+function syncManualOpeningHint(){
+    const value=document.getElementById("settings-local-status-mode")?.value||"auto";
+    const help=document.getElementById("settings-local-status-help");
+    if(help)help.textContent=value==="open"
+        ?"Se mostrará «Local abierto» hasta que vuelvas a cambiar este estado, incluso fuera de horario o en un feriado."
+        :value==="closed"
+        ?"Se mostrará «Local cerrado» hasta que vuelvas a cambiar este estado, incluso dentro del horario habitual."
+        :"El estado se calcula según los turnos semanales y las fechas especiales configuradas.";
+}
+function makeHolidayEditor(holiday={}){
+    const row=document.createElement("article");
+    row.className="settings-holiday-item";
+    row.innerHTML=`<div class="settings-holiday-fields">
+      <label>FECHA<input class="holiday-date" type="date" required aria-label="Fecha del feriado"></label>
+      <label>NOMBRE (OPCIONAL)<input class="holiday-label" type="text" maxlength="65" placeholder="Ej.: Feriado nacional" aria-label="Nombre del feriado"></label>
+      <label>ESTADO DE ESE DÍA
+        <select class="holiday-state" aria-label="Estado del local en la fecha especial">
+          <option value="closed">Cerrado todo el día</option>
+          <option value="open">Abierto con horario especial</option>
+        </select>
+      </label>
+      <button type="button" class="secondary holiday-remove" aria-label="Eliminar feriado">ELIMINAR</button>
+    </div>
+    <div class="settings-time-range holiday-open-hours">
+      <label><span>Abre</span><input class="holiday-open" type="time" aria-label="Apertura del feriado"></label>
+      <i aria-hidden="true">→</i>
+      <label><span>Cierra</span><input class="holiday-close" type="time" aria-label="Cierre del feriado"></label>
+    </div>`;
+    row.querySelector(".holiday-date").value=String(holiday.date||"");
+    row.querySelector(".holiday-label").value=String(holiday.name||"").slice(0,65);
+    row.querySelector(".holiday-state").value=holiday.state==="open"?"open":"closed";
+    row.querySelector(".holiday-open").value=String(holiday.hours?.[0]?.[0]||"09:00");
+    row.querySelector(".holiday-close").value=String(holiday.hours?.[0]?.[1]||"13:00");
+    syncHolidayEditor(row);
+    return row;
+}
+function syncHolidayEditor(row){
+    const opened=row.querySelector(".holiday-state")?.value==="open";
+    const fields=row.querySelector(".holiday-open-hours");
+    if(fields)fields.hidden=!opened;
+    row.querySelectorAll(".holiday-open-hours input").forEach(input=>{input.disabled=!opened;});
+}
+function renderHolidayEditors(hours){
+    const list=document.getElementById("settings-holiday-list");
+    if(!list)return;
+    const holidays=normalizeHolidayRows(hours);
+    list.replaceChildren(...holidays.map(makeHolidayEditor));
+    syncHolidayEmpty();
+    const mode=String(hours?.manual_status||"auto");
+    const select=document.getElementById("settings-local-status-mode");
+    if(select)select.value=["auto","open","closed"].includes(mode)?mode:"auto";
+    syncManualOpeningHint();
+}
+function syncHolidayEmpty(){
+    const list=document.getElementById("settings-holiday-list");
+    if(!list)return;
+    const count=list.querySelectorAll(".settings-holiday-item").length;
+    if(!count && !list.querySelector(".settings-holidays-empty")){
+        const empty=document.createElement("p");
+        empty.className="settings-holidays-empty";
+        empty.textContent="No hay feriados configurados. Agregá uno para definir si el local abre o cierra ese día.";
+        list.append(empty);
+    }
+    if(count)list.querySelector(".settings-holidays-empty")?.remove();
+    const add=document.getElementById("settings-holiday-add");
+    if(add)add.disabled=count>=40;
+}
+function isValidCalendarDate(value){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+    const [y,m,d]=value.split("-").map(Number);
+    const date=new Date(Date.UTC(y,m-1,d));
+    return date.getUTCFullYear()===y && date.getUTCMonth()+1===m && date.getUTCDate()===d;
+}
+function collectHolidayEditors(){
+    const items=[...document.querySelectorAll("#settings-holiday-list .settings-holiday-item")];
+    if(items.length>40)throw new Error("El límite es de 40 fechas especiales.");
+    const dates=new Set();
+    return items.map((row,index)=>{
+        const date=row.querySelector(".holiday-date")?.value||"";
+        const name=String(row.querySelector(".holiday-label")?.value||"").trim().slice(0,65);
+        const state=row.querySelector(".holiday-state")?.value==="open"?"open":"closed";
+        if(!isValidCalendarDate(date))throw new Error("Indicá una fecha válida para el feriado "+(index+1)+".");
+        if(dates.has(date))throw new Error("La fecha "+date+" está repetida en feriados.");
+        dates.add(date);
+        const result={date,name,state};
+        if(state==="open"){
+            const open=row.querySelector(".holiday-open")?.value||"";
+            const close=row.querySelector(".holiday-close")?.value||"";
+            if(!validTimePair(open,close)||open>=close)throw new Error("Revisá el horario del feriado "+date+". La apertura debe ser antes del cierre.");
+            result.hours=[[open,close]];
+        }else result.hours=[];
+        return result;
+    }).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
 function renderAdminBusinessSettings(){
     const b=adminBusinessSettings||{};
     commercialSettingValue("settings-store-name",b.store_name);
@@ -399,6 +499,7 @@ function renderAdminBusinessSettings(){
     commercialSettingValue("settings-sun-open",sun?.[0]?.[0]||"09:00");
     commercialSettingValue("settings-sun-close",sun?.[0]?.[1]||"13:00");
     syncSundaySettings();
+    renderHolidayEditors(hours);
 }
 async function loadAdminBusinessSettings(){
     const select=[
@@ -453,7 +554,9 @@ function readAdminBusinessSettingsForm(){
         business_hours:{
             mon_fri:[[amOpen,amClose],[pmOpen,pmClose]],
             sat:[[satOpen,satClose]],
-            sun:sunEnabled?[[sunOpen,sunClose]]:[]
+            sun:sunEnabled?[[sunOpen,sunClose]]:[],
+            manual_status:document.getElementById("settings-local-status-mode")?.value||"auto",
+            holidays:collectHolidayEditors()
         },
         updated_at:new Date().toISOString()
     };
@@ -3355,6 +3458,26 @@ document.getElementById("product-stock-toggle")?.addEventListener("click",()=>{
 setProductStockControl(false);
 document.getElementById("commercial-settings-form")?.addEventListener("submit",saveAdminBusinessSettings);
 document.getElementById("settings-sun-enabled")?.addEventListener("change",syncSundaySettings);
+document.getElementById("settings-local-status-mode")?.addEventListener("change",syncManualOpeningHint);
+document.getElementById("settings-holiday-add")?.addEventListener("click",()=>{
+    const list=document.getElementById("settings-holiday-list");
+    if(!list || list.querySelectorAll(".settings-holiday-item").length>=40)return;
+    list.querySelector(".settings-holidays-empty")?.remove();
+    const row=makeHolidayEditor();
+    list.append(row);
+    syncHolidayEmpty();
+    row.querySelector(".holiday-date")?.focus();
+});
+document.getElementById("settings-holiday-list")?.addEventListener("click",event=>{
+    const button=event.target.closest?.(".holiday-remove");
+    if(!button)return;
+    button.closest(".settings-holiday-item")?.remove();
+    syncHolidayEmpty();
+});
+document.getElementById("settings-holiday-list")?.addEventListener("change",event=>{
+    if(event.target.matches(".holiday-state"))syncHolidayEditor(event.target.closest(".settings-holiday-item"));
+});
+
 document.getElementById("coupon-form")?.addEventListener("submit",saveCoupon);
 document.getElementById("coupon-cancel")?.addEventListener("click",resetCouponForm);
 document.getElementById("coupon-code")?.addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,"");});

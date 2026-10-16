@@ -5308,33 +5308,62 @@ comprobarRetornoPago();
 
     const status=document.getElementById("store-open-status");
     if(status){
-      try{
-        const parts=new Intl.DateTimeFormat("en-US",{
-          timeZone:"America/Argentina/Buenos_Aires",
-          weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
-        }).formatToParts(new Date());
-        const get=type=>parts.find(p=>p.type===type)?.value||"";
-        const dayMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
-        const day=dayMap[get("weekday")];
-        const minutes=(Number(get("hour"))||0)*60+(Number(get("minute"))||0);
-        const config=await obtenerConfigPublica().catch(()=>null);
-        const hours=config?.business?.hours||{
-          mon_fri:[["09:00","13:00"],["16:00","20:00"]],
-          sat:[["09:00","20:00"]],
-          sun:[]
-        };
-        const pairs=day===0?(hours.sun||[]):day===6?(hours.sat||[]):(hours.mon_fri||[]);
-        const ranges=pairs
-          .map(pair=>[minutosHora(pair?.[0]),minutosHora(pair?.[1])])
-          .filter(([from,to])=>Number.isFinite(from)&&Number.isFinite(to)&&to>from);
-        const open=ranges.some(([from,to])=>minutes>=from&&minutes<to);
-        status.textContent=open?"Local abierto":"Local cerrado";
-        status.classList.toggle("is-open",open);
-        status.classList.toggle("is-closed",!open);
-      }catch{
-        status.textContent="Local cerrado";
-        status.classList.add("is-closed");
-      }
+      let checking=false;
+      const updateStoreStatus=async()=>{
+        if(checking)return;
+        checking=true;
+        try{
+          // No reutilizar una respuesta vieja: el dueño puede cerrar
+          // manualmente o añadir un feriado mientras otro cliente navega.
+          const response=await fetch("/api/public-config",{
+            headers:{Accept:"application/json"},cache:"no-store"
+          });
+          if(!response.ok)throw new Error("Estado comercial no disponible");
+          const data=await response.json();
+          const hours=data?.business?.hours||{};
+          const parts=new Intl.DateTimeFormat("en-US",{
+            timeZone:"America/Argentina/Buenos_Aires",
+            weekday:"short",year:"numeric",month:"2-digit",day:"2-digit",
+            hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+          }).formatToParts(new Date());
+          const get=type=>parts.find(p=>p.type===type)?.value||"";
+          const localDate=[get("year"),get("month"),get("day")].join("-");
+          const dayMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+          const day=dayMap[get("weekday")];
+          const minutes=(Number(get("hour"))||0)*60+(Number(get("minute"))||0);
+          const manual=["open","closed"].includes(hours.manual_status)?hours.manual_status:"auto";
+          const special=Array.isArray(hours.holidays)
+            ?hours.holidays.find(item=>item && item.date===localDate)
+            :null;
+          const isWithinHours=pairs=>(Array.isArray(pairs)?pairs:[])
+            .map(pair=>[minutosHora(pair?.[0]),minutosHora(pair?.[1])])
+            .some(([from,to])=>Number.isFinite(from)&&Number.isFinite(to)&&to>from&&minutes>=from&&minutes<to);
+          const regularPairs=day===0?hours.sun:day===6?hours.sat:hours.mon_fri;
+          const open=manual==="open" || (manual!=="closed" && (
+            special
+              ?(special.state==="open" && isWithinHours(special.hours))
+              :isWithinHours(regularPairs)
+          ));
+          status.textContent=open?"Local abierto":"Local cerrado";
+          status.classList.toggle("is-open",open);
+          status.classList.toggle("is-closed",!open);
+          status.title=manual!=="auto"
+            ?"Estado indicado manualmente por el negocio"
+            :special
+              ?("Fecha especial: "+(special.name||localDate))
+              :"Según el horario habitual del local";
+        }catch(error){
+          // No inventar "cerrado" si falla la red o el servicio de horarios.
+          status.textContent="Consultar horario";
+          status.classList.remove("is-open","is-closed");
+          status.removeAttribute("title");
+        }finally{checking=false;}
+      };
+      await updateStoreStatus();
+      window.setInterval(()=>{if(!document.hidden)void updateStoreStatus();},60000);
+      document.addEventListener("visibilitychange",()=>{
+        if(!document.hidden)void updateStoreStatus();
+      });
     }
   };
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",run,{once:true});
