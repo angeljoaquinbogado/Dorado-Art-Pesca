@@ -30,24 +30,15 @@
           anchor.target="_blank";
           anchor.rel="noopener noreferrer";
         }
-        const sparkle=document.createElement("span");
-        sparkle.className="promo-spark";
-        sparkle.textContent="✦";
-        sparkle.setAttribute("aria-hidden","true");
         const title=document.createElement("strong");
         title.textContent=String(item.title);
-        anchor.append(sparkle,title);
+        anchor.append(title);
         if(item.detail){
           const detail=document.createElement("span");
           detail.className="promo-detail";
           detail.textContent=String(item.detail);
           anchor.appendChild(detail);
         }
-        const arrow=document.createElement("span");
-        arrow.className="promo-arrow";
-        arrow.textContent="↗";
-        arrow.setAttribute("aria-hidden","true");
-        anchor.appendChild(arrow);
         group.appendChild(anchor);
       });
       return group;
@@ -55,6 +46,19 @@
     track.dataset.single=promotions.length===1?"true":"false";
     track.replaceChildren(set(false),set(true));
     shell.hidden=false;
+    // El recorrido equivale exactamente al ancho del menú flotante,
+    // también cuando pasa a su versión compacta al bajar.
+    const updateWidth=()=>{
+      const width=Math.round(shell.getBoundingClientRect().width);
+      if(width>0)track.style.setProperty("--dorado-promo-width",width+"px");
+    };
+    updateWidth();
+    if("ResizeObserver" in window){
+      const observer=new ResizeObserver(updateWidth);
+      observer.observe(shell);
+    }else{
+      window.addEventListener("resize",updateWidth,{passive:true});
+    }
   }catch(error){
     console.warn("No se pudieron cargar los avisos promocionales",error);
   }
