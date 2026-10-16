@@ -6,6 +6,7 @@
  const status=document.getElementById("admin-push-status");
  const enable=document.getElementById("admin-push-enable");
  const disable=document.getElementById("admin-push-disable");
+ const test=document.getElementById("admin-push-test");
  const install=document.getElementById("admin-pwa-install");
  if(!tab||!badge||!status||!enable||!disable)return;
  let started=false,busy=false,installPrompt=null;
@@ -91,6 +92,7 @@
  function syncButtons(subscribed){
    enable.hidden=subscribed;
    disable.hidden=!subscribed;
+   if(test)test.hidden=!subscribed;
  }
  async function refreshPushState(){
    if(!isActive())return;
@@ -127,6 +129,17 @@
      label("Listo. Este celular recibirá pedidos confirmados con número e importe.","success");
    }catch(error){label(error?.message||"No pudimos activar los avisos.","error");}
    finally{enable.disabled=false;}
+ });
+ test?.addEventListener("click",async()=>{
+   test.disabled=true;
+   try{
+     const reg=await registration();
+     const sub=await reg.pushManager.getSubscription();
+     if(!sub)throw Error("Activá las notificaciones primero.");
+     await authFetch("POST",{endpoint:sub.endpoint,test:true});
+     label("Prueba enviada. Revisá las notificaciones de este celular.","success");
+   }catch(error){label(error?.message||"No se pudo enviar la prueba.","error");}
+   finally{test.disabled=false;}
  });
  async function deactivate(){
    if(!("serviceWorker" in navigator))return;
