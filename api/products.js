@@ -750,8 +750,8 @@ async function handlePublicProducts(req, res) {
             const from = page * pageSize;
             const to = from + pageSize - 1;
             const select = includeDiscount
-                ? "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,created_at"
-                : "id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,created_at";
+                ? "id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,en_promocion,activo,destacado,created_at"
+                : "id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,en_promocion,activo,destacado,created_at";
 
             let response = await fetchWithTimeout(
                 `${url}/rest/v1/productos?select=${select}&activo=eq.true&order=id.asc`,
@@ -777,7 +777,7 @@ async function handlePublicProducts(req, res) {
             ) {
                 includeDiscount = false;
                 response = await fetchWithTimeout(
-                    `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,created_at&activo=eq.true&order=id.asc`,
+                    `${url}/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,en_promocion,activo,destacado,created_at&activo=eq.true&order=id.asc`,
                     {
                         headers: {
                             apikey: key,
@@ -846,6 +846,7 @@ async function handlePublicProducts(req, res) {
             marca: String(product.marca || ""),
             created_at: product.created_at || null,
             destacado: Boolean(product.destacado),
+            en_promocion: product.en_promocion === true,
             stock: Math.max(
                 0,
                 Number(product.stock) || 0

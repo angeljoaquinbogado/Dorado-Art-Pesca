@@ -1,0 +1,62 @@
+/* Mensajes promocionales en la portada y catálogo filtrado. */
+.dorado-hero-promo [hidden],.catalog-promo-clear[hidden]{display:none!important}
+.hero .eyebrow.dorado-hero-promo.has-promotion{
+ display:inline-flex!important;align-items:center!important;gap:10px!important;
+ max-width:min(100%,650px);padding:9px 15px!important;
+ border:1px solid rgba(225,176,77,.43)!important;border-radius:999px!important;
+ background:rgba(25,20,11,.62)!important;color:#fff7e9!important;
+ box-shadow:0 8px 24px rgba(0,0,0,.12)!important;
+ text-transform:none!important;letter-spacing:.025em!important;
+}
+.dorado-hero-promo #dorado-hero-promo-link{
+ display:inline-flex;align-items:center;gap:9px;min-width:0;max-width:100%;
+ color:#fff3d5!important;text-decoration:none!important;
+ font:800 clamp(11px,1vw,13px)/1.45 "Manrope",sans-serif!important;
+ white-space:normal;overflow-wrap:anywhere;
+ transition:opacity .25s ease,transform .25s ease
+}
+.dorado-hero-promo .dorado-promo-arrow{flex:0 0 auto;color:#e5b34b;font-size:15px}
+.dorado-hero-promo.promo-switching #dorado-hero-promo-link{opacity:0;transform:translate3d(0,-4px,0)}
+.dorado-hero-promo #dorado-hero-promo-link:hover{color:#fff!important}
+.dorado-hero-promo #dorado-hero-promo-link:focus-visible{outline:2px solid #f6d17a;outline-offset:4px}
+.navlinks .nav-promotions-link{white-space:nowrap}
+.navlinks .nav-promotions-link:hover,.navlinks .nav-promotions-link.active{color:#a36c08!important}
+@media(min-width:901px){
+ .navlinks{gap:clamp(9px,1.3vw,24px)!important}
+ .navlinks a{font-size:11.5px!important;letter-spacing:.035em!important}
+}
+.catalog-products-head{scroll-margin-top:130px;flex-wrap:wrap}
+.catalog-promo-clear{
+ appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+ min-height:35px;padding:7px 13px;border:1px solid rgba(205,156,55,.55);
+ border-radius:999px;background:rgba(220,173,76,.08);color:#ad7b16;
+ font:800 10px/1.25 "Manrope",sans-serif
+}
+.catalog-promo-clear:hover{background:rgba(220,173,76,.17)}
+.product-img{position:relative}
+.product-promotion-mark{
+ position:absolute;z-index:3;right:9px;top:9px;max-width:55%;
+ border-radius:999px;padding:6px 9px;background:#cf9e38;color:#17222c;
+ font:850 9px/1.15 "Manrope",sans-serif;letter-spacing:.035em;
+ pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,.09)
+}
+html[data-store-theme="dark"] .product-promotion-mark{background:#ebba4f;color:#091b25}
+.product-promotion-control{grid-column:1/-1;min-width:0}
+.product-promotion-toggle{
+ display:flex;align-items:flex-start;gap:12px;min-width:0;
+ padding:15px;border:1px solid rgba(197,149,45,.4);
+ border-radius:15px;background:rgba(214,166,61,.075);cursor:pointer
+}
+.product-promotion-toggle input{margin-top:4px;width:17px;height:17px;flex:0 0 auto;accent-color:#bd8b27}
+.product-promotion-toggle span{display:grid;gap:5px;min-width:0}
+.product-promotion-toggle strong{font:800 12px/1.4 "Manrope",sans-serif}
+.product-promotion-toggle small{font:600 11px/1.55 "Manrope",sans-serif;opacity:.9}
+html[data-admin-theme="light"] .product-promotion-toggle{color:#26343b;background:#fffbf0}
+html[data-admin-theme="dark"] .product-promotion-toggle{color:#eaf1f4;background:#142c38}
+@media(max-width:650px){
+ .hero .eyebrow.dorado-hero-promo.has-promotion{padding:8px 12px!important;border-radius:16px!important}
+ .dorado-hero-promo #dorado-hero-promo-link{font-size:11px!important}
+ .product-promotion-mark{font-size:8px;padding:5px 7px}
+ .catalog-products-head{scroll-margin-top:94px}
+}
+@media(prefers-reduced-motion:reduce){.dorado-hero-promo #dorado-hero-promo-link{transition:none}}

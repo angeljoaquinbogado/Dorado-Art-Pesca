@@ -1195,12 +1195,12 @@ async function loadProducts(){
     for(let page=0;page<50;page++){
         const from=page*pageSize;
         const to=from+pageSize-1;
-        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+        let r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,descuento_porcentaje,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,en_promocion,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
             headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
         });
         let d=await r.json().catch(()=>[]);
         if(!r.ok){
-            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
+            r=await sb("/rest/v1/productos?select=id,nombre,descripcion,caracteristicas,precio,imagen,imagenes,categoria,marca,stock,control_stock,cuotas_sin_interes_3,en_promocion,activo,destacado,costo,proveedor,codigo_barras,stock_minimo&order=id.asc",{
                 headers:{Range:`${from}-${to}`,"Range-Unit":"items"}
             });
             d=await r.json().catch(()=>[]);
@@ -1919,6 +1919,7 @@ function resetProductForm(){
     document.getElementById("product-id").value="";
     document.getElementById("product-active").value="true";
     document.getElementById("product-featured").value="false";
+    document.getElementById("product-en-promocion").checked=false;
     setProductStockControl(Boolean(adminBusinessSettings?.default_stock_control));
     document.getElementById("product-installments-3").checked=false;
     renderInstallmentQuote();
@@ -2006,6 +2007,7 @@ function editProduct(id){
     document.getElementById("product-image").value="";
     document.getElementById("product-active").value=String(Boolean(p.activo));
     document.getElementById("product-featured").value=String(Boolean(p.destacado));
+    document.getElementById("product-en-promocion").checked=p.en_promocion===true;
     document.getElementById("product-form-title").textContent="Editar producto";
     document.getElementById("product-save").textContent="GUARDAR CAMBIOS";
     document.getElementById("product-cancel").classList.remove("hidden");
@@ -2095,7 +2097,8 @@ async function saveProduct(event){
             imagen:imagenes[0],
             imagenes,
             activo:document.getElementById("product-active").value==="true",
-            destacado:document.getElementById("product-featured").value==="true"
+            destacado:document.getElementById("product-featured").value==="true",
+            en_promocion:document.getElementById("product-en-promocion").checked
         };
 
         if(!payload.nombre||!Number.isFinite(payload.precio)||payload.precio<0){
