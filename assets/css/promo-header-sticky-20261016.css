@@ -131,3 +131,68 @@ html[data-store-motion="off"] .nav > .dorado-hero-ticker .dorado-promo-track{
   animation:none!important;
   will-change:auto!important
 }
+
+/* Promoción integrada al menú: discreta sobre la portada y blanca al bajar.
+   Mantener la transparencia del fondo evita tapar la foto de pesca. */
+html .nav > .dorado-hero-ticker{
+  transition:background-color .28s ease,border-color .28s ease,box-shadow .28s ease!important;
+}
+html .nav:not(.scrolled) > .dorado-hero-ticker,
+html[data-store-theme="light"] .nav:not(.scrolled) > .dorado-hero-ticker,
+html[data-store-theme="dark"] .nav:not(.scrolled) > .dorado-hero-ticker{
+  background:rgba(17,30,37,.47)!important;
+  border-color:rgba(255,255,255,.16)!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.07)!important;
+  -webkit-backdrop-filter:blur(9px)!important;
+  backdrop-filter:blur(9px)!important;
+}
+html .nav:not(.scrolled) > .dorado-hero-ticker::before,
+html[data-store-theme="light"] .nav:not(.scrolled) > .dorado-hero-ticker::before,
+html[data-store-theme="dark"] .nav:not(.scrolled) > .dorado-hero-ticker::before{
+  background:linear-gradient(90deg,rgba(17,30,37,.45),rgba(17,30,37,0))!important;
+}
+html .nav:not(.scrolled) > .dorado-hero-ticker::after,
+html[data-store-theme="light"] .nav:not(.scrolled) > .dorado-hero-ticker::after,
+html[data-store-theme="dark"] .nav:not(.scrolled) > .dorado-hero-ticker::after{
+  background:linear-gradient(270deg,rgba(17,30,37,.45),rgba(17,30,37,0))!important;
+}
+html .nav:not(.scrolled) > .dorado-hero-ticker .dorado-promo-item strong,
+html[data-store-theme="light"] .nav:not(.scrolled) > .dorado-hero-ticker .dorado-promo-item strong,
+html[data-store-theme="dark"] .nav:not(.scrolled) > .dorado-hero-ticker .dorado-promo-item strong{
+  color:#f1e6cf!important;
+  font-weight:750!important;
+}
+html .nav:not(.scrolled) > .dorado-hero-ticker .dorado-promo-item .promo-detail,
+html[data-store-theme="light"] .nav:not(.scrolled) > .dorado-hero-ticker .dorado-promo-item .promo-detail,
+html[data-store-theme="dark"] .nav:not(.scrolled) > .dorado-hero-ticker .dorado-promo-item .promo-detail{
+  color:#e2dfd8!important;
+}
+/* La navegación entra en estado .scrolled al bajar. Incluso con tema oscuro,
+   la banda queda blanca como el menú de referencia y recupera texto oscuro. */
+html .nav.scrolled > .dorado-hero-ticker,
+html[data-store-theme="light"] .nav.scrolled > .dorado-hero-ticker,
+html[data-store-theme="dark"] .nav.scrolled > .dorado-hero-ticker{
+  background:rgba(255,253,249,.97)!important;
+  border-color:rgba(61,67,70,.14)!important;
+  box-shadow:0 6px 20px rgba(17,25,31,.075)!important;
+}
+html .nav.scrolled > .dorado-hero-ticker::before,
+html[data-store-theme="light"] .nav.scrolled > .dorado-hero-ticker::before,
+html[data-store-theme="dark"] .nav.scrolled > .dorado-hero-ticker::before{
+  background:linear-gradient(90deg,rgba(255,253,249,.98),rgba(255,253,249,0))!important;
+}
+html .nav.scrolled > .dorado-hero-ticker::after,
+html[data-store-theme="light"] .nav.scrolled > .dorado-hero-ticker::after,
+html[data-store-theme="dark"] .nav.scrolled > .dorado-hero-ticker::after{
+  background:linear-gradient(270deg,rgba(255,253,249,.98),rgba(255,253,249,0))!important;
+}
+html .nav.scrolled > .dorado-hero-ticker .dorado-promo-item strong,
+html[data-store-theme="light"] .nav.scrolled > .dorado-hero-ticker .dorado-promo-item strong,
+html[data-store-theme="dark"] .nav.scrolled > .dorado-hero-ticker .dorado-promo-item strong{
+  color:#796027!important;
+}
+html .nav.scrolled > .dorado-hero-ticker .dorado-promo-item .promo-detail,
+html[data-store-theme="light"] .nav.scrolled > .dorado-hero-ticker .dorado-promo-item .promo-detail,
+html[data-store-theme="dark"] .nav.scrolled > .dorado-hero-ticker .dorado-promo-item .promo-detail{
+  color:#505c63!important;
+}

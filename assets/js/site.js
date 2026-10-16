@@ -3027,8 +3027,8 @@ const CATALOG_SORT_LABELS={
     "newest":"Más nuevo al más viejo",
     "oldest":"Más viejo al más nuevo",
     "best-selling":"Más vendidos",
-    "promotions":"Promociones primero",
-    "discounts":"Mayor descuento",
+    "promotions":"Promociones",
+    "discounts":"Descuentos",
     "featured":"Destacado"
 };
 
