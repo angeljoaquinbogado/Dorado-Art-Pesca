@@ -1,0 +1,69 @@
+/* Recuperación de movimiento desktop sin saltarse las preferencias de accesibilidad
+   salvo que el cliente active expresamente "Animadas". */
+@media(min-width:821px){
+  .hero-combined-scene .hero-bg{display:block!important}
+  .hero-combined-scene{
+    background:#08090a!important;
+    background-attachment:scroll!important;
+  }
+  /* Optimización anterior apagaba el fondo duplicado pero también su imagen animada.
+     Volvemos a utilizar la capa única que realmente se mueve. */
+  html[data-store-motion="off"] .hero-combined-scene .hero-bg-media{animation:none!important;will-change:auto!important}
+  /* Dejar que el carrusel siga avanzando con el mouse encima.
+     Solo detenemos el movimiento cuando la zona no está en pantalla. */
+  #productos.perf-active #marcas:not(.brands-expanded) .brand-marquee-shell .brand-marquee-track{
+    animation:doradoBrandMarquee 35s linear infinite!important;
+    animation-play-state:running!important;
+  }
+  #productos.perf-paused .brand-marquee-track,
+  #marcas.brands-expanded .brand-marquee-track{
+    animation-play-state:paused!important;
+  }
+}
+/* Anulación opcional de reducir movimiento: hay controles para apagarla. */
+html[data-store-motion="on"] #productos.perf-active #marcas:not(.brands-expanded) .brand-marquee-track{
+  animation:doradoBrandMarquee 35s linear infinite!important;
+  animation-play-state:running!important;
+}
+html[data-store-motion="on"] #opiniones.perf-active .reviews-marquee-track{
+  animation:doradoReviewsMarquee 44s linear infinite!important;
+  animation-play-state:running!important;
+}
+html[data-store-motion="on"] .dorado-promo-track{
+  animation:doradoPromoFlow 34s linear infinite!important;
+}
+html[data-store-motion="on"].motion-enhanced .motion-item:not(.motion-visible){
+  opacity:0!important;
+}
+html[data-store-motion="on"].motion-enhanced .motion-item.motion-visible{
+  opacity:1!important;
+  transition:opacity 420ms cubic-bezier(.16,1,.3,1),transform 680ms cubic-bezier(.16,1,.3,1)!important;
+}
+html[data-store-motion="off"] .brand-marquee-track,
+html[data-store-motion="off"] .reviews-marquee-track,
+html[data-store-motion="off"] .dorado-promo-track{
+  animation:none!important;will-change:auto!important;
+}
+html[data-store-motion="off"] .dorado-promo-strip,
+html[data-store-motion="off"] .brand-marquee-shell,
+html[data-store-motion="off"] .reviews-marquee-shell{overflow-x:auto}
+/* Un selector específico anterior forzaba la animación de la portada incluso
+   con preferencia reducida, corregimos el caso desde nuestra opción explícita. */
+html[data-store-motion="off"] .hero-bg-media{animation:none!important}
+.footer-motion-settings{
+  border-top:1px solid rgba(128,138,144,.17);padding-top:14px;margin-top:15px;
+  display:grid;gap:8px;max-width:340px;
+}
+.footer-motion-settings>strong{color:inherit;font-size:12px;line-height:1.4}
+.footer-motion-settings>small{color:inherit;opacity:.86;font-size:11px;line-height:1.5}
+.footer-motion-options{display:flex;flex-wrap:wrap;gap:6px}
+.footer-motion-options button{
+  border:1px solid currentColor;opacity:.78;border-radius:999px;
+  font:700 10px/1.2 "Manrope",sans-serif;padding:9px 10px;
+  background:transparent;color:inherit;cursor:pointer;
+  transition:color .18s ease,border-color .18s ease,background-color .18s ease;
+}
+.footer-motion-options button.active{
+  color:#0e1820!important;opacity:1;background:#e4bb50;border-color:#e4bb50;
+}
+.footer-motion-options button:focus-visible{outline:2px solid #e4bb50;outline-offset:3px}

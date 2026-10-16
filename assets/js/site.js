@@ -3495,7 +3495,7 @@ function brandWaveCards(section){
 }
 
 function brandReducedMotion(){
-    return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+    return typeof window.doradoPrefersReducedMotion === "function" ? window.doradoPrefersReducedMotion() : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
 }
 
 function cancelBrandMotion(){
@@ -4024,7 +4024,7 @@ comprobarRetornoPago();
 // ==============================
 
 (() => {
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = window.doradoPrefersReducedMotion?.() ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const canObserve = 'IntersectionObserver' in window;
   document.documentElement.classList.add('motion-enhanced');
 
@@ -4549,7 +4549,7 @@ comprobarRetornoPago();
     const intro=document.getElementById("brand-intro");
     if(intro){
         const seen=sessionStorage.getItem("doradoIntroSeen")==="1";
-        const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const reduced=window.doradoPrefersReducedMotion?.() ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
         const finishIntro=()=>{
             intro.classList.add("hide");

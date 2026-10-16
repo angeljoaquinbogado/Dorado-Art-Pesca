@@ -1,0 +1,94 @@
+/* DORADO ADMIN — tipografía de alto contraste, accesible en claro y oscuro.
+   Solo lectura visual: sin cambiar funcionalidad ni datos. */
+html[data-admin-theme="light"]{
+  --muted:#46535a!important;
+  --text:#20282d!important;
+}
+html[data-admin-theme="dark"]{
+  --muted:#c0cbd1!important;
+  --text:#ecf2f4!important;
+}
+/* Blanco cálido y superficies sin gris lavado. */
+html[data-admin-theme="light"] .commercial-settings-shell,
+html[data-admin-theme="light"] .promo-admin-card{
+  color:#222b31!important;
+}
+html[data-admin-theme="light"] .commercial-settings-card,
+html[data-admin-theme="light"] .promo-admin-row{
+  background:#fffdfa!important;border-color:#e1d8c9!important;
+}
+html[data-admin-theme="light"] .settings-hours-day,
+html[data-admin-theme="light"] .settings-toggle-row{
+  background:#fdf9f1!important;border-color:#e1d8c9!important;
+}
+html[data-admin-theme="light"] .settings-time-range{
+  background:#fff!important;border-color:#e1d8c9!important;
+}
+html[data-admin-theme="light"] .commercial-settings-head p,
+html[data-admin-theme="light"] .settings-card-head p,
+html[data-admin-theme="light"] .settings-theme-options small,
+html[data-admin-theme="light"] .settings-toggle-row small,
+html[data-admin-theme="light"] .settings-time-group-head small,
+html[data-admin-theme="light"] .settings-time-range label span,
+html[data-admin-theme="light"] .promo-admin-actions>span,
+html[data-admin-theme="light"] .promo-admin-empty,
+html[data-admin-theme="light"] .catalog-title-row p,
+html[data-admin-theme="light"] .field label,
+html[data-admin-theme="light"] .side-label,
+html[data-admin-theme="light"] .stat-label,
+html[data-admin-theme="light"] .section-tag{
+  color:#465159!important;opacity:1!important;
+}
+html[data-admin-theme="light"] .field input::placeholder,
+html[data-admin-theme="light"] .field textarea::placeholder,
+html[data-admin-theme="light"] .promo-admin-fields input::placeholder{color:#6b7378!important;opacity:1!important}
+html[data-admin-theme="dark"] .commercial-settings-card,
+html[data-admin-theme="dark"] .promo-admin-row{
+  background:#112633!important;color:#f3f5f7!important;
+  border-color:#34505c!important;
+}
+html[data-admin-theme="dark"] .commercial-settings-head p,
+html[data-admin-theme="dark"] .settings-card-head p,
+html[data-admin-theme="dark"] .settings-theme-options small,
+html[data-admin-theme="dark"] .settings-toggle-row small,
+html[data-admin-theme="dark"] .settings-time-group-head small,
+html[data-admin-theme="dark"] .settings-time-range label span,
+html[data-admin-theme="dark"] .promo-admin-actions>span,
+html[data-admin-theme="dark"] .promo-admin-empty,
+html[data-admin-theme="dark"] .catalog-title-row p,
+html[data-admin-theme="dark"] .field label,
+html[data-admin-theme="dark"] .side-label,
+html[data-admin-theme="dark"] .stat-label,
+html[data-admin-theme="dark"] .section-tag{
+  color:#c0cbd1!important;opacity:1!important;
+}
+html[data-admin-theme="dark"] .field input::placeholder,
+html[data-admin-theme="dark"] .field textarea::placeholder,
+html[data-admin-theme="dark"] .promo-admin-fields input::placeholder{color:#adbcc4!important;opacity:1!important}
+html[data-admin-theme="dark"] .promo-admin-fields input{background:#081a24!important;color:#f5f7f9!important;border-color:#49606c!important}
+/* Tamaños de lectura: no más textos microscópicos en las opciones comerciales. */
+.commercial-settings-head p{font-size:13px!important;line-height:1.6!important}
+.settings-card-head p{font-size:12px!important;line-height:1.55!important}
+.settings-card-head h3{font-size:17px!important;font-weight:800!important}
+.settings-theme-options strong,.settings-toggle-row strong{font-size:12.5px!important;line-height:1.45!important}
+.settings-theme-options small,.settings-toggle-row small{font-size:11.5px!important;line-height:1.45!important}
+.settings-hours-day-head small,.settings-time-group-head small,.settings-time-range label span{font-size:11px!important;line-height:1.45!important}
+.commercial-settings-shell .field label,.promo-admin-fields label{font-size:11px!important;line-height:1.4!important;letter-spacing:.04em!important}
+.promo-admin-actions>span,.promo-admin-empty{font-size:12px!important;line-height:1.55!important;opacity:1!important}
+.promo-admin-fields input{font-size:13px!important;line-height:1.4!important}
+#settings-panel .primary,#settings-panel .secondary{
+  font-size:11px!important;line-height:1.25!important;font-weight:750!important;
+}
+#settings-panel .settings-toggle-row,#settings-panel .settings-theme-options button{
+  min-height:48px;
+}
+html[data-admin-theme="light"] #settings-panel .secondary{color:#303a40!important}
+html[data-admin-theme="dark"] #settings-panel .secondary{background:#15303e!important;color:#f1f5f7!important;border-color:#4a616d!important}
+/* Cabeceras y texto auxiliar del resto del panel */
+html[data-admin-theme="light"] .stat-label,
+html[data-admin-theme="light"] .side-label,
+html[data-admin-theme="light"] .section-tag{color:#4d5960!important}
+html[data-admin-theme="dark"] .stat-label,
+html[data-admin-theme="dark"] .side-label,
+html[data-admin-theme="dark"] .section-tag{color:#bbcbd3!important}
+.stat-label,.side-label,.section-tag{font-size:10.5px!important;line-height:1.4!important;letter-spacing:.07em!important}
