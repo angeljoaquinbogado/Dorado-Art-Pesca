@@ -15,15 +15,24 @@
       <button type="button" class="secondary promo-remove">ELIMINAR</button>
     </div></div>
     <div class="promo-admin-fields">
-      <label>TÍTULO <input class="promo-title" maxlength="90" placeholder="Ej.: Ofertas de temporada"></label>
-      <label>DESCRIPCIÓN (OPCIONAL) <input class="promo-detail" maxlength="125" placeholder="Ej.: Descubrí los productos seleccionados"></label>
-      <label class="promo-wide">ENLACE (OPCIONAL) <input class="promo-link" maxlength="350" placeholder="#promociones o https://..."></label>
-    </div>
-    <label class="promo-enable"><input class="promo-enabled" type="checkbox"><span>Mostrar esta promoción en la tienda</span></label>`;
-  root.querySelector(".promo-title").value=String(data.title||"");
-  root.querySelector(".promo-detail").value=String(data.detail||"");
+      <label>TÍTULO <input class="promo-title" maxlength="90" autocomplete="off" placeholder="EJ.: OFERTAS SOLO POR HOY"></label>
+      <label>ENLACE <input class="promo-link" maxlength="350" placeholder="#promociones o https://..."></label>
+    </div>`;
+  const titleInput=root.querySelector(".promo-title");
+  titleInput.value=String(data.title||"").toLocaleUpperCase("es-AR");
+  titleInput.addEventListener("input",event=>{
+    if(event.isComposing)return;
+    const start=titleInput.selectionStart,end=titleInput.selectionEnd;
+    const upper=titleInput.value.toLocaleUpperCase("es-AR");
+    if(titleInput.value!==upper){
+      titleInput.value=upper;
+      try{titleInput.setSelectionRange(start,end);}catch{}
+    }
+  });
+  titleInput.addEventListener("compositionend",()=>{
+    titleInput.value=titleInput.value.toLocaleUpperCase("es-AR");
+  });
   root.querySelector(".promo-link").value=String(data.href||"");
-  root.querySelector(".promo-enabled").checked=data.enabled===true;
   return root;
  }
  function sync(){
@@ -34,17 +43,16 @@
    item.querySelector(".promo-up").disabled=index===0||working;
    item.querySelector(".promo-down").disabled=index===rows.length-1||working;
   });
-  if(!rows.length)list.innerHTML='<p class="promo-admin-empty">Todavía no hay promociones. Agregá una para empezar; el mensaje de la portada solo aparece cuando esté activo.</p>';
+  if(!rows.length)list.innerHTML='<p class="promo-admin-empty">Todavía no hay títulos promocionales. Agregá uno y guardalo para mostrarlo en la tienda.</p>';
  }
  function paint(items){
   list.replaceChildren(...items.slice(0,8).map(row));sync();
  }
  function collect(){
   const out=[...list.querySelectorAll(".promo-admin-row")].map(el=>({
-    title:el.querySelector(".promo-title").value.trim(),
-    detail:el.querySelector(".promo-detail").value.trim(),
+    title:el.querySelector(".promo-title").value.trim().toLocaleUpperCase("es-AR"),
     href:el.querySelector(".promo-link").value.trim(),
-    enabled:el.querySelector(".promo-enabled").checked
+    enabled:true
   }));
   for(const [i,p] of out.entries()){
    if(!p.title)throw new Error("Completá el título de la promoción "+(i+1)+".");
@@ -95,7 +103,7 @@
    const data=await response.json().catch(()=>[]);
    if(!response.ok||!data.length)throw new Error("No se pudieron guardar las promociones.");
    paint(promotions);
-   notice("Promociones guardadas. Los mensajes activos aparecen debajo del menú, en la portada.");
+   notice("Títulos guardados. Aparecen debajo del menú de la tienda.");
    showToast("Promociones actualizadas.");
   }catch(error){notice(error.message||"Error al guardar.",true);}
   finally{working=false;save.disabled=false;sync();}

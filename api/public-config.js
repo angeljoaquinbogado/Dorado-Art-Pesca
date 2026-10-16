@@ -102,8 +102,7 @@ export default async function handler(req, res) {
         promotions: Array.isArray(settings.promotions)
             ? settings.promotions.slice(0,8).filter(item=>item && typeof item==="object" && item.enabled===true)
                 .map(item=>({
-                    title:String(item.title||"").trim().slice(0,90),
-                    detail:String(item.detail||"").trim().slice(0,125),
+                    title:String(item.title||"").trim().toLocaleUpperCase("es-AR").slice(0,90),
                     href:String(item.href||"").trim().slice(0,350)
                 })).filter(item=>item.title.length>0)
                 .map(item=>({
