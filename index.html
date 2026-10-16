@@ -152,6 +152,7 @@
 <link rel="stylesheet" href="assets/css/catalog-card-alignment-20261014.css?v=2">
 <link rel="stylesheet" href="assets/css/announcements-motion-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/desktop-motion-authority-20261016.css?v=2">
+<link rel="stylesheet" href="assets/css/promotions-catalog-20261016.css?v=1">
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -207,10 +208,6 @@
 <span><svg class="ui-icon"><use href="#i-headset"></use></svg> Atención personalizada</span>
 </div>
 </div>
-<!-- Promociones publicadas desde Configuración del administrador. -->
-<div class="dorado-promo-strip" id="dorado-promo-strip" aria-label="Promociones vigentes" hidden>
-  <div class="dorado-promo-track" id="dorado-promo-track"></div>
-</div>
 <!-- =========================
      NAVEGACIÓN
 ========================= -->
@@ -220,6 +217,7 @@
 <a href="#nosotros">La tienda</a>
 <a href="#productos">Catálogo</a>
 <a href="#marcas">Marcas</a>
+<a href="#promociones" class="nav-promotions-link">Promociones</a>
 <a href="#contacto">Contacto</a>
 <a href="#informacion">Información</a>
 </nav>
@@ -283,6 +281,7 @@
     <a href="#nosotros">La tienda</a>
     <a href="#productos">Catálogo</a>
     <a href="#marcas">Marcas</a>
+    <a href="#promociones">Promociones</a>
     <a href="#contacto">Contacto</a>
     <a href="#informacion">Información</a>
   </div>
@@ -321,10 +320,11 @@
 </div>
 <div class="hero-shell">
 <div class="hero-content">
-<div class="eyebrow">
-<span class="eyebrow-dot"></span>
-        Dorado Artículos de Pesca · Desde 2023
-      </div>
+<div class="eyebrow dorado-hero-promo" id="dorado-hero-promo">
+<span class="eyebrow-dot" aria-hidden="true"></span>
+<span id="dorado-hero-default">Dorado Artículos de Pesca · Desde 2023</span>
+<a id="dorado-hero-promo-link" href="#promociones" hidden><span id="dorado-hero-promo-title"></span><span aria-hidden="true" class="dorado-promo-arrow">↗</span></a>
+</div>
 <h1><span class="hero-title-line hero-title-line-primary">TODO PARA TU</span><span class="hero-title-line hero-title-line-accent">PROXIMA PESCA</span></h1>
 <p class="hero-lead">
         Equipamiento, variedad y asesoramiento de verdad para que encuentres lo que necesitás sin dar vueltas.
@@ -422,8 +422,9 @@
   <button class="catalog-brand-clear" id="catalog-brand-clear" type="button">VER TODOS LOS PRODUCTOS</button>
 </div>
 
-<div class="catalog-step-head catalog-products-head">
-  <div class="catalog-step-label"><strong>PRODUCTOS</strong></div>
+<div class="catalog-step-head catalog-products-head" id="promociones">
+  <div class="catalog-step-label"><strong id="catalog-products-title">PRODUCTOS</strong></div>
+  <button class="catalog-promo-clear" id="catalog-promo-clear" type="button" hidden>VER TODOS LOS PRODUCTOS <span aria-hidden="true">↗</span></button>
 </div>
 
 <div class="catalog-refine-shell">
@@ -1293,9 +1294,9 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261016-motion2"></script>
+<script src="assets/js/site.js?v=20261016-promotions1"></script>
 <script defer src="assets/js/desktop-motion-recovery-20261016.js?v=2"></script>
-<script defer src="assets/js/promotions-public-20261016.js?v=1"></script>
+<script defer src="assets/js/promotions-public-20261016.js?v=2"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->
