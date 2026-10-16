@@ -237,7 +237,7 @@ function applyStoreTheme(preference,{persist=false,animate=false}={}){
     const normalized=normalizeStoreTheme(preference);
     const resolved=resolveStoreTheme(normalized);
     const root=document.documentElement;
-    const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce=window.doradoPrefersReducedMotion?.() ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if(persist){
         try{localStorage.setItem(DORADO_THEME_KEY,normalized);}catch{}
@@ -2683,7 +2683,7 @@ function scrollCatalogCategories(direction){
     const wrap=document.getElementById("categorias");
     if(!wrap)return;
 
-    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const reduced=window.doradoPrefersReducedMotion?.() ?? window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
     const amount=Math.max(180,Math.min(520,wrap.clientWidth*.72));
 
     wrap.scrollBy({
@@ -2699,7 +2699,7 @@ function centerActiveCategory({smooth=false}={}){
     const active=wrap?.querySelector(".category-chip.active");
     if(!wrap||!active)return;
 
-    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const reduced=window.doradoPrefersReducedMotion?.() ?? window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
     const target=Math.max(
         0,
         active.offsetLeft-(wrap.clientWidth-active.offsetWidth)/2
@@ -3701,7 +3701,7 @@ document.getElementById("brand-show-all")?.addEventListener("click",()=>{
 
     // Hero depth only on pointer devices; mobile remains static and lightweight.
     const stage = document.querySelector(".hero-product-stage");
-    if (stage && window.matchMedia("(pointer:fine)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (stage && window.matchMedia("(pointer:fine)").matches && !(window.doradoPrefersReducedMotion?.() ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
         let pointerRaf = 0;
         let pointerEvent = null;
 
@@ -5019,7 +5019,7 @@ comprobarRetornoPago();
    DORADO — UI FINAL: navegación activa, foco, año y detalles UX
    ========================================================= */
 (function configurarPulidoFinal(){
-    const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce=window.doradoPrefersReducedMotion?.() ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     /* Año automático del footer. */
     const year=document.getElementById("copyright-year");
@@ -6093,7 +6093,7 @@ comprobarRetornoPago();
    suma feedback inmediato + swipe-to-dismiss físico en touch.
    ========================================================= */
 (function configurarEntradaFluidaDorado(){
-    const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+    const reduceMotion={get matches(){return window.doradoPrefersReducedMotion?.() ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;}};
     const mobileViewport=window.matchMedia("(max-width: 980px)");
 
     /* Feedback desde pointer-down: la respuesta visual no espera al click. */

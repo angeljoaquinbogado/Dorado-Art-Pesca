@@ -67,3 +67,16 @@ html[data-store-motion="off"] .hero-bg-media{animation:none!important}
   color:#0e1820!important;opacity:1;background:#e4bb50;border-color:#e4bb50;
 }
 .footer-motion-options button:focus-visible{outline:2px solid #e4bb50;outline-offset:3px}
+
+/* Sistema: respetar la solicitud de menos movimiento del dispositivo.
+   "Animadas" es la opción explícita que puede ignorarla. */
+@media(prefers-reduced-motion:reduce){
+  html[data-store-motion="system"] .hero-bg-media{
+    animation:none!important;
+    will-change:auto!important;
+  }
+  html[data-store-motion="system"] #marcas .brand-marquee-track,
+  html[data-store-motion="system"] .dorado-promo-track{
+    animation:none!important;
+  }
+}
