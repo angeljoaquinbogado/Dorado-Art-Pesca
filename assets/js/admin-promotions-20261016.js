@@ -17,7 +17,7 @@
     <div class="promo-admin-fields">
       <label>TÍTULO <input class="promo-title" maxlength="90" placeholder="Ej.: Ofertas de temporada"></label>
       <label>DESCRIPCIÓN (OPCIONAL) <input class="promo-detail" maxlength="125" placeholder="Ej.: Descubrí los productos seleccionados"></label>
-      <label class="promo-wide">ENLACE (OPCIONAL) <input class="promo-link" maxlength="350" placeholder="#productos o https://..."></label>
+      <label class="promo-wide">ENLACE (OPCIONAL) <input class="promo-link" maxlength="350" placeholder="#promociones o https://..."></label>
     </div>
     <label class="promo-enable"><input class="promo-enabled" type="checkbox"><span>Mostrar esta promoción en la tienda</span></label>`;
   root.querySelector(".promo-title").value=String(data.title||"");
@@ -34,7 +34,7 @@
    item.querySelector(".promo-up").disabled=index===0||working;
    item.querySelector(".promo-down").disabled=index===rows.length-1||working;
   });
-  if(!rows.length)list.innerHTML='<p class="promo-admin-empty">Todavía no hay promociones. Agregá una para empezar; la franja pública seguirá oculta hasta activarla.</p>';
+  if(!rows.length)list.innerHTML='<p class="promo-admin-empty">Todavía no hay promociones. Agregá una para empezar; el mensaje de la portada solo aparece cuando esté activo.</p>';
  }
  function paint(items){
   list.replaceChildren(...items.slice(0,8).map(row));sync();
@@ -67,7 +67,7 @@
   if(list.querySelectorAll(".promo-admin-row").length>=8)return;
   if(!loaded){notice("Esperá a que carguen las promociones.",true);return;}
   const empty=list.querySelector(".promo-admin-empty");if(empty)empty.remove();
-  const item=row();list.append(item);sync();item.querySelector(".promo-title").focus();notice("Cambios pendientes de guardar.");
+  const item=row({href:"#promociones"});list.append(item);sync();item.querySelector(".promo-title").focus();notice("Cambios pendientes de guardar.");
  });
  list.addEventListener("click",event=>{
   const btn=event.target.closest("button");
@@ -92,7 +92,7 @@
    const data=await response.json().catch(()=>[]);
    if(!response.ok||!data.length)throw new Error("No se pudieron guardar las promociones.");
    paint(promotions);
-   notice("Promociones guardadas. Las activas ya pueden mostrarse arriba de la tienda.");
+   notice("Promociones guardadas. Los mensajes activos aparecen debajo del menú, en la portada.");
    showToast("Promociones actualizadas.");
   }catch(error){notice(error.message||"Error al guardar.",true);}
   finally{working=false;save.disabled=false;sync();}
