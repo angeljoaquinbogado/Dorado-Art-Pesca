@@ -84,6 +84,7 @@ let productoModalActual = null;
 let checkoutCoupon = null;
 let doradoPublicConfigPromise = null;
 let marcaActiva = "todas";
+let catalogPromoOnly=window.location.hash.toLowerCase()==="#promociones";
 let catalogoVisibleLimit = 12;
 let catalogoRevealFrom = 0;
 let catalogSortMode = "featured";
@@ -645,6 +646,7 @@ async function cargarProductosDesdeSupabase() {
             tarjeta.dataset.discount = String(Math.max(0, Number(producto.descuento_porcentaje) || 0));
             tarjeta.dataset.createdAt = String(producto.created_at || "");
             tarjeta.dataset.featured = producto.destacado === true ? "true" : "false";
+            tarjeta.dataset.promo=producto.en_promocion===true?"true":"false";
             tarjeta.dataset.stock = String(Math.max(0, Number(producto.stock) || 0));
             tarjeta.dataset.controlStock = productoControlaStock(producto) ? "true" : "false";
             tarjeta.dataset.category = String(producto.categoria || "").trim();
@@ -669,6 +671,7 @@ async function cargarProductosDesdeSupabase() {
                     <div class="badge">
                         ${textoSeguro(producto.categoria || "PRODUCTO")}
                     </div>
+                    ${producto.en_promocion===true?'<span class="product-promotion-mark">PROMOCIÓN</span>':""}
 
                     <img
                         src="${textoSeguro(imagen)}"
@@ -817,6 +820,9 @@ async function cargarProductosDesdeSupabase() {
         try { construirFiltrosCategorias(productos); } catch (error) { console.warn("Filtros de catálogo:", error); }
         try { construirMarcas(productos); } catch (error) { console.warn("Marcas del catálogo:", error); }
         try { actualizarFiltroCatalogo(); } catch (error) { console.warn("Filtro activo:", error); }
+        if(catalogPromoOnly && window.location.hash.toLowerCase()==="#promociones"){
+            requestAnimationFrame(()=>document.getElementById("promociones")?.scrollIntoView({behavior:"auto",block:"start"}));
+        }
         ejecutarCuandoHayaTiempo(()=>{
             loadCatalogBestSellerRanks().then(()=>{
                 if(catalogSortMode==="best-selling")actualizarFiltroCatalogo();
@@ -2592,6 +2598,7 @@ function seleccionarMarca(key,{scroll=false}={}){
 
     marcaActiva=brand.key;
     categoriaActiva="todos";
+    catalogPromoOnly=false;
     catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
     const search=document.getElementById("product-search");
@@ -2613,6 +2620,7 @@ function seleccionarMarca(key,{scroll=false}={}){
 function limpiarMarcaSeleccionada({scroll=false}={}){
     marcaActiva="todas";
     categoriaActiva="todos";
+    catalogPromoOnly=false;
     catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
     const search=document.getElementById("product-search");
@@ -2756,6 +2764,7 @@ function construirFiltrosCategorias(productos = []) {
 
     wrap.querySelectorAll(".category-chip").forEach(btn=>btn.addEventListener("click",()=>{
         const key=btn.dataset.category||"todos";
+        catalogPromoOnly=false;
 
         // Dentro de una marca, tocar de nuevo la categoría activa vuelve
         // a mostrar todos los productos de esa marca sin agregar un chip "Todos".
@@ -3225,7 +3234,7 @@ function actualizarFiltroCatalogo() {
     updateCatalogPriceBounds(rawCards);
     const cards = ordenarTarjetasCatalogo(rawCards,grid);
     const advancedCount=catalogFilterCount();
-    const hasActiveFilter = Boolean(query) || categoriaActiva !== "todos" || marcaActiva !== "todas" || advancedCount>0;
+    const hasActiveFilter = Boolean(query) || categoriaActiva !== "todos" || marcaActiva !== "todas" || advancedCount>0 || catalogPromoOnly;
 
     let matches = 0;
     let shown = 0;
@@ -3237,9 +3246,10 @@ function actualizarFiltroCatalogo() {
         const coincideTexto = !query || normalizarTextoBusqueda(card.dataset.search || card.textContent || "").includes(query);
         const coincideCategoria = categoriaActiva === "todos" || String(card.dataset.categoryKey || "sin-categoria") === categoriaActiva;
         const coincideMarca = marcaActiva === "todas" || String(card.dataset.brandKey || "sin-marca") === marcaActiva;
+        const coincidePromo = !catalogPromoOnly || card.dataset.promo==="true";
         const coincideMin = catalogFilterState.priceMin===null || price>=catalogFilterState.priceMin;
         const coincideMax = catalogFilterState.priceMax===null || price<=catalogFilterState.priceMax;
-        const coincide = coincideTexto && coincideCategoria && coincideMarca && coincideMin && coincideMax;
+        const coincide = coincideTexto && coincideCategoria && coincideMarca && coincideMin && coincideMax && coincidePromo;
 
         if(coincide)matches += 1;
 
@@ -3268,6 +3278,10 @@ function actualizarFiltroCatalogo() {
     catalogoRevealFrom=0;
 
     if (clear) clear.hidden = !query;
+    const promoTitle=document.getElementById("catalog-products-title");
+    const promoClear=document.getElementById("catalog-promo-clear");
+    if(promoTitle)promoTitle.textContent=catalogPromoOnly?"PRODUCTOS EN PROMOCIÓN":"PRODUCTOS";
+    if(promoClear)promoClear.hidden=!catalogPromoOnly;
 
     let empty = grid?.querySelector(".catalog-empty-filter");
     if (cards.length && matches === 0 && hasActiveFilter) {
@@ -3281,7 +3295,9 @@ function actualizarFiltroCatalogo() {
             empty.hidden = false;
             empty.textContent = query
                 ? `No encontramos productos que coincidan con “${input.value.trim()}”. Probá otra búsqueda o ajustá los filtros.`
-                : "No hay productos que coincidan con los filtros elegidos. Probá cambiar el rango de precio o restablecer los filtros.";
+                : catalogPromoOnly
+                    ? "Todavía no hay productos en promoción. Los que actives desde el administrador aparecerán acá."
+                    : "No hay productos que coincidan con los filtros elegidos. Probá cambiar el rango de precio o restablecer los filtros.";
         }
     } else if (empty) {
         empty.hidden = true;
@@ -3315,13 +3331,62 @@ function actualizarFiltroCatalogo() {
     syncCatalogFilterUI();
 }
 
+
+// Esta vista reúne exclusivamente los productos activados en el editor del administrador.
+// La URL /#promociones es compartible y conserva "Ver más" y la ordenación actual.
+function activarCatalogoPromociones({scroll=true}={}){
+    catalogPromoOnly=true;
+    marcaActiva="todas";
+    categoriaActiva="todos";
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    const input=document.getElementById("product-search");
+    if(input)input.value="";
+    catalogFilterState={priceMin:null,priceMax:null};
+    for(const id of ["catalog-price-min","catalog-price-max"]){
+        const field=document.getElementById(id);
+        if(field)field.value="";
+    }
+    construirFiltrosCategorias([...catalogoProductos.values()]);
+    construirMarcas([...catalogoProductos.values()]);
+    actualizarFiltroCatalogo();
+    if(scroll)requestAnimationFrame(()=>document.getElementById("promociones")?.scrollIntoView({
+        behavior:window.doradoPrefersReducedMotion?.()?"auto":"smooth",block:"start"
+    }));
+}
+function quitarFiltroPromociones(){
+    catalogPromoOnly=false;
+    catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
+    catalogoRevealFrom=0;
+    actualizarFiltroCatalogo();
+}
+document.addEventListener("click",event=>{
+    const link=event.target.closest?.('a[href="#promociones"],a[href="/#promociones"]');
+    if(!link)return;
+    event.preventDefault();
+    if(location.hash!=="#promociones")history.pushState(null,"","#promociones");
+    activarCatalogoPromociones();
+});
+document.getElementById("catalog-promo-clear")?.addEventListener("click",()=>{
+    if(location.hash==="#promociones")history.pushState(null,"","#productos");
+    quitarFiltroPromociones();
+});
+window.addEventListener("hashchange",()=>{
+    if(location.hash.toLowerCase()==="#promociones"){
+        activarCatalogoPromociones({scroll:false});
+    }else if(catalogPromoOnly){
+        quitarFiltroPromociones();
+    }
+});
+
 const productSearch=document.getElementById("product-search");
 productSearch?.addEventListener("input",()=>{
     const query=normalizarTextoBusqueda(productSearch.value);
 
     // La búsqueda principal es global: no queda limitada por una marca/categoría
     // que el usuario haya seleccionado antes.
-    if(query&&(marcaActiva!=="todas"||categoriaActiva!=="todos")){
+    if(query&&(marcaActiva!=="todas"||categoriaActiva!=="todos"||catalogPromoOnly)){
+        catalogPromoOnly=false;
         marcaActiva="todas";
         categoriaActiva="todos";
         construirFiltrosCategorias([...catalogoProductos.values()]);
@@ -3884,6 +3949,7 @@ comprobarRetornoPago();
         const key=String(button.dataset.mobileCategory||"todos");
         marcaActiva="todas";
         categoriaActiva=key;
+        catalogPromoOnly=false;
         catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
 
         const search=document.getElementById("product-search");
@@ -3959,6 +4025,7 @@ comprobarRetornoPago();
   searchForm?.addEventListener("submit",event=>{
     event.preventDefault();
     const query=String(searchInput?.value||"").trim();
+    catalogPromoOnly=false;
     marcaActiva="todas";
     categoriaActiva="todos";
     catalogoVisibleLimit=CATALOG_INITIAL_LIMIT;
