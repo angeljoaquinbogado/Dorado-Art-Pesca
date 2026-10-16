@@ -1,5 +1,5 @@
 /* Marquesina promocional DORADO: sin mensajes inventados ni HTML dinámico.
-   El administrador controla títulos, enlaces y activación. */
+   El administrador controla títulos y enlaces. */
 (async function mostrarPromocionesDorado(){
   const shell=document.getElementById("dorado-promo-strip");
   const track=document.getElementById("dorado-promo-track");
@@ -31,14 +31,8 @@
           anchor.rel="noopener noreferrer";
         }
         const title=document.createElement("strong");
-        title.textContent=String(item.title);
+        title.textContent=String(item.title).toLocaleUpperCase("es-AR");
         anchor.append(title);
-        if(item.detail){
-          const detail=document.createElement("span");
-          detail.className="promo-detail";
-          detail.textContent=String(item.detail);
-          anchor.appendChild(detail);
-        }
         group.appendChild(anchor);
       });
       return group;
