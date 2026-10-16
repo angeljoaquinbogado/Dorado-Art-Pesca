@@ -1,0 +1,222 @@
+/* DORADO · Contraste uniforme en TODO el administrador.
+   Ajusta exclusivamente legibilidad, contornos y el botón de títulos;
+   conserva estados, diseño responsivo, validación y colores semánticos. */
+
+/* Los dos temas necesitan una escala secundaria legible, no gris desvanecido. */
+html[data-admin-theme="light"]{
+  --muted:#46545d!important;
+  --line:#d3cbbf!important;
+}
+html[data-admin-theme="dark"]{
+  --muted:#bfccd5!important;
+  --line:#3f5865!important;
+}
+
+/* Textos auxiliares de los módulos: Productos, Pedidos, Cupones,
+   Configuración, Stock, Reseñas, Integraciones y controles de la cabecera. */
+html[data-admin-theme="light"] :is(
+  .file-help,.form-section-title,.field label,.card-head p,
+  .catalog-title-row p,.catalog-count,.orders-toolbar p,.orders-filterbar label,
+  .stat-label,.stat small,.cell-sub,.side-label,.section-tag,
+  .top-user,.crumb,.connection-pill,.shipping-help,
+  .shipping-form-grid label>span,.order-meta span,
+  .preview-empty,.search-wrap svg,.loading,
+  .settings-card-head p,.commercial-settings-head p,
+  .settings-theme-options small,.settings-toggle-row small,
+  .settings-time-group-head small,.settings-time-range label span,
+  .promo-admin-empty,.promo-admin-actions>span,.promo-admin-fields label,
+  .store-theme-admin-kicker,.store-theme-admin-options small
+){
+  color:#44515a!important;
+  opacity:1!important;
+}
+html[data-admin-theme="dark"] :is(
+  .file-help,.form-section-title,.field label,.card-head p,
+  .catalog-title-row p,.catalog-count,.orders-toolbar p,.orders-filterbar label,
+  .stat-label,.stat small,.cell-sub,.side-label,.section-tag,
+  .top-user,.crumb,.connection-pill,.shipping-help,
+  .shipping-form-grid label>span,.order-meta span,
+  .preview-empty,.search-wrap svg,.loading,
+  .settings-card-head p,.commercial-settings-head p,
+  .settings-theme-options small,.settings-toggle-row small,
+  .settings-time-group-head small,.settings-time-range label span,
+  .promo-admin-empty,.promo-admin-actions>span,.promo-admin-fields label,
+  .store-theme-admin-kicker,.store-theme-admin-options small
+){
+  color:#c0ced6!important;
+  opacity:1!important;
+}
+
+/* Escala tipográfica usable, incluso para los rótulos más pequeños
+   del editor de productos (información principal, galería, stock, etc.). */
+:where(.app,.login-card) .field label,
+:where(.app,.login-card) .form-section-title,
+:where(.app,.login-card) .stat-label,
+:where(.app,.login-card) .side-label,
+:where(.app,.login-card) .section-tag,
+:where(.app,.login-card) .promo-admin-fields label,
+:where(.app,.login-card) .shipping-form-grid label>span{
+  font-size:11px!important;
+  line-height:1.45!important;
+  font-weight:750!important;
+  letter-spacing:.055em!important;
+}
+:where(.app,.login-card) .file-help,
+:where(.app,.login-card) .card-head p,
+:where(.app,.login-card) .catalog-title-row p,
+:where(.app,.login-card) .orders-toolbar p,
+:where(.app,.login-card) .shipping-help,
+:where(.app,.login-card) .cell-sub,
+:where(.app,.login-card) .commercial-settings-head p,
+:where(.app,.login-card) .settings-card-head p,
+:where(.app,.login-card) .promo-admin-actions>span{
+  font-size:11.5px!important;
+  line-height:1.6!important;
+}
+:where(.app,.login-card) .catalog-count,
+:where(.app,.login-card) .stat small,
+:where(.app,.login-card) .crumb,
+:where(.app,.login-card) .connection-pill,
+:where(.app,.login-card) .top-user{
+  font-size:10.5px!important;
+  line-height:1.5!important;
+}
+:where(.app,.login-card) th,
+:where(.app,.login-card) .table-sort-button{
+  font-size:10.5px!important;
+  line-height:1.45!important;
+  letter-spacing:.04em!important;
+}
+:where(.app,.login-card) .stat-label{
+  font-weight:800!important;
+}
+
+/* Campos legibles, incluso placeholders, en ambos temas. */
+html[data-admin-theme="light"] input::placeholder,
+html[data-admin-theme="light"] textarea::placeholder{
+  color:#5f6a71!important;
+  -webkit-text-fill-color:#5f6a71!important;
+  opacity:1!important;
+}
+html[data-admin-theme="dark"] input::placeholder,
+html[data-admin-theme="dark"] textarea::placeholder{
+  color:#b2c0c8!important;
+  -webkit-text-fill-color:#b2c0c8!important;
+  opacity:1!important;
+}
+html[data-admin-theme="light"] :is(
+  .field input:not([type="checkbox"]):not([type="radio"]),
+  .field textarea,.field select,
+  .search-wrap input,.catalog-filters select,
+  .orders-filterbar input,.orders-filterbar select,
+  .admin-select-trigger,.promo-admin-fields input,
+  .shipping-form-grid input,.shipping-form-grid select
+){
+  border-color:#c7c0b4!important;
+  color:#202b32!important;
+}
+html[data-admin-theme="dark"] :is(
+  .field input:not([type="checkbox"]):not([type="radio"]),
+  .field textarea,.field select,
+  .search-wrap input,.catalog-filters select,
+  .orders-filterbar input,.orders-filterbar select,
+  .admin-select-trigger,.promo-admin-fields input,
+  .shipping-form-grid input,.shipping-form-grid select
+){
+  border-color:#5b707e!important;
+  color:#edf3f5!important;
+}
+:where(.app,.login-card) :is(
+  .field input,.field select,.field textarea,
+  .search-wrap input,.promo-admin-fields input
+):focus-visible{
+  border-color:#bd922d!important;
+  box-shadow:0 0 0 3px rgba(206,163,57,.16)!important;
+}
+
+/* Separaciones que antes casi desaparecían en tarjetas y tablas. */
+html[data-admin-theme="light"] :is(
+  .card,.form-card,.catalog-card,.orders-card,.stat,
+  .commercial-settings-card,.promo-admin-card,.promo-admin-row,
+  .settings-hours-day,.settings-toggle-row,.settings-time-range,
+  .order-meta>div,.privacy-chip,.workspace-top,
+  .admin-select-trigger,.admin-select-menu
+){
+  border-color:#d2c9bb!important;
+}
+html[data-admin-theme="dark"] :is(
+  .card,.form-card,.catalog-card,.orders-card,.stat,
+  .commercial-settings-card,.promo-admin-card,.promo-admin-row,
+  .settings-hours-day,.settings-toggle-row,.settings-time-range,
+  .order-meta>div,.privacy-chip,.workspace-top,
+  .admin-select-trigger,.admin-select-menu
+){
+  border-color:#435d6b!important;
+}
+html[data-admin-theme="light"] :is(
+  .form-section,.catalog-toolbar,.orders-toolbar,
+  .catalog-card th,.catalog-card td,.orders-card th,.orders-card td,
+  .settings-hours-day-head
+){
+  border-color:#d9d0c4!important;
+}
+html[data-admin-theme="dark"] :is(
+  .form-section,.catalog-toolbar,.orders-toolbar,
+  .catalog-card th,.catalog-card td,.orders-card th,.orders-card td,
+  .settings-hours-day-head
+){
+  border-color:#415966!important;
+}
+html[data-admin-theme="light"] :is(
+  .catalog-card th,.orders-card th,.table-sort-button
+){color:#46535b!important}
+html[data-admin-theme="dark"] :is(
+  .catalog-card th,.orders-card th,.table-sort-button
+){color:#c4d1d8!important}
+
+/* Zona de creación de títulos: el botón ya existe, pero ahora tiene nombre
+   claro, foco visible y contraste suficiente para localizarlo enseguida. */
+#settings-panel .promo-admin-actions{
+  align-items:center;
+  gap:14px;
+}
+html[data-admin-theme="light"] #settings-panel #promo-add{
+  background:#fff3d6!important;
+  border:1px solid #b98d35!important;
+  color:#493614!important;
+  box-shadow:0 2px 8px rgba(149,107,24,.08)!important;
+}
+html[data-admin-theme="dark"] #settings-panel #promo-add{
+  background:#29414c!important;
+  border:1px solid #c5a462!important;
+  color:#f4ddb0!important;
+  box-shadow:none!important;
+}
+#settings-panel #promo-add{
+  min-height:43px!important;
+  padding:10px 15px!important;
+  font:800 11.5px/1.3 "Manrope",system-ui,sans-serif!important;
+  letter-spacing:.035em!important;
+  border-radius:12px!important;
+  opacity:1;
+}
+#settings-panel #promo-add:focus-visible{
+  outline:2px solid #c69b40!important;
+  outline-offset:3px!important;
+}
+#settings-panel #promo-add:disabled{
+  opacity:.48!important;
+  cursor:not-allowed!important;
+}
+@media(max-width:650px){
+  #settings-panel .promo-admin-actions{
+    align-items:stretch;
+  }
+  #settings-panel #promo-add{
+    width:100%;
+    justify-content:center;
+  }
+}
+
+/* Mantener los estados inactivos y botones deshabilitados distinguibles;
+   nunca modificar el contraste de badges de estados de pedidos. */
