@@ -52,6 +52,7 @@
       });
       return group;
     };
+    track.dataset.single=promotions.length===1?"true":"false";
     track.replaceChildren(set(false),set(true));
     shell.hidden=false;
   }catch(error){
