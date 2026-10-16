@@ -124,3 +124,17 @@ html[data-admin-theme="dark"] .product-promotion-toggle{color:#eaf1f4;background
 }
 html[data-store-motion="off"] .dorado-hero-ticker .dorado-promo-track{animation:none!important;will-change:auto!important}
 html[data-store-motion="on"] .dorado-hero-ticker .dorado-promo-track{animation:doradoPromoFlow 32s linear infinite!important}
+
+/* El único título comienza desde el borde derecho y cruza la pantalla,
+   como el movimiento de las marcas. */
+.dorado-hero-ticker .dorado-promo-track[data-single="true"] .dorado-promo-set{
+  justify-content:flex-end!important;
+  padding-right:clamp(32px,8vw,120px)!important;
+}
+/* Diez opciones en "Ordenar por": siempre accesibles con rueda y teclado. */
+.catalog-sort-menu:not(.is-mobile-popover){
+  max-height:min(72dvh,525px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
