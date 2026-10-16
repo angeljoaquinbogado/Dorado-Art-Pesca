@@ -60,3 +60,67 @@ html[data-admin-theme="dark"] .product-promotion-toggle{color:#eaf1f4;background
  .catalog-products-head{scroll-margin-top:94px}
 }
 @media(prefers-reduced-motion:reduce){.dorado-hero-promo #dorado-hero-promo-link{transition:none}}
+
+
+/* Marquesina premium bajo la navegación, flotando sobre la portada.
+   Dos grupos idénticos generan un ciclo continuo hacia la izquierda. */
+.hero-combined-scene > .dorado-hero-ticker{
+  position:absolute!important;
+  top:clamp(83px,7vw,103px)!important;
+  left:0!important;right:0!important;
+  z-index:7!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:45px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  background:linear-gradient(90deg,rgba(11,24,31,.88),rgba(18,32,42,.74),rgba(11,24,31,.88))!important;
+  border-block:1px solid rgba(233,186,83,.24)!important;
+  box-shadow:0 6px 22px rgba(0,0,0,.11);
+}
+.hero-combined-scene > .dorado-hero-ticker[hidden]{display:none!important}
+.dorado-hero-ticker .dorado-promo-track{
+  display:flex!important;
+  align-items:center!important;
+  width:max-content!important;
+  min-width:100%!important;
+  animation:doradoPromoFlow 32s linear infinite!important;
+  animation-play-state:running!important;
+  will-change:transform;
+}
+.dorado-hero-ticker .dorado-promo-set{
+  display:flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  justify-content:space-around!important;
+  min-width:100vw!important;
+  gap:36px!important;
+  padding:10px 24px!important;
+}
+.dorado-hero-ticker .dorado-promo-item{
+  color:#f9f4e6!important;
+  font-size:clamp(11px,1vw,13px)!important;
+  font-weight:750!important;
+  letter-spacing:.025em!important;
+  text-transform:none!important;
+  text-decoration:none!important;
+}
+.dorado-hero-ticker .dorado-promo-item strong{color:#f5d27b!important;font-weight:850!important}
+.dorado-hero-ticker .dorado-promo-item:hover strong,
+.dorado-hero-ticker .dorado-promo-item:focus-visible strong{color:#fff!important}
+.dorado-hero-ticker .dorado-promo-item:focus-visible{outline:2px solid #f5d27b;outline-offset:3px}
+.dorado-hero-ticker .promo-spark{font-size:12px!important;color:#f3bc43!important}
+.dorado-hero-ticker .promo-arrow{font-size:14px!important}
+@media(max-width:980px){
+  .hero-combined-scene > .dorado-hero-ticker{top:82px!important;min-height:42px!important}
+  .dorado-hero-ticker .dorado-promo-set{padding:10px 14px!important;gap:24px!important}
+  .dorado-hero-ticker .dorado-promo-track{animation-duration:27s!important}
+}
+@media(prefers-reduced-motion:reduce){
+  html:not([data-store-motion="on"]) .dorado-hero-ticker .dorado-promo-track{animation:none!important;will-change:auto!important}
+  html:not([data-store-motion="on"]) .dorado-hero-ticker .dorado-promo-set[aria-hidden="true"]{display:none!important}
+}
+html[data-store-motion="off"] .dorado-hero-ticker .dorado-promo-track{animation:none!important;will-change:auto!important}
+html[data-store-motion="on"] .dorado-hero-ticker .dorado-promo-track{animation:doradoPromoFlow 32s linear infinite!important}

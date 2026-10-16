@@ -152,7 +152,7 @@
 <link rel="stylesheet" href="assets/css/catalog-card-alignment-20261014.css?v=2">
 <link rel="stylesheet" href="assets/css/announcements-motion-20261016.css?v=1">
 <link rel="stylesheet" href="assets/css/desktop-motion-authority-20261016.css?v=2">
-<link rel="stylesheet" href="assets/css/promotions-catalog-20261016.css?v=1">
+<link rel="stylesheet" href="assets/css/promotions-catalog-20261016.css?v=2">
 </head>
 <body>
 <div class="brand-intro" id="brand-intro" aria-hidden="true">
@@ -310,6 +310,10 @@
 ========================= -->
 <main>
 <div class="hero-combined-scene">
+<!-- Mensajes reales del administrador: desplazamiento continuo derecha → izquierda. -->
+<div class="dorado-promo-strip dorado-hero-ticker" id="dorado-promo-strip" aria-label="Promociones de DORADO" hidden>
+  <div class="dorado-promo-track" id="dorado-promo-track"></div>
+</div>
 <section class="hero reveal" id="inicio">
 <div aria-hidden="true" class="hero-bg">
 <div class="hero-bg-media" aria-hidden="true"></div>
@@ -320,10 +324,9 @@
 </div>
 <div class="hero-shell">
 <div class="hero-content">
-<div class="eyebrow dorado-hero-promo" id="dorado-hero-promo">
+<div class="eyebrow">
 <span class="eyebrow-dot" aria-hidden="true"></span>
-<span id="dorado-hero-default">Dorado Artículos de Pesca · Desde 2023</span>
-<a id="dorado-hero-promo-link" href="#promociones" hidden><span id="dorado-hero-promo-title"></span><span aria-hidden="true" class="dorado-promo-arrow">↗</span></a>
+Dorado Artículos de Pesca · Desde 2023
 </div>
 <h1><span class="hero-title-line hero-title-line-primary">TODO PARA TU</span><span class="hero-title-line hero-title-line-accent">PROXIMA PESCA</span></h1>
 <p class="hero-lead">
@@ -455,6 +458,8 @@
       <button type="button" role="option" data-catalog-sort="newest">Más nuevo al más viejo</button>
       <button type="button" role="option" data-catalog-sort="oldest">Más viejo al más nuevo</button>
       <button type="button" role="option" data-catalog-sort="best-selling">Más vendidos</button>
+      <button type="button" role="option" data-catalog-sort="promotions">Promociones primero</button>
+      <button type="button" role="option" data-catalog-sort="discounts">Mayor descuento</button>
       <button type="button" role="option" data-catalog-sort="featured" aria-selected="true">Destacado</button>
     </div>
   </div>
@@ -1294,9 +1299,9 @@
 </div>
 
 <script src="https://sdk.mercadopago.com/js/v2" data-mercadopago-sdk="true"></script>
-<script src="assets/js/site.js?v=20261016-promotions1"></script>
+<script src="assets/js/site.js?v=20261016-promotions2"></script>
 <script defer src="assets/js/desktop-motion-recovery-20261016.js?v=2"></script>
-<script defer src="assets/js/promotions-public-20261016.js?v=2"></script>
+<script defer src="assets/js/promotions-public-20261016.js?v=3"></script>
   <script defer src="/assets/js/vercel-speed-insights.js?v=20260927-insights1"></script>
 </body>
 <!-- cSpell:enable -->

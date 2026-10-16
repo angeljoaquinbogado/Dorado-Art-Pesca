@@ -3027,6 +3027,8 @@ const CATALOG_SORT_LABELS={
     "newest":"Más nuevo al más viejo",
     "oldest":"Más viejo al más nuevo",
     "best-selling":"Más vendidos",
+    "promotions":"Promociones primero",
+    "discounts":"Mayor descuento",
     "featured":"Destacado"
 };
 
@@ -3196,6 +3198,17 @@ function catalogSortCompare(a,b){
                 ? catalogBestSellerRanks.get(String(b.dataset.productId))
                 : Number.MAX_SAFE_INTEGER;
             result=rankA-rankB;
+            break;
+        }
+        case "promotions":{
+            const promotionA=a.dataset.promo==="true"?1:0;
+            const promotionB=b.dataset.promo==="true"?1:0;
+            result=promotionB-promotionA;
+            if(!result)result=(Number(b.dataset.discount)||0)-(Number(a.dataset.discount)||0);
+            break;
+        }
+        case "discounts":{
+            result=(Number(b.dataset.discount)||0)-(Number(a.dataset.discount)||0);
             break;
         }
         case "featured":{
@@ -3368,8 +3381,11 @@ document.addEventListener("click",event=>{
     activarCatalogoPromociones();
 });
 document.getElementById("catalog-promo-clear")?.addEventListener("click",()=>{
-    if(location.hash==="#promociones")history.pushState(null,"","#productos");
+    if(location.hash==="#promociones")history.replaceState(null,"","#productos");
     quitarFiltroPromociones();
+    document.getElementById("productos")?.scrollIntoView({
+        behavior:window.doradoPrefersReducedMotion?.()?"auto":"smooth",block:"start"
+    });
 });
 window.addEventListener("hashchange",()=>{
     if(location.hash.toLowerCase()==="#promociones"){
@@ -5123,8 +5139,13 @@ comprobarRetornoPago();
         link.addEventListener("click",event=>{
             const id=link.getAttribute("href")?.slice(1);
             const target=id&&document.getElementById(id);
-            if(!target) return;
+            if(!target)return;
+            // Promociones tiene su propio filtro y evento delegado.
+            if(id==="promociones")return;
             event.preventDefault();
+            // replaceState no emite hashchange: salir explícitamente evita
+            // quedarse atrapado en el catálogo de promociones.
+            if(catalogPromoOnly)quitarFiltroPromociones();
             target.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});
             history.replaceState(null,"",`#${id}`);
         });
