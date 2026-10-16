@@ -92,16 +92,14 @@ html[data-admin-theme="dark"] :is(
 }
 
 /* Campos legibles, incluso placeholders, en ambos temas. */
-html[data-admin-theme="light"] :is(
-  input::placeholder,textarea::placeholder
-){
+html[data-admin-theme="light"] input::placeholder,
+html[data-admin-theme="light"] textarea::placeholder{
   color:#5f6a71!important;
   -webkit-text-fill-color:#5f6a71!important;
   opacity:1!important;
 }
-html[data-admin-theme="dark"] :is(
-  input::placeholder,textarea::placeholder
-){
+html[data-admin-theme="dark"] input::placeholder,
+html[data-admin-theme="dark"] textarea::placeholder{
   color:#b2c0c8!important;
   -webkit-text-fill-color:#b2c0c8!important;
   opacity:1!important;
